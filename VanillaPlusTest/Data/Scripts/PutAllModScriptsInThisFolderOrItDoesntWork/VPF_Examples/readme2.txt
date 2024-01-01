@@ -1,0 +1,2 @@
+Yes you can have multiple files, just change the namespace each time OR the class name or there will be errors.
+(the "VPFFXDefinitions" in "public class VPFFXDefinitions : MySessionComponentBase" for example)

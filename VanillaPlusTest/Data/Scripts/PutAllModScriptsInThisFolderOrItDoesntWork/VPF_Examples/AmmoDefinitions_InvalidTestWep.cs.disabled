@@ -1,0 +1,54 @@
+﻿using System;
+using System.Collections.Generic;
+using Sandbox.ModAPI;
+using VRage.Game.Components;
+using VRageMath;
+using VanillaPlusFramework.TemplateClasses;
+using static VanillaPlusFramework.TemplateClasses.GuidanceType;
+using static VanillaPlusFramework.TemplateClasses.IdType;
+using static VanillaPlusFramework.TemplateClasses.DamageType;
+
+namespace Invalid.TestGun /// Set namespace name to something else, preferably something no other mod uses. Can be the same as other definitions
+{
+    /// <summary>
+    /// Recommend renaming the file.
+    /// Recommend Visual Studio for editing this, all fields have descriptions that visual studio will display on hover over. Make a project solution to put all files in as well so the descriptions show up when hovered over.
+    /// Contains all Vanilla+ Stats for all subtypes. Note: Vanilla Ammo.sbc is still used
+    /// Note: All implented stats are here. There are some unimplimented ones not shown, do not use them or errors will be thrown.
+    /// You can have multiple files, just change the class name ("VPFAmmoDefinitions" in front of public class) or the namespace
+    /// </summary>
+    [MySessionComponentDescriptor(MyUpdateOrder.NoUpdate)]
+    public class VPFAmmoDefinitions : MySessionComponentBase
+    {
+        public static List<VPFAmmoDefinition> AmmoDefinitions = new List<VPFAmmoDefinition>() {
+            /*
+             * DON'T MODIFY ANYTHING ABOVE THIS LINE EXCEPT THE NAMESPACE & CLASS NAME
+             */
+            new VPFAmmoDefinition
+            { // if you are NOT using a logic type, SET IT TO NULL OR THE SCRIPT MAY NOT FUNCTION AS INTENDED
+            subtypeName = "", //Ammo.sbc subtype of the missile (or projectile if a beam) you want logic for
+            FXsubtypeName = "Example_CoolRailgunEffect", // name of the effect definition to be used for this missile subtype defined in VPFFXDefinitions. If a matching one is not found none will be used.
+            NeedsAPHEFix = false, // determines if the projectile will use an APHE damage fix.
+            VPF_MissileHitpoints = 1, // missile health, used by a few logics like prox det for anti missile; larger = harder to shoot down. Note: shootdown via direct impact from projectiles ignores this.
+
+            TimeToArm = 1f, // time in seconds before the missile can do damage
+
+
+}            // copy everything from 'new VPFAmmoDefinition' to '} },' and paste it after the '} },' to add another ammo definition to this list
+
+            /*
+             * DON'T MODIFY ANYTHING BELOW THIS LINE
+             */
+        };
+
+
+
+        public override void BeforeStart()
+        {
+            foreach (VPFAmmoDefinition def in AmmoDefinitions)
+            {
+                MyAPIUtilities.Static.SendModMessage(DefinitionTools.ModMessageID, DefinitionTools.DefinitionToMessage(def));
+            }
+        }
+    }
+}
