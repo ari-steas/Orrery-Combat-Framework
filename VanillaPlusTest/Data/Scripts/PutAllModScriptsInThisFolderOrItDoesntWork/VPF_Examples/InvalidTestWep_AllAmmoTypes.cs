@@ -116,7 +116,7 @@ namespace Invalid.TestAmmoType /// Set namespace name to something else, prefera
 
             new VPFAmmoDefinition // example thrust disable beam weapon
             {
-                subtypeName = "InvalidProjectile", //Ammo.sbc subtype of the missile (or projectile if a beam) you want logic for
+                subtypeName = "CEASE", //Ammo.sbc subtype of the missile (or projectile if a beam) you want logic for
                 
                 // beams do not use FXsubtypeName, can be removed
 
