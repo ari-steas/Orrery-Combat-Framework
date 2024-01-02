@@ -50,11 +50,11 @@ public class MissileSpawnerScript : MySessionComponentBase
         {
             var matrix = character.WorldMatrix;
             var forward = matrix.Forward;
-            var spawnPosition = matrix.Translation + forward * 2; // Spawn a bit in front of the player
+            var spawnPosition = matrix.Translation + forward * 10; // Spawn 10m in front of the player
 
             // Define the weapon and ammo definition IDs
-            MyDefinitionId weaponDefId = new MyDefinitionId(typeof(MyObjectBuilder_WeaponDefinition), "LargeGatlingTurret");
-            MyDefinitionId ammoDefId = new MyDefinitionId(typeof(MyObjectBuilder_AmmoDefinition), "LargeCaliber");
+            MyDefinitionId weaponDefId = new MyDefinitionId(typeof(MyObjectBuilder_WeaponDefinition), "InvalidTestTurretProjectile");
+            MyDefinitionId ammoDefId = new MyDefinitionId(typeof(MyObjectBuilder_AmmoDefinition), "InvalidProjectile");
 
             // Retrieve the actual definition objects using the definition IDs
             var weaponDefinition = MyDefinitionManager.Static.GetWeaponDefinition(weaponDefId);
@@ -96,6 +96,7 @@ public class MissileSpawnerScript : MySessionComponentBase
             MyAPIGateway.Utilities.ShowNotification("Error spawning missile: " + e.ToString(), 10000, MyFontEnum.Red);
         }
     }
+
 
 
     protected override void UnloadData()
