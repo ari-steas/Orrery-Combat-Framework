@@ -7,7 +7,7 @@
         <TypeId>AmmoMagazine</TypeId>
         <SubtypeId>InvalidMissile</SubtypeId>
       </Id>
-      <DisplayName>Red Laser Emitter Battery</DisplayName>
+      <DisplayName>FUCKING SHIT</DisplayName>
       <Icon>Textures\GUI\Icons\Items\ZoneChip_Item.dds</Icon>
       <Size>
         <X>0.20</X>
@@ -22,6 +22,8 @@
       <AmmoDefinitionId Subtype="InvalidMissile" />
       <IconSymbol>Red</IconSymbol>
     </AmmoMagazine>
+    
+    
 
 	
   </AmmoMagazines>
