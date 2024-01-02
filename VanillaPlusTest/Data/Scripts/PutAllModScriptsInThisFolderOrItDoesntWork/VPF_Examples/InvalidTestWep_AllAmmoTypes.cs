@@ -70,8 +70,8 @@ namespace Invalid.TestAmmoType /// Set namespace name to something else, prefera
 
                     NoGuidance = false, // set to true if missile has no guidance. Should not be true if other guidance types are true
                     UseLockOn = true, // set to true if missile uses lock on guidance
-                    UseOneTimeRaycast = true, // set to true if missile uses one time raycast (raycasts out to max range on missile spawn, if it gets a valid target then it assigns it as such)
-                    UseTurretTarget = true, // set to true if missile uses turret targeting (if missile is from an AI turret the missile's target will be on the turret's targeted grid or will be its target if not a grid)
+                    UseOneTimeRaycast = false, // set to true if missile uses one time raycast (raycasts out to max range on missile spawn, if it gets a valid target then it assigns it as such)
+                    UseTurretTarget = false, // set to true if missile uses turret targeting (if missile is from an AI turret the missile's target will be on the turret's targeted grid or will be its target if not a grid)
                 },
             },
 
@@ -116,7 +116,7 @@ namespace Invalid.TestAmmoType /// Set namespace name to something else, prefera
 
             new VPFAmmoDefinition // example thrust disable beam weapon
             {
-                subtypeName = "Example_ThrustDisableBeam", //Ammo.sbc subtype of the missile (or projectile if a beam) you want logic for
+                subtypeName = "InvalidProjectile", //Ammo.sbc subtype of the missile (or projectile if a beam) you want logic for
                 
                 // beams do not use FXsubtypeName, can be removed
 
@@ -146,7 +146,7 @@ namespace Invalid.TestAmmoType /// Set namespace name to something else, prefera
                   *  - Proximity Detonation is not compatible with them as opposed to missile types, though JDI, SCI, and EMP are
                   *  - Projectile Beam headshot damage is unused
                   *  - due to there being no richochet tags for projecties, <ProjectileTrailColor x="x" y="y" z="z" /> is used instead.
-                  *     - x: MaxMissileRichochetProbability
+                  *     - x: missileMaxMissileRichochetProbability
                   *     - y: MaxMissileRichochetAngle
                   *     - z: MissileRichochetDamage
                   *  - There has one upside - <ProjectileCount>num</ProjectileCount> can be used to create multiple beams per tick.

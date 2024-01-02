@@ -28,5 +28,28 @@
             </MissileProperties>
         </Ammo>
 
+      <Ammo xsi:type="MyObjectBuilder_ProjectileAmmoDefinition">
+        <Id>
+          <TypeId>AmmoDefinition</TypeId>
+          <SubtypeId>InvalidProjectile</SubtypeId>
+        </Id>
+        <BasicProperties>
+          <DesiredSpeed>300</DesiredSpeed>
+          <SpeedVariance>0</SpeedVariance>
+          <MaxTrajectory>800</MaxTrajectory>
+          <BackkickForce>1.5</BackkickForce>
+          <PhysicalMaterial>RifleBullet</PhysicalMaterial>
+          <ExplosiveDamageMultiplier>0.1</ExplosiveDamageMultiplier>
+        </BasicProperties>
+        <ProjectileProperties>
+          <ProjectileTrailScale>0.05</ProjectileTrailScale>
+          <ProjectileHitImpulse>0</ProjectileHitImpulse>
+          <ProjectileMassDamage>1500</ProjectileMassDamage>
+          <ProjectileHealthDamage>100</ProjectileHealthDamage>
+          <HeadShot>true</HeadShot>
+          <ProjectileHeadShotDamage>300</ProjectileHeadShotDamage>
+        </ProjectileProperties>
+      </Ammo>
+
     </Ammos>
 </Definitions>

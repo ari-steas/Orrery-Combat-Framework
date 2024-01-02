@@ -40,7 +40,7 @@ namespace Template.VPFDefinitions /// Set namespace name to something else, pref
              */
             new VPFTurretDefinition
             {
-                subtypeName = "name of subtype in Cubeblocks.sbc",
+                subtypeName = "",
 
                 TAI_Stats = new TurretAI_Logic
                 {
@@ -83,7 +83,7 @@ namespace Template.VPFDefinitions /// Set namespace name to something else, pref
                 AG_Stats = new AmmoGeneration_Logic
                 {
                     // name of ammo magazine to generate
-                    AG_AmmoDefinitionName = "Name of the turret's ammo magazine in AmmoMagazines.sbc",
+                    AG_AmmoDefinitionName = "",
                     
                     // cost of each batch of ammo, in megawatt hours for power or liters for the gases
                     AG_AmmoCost = 1 / 3600f, // 1 / 3600 for 1 MW input power given the 1 second of generation time. 0.0002777777778f is the decimal way of writing this and is valid as well.

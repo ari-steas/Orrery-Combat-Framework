@@ -5,9 +5,9 @@
      <AmmoMagazine>
       <Id>
         <TypeId>AmmoMagazine</TypeId>
-        <SubtypeId>InvalidMissile</SubtypeId>
+        <SubtypeId>InvalidMissileMagazine</SubtypeId>
       </Id>
-      <DisplayName>Red Laser Emitter Battery</DisplayName>
+      <DisplayName>FUCKING SHIT</DisplayName>
       <Icon>Textures\GUI\Icons\Items\ZoneChip_Item.dds</Icon>
       <Size>
         <X>0.20</X>
@@ -22,6 +22,27 @@
       <AmmoDefinitionId Subtype="InvalidMissile" />
       <IconSymbol>Red</IconSymbol>
     </AmmoMagazine>
+
+    <AmmoMagazine>
+      <Id>
+        <TypeId>AmmoMagazine</TypeId>
+        <SubtypeId>InvalidProjectileMagazine</SubtypeId>
+      </Id>
+      <DisplayName>FUCKING SHIT</DisplayName>
+      <Icon>Textures\GUI\Icons\Items\ZoneChip_Item.dds</Icon>
+      <Size>
+        <X>0.20</X>
+        <Y>0.20</Y>
+        <Z>0.20</Z>
+      </Size>
+      <Mass>1</Mass>
+      <Volume>1</Volume>
+      <Model>Models\Items\ZoneChip_Item.mwm</Model>
+      <PhysicalMaterial>Ammo</PhysicalMaterial>
+      <Capacity>20000000</Capacity>
+      <AmmoDefinitionId Subtype="InvalidProjectile" />
+      <IconSymbol>Red</IconSymbol>
+    </AmmoMagazine>    
 
 	
   </AmmoMagazines>
