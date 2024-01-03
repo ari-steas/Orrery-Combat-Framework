@@ -42,7 +42,7 @@ namespace Invalid.TestAmmoType /// Set namespace name to something else, prefera
             new VPFAmmoDefinition // example guided missile used in VLS
             {
                 subtypeName = "InvalidMissile", //Ammo.sbc subtype of the missile (or projectile if a beam) you want logic for
-                FXsubtypeName = "Example_LineTracer", // name of the effect definition to be used for this missile subtype defined in VPFFXDefinitions. If a matching one is not found none will be used.
+                FXsubtypeName = "Example_CoolRailgunEffect", // name of the effect definition to be used for this missile subtype defined in VPFFXDefinitions. If a matching one is not found none will be used.
 
                 VPF_MissileHitpoints = 1,
 
