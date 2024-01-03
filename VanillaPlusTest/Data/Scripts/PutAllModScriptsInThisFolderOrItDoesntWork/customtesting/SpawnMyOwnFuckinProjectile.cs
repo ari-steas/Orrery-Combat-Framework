@@ -89,6 +89,7 @@ public class MissileSpawnerScript : MySessionComponentBase
                 0UL
             );
 
+            //add a missile
             MyAPIGateway.Utilities.ShowNotification("Missile spawned!", 2000, MyFontEnum.Green);
         }
         catch (Exception e)
