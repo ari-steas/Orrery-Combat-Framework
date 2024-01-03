@@ -1,0 +1,21 @@
+name: "Upload Modular Weaponry Demo"
+
+on:
+  push:
+    paths:
+      - "Modular Weaponry Demo/**"
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: AnarkisGaming/workshop@v1
+        with:
+          appID: 244850
+          publishedFileID: 3130656484
+          path: "Modular Weaponry Demo"
+          changelog: ${{ github.event.head_commit.message }}             
+        env:
+          STEAM_ACCOUNT_NAME: ${{ secrets.accountname }}
+          STEAM_PASSWORD: ${{ secrets.password }}
