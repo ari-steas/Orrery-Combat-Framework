@@ -17,7 +17,7 @@ namespace Digi.Examples.NetworkProtobuf
         // Therefore pick a unique ID, one way is your workshopID % ushort.MaxValue, or just pick a random one that's higher than the low numbers (keen might be using those).
         public const ushort HeartNetworkId = (ushort)(65198749845 % ushort.MaxValue);
 
-        public Network Net;
+        public static Network Net;
 
         PacketSimpleExample PacketExample;
 
