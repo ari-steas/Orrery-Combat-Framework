@@ -5,6 +5,7 @@ using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
+using VRage.Game;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
@@ -22,12 +23,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         public Vector3D InheritedVelocity;
         #endregion
 
-        public MyEntity Firer { get; private set; }
+        public long Firer;
         public Vector3D Position;
         public Vector3D Direction;
         public float Velocity;
-        public float Acceleration;
-        public int RemainingHits;
+        public int RemainingImpacts;
         
         public Action<Projectile> Close = (p) => { };
         public long LastUpdate { get; private set; }
@@ -56,11 +56,25 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             Id = projectile.Id;
             DefinitionId = projectile.DefinitionId;
             Definition = ProjectileDefinitionManager.GetDefinition(projectile.DefinitionId);
-
+            Firer = projectile.Firer;
             // TODO fill in from Definition
-            Acceleration = Definition.PhysicalProjectile.Acceleration;
 
             SyncUpdate(projectile);
+        }
+
+        public Projectile(int DefinitionId)
+        {
+            if (!ProjectileDefinitionManager.HasDefinition(DefinitionId))
+            {
+                SoftHandle.RaiseSyncException("Unable to spawn projectile - invalid DefinitionId!");
+                return;
+            }
+
+            this.DefinitionId = DefinitionId;
+            Definition = ProjectileDefinitionManager.GetDefinition(DefinitionId);
+
+            Velocity = Definition.PhysicalProjectile.Velocity;
+            RemainingImpacts = Definition.Damage.MaxImpacts;
         }
 
         public void TickUpdate(float delta)
@@ -72,36 +86,52 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
             CheckHits(delta);
 
-            Velocity += Acceleration * delta;
+            Velocity += Definition.PhysicalProjectile.Acceleration * delta;
             Position += (InheritedVelocity + Direction * Velocity) * delta;
             Age += delta;
             DistanceTravelled += Velocity * delta;
+
+            NextMoveStep = Position + (InheritedVelocity + Direction * (Velocity + Definition.PhysicalProjectile.Acceleration * delta)) * delta;
         }
 
         public void DrawUpdate(float delta)
         {
-            DebugDraw.AddPoint(Position + (InheritedVelocity + Direction * (Velocity + Acceleration * delta)) * delta, Color.Green, 0.000001f);
+            DebugDraw.AddPoint(Position + (InheritedVelocity + Direction * (Velocity + Definition.PhysicalProjectile.Acceleration * delta)) * delta, Color.Green, 0.000001f);
         }
         
         public void CheckHits(float delta)
         {
             List<IHitInfo> intersects = new List<IHitInfo>();
-            MyAPIGateway.Physics.CastRay(Position, Position + (Direction * Velocity + InheritedVelocity) * delta, intersects);
+            Vector3D endCast = NextMoveStep;
+            MyAPIGateway.Physics.CastRay(Position, endCast, intersects);
 
             double len = ((Direction * Velocity + InheritedVelocity) * delta).Length();
 
             foreach (var hitInfo in intersects)
             {
                 double dist = len * hitInfo.Fraction;
-                ProjectileHit(hitInfo.HitEntity, hitInfo.Fraction);
-                MyAPIGateway.Utilities.ShowMessage("Heart", $"HitEnt type: {hitInfo.HitEntity.GetType().Name} @ {Math.Round(dist, 1)}m");
+                ProjectileHit(hitInfo.HitEntity);
             }
         }
 
-        public void ProjectileHit(IMyEntity impact, double distance)
+        public void ProjectileHit(IMyEntity impact)
         {
+            if (impact.EntityId == Firer)
+                return;
 
+            MyAPIGateway.Utilities.ShowMessage("Heart", $"HitEnt type: {impact.GetType().Name} ({impact.EntityId} | {Firer})");
+
+            if (impact is IMyCubeGrid)
+                DamageHandler.QueueEvent(new DamageEvent(impact, DamageEvent.DamageEntType.Grid, this));
+            else if (impact is IMyCharacter)
+                DamageHandler.QueueEvent(new DamageEvent(impact, DamageEvent.DamageEntType.Character, this));
+
+            RemainingImpacts -= 1;
+            if (RemainingImpacts <= 0)
+                QueueDispose();
         }
+
+        public Vector3D NextMoveStep = Vector3D.Zero;
 
         public void SyncUpdate(SerializableProjectile projectile)
         {
@@ -118,6 +148,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             Position = projectile.Position;
             Velocity = projectile.Velocity;
             InheritedVelocity = projectile.InheritedVelocity;
+            RemainingImpacts = projectile.RemainingImpacts;
             TickUpdate(delta);
         }
 

@@ -52,6 +52,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         [ProtoMember(3)] public float BaseDamage;
         [ProtoMember(4)] public float AreaDamage;
         [ProtoMember(5)] public int MaxImpacts;
+        [ProtoMember(6)] public float AreaRadius;
     }
 
     /// <summary>
@@ -60,7 +61,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     [ProtoContract]
     public struct PhysicalProjectile
     {
-        [ProtoMember(1)] public float Speed;
+        [ProtoMember(1)] public float Velocity;
         [ProtoMember(2)] public float Acceleration;
         [ProtoMember(3)] public float Health;
         [ProtoMember(4)] public float MaxTrajectory;

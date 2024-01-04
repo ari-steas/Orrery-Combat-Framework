@@ -17,15 +17,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             },
             Damage = new Damage()
             {
-                SlimBlockDamageMod = 1,
+                SlimBlockDamageMod = 25,
                 FatBlockDamageMod = 1,
                 BaseDamage = 100,
-                AreaDamage = 0,
+                AreaDamage = 50,
+                AreaRadius = 15,
                 MaxImpacts = 1,
             },
             PhysicalProjectile = new PhysicalProjectile()
             {
-                Speed = 100,
+                Velocity = 100,
                 Acceleration = -10,
                 Health = -1,
                 MaxTrajectory = 800,
