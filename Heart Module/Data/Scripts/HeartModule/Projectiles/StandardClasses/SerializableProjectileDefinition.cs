@@ -118,4 +118,3 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         private static void BaseUpdate1(uint ProjectileId, MyEntity Shooter) { }
     }
 }
-
