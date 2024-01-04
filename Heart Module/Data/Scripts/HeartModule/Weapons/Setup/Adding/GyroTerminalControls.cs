@@ -64,22 +64,22 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         {
             // all the control types:
             {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlSeparator, IMyGyro>(""); // separators don't store the id
+                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlSeparator, IMyConveyorSorter>(""); // separators don't store the id
                 c.SupportsMultipleBlocks = true;
                 c.Visible = CustomVisibleCondition;
 
-                MyAPIGateway.TerminalControls.AddControl<IMyGyro>(c);
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlLabel, IMyGyro>(IdPrefix + "SampleLabel");
+                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlLabel, IMyConveyorSorter>(IdPrefix + "SampleLabel");
                 c.Label = MyStringId.GetOrCompute("Sample Label");
                 c.SupportsMultipleBlocks = true;
                 c.Visible = CustomVisibleCondition;
 
-                MyAPIGateway.TerminalControls.AddControl<IMyGyro>(c);
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyGyro>(IdPrefix + "SampleOnOff");
+                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "SampleOnOff");
                 c.Title = MyStringId.GetOrCompute("Sample OnOff");
                 c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
                 c.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
@@ -101,10 +101,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         logic.Terminal_ExampleToggle = v;
                 };
 
-                MyAPIGateway.TerminalControls.AddControl<IMyGyro>(c);
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlCheckbox, IMyGyro>(IdPrefix + "SampleCheckbox");
+                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlCheckbox, IMyConveyorSorter>(IdPrefix + "SampleCheckbox");
                 c.Title = MyStringId.GetOrCompute("Sample Checkbox");
                 c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
                 c.SupportsMultipleBlocks = true;
@@ -114,10 +114,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 c.Getter = (b) => true;
                 c.Setter = (b, v) => { };
 
-                MyAPIGateway.TerminalControls.AddControl<IMyGyro>(c);
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlSlider, IMyGyro>(IdPrefix + "SampleSlider");
+                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlSlider, IMyConveyorSorter>(IdPrefix + "SampleSlider");
                 c.Title = MyStringId.GetOrCompute("Sample Slider");
                 c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
                 c.SupportsMultipleBlocks = true;
@@ -147,10 +147,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     }
                 };
 
-                MyAPIGateway.TerminalControls.AddControl<IMyGyro>(c);
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlButton, IMyGyro>(IdPrefix + "SampleButton");
+                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlButton, IMyConveyorSorter>(IdPrefix + "SampleButton");
                 c.Title = MyStringId.GetOrCompute("Sample Button");
                 c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
                 c.SupportsMultipleBlocks = true;
@@ -158,10 +158,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
                 c.Action = (b) => { };
 
-                MyAPIGateway.TerminalControls.AddControl<IMyGyro>(c);
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlColor, IMyGyro>(IdPrefix + "SampleColor");
+                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlColor, IMyConveyorSorter>(IdPrefix + "SampleColor");
                 c.Title = MyStringId.GetOrCompute("Sample Color");
                 c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
                 c.SupportsMultipleBlocks = true;
@@ -170,10 +170,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 c.Getter = (b) => new Color(255, 0, 255);
                 c.Setter = (b, color) => { };
 
-                MyAPIGateway.TerminalControls.AddControl<IMyGyro>(c);
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlCombobox, IMyGyro>(IdPrefix + "SampleComboBox");
+                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlCombobox, IMyConveyorSorter>(IdPrefix + "SampleComboBox");
                 c.Title = MyStringId.GetOrCompute("Sample ComboBox");
                 c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
                 c.SupportsMultipleBlocks = true;
@@ -188,10 +188,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     list.Add(new MyTerminalControlComboBoxItem() { Key = 2, Value = MyStringId.GetOrCompute("Value C") });
                 };
 
-                MyAPIGateway.TerminalControls.AddControl<IMyGyro>(c);
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlListbox, IMyGyro>(IdPrefix + "SampleListBox");
+                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlListbox, IMyConveyorSorter>(IdPrefix + "SampleListBox");
                 c.Title = MyStringId.GetOrCompute("Sample ListBox");
                 //c.Tooltip = MyStringId.GetOrCompute("This does some stuff!"); // presenece of this tooltip prevents per-item tooltips
                 c.SupportsMultipleBlocks = true;
@@ -224,10 +224,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     // the setter, called when local player clicks on one or more things in the list, those are given to you through `selected`.
                 };
 
-                MyAPIGateway.TerminalControls.AddControl<IMyGyro>(c);
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlTextbox, IMyGyro>(IdPrefix + "SampleTextBox");
+                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlTextbox, IMyConveyorSorter>(IdPrefix + "SampleTextBox");
                 c.Title = MyStringId.GetOrCompute("Sample TextBox");
                 c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
                 c.SupportsMultipleBlocks = true;
@@ -236,7 +236,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 c.Setter = (b, v) => { };
                 c.Getter = (b) => new StringBuilder("Ney!");
 
-                MyAPIGateway.TerminalControls.AddControl<IMyGyro>(c);
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
         }
 
@@ -244,7 +244,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         {
             // yes, there's only one type of action
             {
-                var a = MyAPIGateway.TerminalControls.CreateAction<IMyGyro>(IdPrefix + "SampleAction");
+                var a = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "SampleAction");
 
                 a.Name = new StringBuilder("Sample Action");
 
@@ -283,7 +283,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 //   It also can be called by mods or PBs.
                 a.Enabled = CustomVisibleCondition;
 
-                MyAPIGateway.TerminalControls.AddAction<IMyGyro>(a);
+                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(a);
             }
         }
 
@@ -294,7 +294,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             // The type given is only limited by access, can only do SE or .NET types, nothing custom (except methods because the wrapper Func/Action is .NET).
             // For APIs, one can send a IReadOnlyDictionary<string, Delegate> for a list of callbacks. Just be sure to use a ImmutableDictionary to avoid getting your API hijacked.
             {
-                var p = MyAPIGateway.TerminalControls.CreateProperty<Vector3, IMyGyro>(IdPrefix + "SampleProp");
+                var p = MyAPIGateway.TerminalControls.CreateProperty<Vector3, IMyConveyorSorter>(IdPrefix + "SampleProp");
                 // SupportsMultipleBlocks, Enabled and Visible don't have a use for this, and Title/Tooltip don't exist.
 
                 p.Getter = (b) =>
@@ -308,7 +308,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 {
                 };
 
-                MyAPIGateway.TerminalControls.AddControl<IMyGyro>(p);
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(p);
 
 
                 // a mod or PB can use it like:

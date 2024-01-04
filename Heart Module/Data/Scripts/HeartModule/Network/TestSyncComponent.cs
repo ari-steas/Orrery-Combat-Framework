@@ -16,7 +16,7 @@ using VRage.Utils;
 
 namespace Phoenix.FTL
 {
-    [MyEntityComponentDescriptor(typeof(MyObjectBuilder_Gyro), false)]
+    [MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false)]
     // Note, your component must implement IMyEventProxy for the game to detect you want to use MySync.
     // Don't worry, there's nothing you need to implement from it, it just needs to be present.
     public class TestSyncComponent : MyGameLogicComponent, IMyEventProxy
@@ -67,7 +67,7 @@ namespace Phoenix.FTL
             {
                 m_controlsCreated = true;
 
-                var clientSyncTestOnOff = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyGyro>("Gwindalmir.Sync.TestClient");
+                var clientSyncTestOnOff = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>("Gwindalmir.Sync.TestClient");
                 clientSyncTestOnOff.Enabled = (b) => true;
                 clientSyncTestOnOff.Visible = (b) => true;
                 clientSyncTestOnOff.Title = MyStringId.GetOrCompute("Client Sync");
@@ -75,9 +75,9 @@ namespace Phoenix.FTL
                 clientSyncTestOnOff.Setter = (b, v) => b.GameLogic.GetAs<TestSyncComponent>().m_clientSync.Value = v;
                 clientSyncTestOnOff.OnText = MyStringId.GetOrCompute("On");
                 clientSyncTestOnOff.OffText = MyStringId.GetOrCompute("Off");
-                MyAPIGateway.TerminalControls.AddControl<IMyGyro>(clientSyncTestOnOff);
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(clientSyncTestOnOff);
 
-                var serverSyncTestOnOff = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyGyro>("Gwindalmir.Sync.TestServer");
+                var serverSyncTestOnOff = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>("Gwindalmir.Sync.TestServer");
                 serverSyncTestOnOff.Enabled = (b) => true;
                 serverSyncTestOnOff.Visible = (b) => true;
                 serverSyncTestOnOff.Title = MyStringId.GetOrCompute("Server Sync");
@@ -85,7 +85,7 @@ namespace Phoenix.FTL
                 serverSyncTestOnOff.Setter = (b, v) => b.GameLogic.GetAs<TestSyncComponent>().m_serverSync.Value = v;
                 serverSyncTestOnOff.OnText = MyStringId.GetOrCompute("On");
                 serverSyncTestOnOff.OffText = MyStringId.GetOrCompute("Off");
-                MyAPIGateway.TerminalControls.AddControl<IMyGyro>(serverSyncTestOnOff);
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(serverSyncTestOnOff);
             }
         }
 
@@ -94,7 +94,7 @@ namespace Phoenix.FTL
             base.UpdateOnceBeforeFrame();
             CreateTerminalControls();
 
-            (Entity as IMyGyro).EnabledChanged += TestSyncComponent_EnabledChanged;
+            (Entity as IMyConveyorSorter).EnabledChanged += TestSyncComponent_EnabledChanged;
         }
 
         private void TestSyncComponent_EnabledChanged(IMyCubeBlock obj)

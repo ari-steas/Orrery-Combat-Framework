@@ -20,7 +20,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding
 
         public override void UpdateOnceBeforeFrame()
         {
-            HideControlsExample.DoOnce();
+            HideSorterControls.DoOnce();
 
             Sorter = (IMyConveyorSorter)Entity;
 

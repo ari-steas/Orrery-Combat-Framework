@@ -12,7 +12,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding
 
 
     // For important notes about terminal controls see: https://github.com/THDigi/SE-ModScript-Examples/blob/master/Data/Scripts/Examples/TerminalControls/Adding/GyroTerminalControls.cs#L21-L35
-    public static class HideControlsExample
+    public static class HideSorterControls
     {
         static bool Done = false;
 
@@ -20,7 +20,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding
         {
             if (Done)
                 return;
-            MyAPIGateway.Utilities.ShowNotification("DoOnce called");
+            //MyAPIGateway.Utilities.ShowNotification("DoOnce called");
             Done = true;
 
             EditControls();
@@ -43,9 +43,14 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding
                 switch (c.Id)
                 {
                     case "DrainAll":
+                    case "blacklistWhitelist":
+                    case "CurrentList":
+                    case "removeFromSelectionButton":
+                    case "candidatesList":
+                    case "addToSelectionButton":
                         {
                             // appends a custom condition after the original condition with an AND.
-                            MyAPIGateway.Utilities.ShowNotification("DrainAll found");
+                            MyAPIGateway.Utilities.ShowNotification("Removing terminal actions!!");
                             // pick which way you want it to work:
                             //c.Enabled = TerminalChainedDelegate.Create(c.Enabled, AppendedCondition); // grays out
                             c.Visible = TerminalChainedDelegate.Create(c.Visible, AppendedCondition); // hides

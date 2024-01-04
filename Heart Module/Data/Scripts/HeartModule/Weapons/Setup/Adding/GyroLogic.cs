@@ -7,10 +7,10 @@ using VRage.ObjectBuilders;
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
     // For more info about the gamelogic comp see https://github.com/THDigi/SE-ModScript-Examples/blob/master/Data/Scripts/Examples/BasicExample_GameLogicAndSession/GameLogic.cs
-    [MyEntityComponentDescriptor(typeof(MyObjectBuilder_Gyro), false, "SmallBlockGyro")]
+    [MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeapon")]
     public class GyroLogic : MyGameLogicComponent
     {
-        IMyGyro Gyro;
+        IMyConveyorSorter SorterWep;
 
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
         {
@@ -21,8 +21,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         {
             GyroTerminalControls.DoOnce(ModContext);
 
-            Gyro = (IMyGyro)Entity;
-            if (Gyro.CubeGrid?.Physics == null)
+            SorterWep = (IMyConveyorSorter)Entity;
+            if (SorterWep.CubeGrid?.Physics == null)
                 return; // ignore ghost/projected grids
 
             // stuff and things
@@ -38,12 +38,12 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         {
             get
             {
-                return Gyro?.Enabled ?? false;
+                return SorterWep?.Enabled ?? false;
             }
             set
             {
-                if (Gyro != null)
-                    Gyro.Enabled = value;
+                if (SorterWep != null)
+                    SorterWep.Enabled = value;
             }
         }
 
