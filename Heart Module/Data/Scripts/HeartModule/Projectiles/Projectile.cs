@@ -28,7 +28,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public float DistanceTravelled { get; private set; } = 0;
         public float Age { get; private set; } = 0;
-        public bool QueuedClose { get; private set; } = false;
+        public bool QueuedDispose { get; private set; } = false;
 
         public Projectile() { }
 
@@ -57,7 +57,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             if ((Definition.PhysicalProjectile.MaxTrajectory != -1 && Definition.PhysicalProjectile.MaxTrajectory < DistanceTravelled) || (Definition.PhysicalProjectile.MaxLifetime != -1 && Definition.PhysicalProjectile.MaxLifetime < Age))
             {
-                QueueClose();
+                QueueDispose();
                 return;
             }
 
@@ -86,14 +86,27 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             Direction = projectile.Direction;
             Position = projectile.Position;
             Velocity = projectile.Velocity;
-            Acceleration = projectile.Acceleration;
             InheritedVelocity = projectile.InheritedVelocity;
             TickUpdate(delta);
         }
 
-        public void QueueClose()
+        public SerializableProjectile AsSerializable()
         {
-            QueuedClose = true;
+            return new SerializableProjectile()
+            {
+                Id = Id,
+                DefinitionId = DefinitionId,
+                Position = Position,
+                Direction = Direction,
+                InheritedVelocity = InheritedVelocity,
+                Velocity = Velocity,
+                Timestamp = DateTime.Now.Ticks,
+            };
+        }
+
+        public void QueueDispose()
+        {
+            QueuedDispose = true;
         }
 
         public void SetId(uint id)

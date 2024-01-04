@@ -1,7 +1,10 @@
-﻿using Sandbox.ModAPI;
+﻿using Digi.Examples.NetworkProtobuf;
+using Digi.NetworkLib;
+using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.Remoting.Messaging;
 using VRage.Game.Components;
 using VRage.Utils;
@@ -13,8 +16,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
     public class ProjectileManager : MySessionComponentBase
     {
         public static ProjectileManager I = new ProjectileManager();
+        const int MaxProjectilesSynced = 500;
 
         private Dictionary<uint, Projectile> ActiveProjectiles = new Dictionary<uint, Projectile>();
+        private List<uint> ProjectileSyncStream = new List<uint>();
         public uint NextId { get; private set; } = 0;
         private List<Projectile> QueuedCloseProjectiles = new List<Projectile>();
         private float delta = 0;
@@ -45,6 +50,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     sendToOthers = false;
                     break;
                 case "!f":
+                    if (!MyAPIGateway.Session.IsServer)
+                        return;
                     try
                     {
                         AddProjectile(new Projectile(new StandardClasses.SerializableProjectile()
@@ -54,7 +61,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                             Position = MyAPIGateway.Session.Player.GetPosition(),
                             Direction = MyAPIGateway.Session.Player.Controller.ControlledEntity.Entity.WorldMatrix.Forward,
                             Velocity = 10,
-                            Acceleration = 5,
                             Timestamp = DateTime.Now.Ticks,
                             InheritedVelocity = Vector3D.Zero
                         }));
@@ -72,19 +78,38 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             delta = clock.ElapsedTicks / (float) TimeSpan.TicksPerSecond;
 
+            // Tick projectiles
             foreach (var projectile in ActiveProjectiles.Values)
             {
                 projectile.TickUpdate(delta);
-                if (projectile.QueuedClose)
+                if (projectile.QueuedDispose)
                     QueuedCloseProjectiles.Add(projectile);
             }
 
+            // Queued removal of projectiles
             foreach (var projectile in QueuedCloseProjectiles)
             {
                 MyAPIGateway.Utilities.ShowMessage("Heart", $"Closing projectile {projectile.Id}. Age: {projectile.Age} ");
                 projectile.Close.Invoke(projectile);
             }
             QueuedCloseProjectiles.Clear();
+
+            // Sync stuff
+            if (MyAPIGateway.Session.IsServer && MyAPIGateway.Multiplayer.MultiplayerActive)
+            {
+                for (int i = 0; i < MaxProjectilesSynced && i < ProjectileSyncStream.Count; i++)
+                {
+                    uint id = ProjectileSyncStream[i];
+
+                    if (ActiveProjectiles.ContainsKey(id))
+                        HeartNetwork_Session.Net.SendToEveryone(ActiveProjectiles[id].AsSerializable());
+                }
+
+                if (ProjectileSyncStream.Count < MaxProjectilesSynced)
+                    ProjectileSyncStream.Clear();
+                else
+                    ProjectileSyncStream.RemoveRange(0, MaxProjectilesSynced);
+            }
 
             clock.Restart();
         }
@@ -93,9 +118,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             if (MyAPIGateway.Utilities.IsDedicated)
                 return;
-
+            
             delta = clock.ElapsedTicks / (float)TimeSpan.TicksPerSecond;
-
+            // Triggered every frame, avoids jitter in projectiles
             foreach (var projectile in ActiveProjectiles.Values)
             {
                 projectile.DrawUpdate(delta);
