@@ -26,7 +26,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             PhysicalProjectile = new PhysicalProjectile()
             {
                 Speed = 100,
-                Acceleration = 0,
+                Acceleration = -10,
                 Health = -1,
                 MaxTrajectory = 800,
                 MaxLifetime = -1,
