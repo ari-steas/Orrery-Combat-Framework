@@ -19,6 +19,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         [ProtoMember(4)] public Vector3D Direction;
         [ProtoMember(5)] public Vector3D InheritedVelocity;
         [ProtoMember(6)] public float Velocity;
+        [ProtoMember(9)] public int RemainingHits;
         [ProtoMember(7)] public Dictionary<string, byte[]> OverridenValues;
         [ProtoMember(8)] public long Timestamp;
 
@@ -27,8 +28,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
             if (MyAPIGateway.Session.IsServer)
                 return;
 
-            ProjectileManager.I.GetProjectile(Id)?.SyncUpdate(this);
-            MyLog.Default.WriteLineAndConsole("Recieved projectile!");
+            ProjectileManager.I.ClientSyncProjectile(this);
         }
     }
 }
