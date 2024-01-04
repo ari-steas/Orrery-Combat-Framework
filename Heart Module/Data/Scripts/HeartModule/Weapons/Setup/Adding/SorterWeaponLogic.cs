@@ -11,6 +11,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
     public class SorterWeaponLogic : MyGameLogicComponent
     {
         IMyConveyorSorter SorterWep;
+        bool shoot = false;
 
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
         {
@@ -34,16 +35,19 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         // if you want the values to persist over world reloads and be sent to clients you'll need to implement that yourself.
         // see: https://github.com/THDigi/SE-ModScript-Examples/wiki/Save-&-Sync-ways
 
-        public bool Terminal_ExampleToggle
+        public bool Terminal_Heart_Shoot
         {
             get
             {
-                return SorterWep?.Enabled ?? false;
+                MyAPIGateway.Utilities.ShowNotification("Terminal_Heart_Shoot Getter called");
+                return shoot;             
             }
             set
             {
-                if (SorterWep != null)
-                    SorterWep.Enabled = value;
+                shoot = value;
+                MyAPIGateway.Utilities.ShowNotification("Terminal_Heart_Shoot Getter called");
+                MyAPIGateway.Utilities.ShowNotification("Terminal_Heart_Shoot" + value);
+
             }
         }
 
