@@ -2,3 +2,5 @@
 
 
 https://hackmd.io/@Iyev4w-vTemyMCOqjPAqBA/VanillaPlusAnalysis
+
+https://hackmd.io/@Iyev4w-vTemyMCOqjPAqBA/WhipsRailgunFrameWork
