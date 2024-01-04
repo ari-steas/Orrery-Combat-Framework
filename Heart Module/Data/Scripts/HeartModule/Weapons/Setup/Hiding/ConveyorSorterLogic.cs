@@ -1,5 +1,6 @@
 ﻿using Sandbox.Common.ObjectBuilders;
 using Sandbox.ModAPI;
+using VRage.Game;
 using VRage.Game.Components;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
@@ -7,10 +8,10 @@ using VRage.ObjectBuilders;
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding
 {
     // For more info about the gamelogic comp see https://github.com/THDigi/SE-ModScript-Examples/blob/master/Data/Scripts/Examples/BasicExample_GameLogicAndSession/GameLogic.cs
-    [MyEntityComponentDescriptor(typeof(MyObjectBuilder_SensorBlock), false, "SmallBlockSensor")]
-    public class SensorLogic : MyGameLogicComponent
+    [MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeapon")]
+    public class ConveyorSorterLogic : MyGameLogicComponent
     {
-        IMySensorBlock Sensor;
+        IMyConveyorSorter Sorter;
 
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
         {
@@ -21,9 +22,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding
         {
             HideControlsExample.DoOnce();
 
-            Sensor = (IMySensorBlock)Entity;
+            Sorter = (IMyConveyorSorter)Entity;
 
-            if (Sensor.CubeGrid?.Physics == null)
+            if (Sorter.CubeGrid?.Physics == null)
                 return; // ignore ghost/projected grids
 
             // the bonus part, enforcing it to stay a specific value.
@@ -35,10 +36,11 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding
 
         public override void UpdateAfterSimulation()
         {
-            if (Sensor.DetectAsteroids)
+            if (Sorter.DrainAll)
             {
-                Sensor.DetectAsteroids = false;
+                Sorter.DrainAll = false;
             }
+            //MyAPIGateway.Utilities.ShowNotification("is this even working");
         }
     }
 }

@@ -31,67 +31,67 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Events
         void CustomControlGetter(IMyTerminalBlock block, List<IMyTerminalControl> controls)
         {
             // Let's say we want to move CustomData button to be first... for ALL blocks!
-            {
-                int index = -1;
-                for (int i = 0; i < controls.Count; i++)
-                {
-                    IMyTerminalControl control = controls[i];
-                    if (control.Id == "CustomData")
-                    {
-                        index = i;
-                        break;
-                    }
-                }
-
-                if (index != -1)
-                {
-                    IMyTerminalControl control = controls[index];
-                    controls.RemoveAt(index);
-                    controls.Insert(0, control);
-                }
-            }
+           //{
+           //    int index = -1;
+           //    for (int i = 0; i < controls.Count; i++)
+           //    {
+           //        IMyTerminalControl control = controls[i];
+           //        if (control.Id == "CustomData")
+           //        {
+           //            index = i;
+           //            break;
+           //        }
+           //    }
+           //
+           //    if (index != -1)
+           //    {
+           //        IMyTerminalControl control = controls[index];
+           //        controls.RemoveAt(index);
+           //        controls.Insert(0, control);
+           //    }
+           //}
 
             // Or let's say PB just has too many controls, get rid of everything except Edit, but only on smallgrid =)
             // Downside of this is that it's undetectable by other mods, like build vision for example.
             // Ideal way to remove controls is to append a condition to their Visible callback, see the /Hiding/ folder example.
             // Neither of these methods prevent mods or PBs from using them, unless permanently removed... and even then, the block interface likely has a way around.
-            if (block is IMyProgrammableBlock && block.CubeGrid.GridSizeEnum == MyCubeSize.Small)
-            {
-                for (int i = controls.Count - 1; i >= 0; i--)
-                {
-                    IMyTerminalControl control = controls[i];
-                    if (control.Id != "Edit")
-                    {
-                        controls.RemoveAt(i);
-                    }
-                }
-            }
+           // if (block is IMyProgrammableBlock && block.CubeGrid.GridSizeEnum == MyCubeSize.Small)
+           // {
+           //     for (int i = controls.Count - 1; i >= 0; i--)
+           //     {
+           //         IMyTerminalControl control = controls[i];
+           //         if (control.Id != "Edit")
+           //         {
+           //             controls.RemoveAt(i);
+           //         }
+           //     }
+           // }
 
             // Can also add controls:
             // Downside or upside is that PB cannot see these. Mods can but only if they specifically hook this event and read the list.
             // CAUTION: Don't create new controls every time! Not just because allocation but mods could be storing the references (like buildinfo does for actions), effectively leading to memory leaks.
-            if (block is IMyCockpit)
-            {
-                if (SampleButton == null)
-                {
-                    SampleButton = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlButton, IMyCockpit>("YourMod_SomeUniqueId");
-                    SampleButton.Action = (b) =>
-                    {
-                        var cockpit = b as IMyCockpit;
-                        if (cockpit != null)
-                        {
-                            cockpit.RemovePilot();
-                            // its xmldoc says "call on server" so it wouldn't work outside of singleplayer.
-                            // in cases like this you have to synchronize it manually by sending a packet to server with the block entityId and have it call the method.
-                        }
-                    };
-                    SampleButton.Title = MyStringId.GetOrCompute("Clickbait!");
-
-                    // Don't use MyAPIGateway.TerminalControls.AddControl() on controls meant to be added using this event.
-                }
-
-                controls.AddOrInsert(SampleButton, 4);
-            }
+           // if (block is IMyCockpit)
+           // {
+           //     if (SampleButton == null)
+           //     {
+           //         SampleButton = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlButton, IMyCockpit>("YourMod_SomeUniqueId");
+           //         SampleButton.Action = (b) =>
+           //         {
+           //             var cockpit = b as IMyCockpit;
+           //             if (cockpit != null)
+           //             {
+           //                 cockpit.RemovePilot();
+           //                 // its xmldoc says "call on server" so it wouldn't work outside of singleplayer.
+           //                 // in cases like this you have to synchronize it manually by sending a packet to server with the block entityId and have it call the method.
+           //             }
+           //         };
+           //         SampleButton.Title = MyStringId.GetOrCompute("Clickbait!");
+           //
+           //         // Don't use MyAPIGateway.TerminalControls.AddControl() on controls meant to be added using this event.
+           //     }
+           //
+           //     controls.AddOrInsert(SampleButton, 4);
+           // }
         }
 
         // similar to the above really, can sort, remove and even add (with caution)

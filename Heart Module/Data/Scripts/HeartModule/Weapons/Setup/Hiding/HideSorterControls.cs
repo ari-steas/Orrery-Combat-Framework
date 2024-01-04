@@ -20,7 +20,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding
         {
             if (Done)
                 return;
-
+            MyAPIGateway.Utilities.ShowNotification("DoOnce called");
             Done = true;
 
             EditControls();
@@ -30,25 +30,25 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding
         static bool AppendedCondition(IMyTerminalBlock block)
         {
             // if block has this gamelogic component then return false to hide the control/action.
-            return block?.GameLogic?.GetAs<SensorLogic>() == null;
+            return block?.GameLogic?.GetAs<ConveyorSorterLogic>() == null;
         }
 
         static void EditControls()
         {
             List<IMyTerminalControl> controls;
-            MyAPIGateway.TerminalControls.GetControls<IMySensorBlock>(out controls);
+            MyAPIGateway.TerminalControls.GetControls<IMyConveyorSorter>(out controls);
 
             foreach (IMyTerminalControl c in controls)
             {
                 switch (c.Id)
                 {
-                    case "Detect Asteroids":
+                    case "DrainAll":
                         {
                             // appends a custom condition after the original condition with an AND.
-
+                            MyAPIGateway.Utilities.ShowNotification("DrainAll found");
                             // pick which way you want it to work:
-                            c.Enabled = TerminalChainedDelegate.Create(c.Enabled, AppendedCondition); // grays out
-                                                                                                      //c.Visible = TerminalChainedDelegate.Create(c.Visible, AppendedCondition); // hides
+                            //c.Enabled = TerminalChainedDelegate.Create(c.Enabled, AppendedCondition); // grays out
+                            c.Visible = TerminalChainedDelegate.Create(c.Visible, AppendedCondition); // hides
                             break;
                         }
                 }
@@ -58,15 +58,15 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding
         static void EditActions()
         {
             List<IMyTerminalAction> actions;
-            MyAPIGateway.TerminalControls.GetActions<IMySensorBlock>(out actions);
+            MyAPIGateway.TerminalControls.GetActions<IMyConveyorSorter>(out actions);
 
             foreach (IMyTerminalAction a in actions)
             {
                 switch (a.Id)
                 {
-                    case "Detect Asteroids":
-                    case "Detect Asteroids_On":
-                    case "Detect Asteroids_Off":
+                    case "DrainAll":
+                    case "DrainAll_On":
+                    case "DrainAll_Off":
                         {
                             // appends a custom condition after the original condition with an AND.
 

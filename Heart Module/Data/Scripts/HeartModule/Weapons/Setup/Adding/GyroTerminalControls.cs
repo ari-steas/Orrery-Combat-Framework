@@ -36,7 +36,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
     public static class GyroTerminalControls
     {
-        const string IdPrefix = "YourMod_"; // highly recommended to tag your properties/actions like this to avoid colliding with other mods'
+        const string IdPrefix = "ModularHeartMod_"; // highly recommended to tag your properties/actions like this to avoid colliding with other mods'
 
         static bool Done = false;
 
