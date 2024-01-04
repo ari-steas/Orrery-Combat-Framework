@@ -34,7 +34,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
      * Make sure your backend code does all the checks, including ensuring limits for sliders and such.
      */
 
-    public static class GyroTerminalControls
+    public static class SorterWeaponTerminalControls
     {
         const string IdPrefix = "ModularHeartMod_"; // highly recommended to tag your properties/actions like this to avoid colliding with other mods'
 
@@ -57,7 +57,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         static bool CustomVisibleCondition(IMyTerminalBlock b)
         {
             // only visible for the blocks having this gamelogic comp
-            return b?.GameLogic?.GetAs<GyroLogic>() != null;
+            return b?.GameLogic?.GetAs<SorterWeaponLogic>() != null;
         }
 
         static void CreateControls()
@@ -93,10 +93,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 c.OffText = MyStringId.GetOrCompute("Meh");
 
                 // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
-                c.Getter = (b) => b?.GameLogic?.GetAs<GyroLogic>()?.Terminal_ExampleToggle ?? false;
+                c.Getter = (b) => b?.GameLogic?.GetAs<SorterWeaponLogic>()?.Terminal_ExampleToggle ?? false;
                 c.Setter = (b, v) =>
                 {
-                    var logic = b?.GameLogic?.GetAs<GyroLogic>();
+                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
                     if (logic != null)
                         logic.Terminal_ExampleToggle = v;
                 };
@@ -125,11 +125,11 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
                 c.Setter = (b, v) =>
                 {
-                    var logic = b?.GameLogic?.GetAs<GyroLogic>();
+                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
                     if (logic != null)
                         logic.Terminal_ExampleFloat = MathHelper.Clamp(v, 0f, 10f); // just a heads up that the given value here is not clamped by the game, a mod or PB can give lower or higher than the limits!
                 };
-                c.Getter = (b) => b?.GameLogic?.GetAs<GyroLogic>()?.Terminal_ExampleFloat ?? 0;
+                c.Getter = (b) => b?.GameLogic?.GetAs<SorterWeaponLogic>()?.Terminal_ExampleFloat ?? 0;
 
                 c.SetLimits(0, 10);
                 //c.SetLimits((b) => 0, (b) => 10); // overload with callbacks to define limits based on the block instance.
@@ -139,7 +139,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 // called when the value changes so that you can display it next to the label
                 c.Writer = (b, sb) =>
                 {
-                    var logic = b?.GameLogic?.GetAs<GyroLogic>();
+                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
                     if (logic != null)
                     {
                         float val = logic.Terminal_ExampleFloat;

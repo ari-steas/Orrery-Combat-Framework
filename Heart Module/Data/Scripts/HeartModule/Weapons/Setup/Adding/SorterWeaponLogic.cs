@@ -8,7 +8,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
     // For more info about the gamelogic comp see https://github.com/THDigi/SE-ModScript-Examples/blob/master/Data/Scripts/Examples/BasicExample_GameLogicAndSession/GameLogic.cs
     [MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeapon")]
-    public class GyroLogic : MyGameLogicComponent
+    public class SorterWeaponLogic : MyGameLogicComponent
     {
         IMyConveyorSorter SorterWep;
 
@@ -19,7 +19,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public override void UpdateOnceBeforeFrame()
         {
-            GyroTerminalControls.DoOnce(ModContext);
+            SorterWeaponTerminalControls.DoOnce(ModContext);
 
             SorterWep = (IMyConveyorSorter)Entity;
             if (SorterWep.CubeGrid?.Physics == null)
