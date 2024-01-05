@@ -20,7 +20,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public const int HeartSettingsUpdateCount = 60 * 1 / 10;
         int SyncCountdown;
 
-        public MySync<bool, SyncDirection.BothWays> FUCK = null; //temporary (lmao) magic bullshit in place of an actual
+        public MySync<bool, SyncDirection.BothWays> ShootState; //temporary (lmao) magic bullshit in place of an actual
 
         public readonly Heart_Settings Settings = new Heart_Settings();
 
@@ -32,7 +32,17 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
         {
             NeedsUpdate = MyEntityUpdateEnum.BEFORE_NEXT_FRAME;
+
+            ShootState.ValueChanged += OnShootStateChanged; // Attach the handler
         }
+
+        private void OnShootStateChanged(MySync<bool, SyncDirection.BothWays> obj)
+        {
+            // Accessing the boolean value using .Value property
+            bool newValue = obj.Value;
+            MyAPIGateway.Utilities.ShowNotification($"Shoot State changed to: {newValue}", 2000, "White");
+        }
+
 
         public override void UpdateOnceBeforeFrame()
         {
@@ -48,7 +58,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public override void UpdateAfterSimulation10()
         {
 
-            MyAPIGateway.Utilities.ShowNotification("Syncing Settings");
+            //MyAPIGateway.Utilities.ShowNotification("Syncing Settings");
             //SyncSettings();
 
         }
@@ -58,7 +68,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         {
             get
             {
-                MyAPIGateway.Utilities.ShowNotification("Shoot State: " + Settings.ShootState.ToString());
 
                 return Settings.ShootState;
             }
@@ -69,7 +78,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
                 if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
                     NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
-                MyAPIGateway.Utilities.ShowNotification("Shoot State: " + Settings.ShootState.ToString());
 
             }
         }
@@ -77,6 +85,13 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public float Terminal_ExampleFloat { get; set; }
 
+        public override void Close()
+        {
+            base.Close();
+            // Unsubscribe from the event when the component is closed
+            if (ShootState != null)
+                ShootState.ValueChanged -= OnShootStateChanged;
+        }
 
     }
 }
