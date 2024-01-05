@@ -28,7 +28,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Debug
 
         public override void LoadData()
         {
-            Instance = this;
+            if (!MyAPIGateway.Utilities.IsDedicated)
+                Instance = this;
         }
 
         protected override void UnloadData()

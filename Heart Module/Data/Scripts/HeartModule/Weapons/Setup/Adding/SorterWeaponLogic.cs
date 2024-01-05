@@ -24,8 +24,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public readonly Heart_Settings Settings = new Heart_Settings();
 
-        Heart_Utility Mod => Heart_Utility.Instance;
-
         //the state of shoot
         bool shoot = false;
 
@@ -55,14 +53,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
            // LoadSettings(); // artifact from chets meme
         }
 
-        public override void UpdateAfterSimulation10()
-        {
-
-            //MyAPIGateway.Utilities.ShowNotification("Syncing Settings");
-            //SyncSettings();
-
-        }
-
+        public float Terminal_ExampleFloat { get; set; }
 
         public bool Terminal_Heart_Shoot
         {
@@ -92,6 +83,5 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (ShootState != null)
                 ShootState.ValueChanged -= OnShootStateChanged;
         }
-
     }
 }

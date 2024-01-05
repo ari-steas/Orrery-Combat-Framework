@@ -80,16 +80,20 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         public void TickUpdate(float delta)
         {
             if ((Definition.PhysicalProjectile.MaxTrajectory != -1 && Definition.PhysicalProjectile.MaxTrajectory < DistanceTravelled) || (Definition.PhysicalProjectile.MaxLifetime != -1 && Definition.PhysicalProjectile.MaxLifetime < Age))
-            {
                 QueueDispose();
-                return;
-            }
+
             CheckHits(delta);
 
             Velocity += Definition.PhysicalProjectile.Acceleration * delta;
             Position += (InheritedVelocity + Direction * Velocity) * delta;
             Age += delta;
             DistanceTravelled += Velocity * delta;
+
+            if (Velocity < 0)
+            {
+                Direction = -Direction;
+                Velocity = -Velocity;
+            }
 
             NextMoveStep = Position + (InheritedVelocity + Direction * (Velocity + Definition.PhysicalProjectile.Acceleration * delta)) * delta;
         }
@@ -119,8 +123,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (impact.EntityId == Firer)
                 return;
 
-            MyAPIGateway.Utilities.ShowMessage("Heart", $"HitEnt type: {impact.GetType().Name} ({impact.EntityId} | {Firer})");
-
             if (impact is IMyCubeGrid)
                 DamageHandler.QueueEvent(new DamageEvent(impact, DamageEvent.DamageEntType.Grid, this));
             else if (impact is IMyCharacter)
@@ -141,6 +143,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 return;
             }
 
+            QueuedDispose = !projectile.IsActive;
+
             LastUpdate = projectile.Timestamp;
             float delta = (DateTime.Now.Ticks - LastUpdate) / (float) TimeSpan.TicksPerSecond;
 
@@ -156,6 +160,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             return new SerializableProjectile()
             {
+                IsActive = !QueuedDispose,
                 Id = Id,
                 DefinitionId = DefinitionId,
                 Position = Position,
@@ -168,7 +173,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public void QueueDispose()
         {
-            QueuedDispose = true;
+            if (MyAPIGateway.Session.IsServer)
+                QueuedDispose = true;
         }
 
         public void SetId(uint id)
