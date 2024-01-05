@@ -19,7 +19,7 @@ namespace Digi.Examples.NetworkProtobuf
 
         public static Network Net;
 
-        PacketSimpleExample PacketExample;
+        PacketBlockSettings PacketExample;
 
         public override void LoadData()
         {
@@ -37,11 +37,11 @@ namespace Digi.Examples.NetworkProtobuf
 
 
             // Re-usable for sending
-            PacketExample = new PacketSimpleExample();
+            PacketExample = new PacketBlockSettings();
 
             // For receiving (will be a different instance than the sending one because the receiver code creates it from bytes)
             // because this is a global event you should only hook it in global cases
-            PacketSimpleExample.OnReceive += PacketSimpleExample_OnReceive;
+            PacketBlockSettings.OnReceive += PacketSimpleExample_OnReceive;
 
             // For packets that are for a specific entity you still should do the event hooking here in session comp,
             //   but you can still trigger code on the entity once you have its instance.
@@ -53,7 +53,7 @@ namespace Digi.Examples.NetworkProtobuf
             Net?.Dispose();
             Net = null;
 
-            PacketSimpleExample.OnReceive -= PacketSimpleExample_OnReceive;
+            PacketBlockSettings.OnReceive -= PacketSimpleExample_OnReceive;
         }
 
         public override void UpdateAfterSimulation()
@@ -71,7 +71,7 @@ namespace Digi.Examples.NetworkProtobuf
             }
         }
 
-        void PacketSimpleExample_OnReceive(PacketSimpleExample packet, ref PacketInfo packetInfo, ulong senderSteamId)
+        void PacketSimpleExample_OnReceive(PacketBlockSettings packet, ref PacketInfo packetInfo, ulong senderSteamId)
         {
             // This is called on everyone that receives the packet.
             //

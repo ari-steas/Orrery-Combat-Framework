@@ -80,7 +80,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             }
             {
                 var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "SampleOnOff");
-                c.Title = MyStringId.GetOrCompute("Sample OnOff");
+                c.Title = MyStringId.GetOrCompute("Shoot");
                 c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
                 c.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
 
@@ -90,151 +90,17 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 //c.Enabled = CustomVisibleCondition;
 
                 c.OnText = MySpaceTexts.SwitchText_On;
-                c.OffText = MyStringId.GetOrCompute("Meh");
+                c.OffText = MySpaceTexts.SwitchText_Off;
+                //c.OffText = MyStringId.GetOrCompute("Off");
 
                 // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
-                c.Getter = (b) => b?.GameLogic?.GetAs<SorterWeaponLogic>()?.Terminal_ExampleToggle ?? false;
+                c.Getter = (b) => b?.GameLogic?.GetAs<SorterWeaponLogic>()?.Terminal_Heart_Shoot ?? false;   //?? when statement on left is null, this is false 
                 c.Setter = (b, v) =>
                 {
                     var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
                     if (logic != null)
-                        logic.Terminal_ExampleToggle = v;
+                        logic.Terminal_Heart_Shoot = v;
                 };
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
-            }
-            {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlCheckbox, IMyConveyorSorter>(IdPrefix + "SampleCheckbox");
-                c.Title = MyStringId.GetOrCompute("Sample Checkbox");
-                c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
-                c.SupportsMultipleBlocks = true;
-                c.Visible = CustomVisibleCondition;
-                c.Enabled = (b) => false; // to see how the grayed out ones look
-
-                c.Getter = (b) => true;
-                c.Setter = (b, v) => { };
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
-            }
-            {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlSlider, IMyConveyorSorter>(IdPrefix + "SampleSlider");
-                c.Title = MyStringId.GetOrCompute("Sample Slider");
-                c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
-                c.SupportsMultipleBlocks = true;
-                c.Visible = CustomVisibleCondition;
-
-                c.Setter = (b, v) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                        logic.Terminal_ExampleFloat = MathHelper.Clamp(v, 0f, 10f); // just a heads up that the given value here is not clamped by the game, a mod or PB can give lower or higher than the limits!
-                };
-                c.Getter = (b) => b?.GameLogic?.GetAs<SorterWeaponLogic>()?.Terminal_ExampleFloat ?? 0;
-
-                c.SetLimits(0, 10);
-                //c.SetLimits((b) => 0, (b) => 10); // overload with callbacks to define limits based on the block instance.
-                //c.SetDualLogLimits(0, 10, 2); // all these also have callback overloads
-                //c.SetLogLimits(0, 10);
-
-                // called when the value changes so that you can display it next to the label
-                c.Writer = (b, sb) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        float val = logic.Terminal_ExampleFloat;
-                        sb.Append(Math.Round(val, 2)).Append(" quacks");
-                    }
-                };
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
-            }
-            {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlButton, IMyConveyorSorter>(IdPrefix + "SampleButton");
-                c.Title = MyStringId.GetOrCompute("Sample Button");
-                c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
-                c.SupportsMultipleBlocks = true;
-                c.Visible = CustomVisibleCondition;
-
-                c.Action = (b) => { };
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
-            }
-            {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlColor, IMyConveyorSorter>(IdPrefix + "SampleColor");
-                c.Title = MyStringId.GetOrCompute("Sample Color");
-                c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
-                c.SupportsMultipleBlocks = true;
-                c.Visible = CustomVisibleCondition;
-
-                c.Getter = (b) => new Color(255, 0, 255);
-                c.Setter = (b, color) => { };
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
-            }
-            {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlCombobox, IMyConveyorSorter>(IdPrefix + "SampleComboBox");
-                c.Title = MyStringId.GetOrCompute("Sample ComboBox");
-                c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
-                c.SupportsMultipleBlocks = true;
-                c.Visible = CustomVisibleCondition;
-
-                c.Getter = (b) => 0;
-                c.Setter = (b, key) => { };
-                c.ComboBoxContent = (list) =>
-                {
-                    list.Add(new MyTerminalControlComboBoxItem() { Key = 0, Value = MyStringId.GetOrCompute("Value A") });
-                    list.Add(new MyTerminalControlComboBoxItem() { Key = 1, Value = MyStringId.GetOrCompute("Value B") });
-                    list.Add(new MyTerminalControlComboBoxItem() { Key = 2, Value = MyStringId.GetOrCompute("Value C") });
-                };
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
-            }
-            {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlListbox, IMyConveyorSorter>(IdPrefix + "SampleListBox");
-                c.Title = MyStringId.GetOrCompute("Sample ListBox");
-                //c.Tooltip = MyStringId.GetOrCompute("This does some stuff!"); // presenece of this tooltip prevents per-item tooltips
-                c.SupportsMultipleBlocks = true;
-                c.Visible = CustomVisibleCondition;
-
-                c.VisibleRowsCount = 3;
-                c.Multiselect = false; // wether player can select muliple at once (ctrl+click, click&shift+click, etc)
-                c.ListContent = (b, content, preSelect) =>
-                {
-                    // this is the getter, gets called when the list needs to be shown/refreshed.
-                    // the 2 lists in the parameters are there for you to fill:
-                    //   `content` with the options to show
-                    //   `preSelect` with the options to be already selected (only needed if you want to persist selections).
-                    // NOTE: `preSelect` requires the same instance(s) as the ones given to `content`, giving it new MyTerminalControlListBoxItem would not work.
-
-                    for (int i = 1; i <= 5; ++i)
-                    {
-                        var item = new MyTerminalControlListBoxItem(MyStringId.GetOrCompute($"Item {i}"),
-                                                                    tooltip: MyStringId.GetOrCompute($"This is item number {i} alright."),
-                                                                    userData: i); // userData can be whatever you wish and it's retrievable in the ItemSelected call.
-
-                        content.Add(item);
-
-                        if (MyUtils.GetRandomInt(1, 6) == i)
-                            preSelect.Add(item);
-                    }
-                };
-                c.ItemSelected = (b, selected) =>
-                {
-                    // the setter, called when local player clicks on one or more things in the list, those are given to you through `selected`.
-                };
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
-            }
-            {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlTextbox, IMyConveyorSorter>(IdPrefix + "SampleTextBox");
-                c.Title = MyStringId.GetOrCompute("Sample TextBox");
-                c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
-                c.SupportsMultipleBlocks = true;
-                c.Visible = CustomVisibleCondition;
-
-                c.Setter = (b, v) => { };
-                c.Getter = (b) => new StringBuilder("Ney!");
 
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
