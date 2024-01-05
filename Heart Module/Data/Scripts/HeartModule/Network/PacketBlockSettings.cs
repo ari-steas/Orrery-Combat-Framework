@@ -6,9 +6,9 @@ namespace Digi.Examples.NetworkProtobuf
     // An example packet with a string and a number.
     // Note that it must be ProtoIncluded in RegisterPackets.cs!
     [ProtoContract]
-    public class PacketSimpleExample : PacketBase
+    public class PacketBlockSettings : PacketBase
     {
-        public PacketSimpleExample() { } // Empty constructor required for deserialization
+        public PacketBlockSettings() { } // Empty constructor required for deserialization
 
         // Each field has to have a unique ProtoMember number.
         //   And ideally don't change its type after mod is released, instead give it a new number and comment out the old one.
@@ -24,6 +24,9 @@ namespace Digi.Examples.NetworkProtobuf
         [ProtoMember(2)]
         public int Number;
 
+        public PacketBlockSettings() { } // Empty constructor required for deserialization
+
+
         public void Setup(string text, int number)
         {
             // Ensure you assign ALL the protomember fields here to avoid problems.
@@ -33,7 +36,7 @@ namespace Digi.Examples.NetworkProtobuf
 
         // Alternative way of handling the data elsewhere.
         // Or you can handle it in the Received() method below and remove this event, up to you.
-        public static event ReceiveDelegate<PacketSimpleExample> OnReceive;
+        public static event ReceiveDelegate<PacketBlockSettings> OnReceive;
 
         public override void Received(ref PacketInfo packetInfo, ulong senderSteamId)
         {

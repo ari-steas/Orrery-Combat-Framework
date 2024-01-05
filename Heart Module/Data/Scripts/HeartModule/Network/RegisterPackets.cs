@@ -4,7 +4,7 @@ using ProtoBuf;
 
 namespace Digi.NetworkLib
 {
-    [ProtoInclude(10, typeof(PacketSimpleExample))]
+    [ProtoInclude(10, typeof(PacketBlockSettings))]
     [ProtoInclude(11, typeof(SerializableProjectile))]
     //[ProtoInclude(11, typeof(SomeOtherPacketClass))]
     //[ProtoInclude(12, typeof(Etc...))]

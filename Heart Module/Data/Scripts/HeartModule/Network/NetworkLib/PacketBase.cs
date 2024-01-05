@@ -1,8 +1,11 @@
-﻿using ProtoBuf;
+﻿using Digi.Examples.NetworkProtobuf;
+using ProtoBuf;
 using Sandbox.ModAPI;
+using YourName.ModName.Data.Scripts.HeartModule.Utility;
 
 namespace Digi.NetworkLib
 {
+    [ProtoInclude(2, typeof(PacketBlockSettings))]
     [ProtoContract(UseProtoMembersOnly = true)]
     public abstract partial class PacketBase
     {
@@ -11,6 +14,9 @@ namespace Digi.NetworkLib
         /// </summary>
         [ProtoMember(1)]
         public ulong OriginalSenderSteamId;
+
+        //protected Network Network => Heart_Utility.Network.Instance;
+
 
         public PacketBase()
         {
