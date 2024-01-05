@@ -3,8 +3,10 @@ using Sandbox.Game.EntityComponents;
 using Sandbox.ModAPI;
 using System;
 using VRage.Game.Components;
+using VRage.Game.ModAPI.Network;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
+using VRage.Sync;
 using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Utility;
 
@@ -17,6 +19,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public readonly Guid HeartSettingsGUID = new Guid("06edc546-3e42-41f3-bc72-1d640035fbf2");
         public const int HeartSettingsUpdateCount = 60 * 1 / 10;
         int SyncCountdown;
+
+        public MySync<bool, SyncDirection.BothWays> FUCK = null;
 
         public readonly Heart_Settings Settings = new Heart_Settings();
 
