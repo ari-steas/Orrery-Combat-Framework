@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using Sandbox.Game.Localization;
 using Sandbox.ModAPI;
@@ -79,7 +80,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "SampleOnOff");
+                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "Shoot");
                 c.Title = MyStringId.GetOrCompute("Shoot");
                 c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
                 c.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
@@ -94,13 +95,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 //c.OffText = MyStringId.GetOrCompute("Off");
 
                 // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
-                c.Getter = (b) => b?.GameLogic?.GetAs<SorterWeaponLogic>()?.Terminal_Heart_Shoot ?? false;   //?? when statement on left is null, this is false 
-                c.Setter = (b, v) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                        logic.Terminal_Heart_Shoot = v;
-                };
+                c.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().FUCK.Value;   //?? when statement on left is null, this is false 
+
+                c.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().FUCK.Value = v;
 
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
