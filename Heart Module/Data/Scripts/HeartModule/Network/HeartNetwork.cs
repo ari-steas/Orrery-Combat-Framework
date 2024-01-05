@@ -1,4 +1,5 @@
-﻿using Sandbox.ModAPI;
+﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,23 +11,16 @@ using VRage.Utils;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Network
 {
-    [MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation)]
-    public class HeartNetwork_Session : MySessionComponentBase
+    public class HeartNetwork
     {
-        public const ushort HeartNetworkId = (ushort)(65198749845 % ushort.MaxValue);
-
-        public static HeartNetwork_Session Net;
-
-        public override void LoadData()
+        public void LoadData()
         {
-            Net = this;
-            MyAPIGateway.Multiplayer.RegisterSecureMessageHandler(HeartNetworkId, ReceivedPacket);
+            MyAPIGateway.Multiplayer.RegisterSecureMessageHandler(HeartData.HeartNetworkId, ReceivedPacket);
         }
 
-        protected override void UnloadData()
+        public void UnloadData()
         {
-            Net = null;
-            MyAPIGateway.Multiplayer.UnregisterSecureMessageHandler(HeartNetworkId, ReceivedPacket);
+            MyAPIGateway.Multiplayer.UnregisterSecureMessageHandler(HeartData.HeartNetworkId, ReceivedPacket);
         }
 
         void ReceivedPacket(ushort channelId, byte[] serialized, ulong senderSteamId, bool isSenderServer)
@@ -38,7 +32,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
             }
             catch (Exception ex)
             {
-                MyLog.Default.WriteLineAndConsole($"Exception in network deserialize: {ex.Message}\n{ex.StackTrace}");
+                SoftHandle.RaiseException(ex, typeof(HeartNetwork));
             }
         }
 
@@ -65,7 +59,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
                 if (serialized == null) // only serialize if necessary, and only once.
                     serialized = MyAPIGateway.Utilities.SerializeToBinary(packet);
 
-                MyAPIGateway.Multiplayer.SendMessageTo(HeartNetworkId, serialized, p.SteamUserId);
+                MyAPIGateway.Multiplayer.SendMessageTo(HeartData.HeartNetworkId, serialized, p.SteamUserId);
             }
 
             TempPlayers.Clear();

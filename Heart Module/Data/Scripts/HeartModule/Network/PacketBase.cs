@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 namespace Heart_Module.Data.Scripts.HeartModule.Network
 {
     [ProtoInclude(1, typeof(SerializableProjectile))]
+    [ProtoInclude(2, typeof(ExceptionHandler.NetworkedError))]
     [ProtoContract(UseProtoMembersOnly = true)]
     public abstract partial class PacketBase
     {

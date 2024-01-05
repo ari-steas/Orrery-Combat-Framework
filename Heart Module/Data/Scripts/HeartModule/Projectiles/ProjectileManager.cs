@@ -1,4 +1,5 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Network;
+﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.Network;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Sandbox.ModAPI;
 using System;
@@ -78,7 +79,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 }
                 catch (Exception ex)
                 {
-                    MyLog.Default.WriteLineAndConsole(ex.Message + " at \n" + ex.StackTrace);
+                    SoftHandle.RaiseException(ex);
                 }
             }
             j++;
@@ -175,7 +176,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             SyncProjectile(projectile);
         }
 
-        public void SyncProjectile(Projectile projectile) => HeartNetwork_Session.Net.SendToEveryone(projectile.AsSerializable());
+        public void SyncProjectile(Projectile projectile) => HeartData.I.Net.SendToEveryone(projectile.AsSerializable());
 
         public Projectile GetProjectile(uint id) => ActiveProjectiles.GetValueOrDefault(id, null);
         public bool IsIdAvailable(uint id) => !ActiveProjectiles.ContainsKey(id);
