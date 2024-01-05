@@ -72,83 +72,76 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlLabel, IMyConveyorSorter>(IdPrefix + "SampleLabel");
-                c.Label = MyStringId.GetOrCompute("Sample Label");
+                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlLabel, IMyConveyorSorter>(IdPrefix + "HeartWeaponOptions");
+                c.Label = MyStringId.GetOrCompute("HeartWeaponOptions");
                 c.SupportsMultipleBlocks = true;
                 c.Visible = CustomVisibleCondition;
 
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "Shoot");
-                c.Title = MyStringId.GetOrCompute("Shoot");
-                c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
-                c.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
+                var ShootToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "Shoot");
+                ShootToggle.Title = MyStringId.GetOrCompute("Toogle Shoot");
+                ShootToggle.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
+                ShootToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
 
                 // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
                 // optional, they both default to true.
-                c.Visible = CustomVisibleCondition;
+                ShootToggle.Visible = CustomVisibleCondition;
                 //c.Enabled = CustomVisibleCondition;
 
-                c.OnText = MySpaceTexts.SwitchText_On;
-                c.OffText = MySpaceTexts.SwitchText_Off;
+                ShootToggle.OnText = MySpaceTexts.SwitchText_On;
+                ShootToggle.OffText = MySpaceTexts.SwitchText_Off;
                 //c.OffText = MyStringId.GetOrCompute("Off");
 
                 // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
-                c.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().FUCK.Value;   //?? when statement on left is null, this is false 
+                ShootToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().ShootState.Value;  // Getting the value
+                ShootToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().ShootState.Value = v; // Setting the value
 
-                c.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().FUCK.Value = v;
 
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(ShootToggle);
             }
         }
 
         static void CreateActions(IMyModContext context)
         {
-            // yes, there's only one type of action
+            var ShootToggleAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleShoot");
+
+            ShootToggleAction.Name = new StringBuilder("Toggle Shoot");
+
+            // If the action is visible for grouped blocks (as long as they all have this action).
+            ShootToggleAction.ValidForGroups = true;
+
+            // The icon shown in the list and top-right of the block icon in toolbar.
+            ShootToggleAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
+
+            // Called when the toolbar slot is triggered
+            ShootToggleAction.Action = (b) =>
             {
-                var a = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "SampleAction");
-
-                a.Name = new StringBuilder("Sample Action");
-
-                // If the action is visible for grouped blocks (as long as they all have this action).
-                a.ValidForGroups = true;
-
-                // The icon shown in the list and top-right of the block icon in toolbar.
-                a.Icon = @"Textures\GUI\Icons\Actions\CharacterToggle.dds";
-                // For paths inside the mod folder you need to supply an absolute path which can be retrieved from a session or gamelogic comp's ModContext.
-                //a.Icon = Path.Combine(context.ModPath, @"Textures\YourIcon.dds");
-
-                // Called when the toolbar slot is triggered
-                // Should not be unassigned.
-                a.Action = (b) => { };
-
-                // The status of the action, shown in toolbar icon text and can also be read by mods or PBs.
-                a.Writer = (b, sb) =>
+                var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+                if (logic != null && logic.ShootState != null)
                 {
-                    sb.Append("Hi\nthere");
-                };
+                    // Toggle the shoot state and ensure sync
+                    logic.ShootState.Value = !logic.ShootState.Value;  // Toggling the value
+                    MyAPIGateway.Utilities.ShowNotification($"Shoot Action toggled to: {(logic.ShootState.Value ? "ON" : "OFF")}", 2000, "White");
+                }
+            };
 
-                // What toolbar types to NOT allow this action for.
-                // Can be left unassigned to allow all toolbar types.
-                // The below are the options used by jumpdrive's Jump action as an example.
-                //a.InvalidToolbarTypes = new List<MyToolbarType>()
-                //{
-                //    MyToolbarType.ButtonPanel,
-                //    MyToolbarType.Character,
-                //    MyToolbarType.Seat
-                //};
-                // PB checks if it's valid for ButtonPanel before allowing the action to be invoked.
+            // Define what the action's tooltip/status text should say
+            ShootToggleAction.Writer = (b, sb) =>
+            {
+                var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+                if (logic != null && logic.ShootState != null)
+                {
+                    sb.Append(logic.ShootState.Value ? "Shooting" : "Not Shooting");
+                }
+            };
 
-                // Wether the action is to be visible for the given block instance.
-                // Can be left unassigned as it defaults to true.
-                // Warning: gets called per tick while in toolbar for each block there, including each block in groups.
-                //   It also can be called by mods or PBs.
-                a.Enabled = CustomVisibleCondition;
+            ShootToggleAction.Enabled = CustomVisibleCondition;
 
-                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(a);
-            }
+            MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(ShootToggleAction);
         }
+
 
         static void CreateProperties()
         {
