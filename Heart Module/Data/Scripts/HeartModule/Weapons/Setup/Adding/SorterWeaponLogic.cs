@@ -5,11 +5,11 @@ using System;
 using VRage.Game.Components;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
+using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Utility;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
-    // For more info about the gamelogic comp see https://github.com/THDigi/SE-ModScript-Examples/blob/master/Data/Scripts/Examples/BasicExample_GameLogicAndSession/GameLogic.cs
     [MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeapon")]
     public class SorterWeaponLogic : MyGameLogicComponent
     {
@@ -17,7 +17,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public readonly Guid HeartSettingsGUID = new Guid("06edc546-3e42-41f3-bc72-1d640035fbf2");
         public const int HeartSettingsUpdateCount = 60 * 1 / 10;
         int SyncCountdown;
-
 
         public readonly Heart_Settings Settings = new Heart_Settings();
 
@@ -39,34 +38,42 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (SorterWep.CubeGrid?.Physics == null)
                 return; // ignore ghost/projected grids
 
-            // stuff and things
+            LoadSettings(); // Load the settings including shoot option state
         }
 
-        // these are going to be set or retrieved by the terminal controls (as seen in the terminal control's Getter and Setter).
+        public override void UpdateAfterSimulation10()
+        {
 
-        // as mentioned in the other .cs file, the terminal stuff are only GUI.
-        // if you want the values to persist over world reloads and be sent to clients you'll need to implement that yourself.
-        // see: https://github.com/THDigi/SE-ModScript-Examples/wiki/Save-&-Sync-ways
+            MyAPIGateway.Utilities.ShowNotification("Syncing Settings");
+            SyncSettings();
+
+        }
+
 
         public bool Terminal_Heart_Shoot
         {
             get
             {
-                MyAPIGateway.Utilities.ShowNotification("Terminal_Heart_Shoot Getter called");
-                return shoot;             
+                MyAPIGateway.Utilities.ShowNotification("Shoot State: " + Settings.ShootState.ToString());
+
+                return Settings.ShootState;
             }
+
             set
             {
-                shoot = value;
-                MyAPIGateway.Utilities.ShowNotification("Terminal_Heart_Shoot Getter called");
-                MyAPIGateway.Utilities.ShowNotification("Terminal_Heart_Shoot" + value);
+                Settings.ShootState = true;
+
+                SettingsChanged();
+
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+                MyAPIGateway.Utilities.ShowNotification("Shoot State: " + Settings.ShootState.ToString());
 
             }
         }
 
+
         public float Terminal_ExampleFloat { get; set; }
-
-
 
         #region Settings
         bool LoadSettings()
@@ -84,8 +91,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
                 if (loadedSettings != null)
                 {
-                    Settings.CringeSetting = loadedSettings.CringeSetting;
+                    Settings.ShootState = loadedSettings.ShootState;
                     Settings.BasedSetting = loadedSettings.BasedSetting;
+                    // Load the shoot state
                     return true;
                 }
             }
@@ -113,6 +121,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 if (SorterWep.Storage == null)
                     SorterWep.Storage = new MyModStorageComponent();
 
+                // Save the shoot state
+                Settings.ShootState = shoot;
+
                 SorterWep.Storage.SetValue(HeartSettingsGUID, Convert.ToBase64String(MyAPIGateway.Utilities.SerializeToBinary(Settings)));
             }
             catch (Exception e)
@@ -123,7 +134,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         void SettingsChanged()
         {
-            if (shoot == false)
+            if (SyncCountdown == 0)
             {
                 SyncCountdown = HeartSettingsUpdateCount;
             }
@@ -136,8 +147,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 if (SyncCountdown > 0 && --SyncCountdown <= 0)
                 {
                     SaveSettings();
-
-                    //Mod.CachedPacketSettings.Send(SorterWep.EntityId, Settings);
                 }
             }
             catch (Exception e)
@@ -150,7 +159,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         {
             try
             {
-                SaveSettings();
+                SaveSettings(); // Ensure settings are saved when world is saved
             }
             catch (Exception e)
             {
@@ -160,7 +169,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             return base.IsSerialized();
         }
         #endregion
-
 
     }
 }
