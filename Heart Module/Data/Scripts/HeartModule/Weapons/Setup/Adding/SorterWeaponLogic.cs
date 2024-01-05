@@ -137,7 +137,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 {
                     SaveSettings();
 
-                    Mod.CachedPacketSettings.Send(SorterWep.EntityId, Settings);
+                    //Mod.CachedPacketSettings.Send(SorterWep.EntityId, Settings);
                 }
             }
             catch (Exception e)

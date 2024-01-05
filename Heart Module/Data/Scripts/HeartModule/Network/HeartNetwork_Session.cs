@@ -37,7 +37,7 @@ namespace Digi.Examples.NetworkProtobuf
 
 
             // Re-usable for sending
-            PacketExample = new PacketSimpleExample();
+            PacketExample = new PacketBlockSettings();
 
             // For receiving (will be a different instance than the sending one because the receiver code creates it from bytes)
             // because this is a global event you should only hook it in global cases

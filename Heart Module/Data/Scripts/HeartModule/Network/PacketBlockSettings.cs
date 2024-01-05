@@ -24,7 +24,7 @@ namespace Digi.Examples.NetworkProtobuf
         [ProtoMember(2)]
         public int Number;
 
-        public PacketBlockSettings() { } // Empty constructor required for deserialization
+        //public PacketBlockSettings() { } // Empty constructor required for deserialization
 
 
         public void Setup(string text, int number)
