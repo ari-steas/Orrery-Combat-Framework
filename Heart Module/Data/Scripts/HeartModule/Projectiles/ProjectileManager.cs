@@ -33,12 +33,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             I = this;
             MyAPIGateway.Utilities.MessageEnteredSender += TempChatCommandHandler;
+            DamageHandler.Load();
         }
 
         protected override void UnloadData()
         {
             I = null;
             MyAPIGateway.Utilities.MessageEnteredSender -= TempChatCommandHandler;
+            DamageHandler.Unload();
         }
 
         private void TempChatCommandHandler(ulong sender, string messageText, ref bool sendToOthers)
@@ -64,7 +66,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 j = 0;
                 try
                 {
-                    AddProjectile(new Projectile(new StandardClasses.SerializableProjectile()
+                    Projectile p = new Projectile(new SerializableProjectile()
                     {
                         Id = 0,
                         DefinitionId = 0,
@@ -72,8 +74,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                         Direction = MyAPIGateway.Session.Player?.Controller.ControlledEntity.Entity.WorldMatrix.Forward ?? Vector3D.Forward,
                         Velocity = 100,
                         Timestamp = DateTime.Now.Ticks,
-                        InheritedVelocity = Vector3D.Zero
-                    }));
+                        InheritedVelocity = Vector3D.Zero,
+                        Firer = MyAPIGateway.Session.Player?.Controller.ControlledEntity.Entity.EntityId ?? -1,
+                    });
+                    AddProjectile(p);
                 }
                 catch (Exception ex)
                 {
@@ -122,6 +126,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     ProjectileSyncStream.RemoveRange(0, MaxProjectilesSynced);
             }
 
+            DamageHandler.Update();
+
             clock.Restart();
         }
 
@@ -145,6 +151,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public void ClientSyncProjectile(SerializableProjectile projectile)
         {
+            if (MyAPIGateway.Session.IsServer)
+                return;
+
             if (IsIdAvailable(projectile.Id))
                 AddProjectile(new Projectile(projectile));
             else
