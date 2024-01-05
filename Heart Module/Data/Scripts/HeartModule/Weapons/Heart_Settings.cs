@@ -6,9 +6,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
     public class Heart_Settings
     {
         [ProtoMember(1)]
-        public float CringeSetting;
+        public bool ShootState;
 
         [ProtoMember(2)]
         public float BasedSetting;
+
     }
 }

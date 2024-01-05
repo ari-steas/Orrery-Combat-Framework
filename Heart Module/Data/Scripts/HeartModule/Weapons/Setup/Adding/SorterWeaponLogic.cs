@@ -3,13 +3,15 @@ using Sandbox.Game.EntityComponents;
 using Sandbox.ModAPI;
 using System;
 using VRage.Game.Components;
+using VRage.Game.ModAPI.Network;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
+using VRage.Sync;
+using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Utility;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
-    // For more info about the gamelogic comp see https://github.com/THDigi/SE-ModScript-Examples/blob/master/Data/Scripts/Examples/BasicExample_GameLogicAndSession/GameLogic.cs
     [MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeapon")]
     public class SorterWeaponLogic : MyGameLogicComponent
     {
@@ -18,6 +20,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public const int HeartSettingsUpdateCount = 60 * 1 / 10;
         int SyncCountdown;
 
+        public MySync<bool, SyncDirection.BothWays> ShootState; //temporary (lmao) magic bullshit in place of an actual
 
         public readonly Heart_Settings Settings = new Heart_Settings();
 
@@ -27,7 +30,17 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
         {
             NeedsUpdate = MyEntityUpdateEnum.BEFORE_NEXT_FRAME;
+
+            ShootState.ValueChanged += OnShootStateChanged; // Attach the handler
         }
+
+        private void OnShootStateChanged(MySync<bool, SyncDirection.BothWays> obj)
+        {
+            // Accessing the boolean value using .Value property
+            bool newValue = obj.Value;
+            MyAPIGateway.Utilities.ShowNotification($"Shoot State changed to: {newValue}", 2000, "White");
+        }
+
 
         public override void UpdateOnceBeforeFrame()
         {
@@ -37,31 +50,38 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (SorterWep.CubeGrid?.Physics == null)
                 return; // ignore ghost/projected grids
 
-            // stuff and things
+           // LoadSettings(); // artifact from chets meme
         }
 
-        // these are going to be set or retrieved by the terminal controls (as seen in the terminal control's Getter and Setter).
-
-        // as mentioned in the other .cs file, the terminal stuff are only GUI.
-        // if you want the values to persist over world reloads and be sent to clients you'll need to implement that yourself.
-        // see: https://github.com/THDigi/SE-ModScript-Examples/wiki/Save-&-Sync-ways
+        public float Terminal_ExampleFloat { get; set; }
 
         public bool Terminal_Heart_Shoot
         {
             get
             {
-                MyAPIGateway.Utilities.ShowNotification("Terminal_Heart_Shoot Getter called");
-                return shoot;             
+
+                return Settings.ShootState;
             }
+
             set
             {
-                shoot = value;
-                MyAPIGateway.Utilities.ShowNotification("Terminal_Heart_Shoot Getter called");
-                MyAPIGateway.Utilities.ShowNotification("Terminal_Heart_Shoot" + value);
+                Settings.ShootState = true;
+
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
 
             }
         }
 
+
         public float Terminal_ExampleFloat { get; set; }
+
+        public override void Close()
+        {
+            base.Close();
+            // Unsubscribe from the event when the component is closed
+            if (ShootState != null)
+                ShootState.ValueChanged -= OnShootStateChanged;
+        }
     }
 }
