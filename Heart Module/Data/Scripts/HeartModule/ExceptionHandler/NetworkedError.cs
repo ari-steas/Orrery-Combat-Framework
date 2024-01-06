@@ -5,24 +5,27 @@ using System;
 
 namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
 {
+    [ProtoContract]
     public class NetworkedError : PacketBase
     {
-        [ProtoMember(21)] Exception Exception;
-        [ProtoMember(22)] bool IsCritical;
+        [ProtoMember(21)] public string ExceptionMessage;
+        [ProtoMember(22)] public string ExceptionStackTrace;
+        [ProtoMember(23)] public bool IsCritical;
 
         public NetworkedError() { }
         public NetworkedError(Exception e, bool IsCritical)
         {
-            Exception = e;
+            ExceptionMessage = e.Message;
+            ExceptionStackTrace = e.StackTrace;
             this.IsCritical = IsCritical;
         }
 
         public override void Received(ulong SenderSteamId)
         {
             if (IsCritical)
-                CriticalHandle.ThrowCriticalException(Exception, typeof(NetworkedError), SenderSteamId);
+                CriticalHandle.ThrowCriticalException(this, typeof(NetworkedError), SenderSteamId);
             else
-                SoftHandle.RaiseException(Exception, callerId: SenderSteamId);
+                SoftHandle.RaiseException(this, callerId: SenderSteamId);
         }
     }
 }

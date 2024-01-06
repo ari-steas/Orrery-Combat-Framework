@@ -24,8 +24,23 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
         public void LogException(Exception ex, Type callingType, string prefix = "")
         {
             if (ex == null)
+            {
+                Log("Null exception! CallingType: " + callingType.FullName);
                 return;
+            }
+                
             Log(prefix + $"Exception in {callingType.FullName}! {ex.Message}\n{ex.StackTrace}");
+        }
+
+        public void LogException(NetworkedError ex, Type callingType, string prefix = "")
+        {
+            if (ex == null)
+            {
+                Log("Null exception! CallingType: " + callingType.FullName);
+                return;
+            }
+
+            Log(prefix + $"Exception in {callingType.FullName}! {ex.ExceptionMessage}\n{ex.ExceptionStackTrace}");
         }
     }
 }

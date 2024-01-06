@@ -26,6 +26,9 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
         public override void UpdateAfterSimulation()
         {
+            // This has the power to shut down the server. Afaik the only way to do this is throwing an exception. Yeah.
+            handle.Update();
+
             try
             {
                 if (HeartData.I.IsSuspended)
@@ -35,9 +38,6 @@ namespace Heart_Module.Data.Scripts.HeartModule
             {
                 SoftHandle.RaiseException(ex);
             }
-
-            // This has the power to shut down the server. Afaik the only way to do this is throwing an exception. Yeah.
-            handle.Update();
         }
 
         protected override void UnloadData()

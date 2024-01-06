@@ -8,7 +8,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ErrorHandler
     {
         public static void RaiseException(string message, Type callingType = null, ulong callerId = ulong.MaxValue)
         {
-            //MyAPIGateway.Utilities.ShowNotification("Minor Exception: " + message);
+            MyAPIGateway.Utilities.ShowNotification("Minor Exception: " + message);
             Exception soft = new Exception(message);
             HeartData.I.Log.LogException(soft, callingType ?? typeof(SoftHandle), callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "");
             if (MyAPIGateway.Session.IsServer)
@@ -17,7 +17,19 @@ namespace Heart_Module.Data.Scripts.HeartModule.ErrorHandler
 
         public static void RaiseException(Exception exception, Type callingType = null, ulong callerId = ulong.MaxValue)
         {
-            //MyAPIGateway.Utilities.ShowNotification("Minor Exception: " + exception.Message);
+            if (exception == null)
+                return;
+
+            MyAPIGateway.Utilities.ShowNotification("Minor Exception: " + exception.Message);
+            HeartData.I.Log.LogException(exception, callingType ?? typeof(SoftHandle), callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "");
+        }
+
+        public static void RaiseException(NetworkedError exception, Type callingType = null, ulong callerId = ulong.MaxValue)
+        {
+            if (exception == null)
+                return;
+
+            MyAPIGateway.Utilities.ShowNotification("Minor Exception: " + exception.ExceptionMessage);
             HeartData.I.Log.LogException(exception, callingType ?? typeof(SoftHandle), callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "");
         }
 
