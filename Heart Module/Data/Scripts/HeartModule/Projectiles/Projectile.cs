@@ -27,7 +27,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         public float Velocity = 0;
         public int RemainingImpacts = 0;
 
-        public Action<Projectile> Close = (p) => { };
+        public Action<Projectile> OnClose = (p) => { };
         public long LastUpdate { get; private set; }
 
         public float DistanceTravelled { get; private set; } = 0;
@@ -97,11 +97,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             NextMoveStep = Position + (InheritedVelocity + Direction * (Velocity + Definition.PhysicalProjectile.Acceleration * delta)) * delta;
         }
 
-        public void DrawUpdate(float delta)
-        {
-            DebugDraw.AddPoint(Position + (InheritedVelocity + Direction * (Velocity + Definition.PhysicalProjectile.Acceleration * delta)) * delta, Color.Green, 0.000001f);
-        }
-
         public void CheckHits(float delta)
         {
             List<IHitInfo> intersects = new List<IHitInfo>();
@@ -112,12 +107,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
             foreach (var hitInfo in intersects)
             {
+                if (QueuedDispose)
+                    break;
                 double dist = len * hitInfo.Fraction;
-                ProjectileHit(hitInfo.HitEntity);
+                ProjectileHit(hitInfo.HitEntity, hitInfo.Position);
             }
         }
 
-        public void ProjectileHit(IMyEntity impact)
+        public void ProjectileHit(IMyEntity impact, Vector3D impactPosition)
         {
             if (impact.EntityId == Firer)
                 return;
@@ -126,6 +123,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 DamageHandler.QueueEvent(new DamageEvent(impact, DamageEvent.DamageEntType.Grid, this));
             else if (impact is IMyCharacter)
                 DamageHandler.QueueEvent(new DamageEvent(impact, DamageEvent.DamageEntType.Character, this));
+
+            DrawImpactParticle(impactPosition);
 
             RemainingImpacts -= 1;
             if (RemainingImpacts <= 0)
