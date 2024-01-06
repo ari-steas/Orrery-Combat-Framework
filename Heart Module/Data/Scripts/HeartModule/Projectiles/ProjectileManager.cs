@@ -57,7 +57,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         int j = 0;
         public override void UpdateAfterSimulation()
         {
-            if (j >= 1 && MyAPIGateway.Session.IsServer)
+            if (HeartData.I.IsSuspended) return;
+
+            if (j >= 100 && MyAPIGateway.Session.IsServer)
             {
                 j = 0;
                 try
@@ -79,7 +81,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 }
                 catch (Exception ex)
                 {
-                    SoftHandle.RaiseException(ex);
+                    SoftHandle.RaiseException(ex, typeof(ProjectileManager));
                 }
             }
             j++;
@@ -141,6 +143,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public override void Draw()
         {
+            if (HeartData.I.IsSuspended) return;
+
             if (MyAPIGateway.Utilities.IsDedicated)
                 return;
             

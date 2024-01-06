@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VRage.Game.Components;
+using VRage.Utils;
 
 namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
 {
@@ -15,13 +16,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
         const int WarnTimeSeconds = 20;
         private static CriticalHandle I;
         private long CriticalCloseTime = -1;
+        private Exception Exception;
 
         public void LoadData()
         {
             I = this;
         }
 
-        int i = 0;
         public void Update()
         {
             if (CriticalCloseTime == -1)
@@ -29,15 +30,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
             double secondsRemaining = Math.Round((CriticalCloseTime - DateTime.Now.Ticks) / (double)TimeSpan.TicksPerSecond, 1);
 
             if (secondsRemaining <= 0)
-                MyVisualScriptLogicProvider.SessionClose(1000, false, true);
-
-            MyAPIGateway.Utilities.ShowNotification($"HeartMod CRITICAL ERROR - Shutting down in {secondsRemaining}s", 1000/60);
-            i++;
-            if (i >= 60)
             {
-                i = 0;
-                MyAPIGateway.Utilities.ShowMessage("HeartMod", $"CRITICAL ERROR - Shutting down in {secondsRemaining} seconds.");
+                CriticalCloseTime = -1;
+                if (!MyAPIGateway.Utilities.IsDedicated)
+                    MyVisualScriptLogicProvider.SessionClose(1000, false, true);
+                else
+                    throw Exception;
             }
+
+            if (!MyAPIGateway.Utilities.IsDedicated)
+                MyAPIGateway.Utilities.ShowNotification($"HeartMod CRITICAL ERROR - Shutting down in {secondsRemaining}s", 1000/60);
         }
 
         public void UnloadData()
@@ -52,10 +54,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
 
         private void m_ThrowCriticalException(Exception ex, Type callingType, ulong callerId = ulong.MaxValue)
         {
-            if (CriticalCloseTime == -1)
+            HeartData.I.IsSuspended = true;
+            if (CriticalCloseTime != -1)
                 return;
-            HeartLog.LogException(ex, callingType, (callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "") + "Critical ");
+
+            Exception = ex;
+            HeartData.I.Log.LogException(ex, callingType, (callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "") + "Critical ");
+            MyAPIGateway.Utilities.ShowMessage("HeartMod", $"CRITICAL ERROR - Shutting down in {WarnTimeSeconds} seconds.");
+            MyLog.Default.WriteLineAndConsole($"HeartMod: CRITICAL ERROR - Shutting down in {WarnTimeSeconds} seconds.");
             CriticalCloseTime = DateTime.Now.Ticks + WarnTimeSeconds * TimeSpan.TicksPerSecond;
+
+            if (MyAPIGateway.Session.IsServer)
+                HeartData.I.Net.SendToEveryone(new NetworkedError(ex, true));
         }
     }
 }

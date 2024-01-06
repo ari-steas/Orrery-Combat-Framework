@@ -8,7 +8,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
         public static HeartData I;
         public const ushort HeartNetworkId = (ushort)(65198749845 % ushort.MaxValue);
 
-        public bool IsClosing = false;
+        public bool IsSuspended = false;
         public HeartNetwork Net = new HeartNetwork();
         public HeartLog Log = new HeartLog();
     }

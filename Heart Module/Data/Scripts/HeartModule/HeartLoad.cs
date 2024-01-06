@@ -16,13 +16,14 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
         public override void LoadData()
         {
+            HeartData.I = new HeartData();
             HeartData.I.Log.Log($"Start loading core...");
 
-            HeartData.I = new HeartData();
             handle = new CriticalHandle();
             handle.LoadData();
             HeartData.I.Net.LoadData();
 
+            HeartData.I.IsSuspended = false;
             HeartData.I.Log.Log($"Finished loading core.");
         }
 
@@ -30,15 +31,16 @@ namespace Heart_Module.Data.Scripts.HeartModule
         {
             try
             {
-                if (HeartData.I.IsClosing)
+                if (HeartData.I.IsSuspended)
                     return;
-
-                handle.Update();
             }
             catch (Exception ex)
             {
                 SoftHandle.RaiseException(ex);
             }
+
+            // This has the power to shut down the server. Afaik the only way to do this is throwing an exception. Yeah.
+            handle.Update();
         }
 
         protected override void UnloadData()

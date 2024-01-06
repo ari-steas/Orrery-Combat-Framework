@@ -73,9 +73,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             }
         }
 
-
-        public float Terminal_ExampleFloat { get; set; }
-
         public override void Close()
         {
             base.Close();

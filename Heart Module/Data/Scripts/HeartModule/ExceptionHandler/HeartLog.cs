@@ -15,11 +15,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
         public HeartLog()
         {
             writer = MyAPIGateway.Utilities.WriteFileInLocalStorage("debug.log", typeof(HeartLog));
+            writer.WriteLine("LogStart");
+            writer.Flush();
         }
 
         public void Log(string message)
         {
-            writer.WriteLineAsync($"{DateTime.Now:HH:mm:ss}: {message}");
+            writer.WriteLine($"{DateTime.Now:HH:mm:ss}: {message}");
+            writer.Flush();
         }
 
         public void LogException(Exception ex, Type callingType, string prefix = "")
