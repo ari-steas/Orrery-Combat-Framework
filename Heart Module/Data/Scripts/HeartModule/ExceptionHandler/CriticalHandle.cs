@@ -1,0 +1,92 @@
+﻿using Sandbox.Game;
+using Sandbox.Game.Debugging;
+using Sandbox.Game.Entities;
+using Sandbox.ModAPI;
+using System;
+using VRage.Utils;
+
+namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
+{
+
+    public class CriticalHandle
+    {
+        const int WarnTimeSeconds = 20;
+        private static CriticalHandle I;
+        private long CriticalCloseTime = -1;
+        private Exception Exception;
+
+        public void LoadData()
+        {
+            I = this;
+        }
+
+        public void Update()
+        {
+            if (CriticalCloseTime == -1)
+                return;
+            double secondsRemaining = Math.Round((CriticalCloseTime - DateTime.Now.Ticks) / (double)TimeSpan.TicksPerSecond, 1);
+
+            if (secondsRemaining <= 0)
+            {
+                CriticalCloseTime = -1;
+                if (!MyAPIGateway.Utilities.IsDedicated)
+                    MyVisualScriptLogicProvider.SessionClose(1000, false, true);
+                else
+                    //throw Exception;
+                    MyAPIGateway.Session.Unload();
+            }
+            
+            if (!MyAPIGateway.Utilities.IsDedicated)
+                MyAPIGateway.Utilities.ShowNotification($"HeartMod CRITICAL ERROR - Shutting down in {secondsRemaining}s", 1000 / 60);
+        }
+
+        public void UnloadData()
+        {
+            I = null;
+        }
+
+        public static void ThrowCriticalException(Exception ex, Type callingType, ulong callerId = ulong.MaxValue)
+        {
+            I?.m_ThrowCriticalException(ex, callingType, callerId);
+        }
+
+        public static void ThrowCriticalException(NetworkedError ex, Type callingType, ulong callerId = ulong.MaxValue)
+        {
+            I?.m_ThrowCriticalException(ex, callingType, callerId);
+        }
+
+        private void m_ThrowCriticalException(Exception ex, Type callingType, ulong callerId = ulong.MaxValue)
+        {
+            HeartData.I.IsSuspended = true;
+            HeartData.I.Log.Log("Start Throw Critical Exception " + CriticalCloseTime);
+            if (CriticalCloseTime != -1)
+                return;
+
+            Exception = ex;
+            HeartData.I.Log.LogException(ex, callingType, (callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "") + "Critical ");
+            MyAPIGateway.Utilities.ShowMessage("HeartMod", $"CRITICAL ERROR - Shutting down in {WarnTimeSeconds} seconds.");
+            MyLog.Default.WriteLineAndConsole($"HeartMod: CRITICAL ERROR - Shutting down in {WarnTimeSeconds} seconds.");
+            CriticalCloseTime = DateTime.Now.Ticks + WarnTimeSeconds * TimeSpan.TicksPerSecond;
+
+            if (MyAPIGateway.Session.IsServer)
+                HeartData.I.Net.SendToEveryone(new NetworkedError(Exception, true));
+        }
+
+        private void m_ThrowCriticalException(NetworkedError ex, Type callingType, ulong callerId = ulong.MaxValue)
+        {
+            HeartData.I.IsSuspended = true;
+            HeartData.I.Log.Log("Start Throw Critical Exception " + CriticalCloseTime);
+            if (CriticalCloseTime != -1)
+                return;
+
+            Exception = new Exception(ex.ExceptionMessage);
+            HeartData.I.Log.LogException(ex, callingType, (callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "") + "Critical ");
+            MyAPIGateway.Utilities.ShowMessage("HeartMod", $"CRITICAL ERROR - Shutting down in {WarnTimeSeconds} seconds.");
+            MyLog.Default.WriteLineAndConsole($"HeartMod: CRITICAL ERROR - Shutting down in {WarnTimeSeconds} seconds.");
+            CriticalCloseTime = DateTime.Now.Ticks + WarnTimeSeconds * TimeSpan.TicksPerSecond;
+
+            if (MyAPIGateway.Session.IsServer)
+                HeartData.I.Net.SendToEveryone(new NetworkedError(Exception, true));
+        }
+    }
+}

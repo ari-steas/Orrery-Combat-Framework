@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Sandbox.ModAPI;
+﻿using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces.Terminal;
+using System.Collections.Generic;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding
 {

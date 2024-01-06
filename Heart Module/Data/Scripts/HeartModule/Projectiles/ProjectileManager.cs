@@ -1,4 +1,4 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Network;
+﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Sandbox.ModAPI;
 using System;
@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using VRage.Game.Components;
-using VRage.Utils;
 using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
@@ -15,7 +14,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
     public class ProjectileManager : MySessionComponentBase
     {
         public static ProjectileManager I = new ProjectileManager();
-        const int MaxProjectilesSynced = 50; // TODO: Sync within range of client & possibly current network load
+        const int MaxProjectilesSynced = 25; // TODO: Sync within range of client. This value should be ~100kB/s per player
 
         private Dictionary<uint, Projectile> ActiveProjectiles = new Dictionary<uint, Projectile>();
         private List<uint> ProjectileSyncStream = new List<uint>();
@@ -56,6 +55,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         int j = 0;
         public override void UpdateAfterSimulation()
         {
+            if (HeartData.I.IsSuspended) return;
+
             if (j >= 1 && MyAPIGateway.Session.IsServer)
             {
                 j = 0;
@@ -74,16 +75,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                         Firer = MyAPIGateway.Session.Player?.Controller.ControlledEntity.Entity.EntityId ?? -1,
                     });
                     AddProjectile(p);
-                    MyLog.Default.WriteLineToConsole($"Projectiles: {ActiveProjectiles.Count}");
+                    //MyLog.Default.WriteLineToConsole($"Projectiles: {ActiveProjectiles.Count}");
                 }
                 catch (Exception ex)
                 {
-                    MyLog.Default.WriteLineAndConsole(ex.Message + " at \n" + ex.StackTrace);
+                    SoftHandle.RaiseException(ex, typeof(ProjectileManager));
                 }
             }
             j++;
 
-            delta = clock.ElapsedTicks / (float) TimeSpan.TicksPerSecond;
+            delta = clock.ElapsedTicks / (float)TimeSpan.TicksPerSecond;
 
             // Tick projectiles
             foreach (var projectile in ActiveProjectiles.Values)
@@ -98,7 +99,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             {
                 //MyAPIGateway.Utilities.ShowMessage("Heart", $"Closing projectile {projectile.Id}. Age: {projectile.Age} ");
                 if (MyAPIGateway.Session.IsServer)
-                    SyncProjectile(projectile);
+                    SyncProjectile(projectile, 2);
                 projectile.Close.Invoke(projectile);
             }
             QueuedCloseProjectiles.Clear();
@@ -113,7 +114,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
                     if (ActiveProjectiles.ContainsKey(id))
                     {
-                        SyncProjectile(ActiveProjectiles[id]);
+                        SyncProjectile(ActiveProjectiles[id], 1);
                         numSyncs++;
                     }
                 }
@@ -126,8 +127,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 else
                     ProjectileSyncStream.RemoveRange(0, MaxProjectilesSynced);
             }
-            MyAPIGateway.Utilities.ShowNotification("Projectiles: " + ActiveProjectiles.Count, 1000/60);
-            
+            else
+            {
+                MyAPIGateway.Utilities.ShowNotification("Projectiles: " + ActiveProjectiles.Count, 1000 / 60);
+            }
+
             DamageHandler.Update();
 
             clock.Restart();
@@ -140,9 +144,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public override void Draw()
         {
+            if (HeartData.I.IsSuspended) return;
+
             if (MyAPIGateway.Utilities.IsDedicated)
                 return;
-            
+
             delta = clock.ElapsedTicks / (float)TimeSpan.TicksPerSecond;
             // Triggered every frame, avoids jitter in projectiles
             foreach (var projectile in ActiveProjectiles.Values)
@@ -151,12 +157,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
         }
 
-        public void ClientSyncProjectile(SerializableProjectile projectile)
+        public void UpdateProjectile(SerializableProjectile projectile)
         {
             if (MyAPIGateway.Session.IsServer)
                 return;
 
-            if (IsIdAvailable(projectile.Id) && projectile.IsActive)
+            if (IsIdAvailable(projectile.Id) && projectile.IsActive && projectile.DefinitionId.HasValue)
                 AddProjectile(new Projectile(projectile));
             else
                 GetProjectile(projectile.Id)?.SyncUpdate(projectile);
@@ -164,7 +170,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public void AddProjectile(Projectile projectile)
         {
-            if (projectile == null) return; // ???
+            if (projectile == null || projectile.DefinitionId == -1) return; // Ensure that invalid projectiles don't get added
 
             NextId++;
             while (!IsIdAvailable(NextId))
@@ -172,10 +178,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             projectile.SetId(NextId);
             projectile.Close += (p) => ActiveProjectiles.Remove(p.Id);
             ActiveProjectiles.Add(projectile.Id, projectile);
-            SyncProjectile(projectile);
+            SyncProjectile(projectile, 0);
         }
 
-        public void SyncProjectile(Projectile projectile) => HeartNetwork_Session.Net.SendToEveryone(projectile.AsSerializable());
+        public void SyncProjectile(Projectile projectile, int DetailLevel = 1) => HeartData.I.Net.SendToEveryone(projectile.AsSerializable(DetailLevel));
 
         public Projectile GetProjectile(uint id) => ActiveProjectiles.GetValueOrDefault(id, null);
         public bool IsIdAvailable(uint id) => !ActiveProjectiles.ContainsKey(id);

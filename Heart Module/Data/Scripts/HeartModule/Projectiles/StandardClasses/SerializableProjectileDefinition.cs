@@ -73,10 +73,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     {
         [ProtoMember(1)] public string Model;
         [ProtoMember(2)] public string TrailTexture;
-        [ProtoMember(3)] public float  TrailFadeTime;
+        [ProtoMember(3)] public float TrailFadeTime;
         [ProtoMember(4)] public string AttachedParticle;
         [ProtoMember(5)] public string ImpactParticle;
-        [ProtoMember(6)] public float  VisibleChance;
+        [ProtoMember(6)] public float VisibleChance;
     }
 
     [ProtoContract]
@@ -84,7 +84,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     {
         [ProtoMember(1)] public string TravelSound;
         [ProtoMember(2)] public string ImpactSound;
-        [ProtoMember(3)] public float  ImpactSoundChance;
+        [ProtoMember(3)] public float ImpactSoundChance;
     }
 
     [ProtoContract]
