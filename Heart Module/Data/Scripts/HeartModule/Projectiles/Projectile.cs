@@ -107,12 +107,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
             foreach (var hitInfo in intersects)
             {
+                if (QueuedDispose)
+                    break;
                 double dist = len * hitInfo.Fraction;
-                ProjectileHit(hitInfo.HitEntity);
+                ProjectileHit(hitInfo.HitEntity, hitInfo.Position);
             }
         }
 
-        public void ProjectileHit(IMyEntity impact)
+        public void ProjectileHit(IMyEntity impact, Vector3D impactPosition)
         {
             if (impact.EntityId == Firer)
                 return;
@@ -121,6 +123,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 DamageHandler.QueueEvent(new DamageEvent(impact, DamageEvent.DamageEntType.Grid, this));
             else if (impact is IMyCharacter)
                 DamageHandler.QueueEvent(new DamageEvent(impact, DamageEvent.DamageEntType.Character, this));
+
+            DrawImpactParticle(impactPosition);
 
             RemainingImpacts -= 1;
             if (RemainingImpacts <= 0)
