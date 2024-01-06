@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Text;
-using Sandbox.Game.Localization;
+﻿using Sandbox.Game.Localization;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces.Terminal;
-using VRage.Game;
-using VRage.Game.Components;
+using System.Text;
 using VRage.Game.ModAPI;
-using VRage.ModAPI;
 using VRage.Utils;
 using VRageMath;
 

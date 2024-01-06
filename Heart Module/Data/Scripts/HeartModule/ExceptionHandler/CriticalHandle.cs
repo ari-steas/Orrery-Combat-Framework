@@ -1,16 +1,11 @@
 ﻿using Sandbox.Game;
 using Sandbox.ModAPI;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VRage.Game.Components;
 using VRage.Utils;
 
 namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
 {
-    
+
     public class CriticalHandle
     {
         const int WarnTimeSeconds = 20;
@@ -39,7 +34,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
             }
 
             if (!MyAPIGateway.Utilities.IsDedicated)
-                MyAPIGateway.Utilities.ShowNotification($"HeartMod CRITICAL ERROR - Shutting down in {secondsRemaining}s", 1000/60);
+                MyAPIGateway.Utilities.ShowNotification($"HeartMod CRITICAL ERROR - Shutting down in {secondsRemaining}s", 1000 / 60);
         }
 
         public void UnloadData()
@@ -55,6 +50,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
         private void m_ThrowCriticalException(Exception ex, Type callingType, ulong callerId = ulong.MaxValue)
         {
             HeartData.I.IsSuspended = true;
+            HeartData.I.Log.Log("Start Throw Critical Exception " + CriticalCloseTime);
             if (CriticalCloseTime != -1)
                 return;
 

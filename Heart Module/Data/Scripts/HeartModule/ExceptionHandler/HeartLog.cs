@@ -1,10 +1,6 @@
 ﻿using Sandbox.ModAPI;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
 {
@@ -27,6 +23,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
 
         public void LogException(Exception ex, Type callingType, string prefix = "")
         {
+            if (ex == null)
+                return;
             Log(prefix + $"Exception in {callingType.FullName}! {ex.Message}\n{ex.StackTrace}");
         }
     }

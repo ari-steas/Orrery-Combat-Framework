@@ -1,9 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using System;
-using System.Diagnostics;
-using System.Text;
-using System.Threading.Tasks;
 using VRage.Game.Components;
 
 namespace Heart_Module.Data.Scripts.HeartModule
@@ -12,7 +9,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
     internal class HeartLoad : MySessionComponentBase
     {
         CriticalHandle handle;
-        
+
 
         public override void LoadData()
         {

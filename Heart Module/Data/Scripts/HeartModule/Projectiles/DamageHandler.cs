@@ -2,12 +2,8 @@
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VRage.Game;
 using VRage.Game.ModAPI;
-using VRage.Utils;
 using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
@@ -45,13 +41,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 switch (damageEvent.Type)
                 {
                     case DamageEvent.DamageEntType.Grid:
-                        m_GridDamageHandler((IMyCubeGrid) damageEvent.Entity, damageEvent);
+                        m_GridDamageHandler((IMyCubeGrid)damageEvent.Entity, damageEvent);
                         break;
                     case DamageEvent.DamageEntType.Character:
-                        m_CharacterDamageHandler((IMyCharacter) damageEvent.Entity, damageEvent);
+                        m_CharacterDamageHandler((IMyCharacter)damageEvent.Entity, damageEvent);
                         break;
                     case DamageEvent.DamageEntType.Projectile:
-                        m_ProjectileDamageHandler((Projectile) damageEvent.Entity, damageEvent);
+                        m_ProjectileDamageHandler((Projectile)damageEvent.Entity, damageEvent);
                         break;
                 }
             }

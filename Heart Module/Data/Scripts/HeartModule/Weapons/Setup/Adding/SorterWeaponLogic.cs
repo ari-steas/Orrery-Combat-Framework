@@ -1,5 +1,4 @@
 ﻿using Sandbox.Common.ObjectBuilders;
-using Sandbox.Game.EntityComponents;
 using Sandbox.ModAPI;
 using System;
 using VRage.Game.Components;
@@ -7,8 +6,6 @@ using VRage.Game.ModAPI.Network;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
 using VRage.Sync;
-using VRageMath;
-using YourName.ModName.Data.Scripts.HeartModule.Utility;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
@@ -50,7 +47,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (SorterWep.CubeGrid?.Physics == null)
                 return; // ignore ghost/projected grids
 
-           // LoadSettings(); // artifact from chets meme
+            // LoadSettings(); // artifact from chets meme
         }
 
         public float Terminal_ExampleFloat { get; set; }

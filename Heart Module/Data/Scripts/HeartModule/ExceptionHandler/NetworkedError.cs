@@ -2,7 +2,6 @@
 using Heart_Module.Data.Scripts.HeartModule.Network;
 using ProtoBuf;
 using System;
-using VRage.Utils;
 
 namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
 {

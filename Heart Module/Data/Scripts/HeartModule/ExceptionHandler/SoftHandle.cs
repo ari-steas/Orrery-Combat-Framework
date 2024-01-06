@@ -1,12 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Sandbox.ModAPI;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VRage.Scripting;
-using VRage.Utils;
 
 namespace Heart_Module.Data.Scripts.HeartModule.ErrorHandler
 {
@@ -14,7 +8,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ErrorHandler
     {
         public static void RaiseException(string message, Type callingType = null, ulong callerId = ulong.MaxValue)
         {
-            MyAPIGateway.Utilities.ShowNotification("Minor Exception: " + message);
+            //MyAPIGateway.Utilities.ShowNotification("Minor Exception: " + message);
             Exception soft = new Exception(message);
             HeartData.I.Log.LogException(soft, callingType ?? typeof(SoftHandle), callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "");
             if (MyAPIGateway.Session.IsServer)
@@ -23,7 +17,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ErrorHandler
 
         public static void RaiseException(Exception exception, Type callingType = null, ulong callerId = ulong.MaxValue)
         {
-            MyAPIGateway.Utilities.ShowNotification("Minor Exception: " + exception.Message);
+            //MyAPIGateway.Utilities.ShowNotification("Minor Exception: " + exception.Message);
             HeartData.I.Log.LogException(exception, callingType ?? typeof(SoftHandle), callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "");
         }
 

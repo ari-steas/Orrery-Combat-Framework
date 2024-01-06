@@ -1,14 +1,12 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
 using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
-using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
-using VRage.Game;
-using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
+using VRage.Utils;
 using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
@@ -23,12 +21,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         public Vector3D InheritedVelocity;
         #endregion
 
-        public long Firer;
-        public Vector3D Position;
-        public Vector3D Direction;
-        public float Velocity;
-        public int RemainingImpacts;
-        
+        public long Firer = -1;
+        public Vector3D Position = Vector3D.Zero;
+        public Vector3D Direction = Vector3D.Up;
+        public float Velocity = 0;
+        public int RemainingImpacts = 0;
+
         public Action<Projectile> Close = (p) => { };
         public long LastUpdate { get; private set; }
 
@@ -39,7 +37,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         public Projectile() { }
 
         public Projectile(SerializableProjectile projectile)
-        { 
+        {
             if (!ProjectileManager.I.IsIdAvailable(projectile.Id))
             {
                 SoftHandle.RaiseSyncException("Unable to spawn projectile - duplicate Id!");
@@ -47,16 +45,17 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 return;
             }
 
-            if (!ProjectileDefinitionManager.HasDefinition(projectile.DefinitionId))
+            if (!projectile.DefinitionId.HasValue || !ProjectileDefinitionManager.HasDefinition(projectile.DefinitionId.Value))
             {
                 SoftHandle.RaiseSyncException("Unable to spawn projectile - invalid DefinitionId!");
+                DefinitionId = -1;
                 return;
             }
 
             Id = projectile.Id;
-            DefinitionId = projectile.DefinitionId;
-            Definition = ProjectileDefinitionManager.GetDefinition(projectile.DefinitionId);
-            Firer = projectile.Firer;
+            DefinitionId = projectile.DefinitionId.Value;
+            Definition = ProjectileDefinitionManager.GetDefinition(projectile.DefinitionId.Value);
+            Firer = projectile.Firer.GetValueOrDefault(0);
             // TODO fill in from Definition
 
             SyncUpdate(projectile);
@@ -102,7 +101,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             DebugDraw.AddPoint(Position + (InheritedVelocity + Direction * (Velocity + Definition.PhysicalProjectile.Acceleration * delta)) * delta, Color.Green, 0.000001f);
         }
-        
+
         public void CheckHits(float delta)
         {
             List<IHitInfo> intersects = new List<IHitInfo>();
@@ -137,38 +136,59 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public void SyncUpdate(SerializableProjectile projectile)
         {
-            if (DefinitionId != projectile.DefinitionId)
-            {
-                SoftHandle.RaiseSyncException("DefinitionId Mismatch!");
-                return;
-            }
-
             QueuedDispose = !projectile.IsActive;
 
             LastUpdate = projectile.Timestamp;
-            float delta = (DateTime.Now.Ticks - LastUpdate) / (float) TimeSpan.TicksPerSecond;
+            float delta = (DateTime.Now.Ticks - LastUpdate) / (float)TimeSpan.TicksPerSecond;
 
-            Direction = projectile.Direction;
-            Position = projectile.Position;
-            Velocity = projectile.Velocity;
-            InheritedVelocity = projectile.InheritedVelocity;
-            RemainingImpacts = projectile.RemainingImpacts;
+            // The following values may be null to save network load
+            if (projectile.Direction.HasValue)
+                Direction = projectile.Direction.Value;
+            if (projectile.Position.HasValue)
+                Position = projectile.Position.Value;
+            if (projectile.Velocity.HasValue)
+                Velocity = projectile.Velocity.Value;
+            if (projectile.InheritedVelocity.HasValue)
+                InheritedVelocity = projectile.InheritedVelocity.Value;
+            if (projectile.RemainingImpacts.HasValue)
+                RemainingImpacts = projectile.RemainingImpacts.Value;
+
             TickUpdate(delta);
         }
 
-        public SerializableProjectile AsSerializable()
+        /// <summary>
+        /// Returns the projectile as a network-ready projectile info class. 0 = max detail, 2+ = min detail
+        /// </summary>
+        /// <param name="DetailLevel"></param>
+        /// <returns></returns>
+        public SerializableProjectile AsSerializable(int DetailLevel = 1)
         {
-            return new SerializableProjectile()
+            SerializableProjectile projectile = new SerializableProjectile()
             {
                 IsActive = !QueuedDispose,
                 Id = Id,
-                DefinitionId = DefinitionId,
-                Position = Position,
-                Direction = Direction,
-                InheritedVelocity = InheritedVelocity,
-                Velocity = Velocity,
                 Timestamp = DateTime.Now.Ticks,
             };
+
+            switch (DetailLevel)
+            {
+                case 0:
+                    projectile.DefinitionId = DefinitionId;
+                    projectile.Position = Position;
+                    projectile.Direction = Direction;
+                    projectile.InheritedVelocity = InheritedVelocity;
+                    projectile.Velocity = Velocity;
+                    break;
+                case 1:
+                    projectile.Position = Position;
+                    if (Definition.Guidance.Length > 0)
+                        projectile.Direction = Direction;
+                    if (Definition.PhysicalProjectile.Acceleration > 0)
+                        projectile.Velocity = Velocity;
+                    break;
+            }
+
+            return projectile;
         }
 
         public void QueueDispose()
