@@ -56,8 +56,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         private void m_QueueEvent(DamageEvent damageEvent)
         {
-            if (MyAPIGateway.Session.IsServer)
-                CriticalHandle.ThrowCriticalException(new Exception("Testing"), typeof(DamageHandler));
             DamageEvents.Add(damageEvent);
         }
 

@@ -27,7 +27,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         public float Velocity = 0;
         public int RemainingImpacts = 0;
 
-        public Action<Projectile> Close = (p) => { };
+        public Action<Projectile> OnClose = (p) => { };
         public long LastUpdate { get; private set; }
 
         public float DistanceTravelled { get; private set; } = 0;
@@ -95,11 +95,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
 
             NextMoveStep = Position + (InheritedVelocity + Direction * (Velocity + Definition.PhysicalProjectile.Acceleration * delta)) * delta;
-        }
-
-        public void DrawUpdate(float delta)
-        {
-            DebugDraw.AddPoint(Position + (InheritedVelocity + Direction * (Velocity + Definition.PhysicalProjectile.Acceleration * delta)) * delta, Color.Green, 0.000001f);
         }
 
         public void CheckHits(float delta)
