@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using VRage.Game.Entity;
+using VRage.Utils;
+using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
 {
@@ -52,6 +54,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         [ProtoMember(3)] public float BaseDamage;
         [ProtoMember(4)] public float AreaDamage;
         [ProtoMember(5)] public int MaxImpacts;
+        [ProtoMember(6)] public float AreaRadius;
     }
 
     /// <summary>
@@ -60,7 +63,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     [ProtoContract]
     public struct PhysicalProjectile
     {
-        [ProtoMember(1)] public float Speed;
+        [ProtoMember(1)] public float Velocity;
         [ProtoMember(2)] public float Acceleration;
         [ProtoMember(3)] public float Health;
         [ProtoMember(4)] public float MaxTrajectory;
@@ -71,11 +74,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     public struct Visual
     {
         [ProtoMember(1)] public string Model;
-        [ProtoMember(2)] public string TrailTexture;
-        [ProtoMember(3)] public float  TrailFadeTime;
+        [ProtoMember(2)] public MyStringId TrailTexture;
+        [ProtoMember(7)] public float TrailLength;
+        [ProtoMember(9)] public float TrailWidth;
+        [ProtoMember(8)] public Vector4 TrailColor;
+        [ProtoMember(3)] public float TrailFadeTime;
         [ProtoMember(4)] public string AttachedParticle;
         [ProtoMember(5)] public string ImpactParticle;
-        [ProtoMember(6)] public float  VisibleChance;
+        [ProtoMember(6)] public float VisibleChance;
     }
 
     [ProtoContract]
@@ -83,7 +89,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     {
         [ProtoMember(1)] public string TravelSound;
         [ProtoMember(2)] public string ImpactSound;
-        [ProtoMember(3)] public float  ImpactSoundChance;
+        [ProtoMember(3)] public float ImpactSoundChance;
     }
 
     [ProtoContract]

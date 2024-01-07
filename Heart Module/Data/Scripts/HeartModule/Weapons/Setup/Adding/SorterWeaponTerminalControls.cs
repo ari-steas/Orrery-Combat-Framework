@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using Sandbox.Game.Localization;
+﻿using Sandbox.Game.Localization;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces.Terminal;
-using VRage.Game;
-using VRage.Game.Components;
+using System.Text;
 using VRage.Game.ModAPI;
-using VRage.ModAPI;
 using VRage.Utils;
 using VRageMath;
 
@@ -71,221 +65,76 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlLabel, IMyConveyorSorter>(IdPrefix + "SampleLabel");
-                c.Label = MyStringId.GetOrCompute("Sample Label");
+                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlLabel, IMyConveyorSorter>(IdPrefix + "HeartWeaponOptions");
+                c.Label = MyStringId.GetOrCompute("HeartWeaponOptions");
                 c.SupportsMultipleBlocks = true;
                 c.Visible = CustomVisibleCondition;
 
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "SampleOnOff");
-                c.Title = MyStringId.GetOrCompute("Sample OnOff");
-                c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
-                c.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
+                var ShootToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "Shoot");
+                ShootToggle.Title = MyStringId.GetOrCompute("Toogle Shoot");
+                ShootToggle.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
+                ShootToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
 
                 // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
                 // optional, they both default to true.
-                c.Visible = CustomVisibleCondition;
+                ShootToggle.Visible = CustomVisibleCondition;
                 //c.Enabled = CustomVisibleCondition;
 
-                c.OnText = MySpaceTexts.SwitchText_On;
-                c.OffText = MyStringId.GetOrCompute("Meh");
+                ShootToggle.OnText = MySpaceTexts.SwitchText_On;
+                ShootToggle.OffText = MySpaceTexts.SwitchText_Off;
+                //c.OffText = MyStringId.GetOrCompute("Off");
 
                 // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
-                c.Getter = (b) => b?.GameLogic?.GetAs<SorterWeaponLogic>()?.Terminal_ExampleToggle ?? false;
-                c.Setter = (b, v) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                        logic.Terminal_ExampleToggle = v;
-                };
+                ShootToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().ShootState.Value;  // Getting the value
+                ShootToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().ShootState.Value = v; // Setting the value
 
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
-            }
-            {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlCheckbox, IMyConveyorSorter>(IdPrefix + "SampleCheckbox");
-                c.Title = MyStringId.GetOrCompute("Sample Checkbox");
-                c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
-                c.SupportsMultipleBlocks = true;
-                c.Visible = CustomVisibleCondition;
-                c.Enabled = (b) => false; // to see how the grayed out ones look
 
-                c.Getter = (b) => true;
-                c.Setter = (b, v) => { };
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
-            }
-            {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlSlider, IMyConveyorSorter>(IdPrefix + "SampleSlider");
-                c.Title = MyStringId.GetOrCompute("Sample Slider");
-                c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
-                c.SupportsMultipleBlocks = true;
-                c.Visible = CustomVisibleCondition;
-
-                c.Setter = (b, v) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                        logic.Terminal_ExampleFloat = MathHelper.Clamp(v, 0f, 10f); // just a heads up that the given value here is not clamped by the game, a mod or PB can give lower or higher than the limits!
-                };
-                c.Getter = (b) => b?.GameLogic?.GetAs<SorterWeaponLogic>()?.Terminal_ExampleFloat ?? 0;
-
-                c.SetLimits(0, 10);
-                //c.SetLimits((b) => 0, (b) => 10); // overload with callbacks to define limits based on the block instance.
-                //c.SetDualLogLimits(0, 10, 2); // all these also have callback overloads
-                //c.SetLogLimits(0, 10);
-
-                // called when the value changes so that you can display it next to the label
-                c.Writer = (b, sb) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        float val = logic.Terminal_ExampleFloat;
-                        sb.Append(Math.Round(val, 2)).Append(" quacks");
-                    }
-                };
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
-            }
-            {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlButton, IMyConveyorSorter>(IdPrefix + "SampleButton");
-                c.Title = MyStringId.GetOrCompute("Sample Button");
-                c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
-                c.SupportsMultipleBlocks = true;
-                c.Visible = CustomVisibleCondition;
-
-                c.Action = (b) => { };
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
-            }
-            {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlColor, IMyConveyorSorter>(IdPrefix + "SampleColor");
-                c.Title = MyStringId.GetOrCompute("Sample Color");
-                c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
-                c.SupportsMultipleBlocks = true;
-                c.Visible = CustomVisibleCondition;
-
-                c.Getter = (b) => new Color(255, 0, 255);
-                c.Setter = (b, color) => { };
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
-            }
-            {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlCombobox, IMyConveyorSorter>(IdPrefix + "SampleComboBox");
-                c.Title = MyStringId.GetOrCompute("Sample ComboBox");
-                c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
-                c.SupportsMultipleBlocks = true;
-                c.Visible = CustomVisibleCondition;
-
-                c.Getter = (b) => 0;
-                c.Setter = (b, key) => { };
-                c.ComboBoxContent = (list) =>
-                {
-                    list.Add(new MyTerminalControlComboBoxItem() { Key = 0, Value = MyStringId.GetOrCompute("Value A") });
-                    list.Add(new MyTerminalControlComboBoxItem() { Key = 1, Value = MyStringId.GetOrCompute("Value B") });
-                    list.Add(new MyTerminalControlComboBoxItem() { Key = 2, Value = MyStringId.GetOrCompute("Value C") });
-                };
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
-            }
-            {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlListbox, IMyConveyorSorter>(IdPrefix + "SampleListBox");
-                c.Title = MyStringId.GetOrCompute("Sample ListBox");
-                //c.Tooltip = MyStringId.GetOrCompute("This does some stuff!"); // presenece of this tooltip prevents per-item tooltips
-                c.SupportsMultipleBlocks = true;
-                c.Visible = CustomVisibleCondition;
-
-                c.VisibleRowsCount = 3;
-                c.Multiselect = false; // wether player can select muliple at once (ctrl+click, click&shift+click, etc)
-                c.ListContent = (b, content, preSelect) =>
-                {
-                    // this is the getter, gets called when the list needs to be shown/refreshed.
-                    // the 2 lists in the parameters are there for you to fill:
-                    //   `content` with the options to show
-                    //   `preSelect` with the options to be already selected (only needed if you want to persist selections).
-                    // NOTE: `preSelect` requires the same instance(s) as the ones given to `content`, giving it new MyTerminalControlListBoxItem would not work.
-
-                    for (int i = 1; i <= 5; ++i)
-                    {
-                        var item = new MyTerminalControlListBoxItem(MyStringId.GetOrCompute($"Item {i}"),
-                                                                    tooltip: MyStringId.GetOrCompute($"This is item number {i} alright."),
-                                                                    userData: i); // userData can be whatever you wish and it's retrievable in the ItemSelected call.
-
-                        content.Add(item);
-
-                        if (MyUtils.GetRandomInt(1, 6) == i)
-                            preSelect.Add(item);
-                    }
-                };
-                c.ItemSelected = (b, selected) =>
-                {
-                    // the setter, called when local player clicks on one or more things in the list, those are given to you through `selected`.
-                };
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
-            }
-            {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlTextbox, IMyConveyorSorter>(IdPrefix + "SampleTextBox");
-                c.Title = MyStringId.GetOrCompute("Sample TextBox");
-                c.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
-                c.SupportsMultipleBlocks = true;
-                c.Visible = CustomVisibleCondition;
-
-                c.Setter = (b, v) => { };
-                c.Getter = (b) => new StringBuilder("Ney!");
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(ShootToggle);
             }
         }
 
         static void CreateActions(IMyModContext context)
         {
-            // yes, there's only one type of action
+            var ShootToggleAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleShoot");
+
+            ShootToggleAction.Name = new StringBuilder("Toggle Shoot");
+
+            // If the action is visible for grouped blocks (as long as they all have this action).
+            ShootToggleAction.ValidForGroups = true;
+
+            // The icon shown in the list and top-right of the block icon in toolbar.
+            ShootToggleAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
+
+            // Called when the toolbar slot is triggered
+            ShootToggleAction.Action = (b) =>
             {
-                var a = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "SampleAction");
-
-                a.Name = new StringBuilder("Sample Action");
-
-                // If the action is visible for grouped blocks (as long as they all have this action).
-                a.ValidForGroups = true;
-
-                // The icon shown in the list and top-right of the block icon in toolbar.
-                a.Icon = @"Textures\GUI\Icons\Actions\CharacterToggle.dds";
-                // For paths inside the mod folder you need to supply an absolute path which can be retrieved from a session or gamelogic comp's ModContext.
-                //a.Icon = Path.Combine(context.ModPath, @"Textures\YourIcon.dds");
-
-                // Called when the toolbar slot is triggered
-                // Should not be unassigned.
-                a.Action = (b) => { };
-
-                // The status of the action, shown in toolbar icon text and can also be read by mods or PBs.
-                a.Writer = (b, sb) =>
+                var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+                if (logic != null && logic.ShootState != null)
                 {
-                    sb.Append("Hi\nthere");
-                };
+                    // Toggle the shoot state and ensure sync
+                    logic.ShootState.Value = !logic.ShootState.Value;  // Toggling the value
+                    MyAPIGateway.Utilities.ShowNotification($"Shoot Action toggled to: {(logic.ShootState.Value ? "ON" : "OFF")}", 2000, "White");
+                }
+            };
 
-                // What toolbar types to NOT allow this action for.
-                // Can be left unassigned to allow all toolbar types.
-                // The below are the options used by jumpdrive's Jump action as an example.
-                //a.InvalidToolbarTypes = new List<MyToolbarType>()
-                //{
-                //    MyToolbarType.ButtonPanel,
-                //    MyToolbarType.Character,
-                //    MyToolbarType.Seat
-                //};
-                // PB checks if it's valid for ButtonPanel before allowing the action to be invoked.
+            // Define what the action's tooltip/status text should say
+            ShootToggleAction.Writer = (b, sb) =>
+            {
+                var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+                if (logic != null && logic.ShootState != null)
+                {
+                    sb.Append(logic.ShootState.Value ? "Shooting" : "Not Shooting");
+                }
+            };
 
-                // Wether the action is to be visible for the given block instance.
-                // Can be left unassigned as it defaults to true.
-                // Warning: gets called per tick while in toolbar for each block there, including each block in groups.
-                //   It also can be called by mods or PBs.
-                a.Enabled = CustomVisibleCondition;
+            ShootToggleAction.Enabled = CustomVisibleCondition;
 
-                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(a);
-            }
+            MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(ShootToggleAction);
         }
+
 
         static void CreateProperties()
         {

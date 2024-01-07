@@ -1,4 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+using VRage.Utils;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 {
@@ -17,15 +18,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             },
             Damage = new Damage()
             {
-                SlimBlockDamageMod = 1,
+                SlimBlockDamageMod = 25,
                 FatBlockDamageMod = 1,
                 BaseDamage = 100,
-                AreaDamage = 0,
+                AreaDamage = 100,
+                AreaRadius = 15,
                 MaxImpacts = 1,
             },
             PhysicalProjectile = new PhysicalProjectile()
             {
-                Speed = 100,
+                Velocity = 1000,
                 Acceleration = 0,
                 Health = -1,
                 MaxTrajectory = 800,
@@ -34,10 +36,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             Visual = new Visual()
             {
                 Model = "",
-                TrailTexture = "",
-                TrailFadeTime = 0,
-                AttachedParticle = "",
-                ImpactParticle = "",
+                TrailTexture = MyStringId.GetOrCompute("WeaponLaser"),
+                TrailFadeTime = 2,
+                TrailLength = 1,
+                TrailWidth = 0.1f,
+                TrailColor = new VRageMath.Vector4(255, 255, 255, 255),
+                AttachedParticle = "Smoke_Missile",
+                ImpactParticle = "Explosion_LargeCaliberShell_Backup",
                 VisibleChance = 1,
             },
             Audio = new Audio()
