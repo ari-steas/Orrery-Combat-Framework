@@ -65,6 +65,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             Vector3I? HitPos = Entity.RayCastBlocks(DamageEvent.Projectile.Position, DamageEvent.Projectile.NextMoveStep);
             if (HitPos != null)
             {
+                Entity.Physics.ApplyImpulse(DamageEvent.Projectile.Direction * DamageEvent.Projectile.Definition.Ungrouped.Impulse, DamageEvent.Projectile.Position);
+
                 IMySlimBlock block = Entity.GetCubeBlock(HitPos.Value);
                 float damageMult = block.FatBlock == null ? DamageEvent.Projectile.Definition.Damage.SlimBlockDamageMod : DamageEvent.Projectile.Definition.Damage.FatBlockDamageMod;
 
@@ -77,8 +79,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
                     foreach (var ablock in AoEBlocks)
                     {
+                        float distMult = Vector3.Distance(ablock.Position, block.Position) / DamageEvent.Projectile.Definition.Damage.AreaRadius; // Do less damage at max radius
                         damageMult = ablock.FatBlock == null ? DamageEvent.Projectile.Definition.Damage.SlimBlockDamageMod : DamageEvent.Projectile.Definition.Damage.FatBlockDamageMod;
-                        ablock.DoDamage(DamageEvent.Projectile.Definition.Damage.AreaDamage * damageMult, MyDamageType.Explosion, MyAPIGateway.Utilities.IsDedicated);
+                        ablock.DoDamage(DamageEvent.Projectile.Definition.Damage.AreaDamage * damageMult * distMult, MyDamageType.Explosion, MyAPIGateway.Utilities.IsDedicated);
                     }
                 }
             }

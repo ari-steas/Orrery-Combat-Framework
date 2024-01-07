@@ -14,7 +14,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 ReloadPowerUsage = 0,
                 Length = 1,
                 Recoil = 0,
-                Impulse = 0,
+                Impulse = 1000,
             },
             Damage = new Damage()
             {
