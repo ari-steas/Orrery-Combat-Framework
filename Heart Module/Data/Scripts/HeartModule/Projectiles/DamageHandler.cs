@@ -65,7 +65,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             Vector3I? HitPos = Entity.RayCastBlocks(DamageEvent.Projectile.Position, DamageEvent.Projectile.NextMoveStep);
             if (HitPos != null)
             {
-                Entity.Physics.ApplyImpulse(DamageEvent.Projectile.Direction * DamageEvent.Projectile.Definition.Ungrouped.Impulse, DamageEvent.Projectile.Position);
+                Entity.Physics?.ApplyImpulse(DamageEvent.Projectile.Direction * DamageEvent.Projectile.Definition.Ungrouped.Impulse, DamageEvent.Projectile.Position);
 
                 IMySlimBlock block = Entity.GetCubeBlock(HitPos.Value);
                 float damageMult = block.FatBlock == null ? DamageEvent.Projectile.Definition.Damage.SlimBlockDamageMod : DamageEvent.Projectile.Definition.Damage.FatBlockDamageMod;
@@ -89,6 +89,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         private void m_CharacterDamageHandler(IMyCharacter Entity, DamageEvent DamageEvent)
         {
+            Entity.Physics?.ApplyImpulse(DamageEvent.Projectile.Direction * DamageEvent.Projectile.Definition.Ungrouped.Impulse, DamageEvent.Projectile.Position);
             Entity.DoDamage(DamageEvent.Projectile.Definition.Damage.BaseDamage, MyDamageType.Bullet, MyAPIGateway.Utilities.IsDedicated);
         }
 

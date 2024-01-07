@@ -91,7 +91,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             MyParticleEffect hitEffect;
             if (MyParticlesManager.TryCreateParticleEffect(Definition.Visual.ImpactParticle, ref matrix, ref ImpactPosition, uint.MaxValue, out hitEffect))
             {
-                MyAPIGateway.Utilities.ShowNotification("Spawned particle at " + hitEffect.WorldMatrix.Translation);
+                //MyAPIGateway.Utilities.ShowNotification("Spawned particle at " + hitEffect.WorldMatrix.Translation);
                 //hitEffect.Velocity = av.Hit.HitVelocity;
 
                 if (hitEffect.Loop)
