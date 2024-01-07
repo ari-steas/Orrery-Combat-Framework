@@ -67,33 +67,33 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (HeartData.I.IsSuspended) return;
 
             // spawn projectiles at world origin for debugging. Don't actually do this to spawn projectiles, please.
-            if (j >= 75 && MyAPIGateway.Session.IsServer)
-            {
-                j = 0;
-                try
-                {
-                    Random r = new Random();
-                    Vector3D randVec = new Vector3D(r.NextDouble(), r.NextDouble(), r.NextDouble()).Normalized();
-                    Projectile p = new Projectile(new SerializableProjectile()
-                    {
-                        IsActive = true,
-                        Id = 0,
-                        DefinitionId = 0,
-                        Position = MyAPIGateway.Session.Player?.GetPosition() ?? Vector3D.Zero, // CHECK OUT HOW HARD I CAN PISS
-                        Direction = MyAPIGateway.Session.Player?.Controller.ControlledEntity.Entity.WorldMatrix.Forward.Rotate(randVec, r.NextDouble() * 0.0873 - 0.04365) ?? Vector3D.Forward,
-                        Velocity = 100,
-                        Timestamp = DateTime.Now.Ticks,
-                        InheritedVelocity = Vector3D.Zero,
-                        Firer = MyAPIGateway.Session.Player?.Controller.ControlledEntity.Entity.EntityId ?? -1,
-                    });
-                    AddProjectile(p);
-                    //MyLog.Default.WriteLineToConsole($"Projectiles: {ActiveProjectiles.Count}");
-                }
-                catch (Exception ex)
-                {
-                    SoftHandle.RaiseException(ex, typeof(ProjectileManager));
-                }
-            }
+            //if (j >= 75 && MyAPIGateway.Session.IsServer)
+            //{
+            //    j = 0;
+            //    try
+            //    {
+            //        Random r = new Random();
+            //        Vector3D randVec = new Vector3D(r.NextDouble(), r.NextDouble(), r.NextDouble()).Normalized();
+            //        Projectile p = new Projectile(new SerializableProjectile()
+            //        {
+            //            IsActive = true,
+            //            Id = 0,
+            //            DefinitionId = 0,
+            //            Position = MyAPIGateway.Session.Player?.GetPosition() ?? Vector3D.Zero, // CHECK OUT HOW HARD I CAN PISS
+            //            Direction = MyAPIGateway.Session.Player?.Controller.ControlledEntity.Entity.WorldMatrix.Forward.Rotate(randVec, r.NextDouble() * 0.0873 - 0.04365) ?? Vector3D.Forward,
+            //            Velocity = 100,
+            //            Timestamp = DateTime.Now.Ticks,
+            //            InheritedVelocity = Vector3D.Zero,
+            //            Firer = MyAPIGateway.Session.Player?.Controller.ControlledEntity.Entity.EntityId ?? -1,
+            //        });
+            //        AddProjectile(p);
+            //        //MyLog.Default.WriteLineToConsole($"Projectiles: {ActiveProjectiles.Count}");
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        SoftHandle.RaiseException(ex, typeof(ProjectileManager));
+            //    }
+            //}
             //j++;
 
             // Delta time for tickrate-independent projectile movement

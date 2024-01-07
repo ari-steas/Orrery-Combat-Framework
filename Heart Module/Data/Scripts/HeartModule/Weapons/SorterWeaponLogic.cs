@@ -61,14 +61,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public override void UpdateAfterSimulation()
         {
         
-            ProjectileManager.I.AddProjectile(new Projectile(0)
-            {
-                Position = SorterWep.WorldMatrix.Translation,
-                Direction = SorterWep.WorldMatrix.Forward,
-                Firer = SorterWep.EntityId,
-                
-        
-            });
+            ProjectileManager.I.AddProjectile(new Projectile(0, SorterWep.WorldMatrix.Translation, SorterWep.WorldMatrix.Forward, SorterWep));
         
         
         }
