@@ -1,4 +1,5 @@
-﻿using Sandbox.Common.ObjectBuilders;
+﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Sandbox.Common.ObjectBuilders;
 using Sandbox.ModAPI;
 using System;
 using VRage.Game.Components;
@@ -6,6 +7,7 @@ using VRage.Game.ModAPI.Network;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
 using VRage.Sync;
+using VRageMath;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
@@ -50,13 +52,20 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             // LoadSettings(); // artifact from chets meme
         }
 
-        public override void UpdateAfterSimulation()
-        {
-            
-
-
-
-        }
+        //public override void UpdateAfterSimulation()
+        //{
+        //
+        //    ProjectileManager.I.AddProjectile(new Projectile(0)
+        //    {
+        //        Position = SorterWep.WorldMatrix.Translation,
+        //        Direction = SorterWep.WorldMatrix.Forward,
+        //        Firer = SorterWep.EntityId,
+        //        
+        //
+        //    });
+        //
+        //
+        //}
 
         public float Terminal_ExampleFloat { get; set; }
 
