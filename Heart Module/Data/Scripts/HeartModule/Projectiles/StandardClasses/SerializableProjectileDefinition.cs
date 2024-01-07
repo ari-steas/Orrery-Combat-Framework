@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using VRage.Game.Entity;
+using VRage.Utils;
+using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
 {
@@ -72,7 +74,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     public struct Visual
     {
         [ProtoMember(1)] public string Model;
-        [ProtoMember(2)] public string TrailTexture;
+        [ProtoMember(2)] public MyStringId TrailTexture;
+        [ProtoMember(7)] public float TrailLength;
+        [ProtoMember(9)] public float TrailWidth;
+        [ProtoMember(8)] public Vector4 TrailColor;
         [ProtoMember(3)] public float TrailFadeTime;
         [ProtoMember(4)] public string AttachedParticle;
         [ProtoMember(5)] public string ImpactParticle;

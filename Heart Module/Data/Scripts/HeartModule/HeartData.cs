@@ -11,6 +11,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
         public const ushort HeartNetworkId = (ushort)(65198749845 % ushort.MaxValue);
 
         public bool IsSuspended = false;
+        public bool IsPaused = false;
         public HeartNetwork Net = new HeartNetwork();
         public HeartLog Log = new HeartLog();
         public int SyncRange = MyAPIGateway.Session.SessionSettings.SyncDistance;

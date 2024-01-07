@@ -1,4 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+using VRage.Utils;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 {
@@ -26,7 +27,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             },
             PhysicalProjectile = new PhysicalProjectile()
             {
-                Velocity = 100,
+                Velocity = 1000,
                 Acceleration = 0,
                 Health = -1,
                 MaxTrajectory = 800,
@@ -35,8 +36,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             Visual = new Visual()
             {
                 Model = "",
-                TrailTexture = "",
-                TrailFadeTime = 0,
+                TrailTexture = MyStringId.GetOrCompute("WeaponLaser"),
+                TrailFadeTime = 2,
+                TrailLength = 1,
+                TrailWidth = 0.1f,
+                TrailColor = new VRageMath.Vector4(255, 255, 255, 255),
                 AttachedParticle = "Smoke_Missile",
                 ImpactParticle = "Explosion_LargeCaliberShell_Backup",
                 VisibleChance = 1,
