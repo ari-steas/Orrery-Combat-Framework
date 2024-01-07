@@ -58,12 +58,18 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             }
         }
 
+        float fireRate = 15; // per-second
+        float lastShoot = 0;
         public override void UpdateAfterSimulation()
         {
+            if (lastShoot < 60)
+                lastShoot += fireRate;
 
-            if (ShootState.Value)
-                ProjectileManager.I.AddProjectile(new Projectile(0, SorterWep.WorldMatrix.Translation, SorterWep.WorldMatrix.Forward, SorterWep));
-
+            if (ShootState.Value && lastShoot >= 60)
+            {
+                ProjectileManager.I.AddProjectile(new Projectile(0, SorterWep.WorldMatrix.Translation + SorterWep.WorldMatrix.Forward, SorterWep.WorldMatrix.Forward, SorterWep));
+                lastShoot -= 60;
+            }
         }
 
         public float Terminal_ExampleFloat { get; set; }
