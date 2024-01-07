@@ -14,7 +14,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 ReloadPowerUsage = 0,
                 Length = 1,
                 Recoil = 0,
-                Impulse = 1000,
+                Impulse = 10000000,
             },
             Damage = new Damage()
             {
@@ -27,21 +27,21 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             },
             PhysicalProjectile = new PhysicalProjectile()
             {
-                Velocity = 1000,
+                Velocity = 100,
                 Acceleration = 0,
                 Health = -1,
-                MaxTrajectory = 800,
+                MaxTrajectory = 100,
                 MaxLifetime = -1,
             },
             Visual = new Visual()
             {
-                Model = "Models\\Weapons\\Projectile_Missile.mwm",
+                //Model = "Models\\Weapons\\Projectile_Missile.mwm",
                 TrailTexture = MyStringId.GetOrCompute("WeaponLaser"),
                 TrailFadeTime = 0,
                 TrailLength = 1,
                 TrailWidth = 0.1f,
-                //TrailColor = new VRageMath.Vector4(61, 24, 24, 200),
-                AttachedParticle = "Smoke_Missile",
+                TrailColor = new VRageMath.Vector4(61, 24, 24, 200),
+                //AttachedParticle = "Smoke_Missile",
                 ImpactParticle = "Explosion_LargeCaliberShell_Backup",
                 VisibleChance = 1,
             },
