@@ -75,9 +75,13 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             if (ShootState.Value && lastShoot >= 60)
             {
-                
-                ProjectileManager.I.AddProjectile(new Projectile(0, SorterWep.WorldMatrix.Translation + SorterWep.WorldMatrix.Forward, SorterWep.WorldMatrix.Forward, SorterWep));
+
+                MatrixD matrix = SorterWep.WorldMatrix + (MatrixD)modeldummy["muzzle01"].Matrix;
+                ProjectileManager.I.AddProjectile(new Projectile(0, matrix.Translation, matrix.Forward, SorterWep));
                 lastShoot -= 60;
+
+
+
             }
         }
 
