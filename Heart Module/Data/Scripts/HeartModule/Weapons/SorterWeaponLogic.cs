@@ -60,10 +60,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public override void UpdateAfterSimulation()
         {
-        
-            ProjectileManager.I.AddProjectile(new Projectile(0, SorterWep.WorldMatrix.Translation, SorterWep.WorldMatrix.Forward, SorterWep));
-        
-        
+
+            if (ShootState.Value)
+                ProjectileManager.I.AddProjectile(new Projectile(0, SorterWep.WorldMatrix.Translation, SorterWep.WorldMatrix.Forward, SorterWep));
+
         }
 
         public float Terminal_ExampleFloat { get; set; }
