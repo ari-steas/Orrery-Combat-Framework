@@ -150,7 +150,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         }
 
         private void SyncPlayerProjectiles(IMyPlayer player)
-        {
+        { // NOTE - BEAMS SHOULD NOT BE SYNCED ASIDE FROM ON SHOOT.
             int numSyncs = 0;
 
             for (int i = 0; i < MaxProjectilesSynced && i < ProjectileSyncStream[player.SteamUserId].Count; i++)

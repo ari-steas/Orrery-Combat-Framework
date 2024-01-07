@@ -33,11 +33,17 @@ namespace Heart_Module.Data.Scripts.HeartModule
             {
                 if (HeartData.I.IsSuspended)
                     return;
+                HeartData.I.IsPaused = false;
             }
             catch (Exception ex)
             {
                 SoftHandle.RaiseException(ex);
             }
+        }
+
+        public override void UpdatingStopped()
+        {
+            HeartData.I.IsPaused = true;
         }
 
         protected override void UnloadData()
