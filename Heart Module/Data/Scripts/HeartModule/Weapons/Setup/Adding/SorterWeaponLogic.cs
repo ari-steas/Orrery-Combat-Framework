@@ -27,7 +27,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
         {
             NeedsUpdate = MyEntityUpdateEnum.BEFORE_NEXT_FRAME;
-
             ShootState.ValueChanged += OnShootStateChanged; // Attach the handler
         }
 

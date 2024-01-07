@@ -35,12 +35,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             },
             Visual = new Visual()
             {
-                Model = "",
+                Model = "Models\\Weapons\\Projectile_Missile.mwm",
                 TrailTexture = MyStringId.GetOrCompute("WeaponLaser"),
-                TrailFadeTime = 2,
+                TrailFadeTime = 0,
                 TrailLength = 1,
                 TrailWidth = 0.1f,
-                TrailColor = new VRageMath.Vector4(255, 255, 255, 255),
+                //TrailColor = new VRageMath.Vector4(61, 24, 24, 200),
                 AttachedParticle = "Smoke_Missile",
                 ImpactParticle = "Explosion_LargeCaliberShell_Backup",
                 VisibleChance = 1,

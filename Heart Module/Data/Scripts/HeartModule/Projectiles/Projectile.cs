@@ -61,7 +61,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             SyncUpdate(projectile);
         }
 
-        public Projectile(int DefinitionId)
+        public Projectile(int DefinitionId, long firer = 0, Vector3D InitialVelocity = new Vector3D())
         {
             if (!ProjectileDefinitionManager.HasDefinition(DefinitionId))
             {
@@ -73,6 +73,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             Definition = ProjectileDefinitionManager.GetDefinition(DefinitionId);
 
             Velocity = Definition.PhysicalProjectile.Velocity;
+            this.Firer = firer;
+            this.InheritedVelocity = InitialVelocity;
+
             RemainingImpacts = Definition.Damage.MaxImpacts;
         }
 
