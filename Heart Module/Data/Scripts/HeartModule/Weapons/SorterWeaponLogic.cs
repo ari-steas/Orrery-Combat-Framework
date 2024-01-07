@@ -1,4 +1,5 @@
-﻿using Sandbox.Common.ObjectBuilders;
+﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Sandbox.Common.ObjectBuilders;
 using Sandbox.ModAPI;
 using System;
 using VRage.Game.Components;
@@ -6,6 +7,8 @@ using VRage.Game.ModAPI.Network;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
 using VRage.Sync;
+using VRageMath;
+using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
@@ -41,13 +44,34 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public override void UpdateOnceBeforeFrame()
         {
+            HideSorterControls.DoOnce();
             SorterWeaponTerminalControls.DoOnce(ModContext);
 
             SorterWep = (IMyConveyorSorter)Entity;
+
             if (SorterWep.CubeGrid?.Physics == null)
                 return; // ignore ghost/projected grids
 
-            // LoadSettings(); // artifact from chets meme
+            // the bonus part, enforcing it to stay a specific value.
+            if (MyAPIGateway.Multiplayer.IsServer) // serverside only to avoid network spam
+            {
+                NeedsUpdate = MyEntityUpdateEnum.EACH_FRAME;
+            }
+        }
+
+        public override void UpdateAfterSimulation()
+        {
+        
+            ProjectileManager.I.AddProjectile(new Projectile(0)
+            {
+                Position = SorterWep.WorldMatrix.Translation,
+                Direction = SorterWep.WorldMatrix.Forward,
+                Firer = SorterWep.EntityId,
+                
+        
+            });
+        
+        
         }
 
         public float Terminal_ExampleFloat { get; set; }

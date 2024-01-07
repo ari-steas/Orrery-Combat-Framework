@@ -86,7 +86,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     SoftHandle.RaiseException(ex, typeof(ProjectileManager));
                 }
             }
-            j++;
+            //j++;
 
             // Delta time for tickrate-independent projectile movement
             delta = clock.ElapsedTicks / (float)TimeSpan.TicksPerSecond;
