@@ -71,17 +71,21 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     }
 
     [ProtoContract]
-    public struct Visual
+    public class Visual
     {
         [ProtoMember(1)] public string Model;
         [ProtoMember(2)] public MyStringId TrailTexture;
-        [ProtoMember(7)] public float TrailLength;
-        [ProtoMember(9)] public float TrailWidth;
-        [ProtoMember(8)] public Vector4 TrailColor;
-        [ProtoMember(3)] public float TrailFadeTime;
+        [ProtoMember(7)] public float TrailLength = 0;
+        [ProtoMember(9)] public float TrailWidth = 0;
+        [ProtoMember(8)] public Vector4 TrailColor = Vector4.Zero;
+        [ProtoMember(3)] public float TrailFadeTime = 0;
         [ProtoMember(4)] public string AttachedParticle;
         [ProtoMember(5)] public string ImpactParticle;
         [ProtoMember(6)] public float VisibleChance;
+        public bool HasModel => !Model?.Equals("") ?? false;
+        public bool HasTrail => TrailTexture != null && TrailLength > 0 && TrailWidth > 0 && TrailColor != null && TrailColor != Vector4.Zero;
+        public bool HasAttachedParticle => !AttachedParticle?.Equals("") ?? false;
+        public bool HasImpactParticle => !ImpactParticle?.Equals("") ?? false;
     }
 
     [ProtoContract]

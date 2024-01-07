@@ -21,8 +21,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         private Dictionary<ulong, List<uint>> ProjectileSyncStream = new Dictionary<ulong, List<uint>>();
         public uint NextId { get; private set; } = 0;
         private List<Projectile> QueuedCloseProjectiles = new List<Projectile>();
-        private float delta = 0;
-        private Stopwatch clock = Stopwatch.StartNew();
+        /// <summary>
+        /// Delta for engine ticks; 60tps
+        /// </summary>
+        private float deltaTick = 0;
+        /// <summary>
+        /// Delta for frames; varies
+        /// </summary>
+        private float deltaDraw = 0;
+        private Stopwatch clockTick = Stopwatch.StartNew();
+        private Stopwatch clockDraw = Stopwatch.StartNew();
 
         public override void LoadData()
         {
@@ -59,7 +67,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (HeartData.I.IsSuspended) return;
 
             // spawn projectiles at world origin for debugging. Don't actually do this to spawn projectiles, please.
-            if (j >= 25 && MyAPIGateway.Session.IsServer)
+            if (j >= 75 && MyAPIGateway.Session.IsServer)
             {
                 j = 0;
                 try
@@ -89,12 +97,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             //j++;
 
             // Delta time for tickrate-independent projectile movement
-            delta = clock.ElapsedTicks / (float)TimeSpan.TicksPerSecond;
+            deltaTick = clockTick.ElapsedTicks / (float)TimeSpan.TicksPerSecond;
 
             // Tick projectiles
             foreach (var projectile in ActiveProjectiles.Values)
             {
-                projectile.TickUpdate(delta);
+                projectile.TickUpdate(deltaTick);
                 if (projectile.QueuedDispose)
                     QueuedCloseProjectiles.Add(projectile);
             }
@@ -146,7 +154,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
             DamageHandler.Update();
 
-            clock.Restart();
+            clockTick.Restart();
         }
 
         private void SyncPlayerProjectiles(IMyPlayer player)
@@ -179,20 +187,21 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public override void UpdatingStopped()
         {
-            clock.Stop();
+            clockTick.Stop();
         }
 
-        public override void Draw()
+        public override void Draw() // Called once per frame to avoid jitter
         {
-            if (HeartData.I.IsSuspended) return;
-
-            if (MyAPIGateway.Utilities.IsDedicated) // We don't want to needlessly use server CPU time
+            if (HeartData.I.IsSuspended || MyAPIGateway.Utilities.IsDedicated) // We don't want to needlessly use server CPU time
                 return;
 
-            delta = clock.ElapsedTicks / (float)TimeSpan.TicksPerSecond;
-            // Triggered every frame, avoids jitter in projectiles
+            deltaTick = (float)clockTick.ElapsedTicks / TimeSpan.TicksPerSecond; // deltaTick is the current offset between tick and draw, to account for variance between FPS and tickrate
+            deltaDraw = (float)clockDraw.ElapsedTicks / TimeSpan.TicksPerSecond; // deltaDraw is a standard delta value based on FPS
+
             foreach (var projectile in ActiveProjectiles.Values)
-                projectile.DrawUpdate(delta);
+                projectile.DrawUpdate(deltaTick, deltaDraw);
+
+            clockDraw.Restart();
         }
 
         public void UpdateProjectile(SerializableProjectile projectile)

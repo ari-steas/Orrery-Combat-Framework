@@ -61,7 +61,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             SyncUpdate(projectile);
         }
 
-        public Projectile(int DefinitionId)
+        public Projectile(int DefinitionId, Vector3D Position, Vector3D Direction, IMyCubeBlock block) : this(DefinitionId, Position, Direction, block.EntityId, block.CubeGrid?.LinearVelocity ?? Vector3D.Zero)
+        {
+            
+        }
+
+        public Projectile(int DefinitionId, Vector3D Position, Vector3D Direction, long firer = 0, Vector3D InitialVelocity = new Vector3D())
         {
             if (!ProjectileDefinitionManager.HasDefinition(DefinitionId))
             {
@@ -72,7 +77,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             this.DefinitionId = DefinitionId;
             Definition = ProjectileDefinitionManager.GetDefinition(DefinitionId);
 
+            this.Position = Position;
+            this.Direction = Direction;
             Velocity = Definition.PhysicalProjectile.Velocity;
+            this.Firer = firer;
+            this.InheritedVelocity = InitialVelocity;
+
             RemainingImpacts = Definition.Damage.MaxImpacts;
         }
 
