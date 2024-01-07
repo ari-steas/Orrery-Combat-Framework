@@ -1,6 +1,7 @@
 ﻿using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces.Terminal;
 using System.Collections.Generic;
+using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding
 {
@@ -30,7 +31,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding
         static bool AppendedCondition(IMyTerminalBlock block)
         {
             // if block has this gamelogic component then return false to hide the control/action.
-            return block?.GameLogic?.GetAs<ConveyorSorterLogic>() == null;
+            return block?.GameLogic?.GetAs<SorterWeaponLogic>() == null;
         }
 
         static void EditControls()
