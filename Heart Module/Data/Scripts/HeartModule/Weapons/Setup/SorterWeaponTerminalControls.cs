@@ -5,9 +5,8 @@ using System.Text;
 using VRage.Game.ModAPI;
 using VRage.Utils;
 using VRageMath;
-using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
-namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
+namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
     // Example of adding terminal controls and actions to a specific gyro subtype.
     // It can be generalized to the entire type by simply not using the visible-filtering methods.
