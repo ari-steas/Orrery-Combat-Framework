@@ -63,7 +63,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public Projectile(int DefinitionId, Vector3D Position, Vector3D Direction, IMyCubeBlock block) : this(DefinitionId, Position, Direction, block.EntityId, block.CubeGrid?.LinearVelocity ?? Vector3D.Zero)
         {
-            
+            DebugDraw.AddPoint(Position, Color.Green, 0);
         }
 
         public Projectile(int DefinitionId, Vector3D Position, Vector3D Direction, long firer = 0, Vector3D InitialVelocity = new Vector3D())
@@ -94,7 +94,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             CheckHits(delta);
 
             Velocity += Definition.PhysicalProjectile.Acceleration * delta;
-            Position += (InheritedVelocity + Direction * Velocity) * delta;
+            Position += (InheritedVelocity + (Direction * Velocity)) * delta;
             Age += delta;
             DistanceTravelled += Velocity * delta;
 
@@ -110,25 +110,22 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         public void CheckHits(float delta)
         {
             List<IHitInfo> intersects = new List<IHitInfo>();
-            Vector3D endCast = NextMoveStep;
-            MyAPIGateway.Physics.CastRay(Position, endCast, intersects);
+            MyAPIGateway.Physics.CastRay(Position, NextMoveStep, intersects);
 
             double len = ((Direction * Velocity + InheritedVelocity) * delta).Length();
 
             foreach (var hitInfo in intersects)
             {
-                if (QueuedDispose)
+                if (QueuedDispose || hitInfo.HitEntity.EntityId == Firer || (DamageHandler.GetCollider(hitInfo.HitEntity as IMyCubeGrid, this)?.FatBlock?.EntityId ?? -1) == Firer)
                     break;
                 double dist = len * hitInfo.Fraction;
+                
                 ProjectileHit(hitInfo.HitEntity, hitInfo.Position);
             }
         }
 
         public void ProjectileHit(IMyEntity impact, Vector3D impactPosition)
         {
-            if (impact.EntityId == Firer)
-                return;
-
             if (impact is IMyCubeGrid)
                 DamageHandler.QueueEvent(new DamageEvent(impact, DamageEvent.DamageEntType.Grid, this));
             else if (impact is IMyCharacter)

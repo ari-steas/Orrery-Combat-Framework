@@ -114,7 +114,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Debug
         {
             //MyTransparentGeometry.AddPointBillboard(MaterialDot, color, globalPos, 1.25f, 0, blendType: BlendTypeEnum.PostPP);
             float depthScale = ToAlwaysOnTop(ref globalPos);
-            MyTransparentGeometry.AddPointBillboard(MaterialDot, color * OnTopColorMul, globalPos, 1.25f * depthScale, 0, blendType: BlendTypeEnum.PostPP);
+            MyTransparentGeometry.AddPointBillboard(MaterialDot, color * OnTopColorMul, globalPos, 0.5f * depthScale, 0, blendType: BlendTypeEnum.PostPP);
         }
 
         private void DrawGridPoint0(Vector3I blockPos, IMyCubeGrid grid, Color color)

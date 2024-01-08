@@ -22,7 +22,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         Dictionary<MyTuple<Vector3D, Vector3D>, float> TrailFade = new Dictionary<MyTuple<Vector3D, Vector3D>, float>();
         MatrixD ProjectileMatrix = MatrixD.Identity;
 
-        internal void InitDrawing()
+        internal void InitEffects()
         {
             if (Definition.Visual.HasModel)
             {
