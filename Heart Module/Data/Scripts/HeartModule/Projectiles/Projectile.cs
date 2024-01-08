@@ -114,7 +114,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 return;
 
             List<IHitInfo> intersects = new List<IHitInfo>();
-            MyAPIGateway.Physics.CastRay(Position, NextMoveStep, intersects);
+            MyAPIGateway.Physics.CastRay(Position, NextMoveStep + Direction * Definition.Ungrouped.Length, intersects);
 
             double len = ((Direction * Velocity + InheritedVelocity) * delta).Length();
 

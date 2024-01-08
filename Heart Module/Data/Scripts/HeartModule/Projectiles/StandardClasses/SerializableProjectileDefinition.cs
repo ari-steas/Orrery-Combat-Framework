@@ -32,15 +32,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         /// <summary>
         /// Power draw during reload, in MW
         /// </summary>
-        [ProtoMember(1)] public float ReloadPowerUsage;
+        [ProtoMember(1)] public float ReloadPowerUsage; // TODO
         /// <summary>
-        /// Length of projectile, in Meters. For beams, range.
+        /// Length of projectile, in Meters. For beams, range. This can be set to zero, and the projectile will still cast; length is additive.
         /// </summary>
         [ProtoMember(2)] public float Length;
         /// <summary>
         /// Recoil of projectile, in Newtons
         /// </summary>
-        [ProtoMember(3)] public int Recoil;
+        [ProtoMember(3)] public int Recoil; // TODO
         /// <summary>
         /// Impulse of projectile, in Newtons
         /// </summary>
@@ -66,7 +66,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     {
         [ProtoMember(1)] public float Velocity;
         [ProtoMember(2)] public float Acceleration;
-        [ProtoMember(3)] public float Health;
+        [ProtoMember(3)] public float Health; // TODO
         [ProtoMember(4)] public float MaxTrajectory;
         [ProtoMember(5)] public float MaxLifetime;
     }
@@ -107,21 +107,21 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     [ProtoContract]
     public struct Guidance
     {
-        [ProtoMember(1)] public int TriggerTime;
-        [ProtoMember(2)] public bool UseAimPrediction;
-        [ProtoMember(3)] public float TurnRate;
-        [ProtoMember(4)] public float TurnRateSpeedRatio;
-        [ProtoMember(5)] public int IFF; // 1 is TargetSelf, 2 is TargetEnemies, 4 is TargetFriendlies
-        [ProtoMember(6)] public bool DoRaycast;
-        [ProtoMember(7)] public float CastCone;
+        [ProtoMember(1)] public int TriggerTime; // TODO
+        [ProtoMember(2)] public bool UseAimPrediction; // TODO
+        [ProtoMember(3)] public float TurnRate; // TODO
+        [ProtoMember(4)] public float TurnRateSpeedRatio; // TODO
+        [ProtoMember(5)] public int IFF; // 1 is TargetSelf, 2 is TargetEnemies, 4 is TargetFriendlies // TODO
+        [ProtoMember(6)] public bool DoRaycast; // TODO
+        [ProtoMember(7)] public float CastCone; // TODO
     }
 
     [ProtoContract]
     public class LiveMethods
     {
-        [ProtoMember(1)] public bool DoOnShoot;
-        [ProtoMember(2)] public bool DoOnImpact;
-        [ProtoMember(3)] public bool DoUpdate1;
+        [ProtoMember(1)] public bool DoOnShoot; // TODO
+        [ProtoMember(2)] public bool DoOnImpact; // TODO
+        [ProtoMember(3)] public bool DoUpdate1; // TODO
 
         // TODO move to definition, and seperate
         Dictionary<string, Delegate> liveMethods = new Dictionary<string, Delegate>()
