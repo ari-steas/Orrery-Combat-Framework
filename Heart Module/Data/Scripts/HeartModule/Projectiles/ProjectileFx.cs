@@ -1,18 +1,12 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
-using Sandbox.Game;
+﻿using Sandbox.Game;
 using Sandbox.Game.Entities;
-using Sandbox.ModAPI;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using VRage;
-using VRage.Audio;
 using VRage.Game;
 using VRage.Game.Entity;
-using VRage.Game.Models;
 using VRage.ModAPI;
 using VRageMath;
-using VRageRender;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 {
@@ -24,13 +18,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         Dictionary<MyTuple<Vector3D, Vector3D>, float> TrailFade = new Dictionary<MyTuple<Vector3D, Vector3D>, float>(); // Maybe try a Stack var?
         MatrixD ProjectileMatrix = MatrixD.Identity;
         MyEntity3DSoundEmitter ProjectileSound;
-        bool IsVisible = true;
-        bool HasAudio = true;
+        public bool IsVisible = true;
+        public bool HasAudio = true;
 
         internal void InitEffects()
         {
-            IsVisible = HeartData.I.Random.NextDouble() <= Definition.Visual.VisibleChance;
-            HasAudio = HeartData.I.Random.NextDouble() <= Definition.Audio.SoundChance;
+            float f = (float) HeartData.I.Random.NextDouble();
+            IsVisible = f <= Definition.Visual.VisibleChance;
+            HasAudio = f <= Definition.Audio.SoundChance;
 
             if (IsVisible && Definition.Visual.HasModel)
             {

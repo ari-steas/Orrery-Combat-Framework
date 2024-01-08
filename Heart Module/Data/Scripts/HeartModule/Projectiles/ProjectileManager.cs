@@ -1,5 +1,4 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
-using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
@@ -101,7 +100,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 foreach (var player in players) // Ensure that all players are being synced
                     if (!ProjectileSyncStream.ContainsKey(player.SteamUserId))
                         ProjectileSyncStream.Add(player.SteamUserId, new List<uint>());
-                
+
                 foreach (ulong syncedPlayerSteamId in ProjectileSyncStream.Keys.ToList())
                 {
                     bool remove = true;

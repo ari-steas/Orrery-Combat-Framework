@@ -43,7 +43,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 TrailColor = new VRageMath.Vector4(61, 24, 24, 200),
                 //AttachedParticle = "Smoke_Missile",
                 ImpactParticle = "Explosion_LargeCaliberShell_Backup",
-                VisibleChance = 1,
+                VisibleChance = 0.1f,
             },
             Audio = new Audio()
             {
@@ -51,7 +51,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 TravelVolume = 100,
                 TravelMaxDistance = 1000,
                 ImpactSound = "WepSmallWarheadExpl",
-                SoundChance = 1,
+                SoundChance = 0.1f,
             },
             Guidance = new Guidance[0],
             LiveMethods = new LiveMethods()

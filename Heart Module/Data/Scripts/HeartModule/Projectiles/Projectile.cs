@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
-using VRage.Utils;
 using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
@@ -124,7 +123,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 if (QueuedDispose || hitInfo.HitEntity.EntityId == Firer || (DamageHandler.GetCollider(hitInfo.HitEntity as IMyCubeGrid, this)?.FatBlock?.EntityId ?? -1) == Firer)
                     break;
                 double dist = len * hitInfo.Fraction;
-                
+
                 ProjectileHit(hitInfo.HitEntity, hitInfo.Position);
             }
         }

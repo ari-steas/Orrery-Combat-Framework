@@ -1,6 +1,4 @@
 ﻿using Sandbox.Game;
-using Sandbox.Game.Debugging;
-using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System;
 using VRage.Utils;
@@ -35,7 +33,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
                     //throw Exception;
                     MyAPIGateway.Session.Unload();
             }
-            
+
             if (!MyAPIGateway.Utilities.IsDedicated)
                 MyAPIGateway.Utilities.ShowNotification($"HeartMod CRITICAL ERROR - Shutting down in {secondsRemaining}s", 1000 / 60);
         }

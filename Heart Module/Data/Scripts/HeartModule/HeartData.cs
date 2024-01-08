@@ -2,7 +2,6 @@
 using Heart_Module.Data.Scripts.HeartModule.Network;
 using Sandbox.ModAPI;
 using System;
-using VRage.Game;
 
 namespace Heart_Module.Data.Scripts.HeartModule
 {
