@@ -59,15 +59,24 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             DamageEvents.Add(damageEvent);
         }
 
-        private void m_GridDamageHandler(IMyCubeGrid Entity, DamageEvent DamageEvent)
+        public static IMySlimBlock GetCollider(IMyCubeGrid Entity, Projectile Projectile)
         {
-            //MyDamageType.Bullet
-            Vector3I? HitPos = Entity.RayCastBlocks(DamageEvent.Projectile.Position, DamageEvent.Projectile.NextMoveStep);
+            Vector3I? HitPos = Entity?.RayCastBlocks(Projectile.Position, Projectile.NextMoveStep);
             if (HitPos != null)
             {
-                Entity.Physics?.ApplyImpulse(DamageEvent.Projectile.Direction * DamageEvent.Projectile.Definition.Ungrouped.Impulse, DamageEvent.Projectile.Position);
+                return Entity.GetCubeBlock(HitPos.Value);
+            }
 
-                IMySlimBlock block = Entity.GetCubeBlock(HitPos.Value);
+            return null;
+        }
+
+        private void m_GridDamageHandler(IMyCubeGrid Entity, DamageEvent DamageEvent)
+        {
+            IMySlimBlock block = GetCollider(Entity, DamageEvent.Projectile);
+
+            if (block != null)
+            {
+                Entity.Physics?.ApplyImpulse(DamageEvent.Projectile.Direction * DamageEvent.Projectile.Definition.Ungrouped.Impulse, DamageEvent.Projectile.Position);
                 float damageMult = block.FatBlock == null ? DamageEvent.Projectile.Definition.Damage.SlimBlockDamageMod : DamageEvent.Projectile.Definition.Damage.FatBlockDamageMod;
 
                 block.DoDamage(DamageEvent.Projectile.Definition.Damage.BaseDamage * damageMult, MyDamageType.Bullet, MyAPIGateway.Utilities.IsDedicated);
