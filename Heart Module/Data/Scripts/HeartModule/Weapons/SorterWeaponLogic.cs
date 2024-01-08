@@ -2,7 +2,9 @@
 using Sandbox.Common.ObjectBuilders;
 using Sandbox.ModAPI;
 using System;
+using System.Collections.Generic;
 using VRage.Game.Components;
+using VRage.Game.ModAPI;
 using VRage.Game.ModAPI.Network;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
@@ -26,6 +28,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         //the state of shoot
         bool shoot = false;
+
+        public Dictionary<string, IMyModelDummy> modeldummy { get; set; } = new Dictionary<string, IMyModelDummy>();
 
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
         {
@@ -56,6 +60,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             {
                 NeedsUpdate = MyEntityUpdateEnum.EACH_FRAME;
             }
+
+            SorterWep.Model.GetDummies(modeldummy);
+            MyAPIGateway.Utilities.ShowNotification($"Model Dummies: {modeldummy.Count}", 2000, "White");
+
         }
 
         float fireRate = 15; // per-second
@@ -67,10 +75,19 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             if (ShootState.Value && lastShoot >= 60)
             {
-                ProjectileManager.I.AddProjectile(new Projectile(0, SorterWep.WorldMatrix.Translation + SorterWep.WorldMatrix.Forward, SorterWep.WorldMatrix.Forward, SorterWep));
+                MatrixD worldMatrix = SorterWep.WorldMatrix; // Block's world matrix
+                MatrixD dummyMatrix = modeldummy["muzzle01"].Matrix; // Dummy's local matrix
+
+                // Combine the matrices by multiplying them to get the transformation of the dummy in world space
+                MatrixD combinedMatrix = dummyMatrix * worldMatrix;
+
+                // Now combinedMatrix.Translation is the muzzle position in world coordinates,
+                // and combinedMatrix.Forward is the forward direction in world coordinates.
+                ProjectileManager.I.AddProjectile(new Projectile(0, combinedMatrix.Translation, combinedMatrix.Forward, SorterWep));
                 lastShoot -= 60;
             }
         }
+
 
         public float Terminal_ExampleFloat { get; set; }
 

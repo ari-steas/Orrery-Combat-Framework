@@ -105,6 +105,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
 
             NextMoveStep = Position + (InheritedVelocity + Direction * (Velocity + Definition.PhysicalProjectile.Acceleration * delta)) * delta;
+            DebugDraw.AddPoint(NextMoveStep, Color.Red, 1);
         }
 
         public void CheckHits(float delta)
