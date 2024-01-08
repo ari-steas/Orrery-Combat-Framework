@@ -94,7 +94,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             CheckHits(delta);
 
             Velocity += Definition.PhysicalProjectile.Acceleration * delta;
-            Position += (InheritedVelocity + (Direction * Velocity)) * delta;
+            Position += (InheritedVelocity + Direction * Velocity) * delta;
             Age += delta;
             DistanceTravelled += Velocity * delta;
 
@@ -109,6 +109,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public void CheckHits(float delta)
         {
+            if (NextMoveStep == Vector3D.Zero)
+                return;
+
             List<IHitInfo> intersects = new List<IHitInfo>();
             MyAPIGateway.Physics.CastRay(Position, NextMoveStep, intersects);
 
