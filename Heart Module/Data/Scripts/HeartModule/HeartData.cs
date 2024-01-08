@@ -1,6 +1,7 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Network;
 using Sandbox.ModAPI;
+using System;
 using VRage.Game;
 
 namespace Heart_Module.Data.Scripts.HeartModule
@@ -16,5 +17,6 @@ namespace Heart_Module.Data.Scripts.HeartModule
         public HeartLog Log = new HeartLog();
         public int SyncRange = MyAPIGateway.Session.SessionSettings.SyncDistance;
         public int SyncRangeSq = MyAPIGateway.Session.SessionSettings.SyncDistance * MyAPIGateway.Session.SessionSettings.SyncDistance;
+        public Random Random = new Random();
     }
 }

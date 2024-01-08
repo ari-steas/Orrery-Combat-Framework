@@ -1,4 +1,5 @@
 ﻿using ProtoBuf;
+using Sandbox.Game.Entities;
 using System;
 using System.Collections.Generic;
 using VRage.Game.Entity;
@@ -71,14 +72,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     }
 
     [ProtoContract]
-    public class Visual
+    public struct Visual
     {
         [ProtoMember(1)] public string Model;
         [ProtoMember(2)] public MyStringId TrailTexture;
-        [ProtoMember(7)] public float TrailLength = 0;
-        [ProtoMember(9)] public float TrailWidth = 0;
-        [ProtoMember(8)] public Vector4 TrailColor = Vector4.Zero;
-        [ProtoMember(3)] public float TrailFadeTime = 0;
+        [ProtoMember(7)] public float TrailLength;
+        [ProtoMember(9)] public float TrailWidth;
+        [ProtoMember(8)] public Vector4 TrailColor;
+        [ProtoMember(3)] public float TrailFadeTime;
         [ProtoMember(4)] public string AttachedParticle;
         [ProtoMember(5)] public string ImpactParticle;
         [ProtoMember(6)] public float VisibleChance;
@@ -92,8 +93,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     public struct Audio
     {
         [ProtoMember(1)] public string TravelSound;
-        [ProtoMember(2)] public string ImpactSound;
-        [ProtoMember(3)] public float ImpactSoundChance;
+        [ProtoMember(2)] public float TravelMaxDistance;
+        [ProtoMember(3)] public float TravelVolume;
+        [ProtoMember(4)] public string ImpactSound;
+        [ProtoMember(5)] public float SoundChance;
+
+        public bool HasTravelSound => !TravelSound?.Equals("") ?? false && SoundChance > 0 && TravelMaxDistance > 0 && TravelVolume > 0;
+        public bool HasImpactSound => !ImpactSound?.Equals("") ?? false && SoundChance > 0;
+        public MySoundPair TravelSoundPair => new MySoundPair(TravelSound);
+        public MySoundPair ImpactSoundPair => new MySoundPair(ImpactSound);
     }
 
     [ProtoContract]

@@ -105,6 +105,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
 
             NextMoveStep = Position + (InheritedVelocity + Direction * (Velocity + Definition.PhysicalProjectile.Acceleration * delta)) * delta;
+
+            UpdateAudio();
         }
 
         public void CheckHits(float delta)
@@ -135,6 +137,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 DamageHandler.QueueEvent(new DamageEvent(impact, DamageEvent.DamageEntType.Character, this));
 
             DrawImpactParticle(impactPosition);
+            PlayImpactAudio(impactPosition);
 
             RemainingImpacts -= 1;
             if (RemainingImpacts <= 0)

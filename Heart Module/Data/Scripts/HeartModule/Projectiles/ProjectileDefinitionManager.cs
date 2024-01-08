@@ -14,7 +14,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 ReloadPowerUsage = 0,
                 Length = 1,
                 Recoil = 0,
-                Impulse = 10000000,
+                Impulse = 0,
             },
             Damage = new Damage()
             {
@@ -48,8 +48,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             Audio = new Audio()
             {
                 TravelSound = "",
-                ImpactSound = "",
-                ImpactSoundChance = 1,
+                TravelVolume = 100,
+                TravelMaxDistance = 1000,
+                ImpactSound = "WepSmallWarheadExpl",
+                SoundChance = 1,
             },
             Guidance = new Guidance[0],
             LiveMethods = new LiveMethods()
