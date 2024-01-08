@@ -75,15 +75,19 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             if (ShootState.Value && lastShoot >= 60)
             {
+                MatrixD worldMatrix = SorterWep.WorldMatrix; // Block's world matrix
+                MatrixD dummyMatrix = modeldummy["muzzle01"].Matrix; // Dummy's local matrix
 
-                MatrixD matrix = SorterWep.WorldMatrix + (MatrixD)modeldummy["muzzle01"].Matrix;
-                ProjectileManager.I.AddProjectile(new Projectile(0, matrix.Translation, matrix.Forward, SorterWep));
+                // Combine the matrices by multiplying them to get the transformation of the dummy in world space
+                MatrixD combinedMatrix = dummyMatrix * worldMatrix;
+
+                // Now combinedMatrix.Translation is the muzzle position in world coordinates,
+                // and combinedMatrix.Forward is the forward direction in world coordinates.
+                ProjectileManager.I.AddProjectile(new Projectile(0, combinedMatrix.Translation, combinedMatrix.Forward, SorterWep));
                 lastShoot -= 60;
-
-
-
             }
         }
+
 
         public float Terminal_ExampleFloat { get; set; }
 
