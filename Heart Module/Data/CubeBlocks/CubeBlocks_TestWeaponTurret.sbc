@@ -14,7 +14,7 @@
 			<BlockTopology>TriangleMesh</BlockTopology>
 			<Size x="1" y="1" z="1" />
 			<ModelOffset x="0" y="0" z="0" />
-			<Model>Models\Cubes\large\TestWeapon.mwm</Model>
+			<Model>Models\Cubes\large\TestWeaponTurret.mwm</Model>
 			<Components>
 				<Component Subtype="InteriorPlate" Count="40" />
 				<Component Subtype="Construction" Count="100" />
@@ -27,7 +27,7 @@
 			<CriticalComponent Subtype="Motor" Index="0" />
 			<BuildProgressModels>
 			</BuildProgressModels>
-			<BlockPairName>TestWeapon</BlockPairName>
+			<BlockPairName>TestWeaponTurret</BlockPairName>
 			<EdgeType>Light</EdgeType>
 			<BuildTimeSeconds>20</BuildTimeSeconds>
 			<DamageEffectName>Damage_HeavyMech_Damaged</DamageEffectName>
