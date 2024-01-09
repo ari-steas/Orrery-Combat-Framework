@@ -17,5 +17,6 @@ namespace Heart_Module.Data.Scripts.HeartModule
         public int SyncRange = MyAPIGateway.Session.SessionSettings.SyncDistance;
         public int SyncRangeSq = MyAPIGateway.Session.SessionSettings.SyncDistance * MyAPIGateway.Session.SessionSettings.SyncDistance;
         public Random Random = new Random();
+        public ulong SteamId = 0;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
+using Sandbox.ModAPI;
 using System;
 using VRage.Game.Components;
 
@@ -18,10 +19,18 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
             handle = new CriticalHandle();
             handle.LoadData();
-            HeartData.I.Net.LoadData();
 
-            HeartData.I.IsSuspended = false;
-            HeartData.I.Log.Log($"Finished loading core.");
+            try
+            {
+                HeartData.I.Net.LoadData();
+
+                HeartData.I.IsSuspended = false;
+                HeartData.I.Log.Log($"Finished loading core.");
+            }
+            catch (Exception ex)
+            {
+                CriticalHandle.ThrowCriticalException(ex, typeof(HeartLoad));
+            }
         }
 
         public override void UpdateAfterSimulation()
@@ -34,6 +43,9 @@ namespace Heart_Module.Data.Scripts.HeartModule
                 if (HeartData.I.IsSuspended)
                     return;
                 HeartData.I.IsPaused = false;
+
+                if (!MyAPIGateway.Utilities.IsDedicated && HeartData.I.SteamId == 0)
+                    HeartData.I.SteamId = MyAPIGateway.Session?.Player?.SteamUserId ?? 0;
             }
             catch (Exception ex)
             {
@@ -51,6 +63,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
             handle.UnloadData();
             HeartData.I.Net.UnloadData();
             HeartData.I.Log.Log($"Closing core, log finishes here.");
+            HeartData.I.Log.Close();
             HeartData.I = null;
         }
     }

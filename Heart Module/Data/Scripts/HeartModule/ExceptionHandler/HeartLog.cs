@@ -15,6 +15,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
             writer.Flush();
         }
 
+        public void Close()
+        {
+            writer.Close();
+        }
+
         public void Log(string message)
         {
             writer.WriteLine($"{DateTime.Now:HH:mm:ss}: {message}");
@@ -32,7 +37,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
             Log(prefix + $"Exception in {callingType.FullName}! {ex.Message}\n{ex.StackTrace}");
         }
 
-        public void LogException(NetworkedError ex, Type callingType, string prefix = "")
+        public void LogException(n_SerializableError ex, Type callingType, string prefix = "")
         {
             if (ex == null)
             {

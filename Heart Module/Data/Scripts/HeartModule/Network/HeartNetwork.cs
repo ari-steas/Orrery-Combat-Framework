@@ -31,15 +31,26 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
             }
         }
 
+        void HandlePacket(PacketBase packet, ulong senderSteamId)
+        {
+            packet.Received(senderSteamId);
+        }
+
         public void SendToPlayer(PacketBase packet, ulong playerSteamId, byte[] serialized = null)
         {
-            RelayToClient(packet, playerSteamId, 0, serialized);
+            RelayToClient(packet, playerSteamId, HeartData.I.SteamId, serialized);
         }
 
         public void SendToEveryone(PacketBase packet, byte[] serialized = null)
         {
-            RelayToClients(packet, 0, serialized);
+            RelayToClients(packet, HeartData.I.SteamId, serialized);
         }
+
+        public void SendToServer(PacketBase packet, byte[] serialized = null)
+        {
+            RelayToServer(packet, HeartData.I.SteamId, serialized);
+        }
+
 
         List<IMyPlayer> TempPlayers = new List<IMyPlayer>();
         void RelayToClients(PacketBase packet, ulong senderSteamId = 0, byte[] serialized = null)
@@ -85,11 +96,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
                 serialized = MyAPIGateway.Utilities.SerializeToBinary(packet);
 
             MyAPIGateway.Multiplayer.SendMessageToServer(HeartData.HeartNetworkId, serialized);
-        }
-
-        void HandlePacket(PacketBase packet, ulong senderSteamId)
-        {
-            packet.Received(senderSteamId);
         }
     }
 }

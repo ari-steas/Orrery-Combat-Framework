@@ -36,12 +36,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public Projectile() { }
 
-        public Projectile(SerializableProjectile projectile)
+        public Projectile(n_SerializableProjectile projectile)
         {
             if (!ProjectileManager.I.IsIdAvailable(projectile.Id))
             {
                 SoftHandle.RaiseSyncException("Unable to spawn projectile - duplicate Id!");
-                ProjectileManager.I.GetProjectile(projectile.Id)?.SyncUpdate(projectile);
+                ProjectileManager.I.GetProjectile(projectile.Id)?.UpdateFromSerializable(projectile);
                 return;
             }
 
@@ -60,7 +60,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (IsHitscan)
                 Definition.PhysicalProjectile.MaxLifetime = 1 / 60;
 
-            SyncUpdate(projectile);
+            UpdateFromSerializable(projectile);
         }
 
         /// <summary>
@@ -147,9 +147,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             double len = IsHitscan ? Definition.PhysicalProjectile.MaxTrajectory : ((Direction * Velocity + InheritedVelocity) * delta).Length();
             double dist = -2;
 
-            if (RemainingImpacts <= 0)
-                MyAPIGateway.Utilities.ShowNotification("No Impacts Remaining!", 1000 / 60);
-
             foreach (var hitInfo in intersects)
             {
                 if (RemainingImpacts <= 0)
@@ -181,7 +178,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public Vector3D NextMoveStep = Vector3D.Zero;
 
-        public void SyncUpdate(SerializableProjectile projectile)
+        public void UpdateFromSerializable(n_SerializableProjectile projectile)
         {
             QueuedDispose = !projectile.IsActive;
 
@@ -216,9 +213,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         /// </summary>
         /// <param name="DetailLevel"></param>
         /// <returns></returns>
-        public SerializableProjectile AsSerializable(int DetailLevel = 1)
+        public n_SerializableProjectile AsSerializable(int DetailLevel = 1)
         {
-            SerializableProjectile projectile = new SerializableProjectile()
+            n_SerializableProjectile projectile = new n_SerializableProjectile()
             {
                 IsActive = !QueuedDispose,
                 Id = Id,

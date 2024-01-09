@@ -10,7 +10,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     /// Used for syncing between server and clients, and in the API.
     /// </summary>
     [ProtoContract]
-    public class SerializableProjectile : PacketBase
+    public class n_SerializableProjectile : PacketBase
     {
         // ProtoMember IDs are high to avoid collisions
         [ProtoMember(22)] public bool IsActive = true;

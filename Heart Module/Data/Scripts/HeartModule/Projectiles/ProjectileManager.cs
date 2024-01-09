@@ -7,6 +7,7 @@ using System.Linq;
 using VRage.Game.Components;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
+using VRage.Utils;
 using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
@@ -103,8 +104,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     if (!ProjectileSyncStream.ContainsKey(player.SteamUserId))
                     {
                         ProjectileSyncStream.Add(player.SteamUserId, new List<uint>());
-                        foreach (var laser in HitscanList.Values)
-                            ProjectileSyncStream[player.SteamUserId].Add(laser);
+                        MyLog.Default.WriteLineAndConsole($"Heart Module: Added player {player.SteamUserId}");
                     }
                 }
 
@@ -120,7 +120,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                         }
                     }
                     if (remove) // Remove disconnected players from sync list
+                    {
                         ProjectileSyncStream.Remove(syncedPlayerSteamId);
+                        MyLog.Default.WriteLineAndConsole($"Heart Module: Removed player {syncedPlayerSteamId}");
+                    }
                 }
             }
             else
@@ -180,7 +183,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             clockDraw.Restart();
         }
 
-        public void UpdateProjectile(SerializableProjectile projectile)
+        public void UpdateProjectile(n_SerializableProjectile projectile)
         {
             if (MyAPIGateway.Session.IsServer)
                 return;
@@ -188,7 +191,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (IsIdAvailable(projectile.Id) && projectile.IsActive && projectile.DefinitionId.HasValue)
                 AddProjectile(new Projectile(projectile));
             else
-                GetProjectile(projectile.Id)?.SyncUpdate(projectile);
+            {
+                Projectile p = GetProjectile(projectile.Id);
+                if (p != null)
+                    p.UpdateFromSerializable(projectile);
+                else
+                    HeartData.I.Net.SendToServer(new n_ProjectileRequest(projectile.Id));
+            }
         }
 
         public void AddProjectile(Projectile projectile)

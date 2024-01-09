@@ -6,14 +6,14 @@ using System;
 namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
 {
     [ProtoContract]
-    public class NetworkedError : PacketBase
+    public class n_SerializableError : PacketBase
     {
         [ProtoMember(21)] public string ExceptionMessage;
         [ProtoMember(22)] public string ExceptionStackTrace;
         [ProtoMember(23)] public bool IsCritical;
 
-        public NetworkedError() { }
-        public NetworkedError(Exception e, bool IsCritical)
+        public n_SerializableError() { }
+        public n_SerializableError(Exception e, bool IsCritical)
         {
             ExceptionMessage = e.Message;
             ExceptionStackTrace = e.StackTrace;
@@ -23,7 +23,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
         public override void Received(ulong SenderSteamId)
         {
             if (IsCritical)
-                CriticalHandle.ThrowCriticalException(this, typeof(NetworkedError), SenderSteamId);
+                CriticalHandle.ThrowCriticalException(this, typeof(n_SerializableError), SenderSteamId);
             else
                 SoftHandle.RaiseException(this, callerId: SenderSteamId);
         }
