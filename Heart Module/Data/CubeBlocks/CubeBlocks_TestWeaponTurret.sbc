@@ -4,11 +4,11 @@
 		<Definition xsi:type="MyObjectBuilder_ConveyorSorterDefinition">
 			<Id>
 				<TypeId>ConveyorSorter</TypeId>
-				<SubtypeId>TestWeapon</SubtypeId>
+				<SubtypeId>TestWeaponTurret</SubtypeId>
 			</Id>
-			<DisplayName>TestWeapon</DisplayName>
+			<DisplayName>TestWeaponTurret</DisplayName>
 			<Icon>Textures\GUI\Icons\AstronautBackpack.dds</Icon>
-			<Description>TestWeapon</Description>
+			<Description>TestWeaponTurret</Description>
 			<CubeSize>Large</CubeSize>
 			<GuiVisible>false</GuiVisible>
 			<BlockTopology>TriangleMesh</BlockTopology>
