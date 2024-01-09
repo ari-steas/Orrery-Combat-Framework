@@ -12,7 +12,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             Ungrouped = new Ungrouped()
             {
                 ReloadPowerUsage = 0,
-                Length = 1,
                 Recoil = 0,
                 Impulse = 0,
             },
@@ -32,6 +31,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 Health = -1,
                 MaxTrajectory = 100,
                 MaxLifetime = -1,
+                IsHitscan = true,
             },
             Visual = new Visual()
             {
@@ -42,8 +42,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 TrailWidth = 0.1f,
                 TrailColor = new VRageMath.Vector4(61, 24, 24, 200),
                 //AttachedParticle = "Smoke_Missile",
-                ImpactParticle = "Explosion_LargeCaliberShell_Backup",
-                VisibleChance = 0.1f,
+                //ImpactParticle = "Explosion_LargeCaliberShell_Backup",
+                VisibleChance = 1f,
             },
             Audio = new Audio()
             {
@@ -51,7 +51,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 TravelVolume = 100,
                 TravelMaxDistance = 1000,
                 ImpactSound = "WepSmallWarheadExpl",
-                SoundChance = 0.1f,
+                SoundChance = 1f,
             },
             Guidance = new Guidance[0],
             LiveMethods = new LiveMethods()

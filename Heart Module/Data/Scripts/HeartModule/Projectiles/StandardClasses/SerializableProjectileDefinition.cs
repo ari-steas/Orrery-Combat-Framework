@@ -34,17 +34,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         /// </summary>
         [ProtoMember(1)] public float ReloadPowerUsage; // TODO
         /// <summary>
-        /// Length of projectile, in Meters. For beams, range. This can be set to zero, and the projectile will still cast; length is additive.
-        /// </summary>
-        [ProtoMember(2)] public float Length;
-        /// <summary>
         /// Recoil of projectile, in Newtons
         /// </summary>
-        [ProtoMember(3)] public int Recoil; // TODO
+        [ProtoMember(2)] public int Recoil; // TODO
         /// <summary>
         /// Impulse of projectile, in Newtons
         /// </summary>
-        [ProtoMember(4)] public int Impulse;
+        [ProtoMember(3)] public int Impulse;
     }
 
     [ProtoContract]
@@ -67,8 +63,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         [ProtoMember(1)] public float Velocity;
         [ProtoMember(2)] public float Acceleration;
         [ProtoMember(3)] public float Health; // TODO
+        /// <summary>
+        /// Max range of projectile, relative to first firing. For hitscans, max hitscan length.
+        /// </summary>
         [ProtoMember(4)] public float MaxTrajectory;
         [ProtoMember(5)] public float MaxLifetime;
+        /// <summary>
+        /// Disables velocity updates, and changes several behaviors. Call (Projectile).UpdateBeam() to recycle and lower performance impact.
+        /// </summary>
+        [ProtoMember(6)] public bool IsHitscan;
     }
 
     [ProtoContract]

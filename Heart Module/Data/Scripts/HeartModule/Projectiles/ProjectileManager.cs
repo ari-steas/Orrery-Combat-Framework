@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using VRage.Game.Components;
+using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRageMath;
 
@@ -196,6 +197,20 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             SyncProjectile(projectile, 0);
             if (!MyAPIGateway.Utilities.IsDedicated)
                 projectile.InitEffects();
+        }
+
+        Dictionary<long, uint> HitscanList = new Dictionary<long, uint>();
+        public void AddHitscanProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, IMyConveyorSorter sorterWep)
+        {
+            if (!HitscanList.ContainsKey(sorterWep.EntityId))
+            {
+                Projectile p = new Projectile(projectileDefinitionId, position, direction, sorterWep);
+                AddProjectile(p);
+                p.OnClose += (projectile) => HitscanList.Remove(sorterWep.EntityId);
+                HitscanList.Add(sorterWep.EntityId, p.Id);
+            }
+
+            GetProjectile(HitscanList[sorterWep.EntityId])?.UpdateHitscan(position, direction);
         }
 
         public void SyncProjectile(Projectile projectile, int DetailLevel = 1, ulong PlayerSteamId = 0)

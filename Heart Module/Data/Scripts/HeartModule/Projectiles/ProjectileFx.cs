@@ -20,6 +20,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         MyEntity3DSoundEmitter ProjectileSound;
         public bool IsVisible = true;
         public bool HasAudio = true;
+        private float MaxBeamLength = 0; // Limits beam length when A Block:tm: is hit
 
         internal void InitEffects()
         {
@@ -77,7 +78,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             ProjectileEntity.WorldMatrix = ProjectileMatrix;
 
             if (Definition.Visual.HasTrail && !HeartData.I.IsPaused)
-                TrailFade.Add(new MyTuple<Vector3D, Vector3D>(visualPosition, visualPosition + Direction * Definition.Visual.TrailLength), Definition.Visual.TrailFadeTime);
+            {
+                if (IsHitscan)
+                {
+                    for (float i = 0; i < MaxBeamLength; i += Definition.Visual.TrailLength)
+                    {
+                        TrailFade.Add(new MyTuple<Vector3D, Vector3D>(visualPosition + Direction * i, visualPosition + Direction * Definition.Visual.TrailLength + Direction * i), Definition.Visual.TrailFadeTime);
+                    }
+                }
+                else
+                    TrailFade.Add(new MyTuple<Vector3D, Vector3D>(visualPosition, visualPosition + Direction * Definition.Visual.TrailLength), Definition.Visual.TrailFadeTime);
+            }
+                
             UpdateTrailFade(deltaDraw);
 
             if (HasAudio && Definition.Audio.HasTravelSound)
