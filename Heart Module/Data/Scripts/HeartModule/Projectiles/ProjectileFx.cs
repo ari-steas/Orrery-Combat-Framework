@@ -80,12 +80,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (Definition.Visual.HasTrail && !HeartData.I.IsPaused)
             {
                 if (IsHitscan)
-                {
-                    for (float i = 0; i < MaxBeamLength; i += Definition.Visual.TrailLength)
-                    {
-                        TrailFade.Add(new MyTuple<Vector3D, Vector3D>(visualPosition + Direction * i, visualPosition + Direction * Definition.Visual.TrailLength + Direction * i), Definition.Visual.TrailFadeTime);
-                    }
-                }
+                    TrailFade.Add(new MyTuple<Vector3D, Vector3D>(visualPosition, visualPosition + Direction * MaxBeamLength), Definition.Visual.TrailFadeTime);
                 else
                     TrailFade.Add(new MyTuple<Vector3D, Vector3D>(visualPosition, visualPosition + Direction * Definition.Visual.TrailLength), Definition.Visual.TrailFadeTime);
             }

@@ -10,7 +10,7 @@ using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 {
-    public partial class Projectile
+    public partial class Projectile // TODO: Make physical, beams, and guided projectiles inheritors, and make a projectile struct class
     {
         #region Definition Values
         public uint Id { get; private set; }
@@ -124,13 +124,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
             else
             {
+                if (!MyAPIGateway.Session.IsServer)
+                    RemainingImpacts = Definition.Damage.MaxImpacts;
                 NextMoveStep = Position + Direction * Definition.PhysicalProjectile.MaxTrajectory;
                 MaxBeamLength = CheckHits(delta);
-                if (MaxBeamLength == -1)
+                if (MaxBeamLength <= -1)
                     MaxBeamLength = Definition.PhysicalProjectile.MaxTrajectory;
             }
 
-            UpdateAudio();
+            if (MyAPIGateway.Session.IsServer)
+                UpdateAudio();
         }
 
         public float CheckHits(float delta)
@@ -142,7 +145,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             MyAPIGateway.Physics.CastRay(Position, NextMoveStep, intersects);
 
             double len = IsHitscan ? Definition.PhysicalProjectile.MaxTrajectory : ((Direction * Velocity + InheritedVelocity) * delta).Length();
-            double dist = -1;
+            double dist = -2;
+
+            if (RemainingImpacts <= 0)
+                MyAPIGateway.Utilities.ShowNotification("No Impacts Remaining!", 1000 / 60);
 
             foreach (var hitInfo in intersects)
             {
@@ -154,7 +160,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 }
 
                 if (hitInfo.HitEntity.EntityId == Firer || (DamageHandler.GetCollider(hitInfo.HitEntity as IMyCubeGrid, this)?.FatBlock?.EntityId ?? -1) == Firer)
-                    return -1;
+                    return -3;
                 dist = len * hitInfo.Fraction;
 
                 if (hitInfo.HitEntity is IMyCubeGrid)
@@ -162,8 +168,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 else if (hitInfo.HitEntity is IMyCharacter)
                     DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Character, this, hitInfo.Position));
 
-                DrawImpactParticle(hitInfo.Position);
-                PlayImpactAudio(hitInfo.Position);
+                if (MyAPIGateway.Session.IsServer)
+                    PlayImpactAudio(hitInfo.Position);
+                else
+                    DrawImpactParticle(hitInfo.Position);
 
                 RemainingImpacts -= 1;
             }
@@ -195,12 +203,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             TickUpdate(delta);
         }
 
-        public void UpdateHitscan(Vector3D newPosition, Vector3D newDirection, int remainingImpacts = 1)
+        public void UpdateHitscan(Vector3D newPosition, Vector3D newDirection)
         {
             Age = 0;
             Position = newPosition;
             Direction = newDirection;
-            RemainingImpacts = remainingImpacts;
+            RemainingImpacts = Definition.Damage.MaxImpacts;
         }
 
         /// <summary>
@@ -228,9 +236,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     break;
                 case 1:
                     projectile.Position = Position;
-                    if (Definition.Guidance.Length > 0)
+                    if (IsHitscan || Definition.Guidance.Length > 0)
                         projectile.Direction = Direction;
-                    if (Definition.PhysicalProjectile.Acceleration > 0)
+                    if (!IsHitscan && Definition.PhysicalProjectile.Acceleration > 0)
                         projectile.Velocity = Velocity;
                     break;
             }

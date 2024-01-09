@@ -99,8 +99,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 MyAPIGateway.Multiplayer.Players.GetPlayers(players);
 
                 foreach (var player in players) // Ensure that all players are being synced
+                {
                     if (!ProjectileSyncStream.ContainsKey(player.SteamUserId))
+                    {
                         ProjectileSyncStream.Add(player.SteamUserId, new List<uint>());
+                        foreach (var laser in HitscanList.Values)
+                            ProjectileSyncStream[player.SteamUserId].Add(laser);
+                    }
+                }
 
                 foreach (ulong syncedPlayerSteamId in ProjectileSyncStream.Keys.ToList())
                 {

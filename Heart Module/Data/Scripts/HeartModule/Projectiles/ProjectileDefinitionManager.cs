@@ -51,7 +51,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 TravelVolume = 100,
                 TravelMaxDistance = 1000,
                 ImpactSound = "WepSmallWarheadExpl",
-                SoundChance = 1f,
+                SoundChance = 0.1f,
             },
             Guidance = new Guidance[0],
             LiveMethods = new LiveMethods()
