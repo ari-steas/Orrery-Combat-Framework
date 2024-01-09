@@ -12,7 +12,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ErrorHandler
             Exception soft = new Exception(message);
             HeartData.I.Log.LogException(soft, callingType ?? typeof(SoftHandle), callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "");
             if (MyAPIGateway.Session.IsServer)
-                HeartData.I.Net.SendToEveryone(new NetworkedError(soft, false));
+                HeartData.I.Net.SendToEveryone(new n_SerializableError(soft, false));
         }
 
         public static void RaiseException(Exception exception, Type callingType = null, ulong callerId = ulong.MaxValue)
@@ -24,7 +24,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ErrorHandler
             HeartData.I.Log.LogException(exception, callingType ?? typeof(SoftHandle), callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "");
         }
 
-        public static void RaiseException(NetworkedError exception, Type callingType = null, ulong callerId = ulong.MaxValue)
+        public static void RaiseException(n_SerializableError exception, Type callingType = null, ulong callerId = ulong.MaxValue)
         {
             if (exception == null)
                 return;

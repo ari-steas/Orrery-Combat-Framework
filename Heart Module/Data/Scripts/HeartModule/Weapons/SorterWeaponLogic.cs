@@ -66,7 +66,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         }
 
-        float fireRate = 15; // per-second
+        float fireRate = 60; // per-second
         float lastShoot = 0;
         public override void UpdateAfterSimulation()
         {
@@ -83,7 +83,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
                 // Now combinedMatrix.Translation is the muzzle position in world coordinates,
                 // and combinedMatrix.Forward is the forward direction in world coordinates.
-                ProjectileManager.I.AddProjectile(new Projectile(0, combinedMatrix.Translation, combinedMatrix.Forward, SorterWep));
+                ProjectileManager.I.AddHitscanProjectile(0, combinedMatrix.Translation, combinedMatrix.Forward, SorterWep);
+                //ProjectileManager.I.AddProjectile(new Projectile(0, combinedMatrix.Translation, combinedMatrix.Forward, SorterWep));
                 lastShoot -= 60;
             }
         }

@@ -1,4 +1,5 @@
 ﻿using ProtoBuf;
+using Sandbox.Game.Entities;
 using System;
 using System.Collections.Generic;
 using VRage.Game.Entity;
@@ -31,19 +32,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         /// <summary>
         /// Power draw during reload, in MW
         /// </summary>
-        [ProtoMember(1)] public float ReloadPowerUsage;
-        /// <summary>
-        /// Length of projectile, in Meters. For beams, range.
-        /// </summary>
-        [ProtoMember(2)] public float Length;
+        [ProtoMember(1)] public float ReloadPowerUsage; // TODO
         /// <summary>
         /// Recoil of projectile, in Newtons
         /// </summary>
-        [ProtoMember(3)] public int Recoil;
+        [ProtoMember(2)] public int Recoil; // TODO
         /// <summary>
         /// Impulse of projectile, in Newtons
         /// </summary>
-        [ProtoMember(4)] public int Impulse;
+        [ProtoMember(3)] public int Impulse;
     }
 
     [ProtoContract]
@@ -65,20 +62,27 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     {
         [ProtoMember(1)] public float Velocity;
         [ProtoMember(2)] public float Acceleration;
-        [ProtoMember(3)] public float Health;
+        [ProtoMember(3)] public float Health; // TODO
+        /// <summary>
+        /// Max range of projectile, relative to first firing. For hitscans, max hitscan length.
+        /// </summary>
         [ProtoMember(4)] public float MaxTrajectory;
         [ProtoMember(5)] public float MaxLifetime;
+        /// <summary>
+        /// Disables velocity updates, and changes several behaviors. Call (Projectile).UpdateBeam() to recycle and lower performance impact.
+        /// </summary>
+        [ProtoMember(6)] public bool IsHitscan;
     }
 
     [ProtoContract]
-    public class Visual
+    public struct Visual
     {
         [ProtoMember(1)] public string Model;
         [ProtoMember(2)] public MyStringId TrailTexture;
-        [ProtoMember(7)] public float TrailLength = 0;
-        [ProtoMember(9)] public float TrailWidth = 0;
-        [ProtoMember(8)] public Vector4 TrailColor = Vector4.Zero;
-        [ProtoMember(3)] public float TrailFadeTime = 0;
+        [ProtoMember(7)] public float TrailLength;
+        [ProtoMember(9)] public float TrailWidth;
+        [ProtoMember(8)] public Vector4 TrailColor;
+        [ProtoMember(3)] public float TrailFadeTime;
         [ProtoMember(4)] public string AttachedParticle;
         [ProtoMember(5)] public string ImpactParticle;
         [ProtoMember(6)] public float VisibleChance;
@@ -92,28 +96,35 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     public struct Audio
     {
         [ProtoMember(1)] public string TravelSound;
-        [ProtoMember(2)] public string ImpactSound;
-        [ProtoMember(3)] public float ImpactSoundChance;
+        [ProtoMember(2)] public float TravelMaxDistance;
+        [ProtoMember(3)] public float TravelVolume;
+        [ProtoMember(4)] public string ImpactSound;
+        [ProtoMember(5)] public float SoundChance;
+
+        public bool HasTravelSound => !TravelSound?.Equals("") ?? false && SoundChance > 0 && TravelMaxDistance > 0 && TravelVolume > 0;
+        public bool HasImpactSound => !ImpactSound?.Equals("") ?? false && SoundChance > 0;
+        public MySoundPair TravelSoundPair => new MySoundPair(TravelSound);
+        public MySoundPair ImpactSoundPair => new MySoundPair(ImpactSound);
     }
 
     [ProtoContract]
     public struct Guidance
     {
-        [ProtoMember(1)] public int TriggerTime;
-        [ProtoMember(2)] public bool UseAimPrediction;
-        [ProtoMember(3)] public float TurnRate;
-        [ProtoMember(4)] public float TurnRateSpeedRatio;
-        [ProtoMember(5)] public int IFF; // 1 is TargetSelf, 2 is TargetEnemies, 4 is TargetFriendlies
-        [ProtoMember(6)] public bool DoRaycast;
-        [ProtoMember(7)] public float CastCone;
+        [ProtoMember(1)] public int TriggerTime; // TODO
+        [ProtoMember(2)] public bool UseAimPrediction; // TODO
+        [ProtoMember(3)] public float TurnRate; // TODO
+        [ProtoMember(4)] public float TurnRateSpeedRatio; // TODO
+        [ProtoMember(5)] public int IFF; // 1 is TargetSelf, 2 is TargetEnemies, 4 is TargetFriendlies // TODO
+        [ProtoMember(6)] public bool DoRaycast; // TODO
+        [ProtoMember(7)] public float CastCone; // TODO
     }
 
     [ProtoContract]
     public class LiveMethods
     {
-        [ProtoMember(1)] public bool DoOnShoot;
-        [ProtoMember(2)] public bool DoOnImpact;
-        [ProtoMember(3)] public bool DoUpdate1;
+        [ProtoMember(1)] public bool DoOnShoot; // TODO
+        [ProtoMember(2)] public bool DoOnImpact; // TODO
+        [ProtoMember(3)] public bool DoUpdate1; // TODO
 
         // TODO move to definition, and seperate
         Dictionary<string, Delegate> liveMethods = new Dictionary<string, Delegate>()

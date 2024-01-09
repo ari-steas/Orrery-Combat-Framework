@@ -1,6 +1,4 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
-using Sandbox.ModAPI;
-using System;
+﻿using Sandbox.ModAPI;
 using System.Collections.Generic;
 using VRage.Game;
 using VRage.Game.ModAPI;
@@ -76,14 +74,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
             if (block != null)
             {
-                Entity.Physics?.ApplyImpulse(DamageEvent.Projectile.Direction * DamageEvent.Projectile.Definition.Ungrouped.Impulse, DamageEvent.Projectile.Position);
+                Entity.Physics?.ApplyImpulse(DamageEvent.Projectile.Direction * DamageEvent.Projectile.Definition.Ungrouped.Impulse, DamageEvent.HitPosition);
                 float damageMult = block.FatBlock == null ? DamageEvent.Projectile.Definition.Damage.SlimBlockDamageMod : DamageEvent.Projectile.Definition.Damage.FatBlockDamageMod;
 
                 block.DoDamage(DamageEvent.Projectile.Definition.Damage.BaseDamage * damageMult, MyDamageType.Bullet, MyAPIGateway.Utilities.IsDedicated);
 
                 if (DamageEvent.Projectile.Definition.Damage.AreaDamage != 0 && DamageEvent.Projectile.Definition.Damage.AreaRadius > 0)
                 {
-                    BoundingSphereD damageArea = new BoundingSphereD(DamageEvent.Projectile.Position, DamageEvent.Projectile.Definition.Damage.AreaRadius);
+                    BoundingSphereD damageArea = new BoundingSphereD(DamageEvent.HitPosition, DamageEvent.Projectile.Definition.Damage.AreaRadius);
                     List<IMySlimBlock> AoEBlocks = Entity.GetBlocksInsideSphere(ref damageArea);
 
                     foreach (var ablock in AoEBlocks)
@@ -114,12 +112,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         internal float Modifier;
         internal Projectile Projectile;
         internal object Entity;
+        internal Vector3D HitPosition;
 
-        internal DamageEvent(object Entity, DamageEntType type, Projectile projectile)
+        internal DamageEvent(object Entity, DamageEntType type, Projectile projectile, Vector3D hitPosition)
         {
             this.Entity = Entity;
             Type = type;
             Projectile = projectile;
+            HitPosition = hitPosition;
         }
 
         public enum DamageEntType

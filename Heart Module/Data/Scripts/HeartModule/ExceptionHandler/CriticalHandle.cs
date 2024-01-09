@@ -1,6 +1,4 @@
 ﻿using Sandbox.Game;
-using Sandbox.Game.Debugging;
-using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System;
 using VRage.Utils;
@@ -35,7 +33,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
                     //throw Exception;
                     MyAPIGateway.Session.Unload();
             }
-            
+
             if (!MyAPIGateway.Utilities.IsDedicated)
                 MyAPIGateway.Utilities.ShowNotification($"HeartMod CRITICAL ERROR - Shutting down in {secondsRemaining}s", 1000 / 60);
         }
@@ -50,7 +48,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
             I?.m_ThrowCriticalException(ex, callingType, callerId);
         }
 
-        public static void ThrowCriticalException(NetworkedError ex, Type callingType, ulong callerId = ulong.MaxValue)
+        public static void ThrowCriticalException(n_SerializableError ex, Type callingType, ulong callerId = ulong.MaxValue)
         {
             I?.m_ThrowCriticalException(ex, callingType, callerId);
         }
@@ -69,10 +67,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
             CriticalCloseTime = DateTime.Now.Ticks + WarnTimeSeconds * TimeSpan.TicksPerSecond;
 
             if (MyAPIGateway.Session.IsServer)
-                HeartData.I.Net.SendToEveryone(new NetworkedError(Exception, true));
+                HeartData.I.Net.SendToEveryone(new n_SerializableError(Exception, true));
         }
 
-        private void m_ThrowCriticalException(NetworkedError ex, Type callingType, ulong callerId = ulong.MaxValue)
+        private void m_ThrowCriticalException(n_SerializableError ex, Type callingType, ulong callerId = ulong.MaxValue)
         {
             HeartData.I.IsSuspended = true;
             HeartData.I.Log.Log("Start Throw Critical Exception " + CriticalCloseTime);
@@ -86,7 +84,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
             CriticalCloseTime = DateTime.Now.Ticks + WarnTimeSeconds * TimeSpan.TicksPerSecond;
 
             if (MyAPIGateway.Session.IsServer)
-                HeartData.I.Net.SendToEveryone(new NetworkedError(Exception, true));
+                HeartData.I.Net.SendToEveryone(new n_SerializableError(Exception, true));
         }
     }
 }

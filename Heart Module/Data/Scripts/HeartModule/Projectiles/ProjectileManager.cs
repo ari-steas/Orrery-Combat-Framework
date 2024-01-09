@@ -1,12 +1,13 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
-using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using VRage.Game.Components;
+using VRage.Game.Entity;
 using VRage.Game.ModAPI;
+using VRage.Utils;
 using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
@@ -99,9 +100,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 MyAPIGateway.Multiplayer.Players.GetPlayers(players);
 
                 foreach (var player in players) // Ensure that all players are being synced
+                {
                     if (!ProjectileSyncStream.ContainsKey(player.SteamUserId))
+                    {
                         ProjectileSyncStream.Add(player.SteamUserId, new List<uint>());
-                
+                        MyLog.Default.WriteLineAndConsole($"Heart Module: Added player {player.SteamUserId}");
+                    }
+                }
+
                 foreach (ulong syncedPlayerSteamId in ProjectileSyncStream.Keys.ToList())
                 {
                     bool remove = true;
@@ -114,7 +120,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                         }
                     }
                     if (remove) // Remove disconnected players from sync list
+                    {
                         ProjectileSyncStream.Remove(syncedPlayerSteamId);
+                        MyLog.Default.WriteLineAndConsole($"Heart Module: Removed player {syncedPlayerSteamId}");
+                    }
                 }
             }
             else
@@ -174,7 +183,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             clockDraw.Restart();
         }
 
-        public void UpdateProjectile(SerializableProjectile projectile)
+        public void UpdateProjectile(n_SerializableProjectile projectile)
         {
             if (MyAPIGateway.Session.IsServer)
                 return;
@@ -182,7 +191,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (IsIdAvailable(projectile.Id) && projectile.IsActive && projectile.DefinitionId.HasValue)
                 AddProjectile(new Projectile(projectile));
             else
-                GetProjectile(projectile.Id)?.SyncUpdate(projectile);
+            {
+                Projectile p = GetProjectile(projectile.Id);
+                if (p != null)
+                    p.UpdateFromSerializable(projectile);
+                else
+                    HeartData.I.Net.SendToServer(new n_ProjectileRequest(projectile.Id));
+            }
         }
 
         public void AddProjectile(Projectile projectile)
@@ -197,6 +212,20 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             SyncProjectile(projectile, 0);
             if (!MyAPIGateway.Utilities.IsDedicated)
                 projectile.InitEffects();
+        }
+
+        Dictionary<long, uint> HitscanList = new Dictionary<long, uint>();
+        public void AddHitscanProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, IMyConveyorSorter sorterWep)
+        {
+            if (!HitscanList.ContainsKey(sorterWep.EntityId))
+            {
+                Projectile p = new Projectile(projectileDefinitionId, position, direction, sorterWep);
+                AddProjectile(p);
+                p.OnClose += (projectile) => HitscanList.Remove(sorterWep.EntityId);
+                HitscanList.Add(sorterWep.EntityId, p.Id);
+            }
+
+            GetProjectile(HitscanList[sorterWep.EntityId])?.UpdateHitscan(position, direction);
         }
 
         public void SyncProjectile(Projectile projectile, int DetailLevel = 1, ulong PlayerSteamId = 0)

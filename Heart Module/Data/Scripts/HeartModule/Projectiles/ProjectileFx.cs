@@ -1,16 +1,12 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
+﻿using Sandbox.Game;
 using Sandbox.Game.Entities;
-using Sandbox.ModAPI;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using VRage;
 using VRage.Game;
 using VRage.Game.Entity;
-using VRage.Game.Models;
 using VRage.ModAPI;
 using VRageMath;
-using VRageRender;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 {
@@ -19,12 +15,20 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         MyEntity ProjectileEntity = new MyEntity();
         MyParticleEffect ProjectileEffect;
         uint RenderId = 0;
-        Dictionary<MyTuple<Vector3D, Vector3D>, float> TrailFade = new Dictionary<MyTuple<Vector3D, Vector3D>, float>();
+        Dictionary<MyTuple<Vector3D, Vector3D>, float> TrailFade = new Dictionary<MyTuple<Vector3D, Vector3D>, float>(); // Maybe try a Stack var?
         MatrixD ProjectileMatrix = MatrixD.Identity;
+        MyEntity3DSoundEmitter ProjectileSound;
+        public bool IsVisible = true;
+        public bool HasAudio = true;
+        private float MaxBeamLength = 0; // Limits beam length when A Block:tm: is hit
 
         internal void InitEffects()
         {
-            if (Definition.Visual.HasModel)
+            float f = (float) HeartData.I.Random.NextDouble();
+            IsVisible = f <= Definition.Visual.VisibleChance;
+            HasAudio = f <= Definition.Audio.SoundChance;
+
+            if (IsVisible && Definition.Visual.HasModel)
             {
                 ProjectileEntity.Init(null, Definition.Visual.Model, null, null);
                 ProjectileEntity.Render.CastShadows = false;
@@ -34,17 +38,31 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 ProjectileEntity.NeedsWorldMatrix = false;
                 ProjectileEntity.Flags |= EntityFlags.IsNotGamePrunningStructureObject;
                 MyEntities.Add(ProjectileEntity, true);
+                ProjectileEntity.WorldMatrix = MatrixD.CreateWorld(Position, Direction, Vector3D.Cross(Direction, Vector3D.Up));
                 RenderId = ProjectileEntity.Render.GetRenderObjectID();
             }
             else
                 RenderId = uint.MaxValue;
+
+            if (HasAudio && Definition.Audio.HasTravelSound)
+            {
+                ProjectileSound = new MyEntity3DSoundEmitter(null);
+                ProjectileSound.SetPosition(Position);
+                ProjectileSound.CanPlayLoopSounds = true;
+                ProjectileSound.VolumeMultiplier = Definition.Audio.TravelVolume;
+                ProjectileSound.CustomMaxDistance = Definition.Audio.TravelMaxDistance;
+                ProjectileSound.PlaySound(Definition.Audio.TravelSoundPair, true);
+            }
         }
 
         public void DrawUpdate(float deltaTick, float deltaDraw)
         {
+            if (!IsVisible)
+                return;
+
             // deltaTick is the current offset between tick and draw, to account for variance between FPS and tickrate
             Vector3D visualPosition = Position + (InheritedVelocity + Direction * (Velocity + Definition.PhysicalProjectile.Acceleration * deltaTick)) * deltaTick;
-            ProjectileMatrix = MatrixD.CreateWorld(visualPosition, Direction, Vector3D.Cross(Direction, Vector3D.Up));
+            ProjectileMatrix = MatrixD.CreateWorld(visualPosition, Direction, Vector3D.Cross(Direction, Vector3D.Up)); // TODO: Inherit up vector from firer. Also TODO: Make matrix a projectile var
 
             // Temporary debug draw
             //DebugDraw.AddPoint(visualPosition, Color.Green, 0.000001f);
@@ -60,8 +78,19 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             ProjectileEntity.WorldMatrix = ProjectileMatrix;
 
             if (Definition.Visual.HasTrail && !HeartData.I.IsPaused)
-                TrailFade.Add(new MyTuple<Vector3D, Vector3D>(visualPosition, visualPosition + Direction * Definition.Visual.TrailLength), Definition.Visual.TrailFadeTime);
+            {
+                if (IsHitscan)
+                    TrailFade.Add(new MyTuple<Vector3D, Vector3D>(visualPosition, visualPosition + Direction * MaxBeamLength), Definition.Visual.TrailFadeTime);
+                else
+                    TrailFade.Add(new MyTuple<Vector3D, Vector3D>(visualPosition, visualPosition + Direction * Definition.Visual.TrailLength), Definition.Visual.TrailFadeTime);
+            }
+                
             UpdateTrailFade(deltaDraw);
+
+            if (HasAudio && Definition.Audio.HasTravelSound)
+            {
+                ProjectileSound.SetPosition(Position);
+            }
         }
 
         /// <summary>
@@ -82,9 +111,17 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
         }
 
+        private void UpdateAudio()
+        {
+            if (!HasAudio || !Definition.Audio.HasTravelSound) return;
+
+            ProjectileSound.SetPosition(Position);
+            ProjectileSound.SetVelocity(Direction * Velocity);
+        }
+
         private void DrawImpactParticle(Vector3D ImpactPosition)
         {
-            if (Definition.Visual.ImpactParticle == "")
+            if (!IsVisible || Definition.Visual.ImpactParticle == "")
                 return;
 
             MatrixD matrix = MatrixD.CreateTranslation(ImpactPosition);
@@ -99,10 +136,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
         }
 
+        private void PlayImpactAudio(Vector3D ImpactPosition)
+        {
+            if (!HasAudio || !Definition.Audio.HasImpactSound) return;
+            MyVisualScriptLogicProvider.PlaySingleSoundAtPosition(Definition.Audio.ImpactSound, ImpactPosition);
+        }
+
         internal void CloseDrawing()
         {
             ProjectileEffect?.Close();
-            ProjectileEntity.Close();
+            ProjectileEntity?.Close();
+            ProjectileSound?.StopSound(true);
+            ProjectileSound?.Cleanup();
         }
     }
 }

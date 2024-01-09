@@ -6,12 +6,11 @@ using System;
 using System.Collections.Generic;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
-using VRage.Utils;
 using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 {
-    public partial class Projectile
+    public partial class Projectile // TODO: Make physical, beams, and guided projectiles inheritors, and make a projectile struct class
     {
         #region Definition Values
         public uint Id { get; private set; }
@@ -21,6 +20,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         public Vector3D InheritedVelocity;
         #endregion
 
+        public bool IsHitscan { get; private set; } = false;
         public long Firer = -1;
         public Vector3D Position = Vector3D.Zero;
         public Vector3D Direction = Vector3D.Up;
@@ -36,12 +36,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public Projectile() { }
 
-        public Projectile(SerializableProjectile projectile)
+        public Projectile(n_SerializableProjectile projectile)
         {
             if (!ProjectileManager.I.IsIdAvailable(projectile.Id))
             {
                 SoftHandle.RaiseSyncException("Unable to spawn projectile - duplicate Id!");
-                ProjectileManager.I.GetProjectile(projectile.Id)?.SyncUpdate(projectile);
+                ProjectileManager.I.GetProjectile(projectile.Id)?.UpdateFromSerializable(projectile);
                 return;
             }
 
@@ -56,14 +56,22 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             DefinitionId = projectile.DefinitionId.Value;
             Definition = ProjectileDefinitionManager.GetDefinition(projectile.DefinitionId.Value);
             Firer = projectile.Firer.GetValueOrDefault(0);
-            // TODO fill in from Definition
+            IsHitscan = Definition.PhysicalProjectile.IsHitscan;
+            if (IsHitscan)
+                Definition.PhysicalProjectile.MaxLifetime = 1 / 60;
 
-            SyncUpdate(projectile);
+            UpdateFromSerializable(projectile);
         }
 
+        /// <summary>
+        /// Spawn a projectile with a grid as a reference.
+        /// </summary>
+        /// <param name="DefinitionId"></param>
+        /// <param name="Position"></param>
+        /// <param name="Direction"></param>
+        /// <param name="block"></param>
         public Projectile(int DefinitionId, Vector3D Position, Vector3D Direction, IMyCubeBlock block) : this(DefinitionId, Position, Direction, block.EntityId, block.CubeGrid?.LinearVelocity ?? Vector3D.Zero)
         {
-            DebugDraw.AddPoint(Position, Color.Green, 0);
         }
 
         public Projectile(int DefinitionId, Vector3D Position, Vector3D Direction, long firer = 0, Vector3D InitialVelocity = new Vector3D())
@@ -79,9 +87,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
             this.Position = Position;
             this.Direction = Direction;
-            Velocity = Definition.PhysicalProjectile.Velocity;
             this.Firer = firer;
-            this.InheritedVelocity = InitialVelocity;
+            IsHitscan = Definition.PhysicalProjectile.IsHitscan;
+
+            if (!IsHitscan)
+            {
+                Velocity = Definition.PhysicalProjectile.Velocity;
+                this.InheritedVelocity = InitialVelocity;
+            }
+            else
+                Definition.PhysicalProjectile.MaxLifetime = 1/60;
 
             RemainingImpacts = Definition.Damage.MaxImpacts;
         }
@@ -91,59 +106,79 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if ((Definition.PhysicalProjectile.MaxTrajectory != -1 && Definition.PhysicalProjectile.MaxTrajectory < DistanceTravelled) || (Definition.PhysicalProjectile.MaxLifetime != -1 && Definition.PhysicalProjectile.MaxLifetime < Age))
                 QueueDispose();
 
-            CheckHits(delta);
-
-            Velocity += Definition.PhysicalProjectile.Acceleration * delta;
-            Position += (InheritedVelocity + Direction * Velocity) * delta;
             Age += delta;
-            DistanceTravelled += Velocity * delta;
-
-            if (Velocity < 0)
+            if (!IsHitscan)
             {
-                Direction = -Direction;
-                Velocity = -Velocity;
+                CheckHits(delta);
+                Velocity += Definition.PhysicalProjectile.Acceleration * delta;
+                Position += (InheritedVelocity + Direction * Velocity) * delta;
+                DistanceTravelled += Velocity * delta;
+
+                if (Velocity < 0)
+                {
+                    Direction = -Direction;
+                    Velocity = -Velocity;
+                }
+
+                NextMoveStep = Position + (InheritedVelocity + Direction * (Velocity + Definition.PhysicalProjectile.Acceleration * delta)) * delta;
+            }
+            else
+            {
+                if (!MyAPIGateway.Session.IsServer)
+                    RemainingImpacts = Definition.Damage.MaxImpacts;
+                NextMoveStep = Position + Direction * Definition.PhysicalProjectile.MaxTrajectory;
+                MaxBeamLength = CheckHits(delta);
+                if (MaxBeamLength <= -1)
+                    MaxBeamLength = Definition.PhysicalProjectile.MaxTrajectory;
             }
 
-            NextMoveStep = Position + (InheritedVelocity + Direction * (Velocity + Definition.PhysicalProjectile.Acceleration * delta)) * delta;
+            if (MyAPIGateway.Session.IsServer)
+                UpdateAudio();
         }
 
-        public void CheckHits(float delta)
+        public float CheckHits(float delta)
         {
             if (NextMoveStep == Vector3D.Zero)
-                return;
+                return -1;
 
             List<IHitInfo> intersects = new List<IHitInfo>();
             MyAPIGateway.Physics.CastRay(Position, NextMoveStep, intersects);
 
-            double len = ((Direction * Velocity + InheritedVelocity) * delta).Length();
+            double len = IsHitscan ? Definition.PhysicalProjectile.MaxTrajectory : ((Direction * Velocity + InheritedVelocity) * delta).Length();
+            double dist = -2;
 
             foreach (var hitInfo in intersects)
             {
-                if (QueuedDispose || hitInfo.HitEntity.EntityId == Firer || (DamageHandler.GetCollider(hitInfo.HitEntity as IMyCubeGrid, this)?.FatBlock?.EntityId ?? -1) == Firer)
+                if (RemainingImpacts <= 0)
+                {
+                    if (!IsHitscan)
+                        QueueDispose();
                     break;
-                double dist = len * hitInfo.Fraction;
-                
-                ProjectileHit(hitInfo.HitEntity, hitInfo.Position);
+                }
+
+                if (hitInfo.HitEntity.EntityId == Firer || (DamageHandler.GetCollider(hitInfo.HitEntity as IMyCubeGrid, this)?.FatBlock?.EntityId ?? -1) == Firer)
+                    return -3;
+                dist = len * hitInfo.Fraction;
+
+                if (hitInfo.HitEntity is IMyCubeGrid)
+                    DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Grid, this, hitInfo.Position));
+                else if (hitInfo.HitEntity is IMyCharacter)
+                    DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Character, this, hitInfo.Position));
+
+                if (MyAPIGateway.Session.IsServer)
+                    PlayImpactAudio(hitInfo.Position);
+                else
+                    DrawImpactParticle(hitInfo.Position);
+
+                RemainingImpacts -= 1;
             }
-        }
 
-        public void ProjectileHit(IMyEntity impact, Vector3D impactPosition)
-        {
-            if (impact is IMyCubeGrid)
-                DamageHandler.QueueEvent(new DamageEvent(impact, DamageEvent.DamageEntType.Grid, this));
-            else if (impact is IMyCharacter)
-                DamageHandler.QueueEvent(new DamageEvent(impact, DamageEvent.DamageEntType.Character, this));
-
-            DrawImpactParticle(impactPosition);
-
-            RemainingImpacts -= 1;
-            if (RemainingImpacts <= 0)
-                QueueDispose();
+            return (float) dist;
         }
 
         public Vector3D NextMoveStep = Vector3D.Zero;
 
-        public void SyncUpdate(SerializableProjectile projectile)
+        public void UpdateFromSerializable(n_SerializableProjectile projectile)
         {
             QueuedDispose = !projectile.IsActive;
 
@@ -165,14 +200,22 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             TickUpdate(delta);
         }
 
+        public void UpdateHitscan(Vector3D newPosition, Vector3D newDirection)
+        {
+            Age = 0;
+            Position = newPosition;
+            Direction = newDirection;
+            RemainingImpacts = Definition.Damage.MaxImpacts;
+        }
+
         /// <summary>
         /// Returns the projectile as a network-ready projectile info class. 0 = max detail, 2+ = min detail
         /// </summary>
         /// <param name="DetailLevel"></param>
         /// <returns></returns>
-        public SerializableProjectile AsSerializable(int DetailLevel = 1)
+        public n_SerializableProjectile AsSerializable(int DetailLevel = 1)
         {
-            SerializableProjectile projectile = new SerializableProjectile()
+            n_SerializableProjectile projectile = new n_SerializableProjectile()
             {
                 IsActive = !QueuedDispose,
                 Id = Id,
@@ -190,9 +233,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     break;
                 case 1:
                     projectile.Position = Position;
-                    if (Definition.Guidance.Length > 0)
+                    if (IsHitscan || Definition.Guidance.Length > 0)
                         projectile.Direction = Direction;
-                    if (Definition.PhysicalProjectile.Acceleration > 0)
+                    if (!IsHitscan && Definition.PhysicalProjectile.Acceleration > 0)
                         projectile.Velocity = Velocity;
                     break;
             }
