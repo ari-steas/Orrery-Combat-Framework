@@ -66,7 +66,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         }
 
-        float fireRate = 60; // per-second
+        float fireRate = 10; // per-second
         float lastShoot = 0;
         public override void UpdateAfterSimulation()
         {
@@ -75,15 +75,15 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             if (ShootState.Value && lastShoot >= 60)
             {
-                MatrixD muzzleMatrix = GetMuzzleMatrix();
+                MatrixD muzzleMatrix = CalcMuzzleMatrix();
 
-                ProjectileManager.I.AddHitscanProjectile(0, muzzleMatrix.Translation, muzzleMatrix.Forward, SorterWep);
+                ProjectileManager.I.AddProjectile(0, muzzleMatrix.Translation, muzzleMatrix.Forward, SorterWep);
                 //ProjectileManager.I.AddProjectile(new Projectile(0, combinedMatrix.Translation, combinedMatrix.Forward, SorterWep));
                 lastShoot -= 60;
             }
         }
 
-        public virtual MatrixD GetMuzzleMatrix()
+        public virtual MatrixD CalcMuzzleMatrix()
         {
             MatrixD worldMatrix = SorterWep.WorldMatrix; // Block's world matrix
             MatrixD dummyMatrix = modeldummy["muzzle01"].Matrix; // Dummy's local matrix

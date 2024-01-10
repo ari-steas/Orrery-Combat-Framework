@@ -1,4 +1,8 @@
-﻿using Sandbox.Common.ObjectBuilders;
+﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Heart_Module.Data.Scripts.HeartModule.Utility;
+using Sandbox.Common.ObjectBuilders;
+using Sandbox.Definitions;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
@@ -17,12 +21,20 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
     [MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeaponTurret")]
     public class SorterTurretLogic : SorterWeaponLogic
     {
-        public override MatrixD GetMuzzleMatrix()
+        MatrixD MuzzleMatrix = MatrixD.Identity;
+
+        public override void UpdateBeforeSimulation()
+        {
+            base.UpdateBeforeSimulation();
+
+            UpdateTurretSubparts();
+            MuzzleMatrix = CalcMuzzleMatrix();
+        }
+
+        public override MatrixD CalcMuzzleMatrix()
         {
             Dictionary<string, IMyModelDummy> dummies = new Dictionary<string, IMyModelDummy>();
             MyEntitySubpart subpart = HeartData.I.SubpartManager.GetSubpart((MyEntity)SorterWep, "TestAz");
-
-            HeartData.I.SubpartManager.RotateSubpart(subpart, MatrixD.CreateRotationY(0.1));
 
             ((IMyEntity)subpart).Model.GetDummies(dummies);
 
@@ -31,9 +43,27 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
             //foreach (var part in HeartData.I.SubpartManager.GetAllSubparts((MyEntity)SorterWep))
             //    MyAPIGateway.Utilities.ShowMessage("HM", part);
+
             if (muzzleMatrix != null)
                 return muzzleMatrix * partMatrix;
+
             return MatrixD.Identity;
+        }
+
+        public void UpdateTurretSubparts()
+        {
+            Vector3D vecToTarget = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, Vector3D.Zero, (MyEntity)MyAPIGateway.Session.Player.Controller.ControlledEntity.Entity, 0) ?? Vector3D.MaxValue;
+            if (vecToTarget == Vector3D.MaxValue)
+                return;
+            if (!MyAPIGateway.Utilities.IsDedicated)
+                DebugDraw.AddPoint(vecToTarget, Color.Red, 0);
+
+            vecToTarget -= MuzzleMatrix.Translation;
+
+            MyEntitySubpart azimuth = HeartData.I.SubpartManager.GetSubpart((MyEntity)SorterWep, "TestAz");
+            
+            // Inverted because SUBPARTS ARE FUCKED!
+            HeartData.I.SubpartManager.LocalRotateSubpartAbs(azimuth, MatrixD.CreateWorld(Vector3D.Zero, -vecToTarget.Normalized(), Vector3D.Up));
         }
     }
 }
