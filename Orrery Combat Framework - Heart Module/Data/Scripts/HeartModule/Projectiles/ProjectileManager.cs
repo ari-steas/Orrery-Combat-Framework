@@ -194,6 +194,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             if (projectile == null || projectile.DefinitionId == -1) return; // Ensure that invalid projectiles don't get added
 
+            projectile.Position -= projectile.InheritedVelocity / 60; // Because this doesn't run during simulation
+
             NextId++;
             while (!IsIdAvailable(NextId))
                 NextId++;

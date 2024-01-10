@@ -3,11 +3,13 @@ using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.Common.ObjectBuilders;
+using Sandbox.Game;
 using Sandbox.Game.Entities;
 using Sandbox.Game.EntityComponents;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
+using VRage.Game;
 using VRage.Game.Components;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
@@ -85,13 +87,15 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             // Implement weapon UI defaults here
 
             SaveSettings();
-
-
         }
 
+        public override void UpdateAfterSimulation()
+        {
+            TryShoot();
+        }
 
         float lastShoot = 0;
-        public override void UpdateAfterSimulation()
+        public void TryShoot()
         {
             if (lastShoot < 60)
                 lastShoot += Definition.Loading.RateOfFire;
@@ -99,9 +103,24 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (ShootState.Value && lastShoot >= 60)
             {
                 MatrixD muzzleMatrix = CalcMuzzleMatrix();
+                Vector3D muzzlePos = muzzleMatrix.Translation;
 
-                ProjectileManager.I.AddProjectile(0, muzzleMatrix.Translation, /*RandomCone(*/muzzleMatrix.Forward/*, Definition.Hardpoint.ShotInaccuracy)*/, SorterWep);
+                ProjectileManager.I.AddProjectile(0, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
                 lastShoot -= 60;
+
+                if (Definition.Visuals.HasShootParticle)
+                {
+                    MatrixD matrix = MatrixD.CreateTranslation(muzzlePos);
+                    MyParticleEffect hitEffect;
+                    if (MyParticlesManager.TryCreateParticleEffect(Definition.Visuals.ShootParticle, ref matrix, ref muzzlePos, uint.MaxValue, out hitEffect))
+                    {
+                        //MyAPIGateway.Utilities.ShowNotification("Spawned particle at " + hitEffect.WorldMatrix.Translation);
+                        hitEffect.Velocity = SorterWep.CubeGrid.LinearVelocity;
+
+                        if (hitEffect.Loop)
+                            hitEffect.Stop();
+                    }
+                }
             }
         }
 
@@ -214,11 +233,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         {
             Vector3D Axis = Vector3D.CalculatePerpendicularVector(center).Rotate(center, Math.PI * 2 * HeartData.I.Random.NextDouble());
 
-            return Vector3D.Up.Rotate(Axis, radius * HeartData.I.Random.NextDouble());
+            return center.Rotate(Axis, radius * HeartData.I.Random.NextDouble());
         }
-
-
-
 
         public override void Close()
         {

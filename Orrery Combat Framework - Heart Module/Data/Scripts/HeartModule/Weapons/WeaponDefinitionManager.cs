@@ -65,14 +65,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             },
             Hardpoint = new Hardpoint()
             {
-                AzimuthRate = 0.01f,
-                ElevationRate = 0.01f,
-                MaxAzimuth = (float)Math.PI / 2,
-                MinAzimuth = (float)-Math.PI / 2,
-                MaxElevation = (float)Math.PI / 4,
+                AzimuthRate = 0.1f,
+                ElevationRate = 0.1f,
+                MaxAzimuth = (float)Math.PI, // /2,
+                MinAzimuth = (float)-Math.PI, // /2,
+                MaxElevation = (float)Math.PI, // /4,
                 MinElevation = 0,
                 IdlePower = 0,
-                ShotInaccuracy = (float)Math.PI,
+                ShotInaccuracy = 0,//0.0175f,
                 AimTolerance = 0.1f,
                 LineOfSightCheck = true,
                 ControlRotation = true,
@@ -86,6 +86,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 MagsToLoad = 1,
                 DelayUntilFire = 0,
             },
+            Visuals = new Visuals()
+            {
+                ShootParticle = "",//"BlockDestroyedExplosion_Small",
+                ContinuousShootParticle = false,
+                ReloadParticle = "",
+    },
         };
 
         // this is after the definitions because FUCKING STATICS ARE THE WORK OF THE DEVIL

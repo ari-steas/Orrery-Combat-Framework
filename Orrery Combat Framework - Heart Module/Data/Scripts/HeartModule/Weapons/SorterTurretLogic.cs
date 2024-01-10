@@ -72,9 +72,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 MatrixD partMatrix = evSubpart.WorldMatrix;
                 Matrix muzzleMatrix = dummies[Definition.Assignments.Muzzles[0]].Matrix;
 
-                //foreach (var part in HeartData.I.SubpartManager.GetAllSubparts((MyEntity)SorterWep))
-                //    MyAPIGateway.Utilities.ShowMessage("HM", part);
-
                 if (muzzleMatrix != null)
                     return muzzleMatrix * partMatrix;
             }
@@ -84,19 +81,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public void UpdateTurretSubparts()
         {
-            Vector3D vecToTarget = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, Vector3D.Zero, Vector3D.Zero, Vector3D.Zero, 1) ?? Vector3D.MaxValue;
-            
+            Vector3D vecToTarget = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, SorterWep.CubeGrid.LinearVelocity, (MyEntity)MyAPIGateway.Session.Player?.Controller?.ControlledEntity?.Entity, 0) ?? Vector3D.MaxValue;
+
             if (vecToTarget == Vector3D.MaxValue)
                 return;
             if (!MyAPIGateway.Utilities.IsDedicated)
                 DebugDraw.AddPoint(vecToTarget, Color.Red, 0);
 
             vecToTarget -= MuzzleMatrix.Translation;
+            MyEntitySubpart azimuth = HeartData.I.SubpartManager.GetSubpart((MyEntity)SorterWep, Definition.Assignments.AzimuthSubpart);
+            MyEntitySubpart elevation = HeartData.I.SubpartManager.GetSubpart(azimuth, Definition.Assignments.ElevationSubpart);
 
-            MyEntitySubpart azimuth = HeartData.I.SubpartManager.GetSubpart((MyEntity)SorterWep, "TestAz");
-            MyEntitySubpart elevation = HeartData.I.SubpartManager.GetSubpart(azimuth, "TestEv");
             vecToTarget = Vector3D.Rotate(vecToTarget.Normalized(), MatrixD.Invert(SorterWep.WorldMatrix)); // Inverted because subparts are wonky. Pre-rotated.
-
             HeartData.I.SubpartManager.LocalRotateSubpartAbs(azimuth, GetAzimuthMatrix(vecToTarget));
             HeartData.I.SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(vecToTarget));
         }
