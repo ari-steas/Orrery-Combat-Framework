@@ -66,14 +66,14 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             SorterWep.Model.GetDummies(modeldummy);
             MyAPIGateway.Utilities.ShowNotification($"Model Dummies: {modeldummy.Count}", 2000, "White");
-
-            // Log the result of LoadSettings
-            var loadSettingsOutput = LoadSettings();
-            MyLog.Default.WriteLineAndConsole($"LoadSettings Output: {loadSettingsOutput}");
+          
+            LoadSettings();
 
             // Implement weapon UI defaults here
 
             SaveSettings();
+
+
         }
 
 
@@ -138,10 +138,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 return; // called too soon or after it was already closed, ignore
 
             if (Settings == null)
-                throw new NullReferenceException($"Settings == null on entId={Entity?.EntityId}; FUCK");
+                throw new NullReferenceException($"Settings == null on entId={Entity?.EntityId}; Test log 1");
 
             if (MyAPIGateway.Utilities == null)
-                throw new NullReferenceException($"MyAPIGateway.Utilities == null; entId={Entity?.EntityId}; OH GOD!!");
+                throw new NullReferenceException($"MyAPIGateway.Utilities == null; entId={Entity?.EntityId}; Test log 2");
 
             if (SorterWep.Storage == null)
                 SorterWep.Storage = new MyModStorageComponent();
@@ -167,8 +167,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 if (loadedSettings != null)
                 {
                     Settings.ShootState = loadedSettings.ShootState;
-
+                    ShootState.Value = Settings.ShootState;
                     return true;
+
+
                 }
             }
             catch (Exception e)
