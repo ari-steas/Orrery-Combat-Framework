@@ -17,7 +17,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
     [MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeapon")]
     public class SorterWeaponLogic : MyGameLogicComponent
     {
-        IMyConveyorSorter SorterWep;
+        internal IMyConveyorSorter SorterWep;
         public readonly Guid HeartSettingsGUID = new Guid("06edc546-3e42-41f3-bc72-1d640035fbf2");
         public const int HeartSettingsUpdateCount = 60 * 1 / 10;
         int SyncCountdown;
@@ -75,18 +75,24 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             if (ShootState.Value && lastShoot >= 60)
             {
-                MatrixD worldMatrix = SorterWep.WorldMatrix; // Block's world matrix
-                MatrixD dummyMatrix = modeldummy["muzzle01"].Matrix; // Dummy's local matrix
+                MatrixD muzzleMatrix = GetMuzzleMatrix();
 
-                // Combine the matrices by multiplying them to get the transformation of the dummy in world space
-                MatrixD combinedMatrix = dummyMatrix * worldMatrix;
-
-                // Now combinedMatrix.Translation is the muzzle position in world coordinates,
-                // and combinedMatrix.Forward is the forward direction in world coordinates.
-                ProjectileManager.I.AddHitscanProjectile(0, combinedMatrix.Translation, combinedMatrix.Forward, SorterWep);
+                ProjectileManager.I.AddHitscanProjectile(0, muzzleMatrix.Translation, muzzleMatrix.Forward, SorterWep);
                 //ProjectileManager.I.AddProjectile(new Projectile(0, combinedMatrix.Translation, combinedMatrix.Forward, SorterWep));
                 lastShoot -= 60;
             }
+        }
+
+        public virtual MatrixD GetMuzzleMatrix()
+        {
+            MatrixD worldMatrix = SorterWep.WorldMatrix; // Block's world matrix
+            MatrixD dummyMatrix = modeldummy["muzzle01"].Matrix; // Dummy's local matrix
+
+            // Combine the matrices by multiplying them to get the transformation of the dummy in world space
+            return dummyMatrix * worldMatrix;
+
+            // Now combinedMatrix.Translation is the muzzle position in world coordinates,
+            // and combinedMatrix.Forward is the forward direction in world coordinates.
         }
 
 
