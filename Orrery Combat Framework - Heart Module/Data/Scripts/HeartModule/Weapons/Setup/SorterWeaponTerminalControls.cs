@@ -89,7 +89,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             }
             {
                 var slider = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlSlider, IMyConveyorSorter>(IdPrefix + "HeartAIRange");
-                slider.Title = MyStringId.GetOrCompute("HeartSlider");
+                slider.Title = MyStringId.GetOrCompute("AI Range");
                 slider.Tooltip = MyStringId.GetOrCompute("HeartSliderDesc");
                 slider.SetLimits(1, 100); // Set the minimum and maximum values for the slider
                 slider.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().AI_Range_Slider; // Replace with your property
