@@ -119,7 +119,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
     [ProtoContract]
     public struct Visuals
     {
-        [ProtoMember(1)] public string OnShootParticle;
-        [ProtoMember(2)] public string OnReloadParticle;
+        [ProtoMember(1)] public string ShootParticle;
+        [ProtoMember(2)] public bool ContinuousShootParticle;
+        [ProtoMember(3)] public string ReloadParticle;
+
+        public bool HasShootParticle => !ShootParticle?.Equals("") ?? false;
+        public bool HasReloadParticle => !ReloadParticle?.Equals("") ?? false;
     }
 }

@@ -42,6 +42,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Debug
             if (Instance == null)
                 return;
 
+
             if (Instance.QueuedPoints.ContainsKey(globalPos))
                 Instance.QueuedPoints[globalPos] = new MyTuple<long, Color>(DateTime.Now.Ticks + (long)(duration * TimeSpan.TicksPerSecond), color);
             else
@@ -65,6 +66,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Debug
             if (Instance == null)
                 return;
 
+
             if (Instance.QueuedGridPoints.ContainsKey(blockPos))
                 Instance.QueuedGridPoints[blockPos] = new MyTuple<long, Color, IMyCubeGrid>(DateTime.Now.Ticks + (long)(duration * TimeSpan.TicksPerSecond), color, grid);
             else
@@ -75,6 +77,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Debug
         {
             if (Instance == null)
                 return;
+
 
             MyTuple<Vector3D, Vector3D> key = new MyTuple<Vector3D, Vector3D>(origin, destination);
             if (Instance.QueuedLinePoints.ContainsKey(key))
