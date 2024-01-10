@@ -88,8 +88,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 //c.OffText = MyStringId.GetOrCompute("Off");
 
                 // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
-                ShootToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().ShootState.Value;  // Getting the value
-                ShootToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().ShootState.Value = v; // Setting the value
+                ShootToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Shoot;  // Getting the value
+                ShootToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Shoot = v; // Setting the value
 
 
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(ShootToggle);

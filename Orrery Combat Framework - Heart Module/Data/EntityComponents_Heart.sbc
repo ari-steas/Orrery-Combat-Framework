@@ -3,7 +3,7 @@
     <EntityComponent xsi:type="MyObjectBuilder_ModStorageComponentDefinition">
       <Id>
         <TypeId>ModStorageComponent</TypeId>
-        <SubtypeId>Cringe</SubtypeId>
+        <SubtypeId>HeartModStorage</SubtypeId>
       </Id>
       <RegisteredStorageGuids>
         <guid>06edc546-3e42-41f3-bc72-1d640035fbf2</guid>
