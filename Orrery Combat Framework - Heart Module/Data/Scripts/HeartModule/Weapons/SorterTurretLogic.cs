@@ -9,7 +9,10 @@ using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
 using VRageMath;
+using VRage.Sync;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
+using VRage.Game.ModAPI.Network;
+using VRage.ObjectBuilders;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
@@ -17,6 +20,33 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
     public class SorterTurretLogic : SorterWeaponLogic
     {
         MatrixD MuzzleMatrix = MatrixD.Identity;
+        public MySync<float, SyncDirection.FromServer> AzimuthSync;
+        public MySync<float, SyncDirection.FromServer> ElevationSync;
+
+
+        public override void Init(MyObjectBuilder_EntityBase objectBuilder)
+        {
+            base.Init(objectBuilder);
+
+
+            AzimuthSync.ValueChanged += OnAzimuthChanged;
+            ElevationSync.ValueChanged += OnElevationChanged;
+        }
+
+
+        private void OnAzimuthChanged(MySync<float, SyncDirection.FromServer> obj)
+        {
+            // Handle the change in azimuth
+            Azimuth = obj.Value;
+            // Additional logic to apply azimuth changes, if needed
+        }
+
+        private void OnElevationChanged(MySync<float, SyncDirection.FromServer> obj)
+        {
+            // Handle the change in elevation
+            Elevation = obj.Value;
+            // Additional logic to apply elevation changes, if needed
+        }
 
         public override void UpdateBeforeSimulation()
         {
