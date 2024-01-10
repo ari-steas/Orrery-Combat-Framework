@@ -1,5 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.Common.ObjectBuilders;
 using Sandbox.ModAPI;
 using System;
@@ -18,7 +19,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
     {
         MatrixD MuzzleMatrix = MatrixD.Identity;
 
-        public SorterTurretLogic(IMyConveyorSorter sorterWeapon) : base(sorterWeapon) { }
+        public SorterTurretLogic(IMyConveyorSorter sorterWeapon, SerializableWeaponDefinition definition) : base(sorterWeapon, definition) { }
 
         public override void UpdateBeforeSimulation()
         {
@@ -33,13 +34,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             try
             {
                 Dictionary<string, IMyModelDummy> dummies = new Dictionary<string, IMyModelDummy>();
-                MyEntitySubpart azSubpart = HeartData.I.SubpartManager.GetSubpart((MyEntity)SorterWep, "TestAz");
-                MyEntitySubpart evSubpart = HeartData.I.SubpartManager.GetSubpart(azSubpart, "TestEv");
+                MyEntitySubpart azSubpart = HeartData.I.SubpartManager.GetSubpart((MyEntity)SorterWep, Definition.Assignments.AzimuthSubpart);
+                MyEntitySubpart evSubpart = HeartData.I.SubpartManager.GetSubpart(azSubpart, Definition.Assignments.ElevationSubpart);
 
                 ((IMyEntity)evSubpart).Model.GetDummies(dummies);
 
                 MatrixD partMatrix = evSubpart.WorldMatrix;
-                Matrix muzzleMatrix = dummies["muzzle01"].Matrix;
+                Matrix muzzleMatrix = dummies[Definition.Assignments.Muzzles[0]].Matrix;
 
                 //foreach (var part in HeartData.I.SubpartManager.GetAllSubparts((MyEntity)SorterWep))
                 //    MyAPIGateway.Utilities.ShowMessage("HM", part);
@@ -53,7 +54,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public void UpdateTurretSubparts()
         {
-            Vector3D vecToTarget = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, Vector3D.Zero, (MyEntity)MyAPIGateway.Session.Player.Controller.ControlledEntity.Entity, 0) ?? Vector3D.MaxValue;
+            Vector3D vecToTarget = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, Vector3D.Zero, (MyEntity)MyAPIGateway.Session.Player?.Controller?.ControlledEntity?.Entity, 0) ?? Vector3D.MaxValue;
             
             if (vecToTarget == Vector3D.MaxValue)
                 return;
@@ -73,24 +74,21 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         float Azimuth = 0;
         float Elevation = 0;
 
-        float AzSpeedLimit = 0.01f;
-        float EvSpeedLimit = 0.01f;
-
-        float pAzLimitRads = (float) Math.PI / 2; // Positive Azimuth Limit, Radians
-        float nAzLimitRads = (float) -Math.PI / 2; // Negative Azimuth Limit, Radians
-        float pEvLimitRads = (float) Math.PI / 4; // 45deg
-        float nEvLimitRads = 0; // 0deg
-
         private Matrix GetAzimuthMatrix(Vector3D targetDirection)
         {
             float desiredAzimuth = (float) Math.Atan2(targetDirection.X, targetDirection.Z);
             if (desiredAzimuth == float.NaN)
                 desiredAzimuth = (float) Math.PI;
 
-            desiredAzimuth = Clamp(desiredAzimuth - Azimuth, AzSpeedLimit, -AzSpeedLimit) + Azimuth;
-
-            Azimuth = Clamp(desiredAzimuth, pAzLimitRads, nAzLimitRads);
+            desiredAzimuth = Clamp(desiredAzimuth - Azimuth, Definition.Hardpoint.AzimuthRate, -Definition.Hardpoint.AzimuthRate) + Azimuth;
             
+            return GetAzimuthMatrix(desiredAzimuth);
+        }
+
+        private Matrix GetAzimuthMatrix(float desiredAzimuth)
+        {
+            Azimuth = Clamp(desiredAzimuth, Definition.Hardpoint.MaxAzimuth, Definition.Hardpoint.MinAzimuth);
+
             return Matrix.CreateFromYawPitchRoll(Azimuth, 0, 0);
         }
 
@@ -100,9 +98,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (desiredElevation == float.NaN)
                 desiredElevation = (float)Math.PI;
 
-            desiredElevation = Clamp(desiredElevation - Elevation, EvSpeedLimit, -EvSpeedLimit) + Elevation;
+            desiredElevation = Clamp(desiredElevation - Elevation, Definition.Hardpoint.ElevationRate, -Definition.Hardpoint.ElevationRate) + Elevation;
 
-            Elevation = -Clamp(-desiredElevation, pEvLimitRads, nEvLimitRads);
+            return GetElevationMatrix(desiredElevation);
+        }
+
+        private Matrix GetElevationMatrix(float desiredElevation)
+        {
+            Elevation = -Clamp(-desiredElevation, Definition.Hardpoint.MaxElevation, Definition.Hardpoint.MinElevation);
 
             return Matrix.CreateFromYawPitchRoll(0, Elevation, 0);
         }

@@ -75,12 +75,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         private void AddWeapon(IMyConveyorSorter sorter)
         {
             SerializableWeaponDefinition def = WeaponDefinitionManager.GetDefinition(sorter.BlockDefinition.SubtypeName);
-            MyLog.Default.WriteLineAndConsole("I AM GOING TO FUCKING EXPLODE " + (def == null) + " " + (def?.Assignments.IsTurret));
             SorterWeaponLogic logic;
             if (def.Assignments.IsTurret)
-                logic = new SorterTurretLogic(sorter); // TODO constructor
+                logic = new SorterTurretLogic(sorter, def);
             else
-                logic = new SorterWeaponLogic(sorter); // TODO constructor
+                logic = new SorterWeaponLogic(sorter, def);
 
             NextId++;
             while (!IsIdAvailable(NextId))
