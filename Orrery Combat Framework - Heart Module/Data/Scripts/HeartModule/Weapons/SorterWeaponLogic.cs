@@ -34,6 +34,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         int SyncCountdown;
 
         public MySync<bool, SyncDirection.BothWays> ShootState; //temporary (lmao) magic bullshit in place of an actual
+        public MySync<float, SyncDirection.BothWays> AiRange; //temporary (lmao) magic bullshit in place of an actual
 
         public readonly Heart_Settings Settings = new Heart_Settings();
 
@@ -44,7 +45,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public SorterWeaponLogic(IMyConveyorSorter sorterWeapon, SerializableWeaponDefinition definition)
         {
-            sorterWeapon.GameLogic = MyCompositeGameLogicComponent.Create(new MyGameLogicComponent[] { this, (MyGameLogicComponent)sorterWeapon.GameLogic }, (MyEntity) sorterWeapon);
+            sorterWeapon.GameLogic = this;
             Init(sorterWeapon.GetObjectBuilder());
             this.Definition = definition;
         }
@@ -156,6 +157,23 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             }
         }
 
+        public float AI_Range
+        {
+            get
+            {
+
+                return Settings.AiRange;
+            }
+
+            set
+            {
+                Settings.AiRange = value;
+                AiRange.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+
+            }
+        }
 
 
 
