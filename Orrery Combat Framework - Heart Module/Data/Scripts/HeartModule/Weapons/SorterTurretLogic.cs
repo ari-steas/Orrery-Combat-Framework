@@ -10,7 +10,10 @@ using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
 using VRageMath;
+using VRage.Sync;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
+using VRage.Game.ModAPI.Network;
+using VRage.ObjectBuilders;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
@@ -18,6 +21,33 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
     public class SorterTurretLogic : SorterWeaponLogic
     {
         MatrixD MuzzleMatrix = MatrixD.Identity;
+        public MySync<float, SyncDirection.FromServer> AzimuthSync;
+        public MySync<float, SyncDirection.FromServer> ElevationSync;
+
+
+        public override void Init(MyObjectBuilder_EntityBase objectBuilder)
+        {
+            base.Init(objectBuilder);
+
+
+            AzimuthSync.ValueChanged += OnAzimuthChanged;
+            ElevationSync.ValueChanged += OnElevationChanged;
+        }
+
+
+        private void OnAzimuthChanged(MySync<float, SyncDirection.FromServer> obj)
+        {
+            // Handle the change in azimuth
+            Azimuth = obj.Value;
+            // Additional logic to apply azimuth changes, if needed
+        }
+
+        private void OnElevationChanged(MySync<float, SyncDirection.FromServer> obj)
+        {
+            // Handle the change in elevation
+            Elevation = obj.Value;
+            // Additional logic to apply elevation changes, if needed
+        }
 
         public SorterTurretLogic(IMyConveyorSorter sorterWeapon, SerializableWeaponDefinition definition) : base(sorterWeapon, definition) { }
 
@@ -54,7 +84,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public void UpdateTurretSubparts()
         {
-            Vector3D vecToTarget = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, Vector3D.Zero, (MyEntity)MyAPIGateway.Session.Player?.Controller?.ControlledEntity?.Entity, 0) ?? Vector3D.MaxValue;
+            Vector3D vecToTarget = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, Vector3D.Zero, Vector3D.Zero, Vector3D.Zero, 1) ?? Vector3D.MaxValue;
             
             if (vecToTarget == Vector3D.MaxValue)
                 return;
