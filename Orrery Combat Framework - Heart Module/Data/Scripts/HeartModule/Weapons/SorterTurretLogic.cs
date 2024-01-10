@@ -1,14 +1,9 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
-using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Sandbox.Common.ObjectBuilders;
-using Sandbox.Definitions;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VRage.Game.Components;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
@@ -33,26 +28,31 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public override MatrixD CalcMuzzleMatrix()
         {
-            Dictionary<string, IMyModelDummy> dummies = new Dictionary<string, IMyModelDummy>();
-            MyEntitySubpart subpart = HeartData.I.SubpartManager.GetSubpart((MyEntity)SorterWep, "TestAz");
+            try
+            {
+                Dictionary<string, IMyModelDummy> dummies = new Dictionary<string, IMyModelDummy>();
+                MyEntitySubpart azSubpart = HeartData.I.SubpartManager.GetSubpart((MyEntity)SorterWep, "TestAz");
+                MyEntitySubpart evSubpart = HeartData.I.SubpartManager.GetSubpart(azSubpart, "TestEv");
 
-            ((IMyEntity)subpart).Model.GetDummies(dummies);
+                ((IMyEntity)evSubpart).Model.GetDummies(dummies);
 
-            MatrixD partMatrix = subpart.WorldMatrix;
-            Matrix muzzleMatrix = dummies["muzzle01"].Matrix;
+                MatrixD partMatrix = evSubpart.WorldMatrix;
+                Matrix muzzleMatrix = dummies["muzzle01"].Matrix;
 
-            //foreach (var part in HeartData.I.SubpartManager.GetAllSubparts((MyEntity)SorterWep))
-            //    MyAPIGateway.Utilities.ShowMessage("HM", part);
+                //foreach (var part in HeartData.I.SubpartManager.GetAllSubparts((MyEntity)SorterWep))
+                //    MyAPIGateway.Utilities.ShowMessage("HM", part);
 
-            if (muzzleMatrix != null)
-                return muzzleMatrix * partMatrix;
-
+                if (muzzleMatrix != null)
+                    return muzzleMatrix * partMatrix;
+            }
+            catch { }
             return MatrixD.Identity;
         }
 
         public void UpdateTurretSubparts()
         {
-            Vector3D vecToTarget = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, Vector3D.Zero, (MyEntity)MyAPIGateway.Session.Player.Controller.ControlledEntity.Entity, 0) ?? Vector3D.MaxValue;
+            //Vector3D vecToTarget = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, Vector3D.Zero, (MyEntity)MyAPIGateway.Session.Player.Controller.ControlledEntity.Entity, 0) ?? Vector3D.MaxValue;
+            Vector3D vecToTarget = MyAPIGateway.Session.Player.Controller.ControlledEntity.Entity.PositionComp.GetPosition();
             if (vecToTarget == Vector3D.MaxValue)
                 return;
             if (!MyAPIGateway.Utilities.IsDedicated)
@@ -61,9 +61,26 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             vecToTarget -= MuzzleMatrix.Translation;
 
             MyEntitySubpart azimuth = HeartData.I.SubpartManager.GetSubpart((MyEntity)SorterWep, "TestAz");
-            
+            MyEntitySubpart elevation = HeartData.I.SubpartManager.GetSubpart(azimuth, "TestEv");
+            vecToTarget = vecToTarget.Normalized();
+
             // Inverted because SUBPARTS ARE FUCKED!
-            HeartData.I.SubpartManager.LocalRotateSubpartAbs(azimuth, MatrixD.CreateWorld(Vector3D.Zero, -vecToTarget.Normalized(), Vector3D.Up));
+            HeartData.I.SubpartManager.LocalRotateSubpartAbs(azimuth, GetAzimuthMatrix(azimuth, vecToTarget));
+            HeartData.I.SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(elevation, vecToTarget));
+        }
+        
+        private Matrix GetAzimuthMatrix(MyEntitySubpart azimuth, Vector3D targetDirection)
+        {
+            double desiredAzimuth = Math.Atan2(targetDirection.X, targetDirection.Z);
+
+            return Matrix.CreateFromYawPitchRoll((float) desiredAzimuth, 0, 0);
+        }
+
+        private MatrixD GetElevationMatrix(MyEntitySubpart elevation, Vector3D targetDirection)
+        {
+            double desiredElevation = Math.Asin(-targetDirection.Y);
+
+            return Matrix.CreateFromYawPitchRoll(0, (float)desiredElevation, 0);
         }
     }
 }
