@@ -200,7 +200,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
         }
 
-        public void AddProjectile(Projectile projectile)
+        public void AddProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, IMyConveyorSorter sorterWep)
+        {
+            if (ProjectileDefinitionManager.GetDefinition(projectileDefinitionId)?.PhysicalProjectile.IsHitscan ?? false)
+                AddHitscanProjectile(projectileDefinitionId, position, direction, sorterWep);
+            else
+                AddProjectile(new Projectile(projectileDefinitionId, position, direction, sorterWep));
+        }
+
+        private void AddProjectile(Projectile projectile)
         {
             if (projectile == null || projectile.DefinitionId == -1) return; // Ensure that invalid projectiles don't get added
 
@@ -215,7 +223,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         }
 
         Dictionary<long, uint> HitscanList = new Dictionary<long, uint>();
-        public void AddHitscanProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, IMyConveyorSorter sorterWep)
+        private void AddHitscanProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, IMyConveyorSorter sorterWep)
         {
             if (!HitscanList.ContainsKey(sorterWep.EntityId))
             {

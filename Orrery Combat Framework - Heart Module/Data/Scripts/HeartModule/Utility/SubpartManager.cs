@@ -53,10 +53,21 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
             return ((MyEntity)entity).Subparts.Keys.ToArray();
         }
 
-        public void RotateSubpart(MyEntitySubpart subpart, Matrix matrix)
+        public void LocalRotateSubpart(MyEntitySubpart subpart, Matrix matrix)
         {
             Matrix refMatrix = matrix * subpart.PositionComp.LocalMatrixRef;
+            refMatrix.Translation = subpart.PositionComp.LocalMatrixRef.Translation;
             subpart.PositionComp.SetLocalMatrix(ref refMatrix);
+        }
+        public void LocalRotateSubpartAbs(MyEntitySubpart subpart, Matrix matrix)
+        {
+            matrix.Translation = subpart.PositionComp.LocalMatrixRef.Translation;
+            subpart.PositionComp.SetLocalMatrix(ref matrix);
+        }
+        public void RotateSubpartAbs(MyEntitySubpart subpart, MatrixD matrix)
+        {
+            matrix.Translation = subpart.PositionComp.WorldMatrixRef.Translation;
+            subpart.PositionComp.SetWorldMatrix(ref matrix);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 Velocity = 100,
                 Acceleration = 0,
                 Health = -1,
-                MaxTrajectory = 100,
+                MaxTrajectory = 1000,
                 MaxLifetime = -1,
                 IsHitscan = true,
             },
