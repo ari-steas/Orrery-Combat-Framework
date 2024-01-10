@@ -31,7 +31,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 Health = -1,
                 MaxTrajectory = 1000,
                 MaxLifetime = -1,
-                IsHitscan = false,
+                IsHitscan = true,
             },
             Visual = new Visual()
             {

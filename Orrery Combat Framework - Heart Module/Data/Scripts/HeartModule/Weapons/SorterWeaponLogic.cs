@@ -66,7 +66,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         }
 
-        float fireRate = 10; // per-second
+        float fireRate = 60; // per-second
         float lastShoot = 0;
         public override void UpdateAfterSimulation()
         {

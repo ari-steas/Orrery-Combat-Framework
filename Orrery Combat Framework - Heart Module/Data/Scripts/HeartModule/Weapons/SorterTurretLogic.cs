@@ -62,38 +62,45 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
             MyEntitySubpart azimuth = HeartData.I.SubpartManager.GetSubpart((MyEntity)SorterWep, "TestAz");
             MyEntitySubpart elevation = HeartData.I.SubpartManager.GetSubpart(azimuth, "TestEv");
-            vecToTarget = Vector3D.Rotate(vecToTarget.Normalized(), MatrixD.Invert(SorterWep.WorldMatrix)); // Inverted because subparts are wonky
+            vecToTarget = Vector3D.Rotate(vecToTarget.Normalized(), MatrixD.Invert(SorterWep.WorldMatrix)); // Inverted because subparts are wonky. Pre-rotated.
 
-            HeartData.I.SubpartManager.LocalRotateSubpartAbs(azimuth, GetAzimuthMatrix(azimuth, vecToTarget));
-            HeartData.I.SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(elevation, vecToTarget));
+            HeartData.I.SubpartManager.LocalRotateSubpartAbs(azimuth, GetAzimuthMatrix(vecToTarget));
+            HeartData.I.SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(vecToTarget));
         }
 
         float Azimuth = 0;
         float Elevation = 0;
+
+        float AzSpeedLimit = 0.01f;
+        float EvSpeedLimit = 0.01f;
 
         float pAzLimitRads = (float) Math.PI / 2; // Positive Azimuth Limit, Radians
         float nAzLimitRads = (float) -Math.PI / 2; // Negative Azimuth Limit, Radians
         float pEvLimitRads = (float) Math.PI / 4; // 45deg
         float nEvLimitRads = 0; // 0deg
 
-        private Matrix GetAzimuthMatrix(MyEntitySubpart azimuth, Vector3D targetDirection)
+        private Matrix GetAzimuthMatrix(Vector3D targetDirection)
         {
-            double desiredAzimuth = Math.Atan2(targetDirection.X, targetDirection.Z);
-            if (desiredAzimuth == double.NaN)
-                desiredAzimuth = Math.PI;
+            float desiredAzimuth = (float) Math.Atan2(targetDirection.X, targetDirection.Z);
+            if (desiredAzimuth == float.NaN)
+                desiredAzimuth = (float) Math.PI;
 
-            Azimuth = Clamp((float) desiredAzimuth, pAzLimitRads, nAzLimitRads);
+            desiredAzimuth = Clamp(desiredAzimuth - Azimuth, AzSpeedLimit, -AzSpeedLimit) + Azimuth;
+
+            Azimuth = Clamp(desiredAzimuth, pAzLimitRads, nAzLimitRads);
             
             return Matrix.CreateFromYawPitchRoll(Azimuth, 0, 0);
         }
 
-        private MatrixD GetElevationMatrix(MyEntitySubpart elevation, Vector3D targetDirection)
+        private MatrixD GetElevationMatrix(Vector3D targetDirection)
         {
-            double desiredElevation = Math.Asin(-targetDirection.Y);
-            if (desiredElevation == double.NaN)
-                desiredElevation = Math.PI;
+            float desiredElevation = (float)Math.Asin(-targetDirection.Y);
+            if (desiredElevation == float.NaN)
+                desiredElevation = (float)Math.PI;
 
-            Elevation = -Clamp(-(float)desiredElevation, pEvLimitRads, nEvLimitRads);
+            desiredElevation = Clamp(desiredElevation - Elevation, EvSpeedLimit, -EvSpeedLimit) + Elevation;
+
+            Elevation = -Clamp(-desiredElevation, pEvLimitRads, nEvLimitRads);
 
             return Matrix.CreateFromYawPitchRoll(0, Elevation, 0);
         }
