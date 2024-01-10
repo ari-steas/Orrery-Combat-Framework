@@ -1,5 +1,7 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
+﻿using Heart_Module.Data.Scripts.HeartModule;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.Common.ObjectBuilders;
 using Sandbox.Game.Entities;
 using Sandbox.Game.EntityComponents;
@@ -24,6 +26,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
     public class SorterWeaponLogic : MyGameLogicComponent
     {
         internal IMyConveyorSorter SorterWep;
+        internal SerializableWeaponDefinition Definition;
         public readonly Guid HeartSettingsGUID = new Guid("06edc546-3e42-41f3-bc72-1d640035fbf2");
         public const int HeartSettingsUpdateCount = 60 * 1 / 10;
         int SyncCountdown;
@@ -37,10 +40,11 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public Dictionary<string, IMyModelDummy> modeldummy { get; set; } = new Dictionary<string, IMyModelDummy>();
 
-        public SorterWeaponLogic(IMyConveyorSorter sorterWeapon)
+        public SorterWeaponLogic(IMyConveyorSorter sorterWeapon, SerializableWeaponDefinition definition)
         {
             sorterWeapon.GameLogic = MyCompositeGameLogicComponent.Create(new MyGameLogicComponent[] { this, (MyGameLogicComponent)sorterWeapon.GameLogic }, (MyEntity) sorterWeapon);
             Init(sorterWeapon.GetObjectBuilder());
+            this.Definition = definition;
         }
 
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
@@ -86,19 +90,17 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         }
 
 
-        float fireRate = 60; // per-second
         float lastShoot = 0;
         public override void UpdateAfterSimulation()
         {
             if (lastShoot < 60)
-                lastShoot += fireRate;
+                lastShoot += Definition.Loading.RateOfFire;
 
             if (ShootState.Value && lastShoot >= 60)
             {
                 MatrixD muzzleMatrix = CalcMuzzleMatrix();
 
-                ProjectileManager.I.AddProjectile(0, muzzleMatrix.Translation, muzzleMatrix.Forward, SorterWep);
-                //ProjectileManager.I.AddProjectile(new Projectile(0, combinedMatrix.Translation, combinedMatrix.Forward, SorterWep));
+                ProjectileManager.I.AddProjectile(0, muzzleMatrix.Translation, /*RandomCone(*/muzzleMatrix.Forward/*, Definition.Hardpoint.ShotInaccuracy)*/, SorterWep);
                 lastShoot -= 60;
             }
         }
@@ -106,7 +108,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public virtual MatrixD CalcMuzzleMatrix()
         {
             MatrixD worldMatrix = SorterWep.WorldMatrix; // Block's world matrix
-            MatrixD dummyMatrix = modeldummy["muzzle01"].Matrix; // Dummy's local matrix
+            MatrixD dummyMatrix = modeldummy[Definition.Assignments.Muzzles[0]].Matrix; // Dummy's local matrix
 
             // Combine the matrices by multiplying them to get the transformation of the dummy in world space
             return dummyMatrix * worldMatrix;
@@ -208,7 +210,12 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         #endregion
 
 
+        internal Vector3D RandomCone(Vector3D center, double radius)
+        {
+            Vector3D Axis = Vector3D.CalculatePerpendicularVector(center).Rotate(center, Math.PI * 2 * HeartData.I.Random.NextDouble());
 
+            return Vector3D.Up.Rotate(Axis, radius * HeartData.I.Random.NextDouble());
+        }
 
 
 
