@@ -51,8 +51,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public void UpdateTurretSubparts()
         {
-            //Vector3D vecToTarget = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, Vector3D.Zero, (MyEntity)MyAPIGateway.Session.Player.Controller.ControlledEntity.Entity, 0) ?? Vector3D.MaxValue;
-            Vector3D vecToTarget = MyAPIGateway.Session.Player.Controller.ControlledEntity.Entity.PositionComp.GetPosition();
+            Vector3D vecToTarget = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, Vector3D.Zero, (MyEntity)MyAPIGateway.Session.Player.Controller.ControlledEntity.Entity, 0) ?? Vector3D.MaxValue;
+            
             if (vecToTarget == Vector3D.MaxValue)
                 return;
             if (!MyAPIGateway.Utilities.IsDedicated)
@@ -62,25 +62,33 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
             MyEntitySubpart azimuth = HeartData.I.SubpartManager.GetSubpart((MyEntity)SorterWep, "TestAz");
             MyEntitySubpart elevation = HeartData.I.SubpartManager.GetSubpart(azimuth, "TestEv");
-            vecToTarget = vecToTarget.Normalized();
+            vecToTarget = Vector3D.Rotate(vecToTarget.Normalized(), MatrixD.Invert(SorterWep.WorldMatrix));
 
             // Inverted because SUBPARTS ARE FUCKED!
             HeartData.I.SubpartManager.LocalRotateSubpartAbs(azimuth, GetAzimuthMatrix(azimuth, vecToTarget));
             HeartData.I.SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(elevation, vecToTarget));
         }
-        
+
+        float Azimuth = 0;
+        float Elevation = 0;
         private Matrix GetAzimuthMatrix(MyEntitySubpart azimuth, Vector3D targetDirection)
         {
             double desiredAzimuth = Math.Atan2(targetDirection.X, targetDirection.Z);
+            if (desiredAzimuth == double.NaN)
+                desiredAzimuth = Math.PI;
 
-            return Matrix.CreateFromYawPitchRoll((float) desiredAzimuth, 0, 0);
+            Azimuth = (float) desiredAzimuth;
+            return Matrix.CreateFromYawPitchRoll(Azimuth, 0, 0);
         }
 
         private MatrixD GetElevationMatrix(MyEntitySubpart elevation, Vector3D targetDirection)
         {
             double desiredElevation = Math.Asin(-targetDirection.Y);
+            if (desiredElevation == double.NaN)
+                desiredElevation = Math.PI;
 
-            return Matrix.CreateFromYawPitchRoll(0, (float)desiredElevation, 0);
+            Elevation = (float)desiredElevation;
+            return Matrix.CreateFromYawPitchRoll(0, Elevation, 0);
         }
     }
 }
