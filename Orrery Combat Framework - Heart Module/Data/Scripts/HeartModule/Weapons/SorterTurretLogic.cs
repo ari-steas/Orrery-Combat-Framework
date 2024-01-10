@@ -13,10 +13,12 @@ using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
-    [MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeaponTurret")]
+    //[MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeaponTurret")]
     public class SorterTurretLogic : SorterWeaponLogic
     {
         MatrixD MuzzleMatrix = MatrixD.Identity;
+
+        public SorterTurretLogic(IMyConveyorSorter sorterWeapon) : base(sorterWeapon) { }
 
         public override void UpdateBeforeSimulation()
         {

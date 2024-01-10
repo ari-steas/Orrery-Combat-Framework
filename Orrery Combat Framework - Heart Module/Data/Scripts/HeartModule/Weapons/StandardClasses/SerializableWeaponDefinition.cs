@@ -10,7 +10,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
     {
         public SerializableWeaponDefinition() { }
     
-        [ProtoMember(1)] public string Name;
         [ProtoMember(2)] public Targeting Targeting;
         [ProtoMember(3)] public Assignments Assignments;
         [ProtoMember(4)] public Hardpoint Hardpoint;
@@ -61,6 +60,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
         [ProtoMember(5)] public float DurabilityModifier;
         [ProtoMember(6)] public string InventoryIconName;
         [ProtoMember(7)] public string[] Muzzles;
+
+        public bool HasElevation => !ElevationSubpart?.Equals("") ?? false;
+        public bool HasAzimuth => !AzimuthSubpart?.Equals("") ?? false;
+        public bool HasMuzzleSubpart => !MuzzleSubpart?.Equals("") ?? false;
+        public bool IsTurret => HasAzimuth && HasElevation;
     }
 
     [ProtoContract]

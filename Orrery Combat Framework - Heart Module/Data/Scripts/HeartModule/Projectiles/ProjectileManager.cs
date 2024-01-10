@@ -36,33 +36,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         public override void LoadData()
         {
             I = this;
-            MyAPIGateway.Utilities.MessageEnteredSender += TempChatCommandHandler;
             DamageHandler.Load();
         }
 
         protected override void UnloadData()
         {
             I = null;
-            MyAPIGateway.Utilities.MessageEnteredSender -= TempChatCommandHandler;
             DamageHandler.Unload();
         }
 
-        private void TempChatCommandHandler(ulong sender, string messageText, ref bool sendToOthers)
-        {
-            if (!messageText.StartsWith("!"))
-                return;
-
-            string[] split = messageText.Split(' ');
-            switch (split[0].ToLower())
-            {
-                case "!hhelp":
-                    MyAPIGateway.Utilities.ShowMessage("HeartModule", "Commands:\n!hHelp - Prints all commands\n(press L) - Spawns a projectile on your face");
-                    sendToOthers = false;
-                    break;
-            }
-        }
-
-        int j = 0;
         public override void UpdateAfterSimulation()
         {
             if (HeartData.I.IsSuspended) return;
