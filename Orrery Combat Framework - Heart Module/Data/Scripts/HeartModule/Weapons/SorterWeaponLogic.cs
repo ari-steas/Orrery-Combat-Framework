@@ -33,8 +33,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public const int HeartSettingsUpdateCount = 60 * 1 / 10;
         int SyncCountdown;
 
-        public MySync<bool, SyncDirection.BothWays> ShootState; //temporary (lmao) magic bullshit in place of an actual
-        public MySync<float, SyncDirection.BothWays> AiRange; //temporary (lmao) magic bullshit in place of an actual
+        public MySync<bool, SyncDirection.BothWays> ShootState; //temporary (lmao) magic bullshit in place of actual packet sending
+        public MySync<float, SyncDirection.BothWays> AiRange; 
+        public MySync<bool, SyncDirection.BothWays> TargetGridsState; 
 
         public readonly Heart_Settings Settings = new Heart_Settings();
 
@@ -54,7 +55,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         {
             NeedsUpdate = MyEntityUpdateEnum.BEFORE_NEXT_FRAME;
             ShootState.ValueChanged += OnShootStateChanged; // Attach the handler
-            AiRange.ValueChanged += OnAiRangeChanged; // Attach the handler
+            AiRange.ValueChanged += OnAiRangeChanged; 
+            TargetGridsState.ValueChanged += OnTargetGridsStateChanged; 
+
         }
 
         private void OnShootStateChanged(MySync<bool, SyncDirection.BothWays> obj)
@@ -69,6 +72,13 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             // Accessing the float value using .Value property
             float newValue = obj.Value;
             MyAPIGateway.Utilities.ShowNotification($"AI Range changed to: {newValue}", 2000, "White");
+        }
+
+        private void OnTargetGridsStateChanged(MySync<bool, SyncDirection.BothWays> obj)
+        {
+            // Accessing the boolean value using .Value property
+            bool newValue = obj.Value;
+            MyAPIGateway.Utilities.ShowNotification($"Target Grids State changed to: {newValue}", 2000, "White");
         }
 
 
@@ -145,7 +155,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             // and combinedMatrix.Forward is the forward direction in world coordinates.
         }
 
-
+        #region Terminal controls
 
         public bool Terminal_Heart_Shoot
         {
@@ -165,7 +175,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             }
         }
 
-        public float AI_Range_Slider
+        public float Terminal_Heart_Range_Slider
         {
             get
             {
@@ -183,7 +193,25 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             }
         }
 
+        public bool Terminal_Heart_TargetGrids
+        {
+            get
+            {
 
+                return Settings.TargetGridsState;
+            }
+
+            set
+            {
+                Settings.TargetGridsState = value;
+                TargetGridsState.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+
+            }
+        }
+
+        #endregion
 
         #region Saving
 
@@ -229,6 +257,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     Settings.AiRange = loadedSettings.AiRange;
                     AiRange.Value = Settings.AiRange;
 
+                    // Set the TargetGrids state from loaded settings
+                    Settings.TargetGridsState = loadedSettings.TargetGridsState;
+                    TargetGridsState.Value = Settings.TargetGridsState;
+
                     return true;
                 }
             }
@@ -268,6 +300,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public override void Close()
         {
             base.Close();
+
+            // Unsubscribe from the event when the component is closed
+            if (AiRange != null)
+                AiRange.ValueChanged -= OnAiRangeChanged;
 
             // Unsubscribe from the event when the component is closed
             if (AiRange != null)

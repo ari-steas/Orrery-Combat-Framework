@@ -92,14 +92,32 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 slider.Title = MyStringId.GetOrCompute("AI Range");
                 slider.Tooltip = MyStringId.GetOrCompute("HeartSliderDesc");
                 slider.SetLimits(1, 100); // Set the minimum and maximum values for the slider
-                slider.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().AI_Range_Slider; // Replace with your property
-                slider.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().AI_Range_Slider = v; // Replace with your property
-                slider.Writer = (b, sb) => sb.AppendFormat("Current value: {0}", b.GameLogic.GetAs<SorterWeaponLogic>().AI_Range_Slider); // Replace with your property
+                slider.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Range_Slider; // Replace with your property
+                slider.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Range_Slider = v; // Replace with your property
+                slider.Writer = (b, sb) => sb.AppendFormat("Current value: {0}", b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Range_Slider); // Replace with your property
                 slider.Visible = CustomVisibleCondition;
                 slider.Enabled = (b) => true; // or your custom condition
                 slider.SupportsMultipleBlocks = true;
 
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(slider);
+            }
+            {
+                var ShootToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartTargetGrids");
+                ShootToggle.Title = MyStringId.GetOrCompute("Target Grids");
+                ShootToggle.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
+                ShootToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
+                // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
+                // optional, they both default to true.
+                ShootToggle.Visible = CustomVisibleCondition;
+                //c.Enabled = CustomVisibleCondition;
+                ShootToggle.OnText = MySpaceTexts.SwitchText_On;
+                ShootToggle.OffText = MySpaceTexts.SwitchText_Off;
+                //c.OffText = MyStringId.GetOrCompute("Off");
+                // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
+                ShootToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetGrids;  // Getting the value
+                ShootToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetGrids = v; // Setting the value
+
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(ShootToggle);
             }
 
         }

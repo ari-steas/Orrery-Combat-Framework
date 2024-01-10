@@ -11,5 +11,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
         [ProtoMember(2)]
         public float AiRange;
 
+        [ProtoMember(3)]
+        public bool TargetGridsState;
+
     }
 }
