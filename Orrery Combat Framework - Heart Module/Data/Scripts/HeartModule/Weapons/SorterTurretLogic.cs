@@ -62,22 +62,28 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
             MyEntitySubpart azimuth = HeartData.I.SubpartManager.GetSubpart((MyEntity)SorterWep, "TestAz");
             MyEntitySubpart elevation = HeartData.I.SubpartManager.GetSubpart(azimuth, "TestEv");
-            vecToTarget = Vector3D.Rotate(vecToTarget.Normalized(), MatrixD.Invert(SorterWep.WorldMatrix));
+            vecToTarget = Vector3D.Rotate(vecToTarget.Normalized(), MatrixD.Invert(SorterWep.WorldMatrix)); // Inverted because subparts are wonky
 
-            // Inverted because SUBPARTS ARE FUCKED!
             HeartData.I.SubpartManager.LocalRotateSubpartAbs(azimuth, GetAzimuthMatrix(azimuth, vecToTarget));
             HeartData.I.SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(elevation, vecToTarget));
         }
 
         float Azimuth = 0;
         float Elevation = 0;
+
+        float pAzLimitRads = (float) Math.PI / 2; // Positive Azimuth Limit, Radians
+        float nAzLimitRads = (float) -Math.PI / 2; // Negative Azimuth Limit, Radians
+        float pEvLimitRads = (float) Math.PI / 4; // 45deg
+        float nEvLimitRads = 0; // 0deg
+
         private Matrix GetAzimuthMatrix(MyEntitySubpart azimuth, Vector3D targetDirection)
         {
             double desiredAzimuth = Math.Atan2(targetDirection.X, targetDirection.Z);
             if (desiredAzimuth == double.NaN)
                 desiredAzimuth = Math.PI;
 
-            Azimuth = (float) desiredAzimuth;
+            Azimuth = Clamp((float) desiredAzimuth, pAzLimitRads, nAzLimitRads);
+            
             return Matrix.CreateFromYawPitchRoll(Azimuth, 0, 0);
         }
 
@@ -87,8 +93,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (desiredElevation == double.NaN)
                 desiredElevation = Math.PI;
 
-            Elevation = (float)desiredElevation;
+            Elevation = -Clamp(-(float)desiredElevation, pEvLimitRads, nEvLimitRads);
+
             return Matrix.CreateFromYawPitchRoll(0, Elevation, 0);
+        }
+
+        private float Clamp(float value, float max, float min)
+        {
+            if (value < min)
+                return min;
+            if (value > max)
+                return max;
+            return value;
         }
     }
 }
