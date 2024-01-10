@@ -1,6 +1,8 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Sandbox.Common.ObjectBuilders;
 using Sandbox.Game.Entities;
+using Sandbox.Game.EntityComponents;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
@@ -11,6 +13,7 @@ using VRage.Game.ModAPI.Network;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
 using VRage.Sync;
+using VRage.Utils;
 using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding;
 using static VRage.Game.MyObjectBuilder_BehaviorTreeDecoratorNode;
@@ -73,7 +76,15 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             SorterWep.Model.GetDummies(modeldummy);
             MyAPIGateway.Utilities.ShowNotification($"Model Dummies: {modeldummy.Count}", 2000, "White");
 
+            // Log the result of LoadSettings
+            var loadSettingsOutput = LoadSettings();
+            MyLog.Default.WriteLineAndConsole($"LoadSettings Output: {loadSettingsOutput}");
+
+            // Implement weapon UI defaults here
+
+            SaveSettings();
         }
+
 
         float fireRate = 60; // per-second
         float lastShoot = 0;
@@ -105,7 +116,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         }
 
 
-        public float Terminal_ExampleFloat { get; set; }
 
         public bool Terminal_Heart_Shoot
         {
@@ -117,17 +127,94 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             set
             {
-                Settings.ShootState = true;
-
+                Settings.ShootState = value;
+                ShootState.Value = value;
                 if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
                     NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
 
             }
         }
 
+
+
+
+        #region Saving
+
+
+        void SaveSettings()
+        {
+            if (SorterWep == null)
+                return; // called too soon or after it was already closed, ignore
+
+            if (Settings == null)
+                throw new NullReferenceException($"Settings == null on entId={Entity?.EntityId}; FUCK");
+
+            if (MyAPIGateway.Utilities == null)
+                throw new NullReferenceException($"MyAPIGateway.Utilities == null; entId={Entity?.EntityId}; OH GOD!!");
+
+            if (SorterWep.Storage == null)
+                SorterWep.Storage = new MyModStorageComponent();
+
+            SorterWep.Storage.SetValue(HeartSettingsGUID, Convert.ToBase64String(MyAPIGateway.Utilities.SerializeToBinary(Settings)));
+
+            //MyAPIGateway.Utilities.ShowNotification(SettingsBlockRange.ToString(), 1000, "Red");
+        }
+
+        bool LoadSettings()
+        {
+            if (SorterWep.Storage == null)
+                return false;
+
+            string rawData;
+            if (!SorterWep.Storage.TryGetValue(HeartSettingsGUID, out rawData))
+                return false;
+
+            try
+            {
+                var loadedSettings = MyAPIGateway.Utilities.SerializeFromBinary<Heart_Settings>(Convert.FromBase64String(rawData));
+
+                if (loadedSettings != null)
+                {
+                    Settings.ShootState = loadedSettings.ShootState;
+
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                //should probably log this tbqh
+            }
+
+            return false;
+        }
+
+        public override bool IsSerialized()
+        {
+            try
+            {
+                SaveSettings();
+                MyAPIGateway.Utilities.ShowNotification("AAAHH I'M SERIALIZING AAAHHHHH", 2000, "Red");
+            }
+            catch (Exception e)
+            {
+                //should probably log this tbqh
+            }
+
+            return base.IsSerialized();
+        }
+
+        #endregion
+
+
+
+
+
+
+
         public override void Close()
         {
             base.Close();
+
             // Unsubscribe from the event when the component is closed
             if (ShootState != null)
                 ShootState.ValueChanged -= OnShootStateChanged;
