@@ -92,9 +92,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 slider.Title = MyStringId.GetOrCompute("HeartSlider");
                 slider.Tooltip = MyStringId.GetOrCompute("HeartSliderDesc");
                 slider.SetLimits(1, 100); // Set the minimum and maximum values for the slider
-                slider.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().AiRange; // Replace with your property
-                slider.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().AiRange.Value = v; // Replace with your property
-                slider.Writer = (b, sb) => sb.AppendFormat("Current value: {0}", b.GameLogic.GetAs<SorterWeaponLogic>().AiRange); // Replace with your property
+                slider.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().AI_Range_Slider; // Replace with your property
+                slider.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().AI_Range_Slider = v; // Replace with your property
+                slider.Writer = (b, sb) => sb.AppendFormat("Current value: {0}", b.GameLogic.GetAs<SorterWeaponLogic>().AI_Range_Slider); // Replace with your property
                 slider.Visible = CustomVisibleCondition;
                 slider.Enabled = (b) => true; // or your custom condition
                 slider.SupportsMultipleBlocks = true;

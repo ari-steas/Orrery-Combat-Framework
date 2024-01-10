@@ -54,6 +54,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         {
             NeedsUpdate = MyEntityUpdateEnum.BEFORE_NEXT_FRAME;
             ShootState.ValueChanged += OnShootStateChanged; // Attach the handler
+            AiRange.ValueChanged += OnAiRangeChanged; // Attach the handler
         }
 
         private void OnShootStateChanged(MySync<bool, SyncDirection.BothWays> obj)
@@ -61,6 +62,13 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             // Accessing the boolean value using .Value property
             bool newValue = obj.Value;
             MyAPIGateway.Utilities.ShowNotification($"Shoot State changed to: {newValue}", 2000, "White");
+        }
+
+        private void OnAiRangeChanged(MySync<float, SyncDirection.BothWays> obj)
+        {
+            // Accessing the float value using .Value property
+            float newValue = obj.Value;
+            MyAPIGateway.Utilities.ShowNotification($"AI Range changed to: {newValue}", 2000, "White");
         }
 
 
@@ -157,7 +165,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             }
         }
 
-        public float AI_Range
+        public float AI_Range_Slider
         {
             get
             {
@@ -216,14 +224,17 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 {
                     Settings.ShootState = loadedSettings.ShootState;
                     ShootState.Value = Settings.ShootState;
+
+                    // Set the AI Range from loaded settings
+                    Settings.AiRange = loadedSettings.AiRange;
+                    AiRange.Value = Settings.AiRange;
+
                     return true;
-
-
                 }
             }
             catch (Exception e)
             {
-                //should probably log this tbqh
+                // Log the exception
             }
 
             return false;
@@ -257,6 +268,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public override void Close()
         {
             base.Close();
+
+            // Unsubscribe from the event when the component is closed
+            if (AiRange != null)
+                AiRange.ValueChanged -= OnAiRangeChanged;
 
             // Unsubscribe from the event when the component is closed
             if (ShootState != null)
