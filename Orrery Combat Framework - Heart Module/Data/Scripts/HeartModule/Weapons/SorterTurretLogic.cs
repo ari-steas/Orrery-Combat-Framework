@@ -51,7 +51,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public void UpdateTurretSubparts()
         {
-            Vector3D vecToTarget = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, Vector3D.Zero, (MyEntity)MyAPIGateway.Session.Player.Controller.ControlledEntity.Entity, 0) ?? Vector3D.MaxValue;
+            Vector3D vecToTarget = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, Vector3D.Zero, (MyEntity)MyAPIGateway.Session.Player?.Controller?.ControlledEntity?.Entity, 0) ?? Vector3D.MaxValue;
             
             if (vecToTarget == Vector3D.MaxValue)
                 return;
