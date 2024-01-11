@@ -44,7 +44,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
             }
         }
 
-        public static double TimeOfInterception(Vector3 relativePosition, Vector3 relativeVelocity, float projectileSpeed) // Adapted from Bunny83 on the Unity forums
+        public static double TimeOfInterception(Vector3 relativePosition, Vector3 relativeVelocity, float projectileSpeed) // Adapted from Bunny83 on the Unity forums https://forum.unity.com/threads/clamping-angle-between-two-values.853771/ 
         {
             double velocitySquared = relativeVelocity.LengthSquared();
             if (velocitySquared < double.Epsilon)
