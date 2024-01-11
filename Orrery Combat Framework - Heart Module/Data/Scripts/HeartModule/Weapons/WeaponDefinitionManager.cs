@@ -27,10 +27,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             {
                 AzimuthRate = 0.01f,
                 ElevationRate = 0.01f,
-                MaxAzimuth = (float)Math.PI / 2,
-                MinAzimuth = (float)-Math.PI / 2,
+                MaxAzimuth = (float)Math.PI,
+                MinAzimuth = (float)-Math.PI,
                 MaxElevation = (float)Math.PI / 4,
-                MinElevation = 0,
+                MinElevation = (float)-Math.PI / 4,
                 IdlePower = 0,
                 ShotInaccuracy = (float) Math.PI,
                 AimTolerance = 0.1f,
@@ -65,8 +65,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             },
             Hardpoint = new Hardpoint()
             {
-                AzimuthRate = 0.1f,
-                ElevationRate = 0.1f,
+                AzimuthRate = 0.5f,
+                ElevationRate = 0.5f,
                 MaxAzimuth = (float)Math.PI, // /2,
                 MinAzimuth = (float)-Math.PI, // /2,
                 MaxElevation = (float)Math.PI, // /4,
