@@ -61,8 +61,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             // Delta time for tickrate-independent weapon movement
             deltaTick = clockTick.ElapsedTicks / (float)TimeSpan.TicksPerSecond;
 
-            UpdateTurretSubparts(deltaTick);
             MuzzleMatrix = CalcMuzzleMatrix();
+            UpdateTurretSubparts(deltaTick);
 
             base.UpdateAfterSimulation(); // TryShoot is contained in here
             clockTick.Restart();
@@ -115,7 +115,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (desiredAzimuth == float.NaN)
                 desiredAzimuth = (float) Math.PI;
 
-            desiredAzimuth = Clamp(desiredAzimuth - Azimuth, Definition.Hardpoint.AzimuthRate * delta, -Definition.Hardpoint.AzimuthRate * delta);
+            desiredAzimuth = Clamp(desiredAzimuth - Azimuth, Definition.Hardpoint.AzimuthRate * delta, -Definition.Hardpoint.AzimuthRate * delta) + Azimuth;
 
             return GetAzimuthMatrix(desiredAzimuth);
         }
@@ -123,7 +123,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         private Matrix GetAzimuthMatrix(float desiredAzimuth)
         {
             Azimuth = Clamp(desiredAzimuth, Definition.Hardpoint.MaxAzimuth, Definition.Hardpoint.MinAzimuth);
-            Azimuth = desiredAzimuth;
             return Matrix.CreateFromYawPitchRoll(Azimuth, 0, 0);
         }
 
