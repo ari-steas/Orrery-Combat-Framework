@@ -3,6 +3,7 @@ using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces.Terminal;
 using System.Text;
 using VRage.Game.ModAPI;
+using VRage.ModAPI;
 using VRage.Utils;
 using VRageMath;
 
@@ -63,14 +64,14 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
-                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlLabel, IMyConveyorSorter>(IdPrefix + "HeartWeaponOptions");
-                c.Label = MyStringId.GetOrCompute("HeartWeaponOptions");
+                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlLabel, IMyConveyorSorter>(IdPrefix + "HeartWeaponOptionsDivider");
+                c.Label = MyStringId.GetOrCompute("=== HeartWeaponOptions ===");
                 c.SupportsMultipleBlocks = true;
                 c.Visible = CustomVisibleCondition;
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
-                var ShootToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "Shoot");
+                var ShootToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartWeaponShoot");
                 ShootToggle.Title = MyStringId.GetOrCompute("Toogle Shoot");
                 ShootToggle.Tooltip = MyStringId.GetOrCompute("TargetGridsDesc");
                 ShootToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
@@ -86,6 +87,31 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 ShootToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Shoot = v; // Setting the value
 
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(ShootToggle);
+            }
+            {
+                var AmmoComboBox = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlCombobox, IMyConveyorSorter>(IdPrefix + "HeartAmmoComboBox");
+                AmmoComboBox.Title = MyStringId.GetOrCompute("Ammo Type");
+                AmmoComboBox.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
+                AmmoComboBox.SupportsMultipleBlocks = true;
+                AmmoComboBox.Visible = CustomVisibleCondition;
+
+                AmmoComboBox.Getter = (b) => 0;
+                AmmoComboBox.Setter = (b, key) => { };
+                AmmoComboBox.ComboBoxContent = (list) =>
+                {
+                    list.Add(new MyTerminalControlComboBoxItem() { Key = 0, Value = MyStringId.GetOrCompute("Value A") });
+                    list.Add(new MyTerminalControlComboBoxItem() { Key = 1, Value = MyStringId.GetOrCompute("Value B") });
+                    list.Add(new MyTerminalControlComboBoxItem() { Key = 2, Value = MyStringId.GetOrCompute("Value C") });
+                };
+
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(AmmoComboBox);
+            }
+            {
+                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlLabel, IMyConveyorSorter>(IdPrefix + "HeartWeaponTargetingOptionsDivider");
+                c.Label = MyStringId.GetOrCompute("=== HeartWeaponTargetingOptions === ");
+                c.SupportsMultipleBlocks = true;
+                c.Visible = CustomVisibleCondition;
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
                 var slider = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlSlider, IMyConveyorSorter>(IdPrefix + "HeartAIRange");
