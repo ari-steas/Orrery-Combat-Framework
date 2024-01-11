@@ -41,7 +41,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (Done)
                 return;
             Done = true;
-
             // these are all the options and they're not all required so use only what you need.
             CreateControls();
             CreateActions(context);
@@ -61,7 +60,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlSeparator, IMyConveyorSorter>(""); // separators don't store the id
                 c.SupportsMultipleBlocks = true;
                 c.Visible = CustomVisibleCondition;
-
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
@@ -69,45 +67,215 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 c.Label = MyStringId.GetOrCompute("HeartWeaponOptions");
                 c.SupportsMultipleBlocks = true;
                 c.Visible = CustomVisibleCondition;
-
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
                 var ShootToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "Shoot");
                 ShootToggle.Title = MyStringId.GetOrCompute("Toogle Shoot");
-                ShootToggle.Tooltip = MyStringId.GetOrCompute("This does some stuff!");
+                ShootToggle.Tooltip = MyStringId.GetOrCompute("TargetGridsDesc");
                 ShootToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
-
                 // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
                 // optional, they both default to true.
                 ShootToggle.Visible = CustomVisibleCondition;
                 //c.Enabled = CustomVisibleCondition;
-
                 ShootToggle.OnText = MySpaceTexts.SwitchText_On;
                 ShootToggle.OffText = MySpaceTexts.SwitchText_Off;
                 //c.OffText = MyStringId.GetOrCompute("Off");
-
                 // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
                 ShootToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Shoot;  // Getting the value
                 ShootToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Shoot = v; // Setting the value
 
-
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(ShootToggle);
             }
+            {
+                var slider = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlSlider, IMyConveyorSorter>(IdPrefix + "HeartAIRange");
+                slider.Title = MyStringId.GetOrCompute("AI Range");
+                slider.Tooltip = MyStringId.GetOrCompute("HeartSliderDesc");
+                slider.SetLimits(1, 100); // Set the minimum and maximum values for the slider
+                slider.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Range_Slider; // Replace with your property
+                slider.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Range_Slider = v; // Replace with your property
+                slider.Writer = (b, sb) => sb.AppendFormat("Current value: {0}", b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Range_Slider); // Replace with your property
+                slider.Visible = CustomVisibleCondition;
+                slider.Enabled = (b) => true; // or your custom condition
+                slider.SupportsMultipleBlocks = true;
+
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(slider);
+            }
+            {
+                var TargetGridsToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartTargetGrids");
+                TargetGridsToggle.Title = MyStringId.GetOrCompute("Target Grids");
+                TargetGridsToggle.Tooltip = MyStringId.GetOrCompute("TargetGridsDesc");
+                TargetGridsToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
+                // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
+                // optional, they both default to true.
+                TargetGridsToggle.Visible = CustomVisibleCondition;
+                //c.Enabled = CustomVisibleCondition;
+                TargetGridsToggle.OnText = MySpaceTexts.SwitchText_On;
+                TargetGridsToggle.OffText = MySpaceTexts.SwitchText_Off;
+                //c.OffText = MyStringId.GetOrCompute("Off");
+                // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
+                TargetGridsToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetGrids;  // Getting the value
+                TargetGridsToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetGrids = v; // Setting the value
+
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(TargetGridsToggle);
+            }
+            {
+                var TargetLargeGridsToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartTargetLargeGrids");
+                TargetLargeGridsToggle.Title = MyStringId.GetOrCompute("Target Large Grids");
+                TargetLargeGridsToggle.Tooltip = MyStringId.GetOrCompute("TargetLargeGridsDesc");
+                TargetLargeGridsToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
+                // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
+                // optional, they both default to true.
+                TargetLargeGridsToggle.Visible = CustomVisibleCondition;
+                //c.Enabled = CustomVisibleCondition;
+                TargetLargeGridsToggle.OnText = MySpaceTexts.SwitchText_On;
+                TargetLargeGridsToggle.OffText = MySpaceTexts.SwitchText_Off;
+                //c.OffText = MyStringId.GetOrCompute("Off");
+                // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
+                TargetLargeGridsToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetLargeGrids;  // Getting the value
+                TargetLargeGridsToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetLargeGrids = v; // Setting the value
+
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(TargetLargeGridsToggle);
+            }
+            {
+                var TargetSmallGridsToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartTargetSmallGrids");
+                TargetSmallGridsToggle.Title = MyStringId.GetOrCompute("Target Small Grids");
+                TargetSmallGridsToggle.Tooltip = MyStringId.GetOrCompute("TargetSmallGridsDesc");
+                TargetSmallGridsToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
+                // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
+                // optional, they both default to true.
+                TargetSmallGridsToggle.Visible = CustomVisibleCondition;
+                //c.Enabled = CustomVisibleCondition;
+                TargetSmallGridsToggle.OnText = MySpaceTexts.SwitchText_On;
+                TargetSmallGridsToggle.OffText = MySpaceTexts.SwitchText_Off;
+                //c.OffText = MyStringId.GetOrCompute("Off");
+                // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
+                TargetSmallGridsToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetSmallGrids;  // Getting the value
+                TargetSmallGridsToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetSmallGrids = v; // Setting the value
+
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(TargetSmallGridsToggle);
+            }
+            {
+                var TargetProjectilesToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartTargetProjectiles");
+                TargetProjectilesToggle.Title = MyStringId.GetOrCompute("Target Projectiles");
+                TargetProjectilesToggle.Tooltip = MyStringId.GetOrCompute("TargetProjectilesDesc");
+                TargetProjectilesToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
+                // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
+                // optional, they both default to true.
+                TargetProjectilesToggle.Visible = CustomVisibleCondition;
+                //c.Enabled = CustomVisibleCondition;
+                TargetProjectilesToggle.OnText = MySpaceTexts.SwitchText_On;
+                TargetProjectilesToggle.OffText = MySpaceTexts.SwitchText_Off;
+                //c.OffText = MyStringId.GetOrCompute("Off");
+                // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
+                TargetProjectilesToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetProjectiles;  // Getting the value
+                TargetProjectilesToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetProjectiles = v; // Setting the value
+
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(TargetProjectilesToggle);
+            }
+            {
+                var TargetCharactersToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartTargetCharacters");
+                TargetCharactersToggle.Title = MyStringId.GetOrCompute("Target Characters");
+                TargetCharactersToggle.Tooltip = MyStringId.GetOrCompute("TargetCharactersDesc");
+                TargetCharactersToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
+                // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
+                // optional, they both default to true.
+                TargetCharactersToggle.Visible = CustomVisibleCondition;
+                //c.Enabled = CustomVisibleCondition;
+                TargetCharactersToggle.OnText = MySpaceTexts.SwitchText_On;
+                TargetCharactersToggle.OffText = MySpaceTexts.SwitchText_Off;
+                //c.OffText = MyStringId.GetOrCompute("Off");
+                // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
+                TargetCharactersToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetCharacters;  // Getting the value
+                TargetCharactersToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetCharacters = v; // Setting the value
+
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(TargetCharactersToggle);
+            }
+            {
+                var TargetFriendliesToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartTargetFriendlies");
+                TargetFriendliesToggle.Title = MyStringId.GetOrCompute("Target Friendlies");
+                TargetFriendliesToggle.Tooltip = MyStringId.GetOrCompute("TargetFriendliesDesc");
+                TargetFriendliesToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
+                // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
+                // optional, they both default to true.
+                TargetFriendliesToggle.Visible = CustomVisibleCondition;
+                //c.Enabled = CustomVisibleCondition;
+                TargetFriendliesToggle.OnText = MySpaceTexts.SwitchText_On;
+                TargetFriendliesToggle.OffText = MySpaceTexts.SwitchText_Off;
+                //c.OffText = MyStringId.GetOrCompute("Off");
+                // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
+                TargetFriendliesToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetFriendlies;  // Getting the value
+                TargetFriendliesToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetFriendlies = v; // Setting the value
+
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(TargetFriendliesToggle);
+            }
+            {
+                var TargetNeutralsToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartTargetNeutrals");
+                TargetNeutralsToggle.Title = MyStringId.GetOrCompute("Target Neutrals");
+                TargetNeutralsToggle.Tooltip = MyStringId.GetOrCompute("TargetNeutralsDesc");
+                TargetNeutralsToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
+                // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
+                // optional, they both default to true.
+                TargetNeutralsToggle.Visible = CustomVisibleCondition;
+                //c.Enabled = CustomVisibleCondition;
+                TargetNeutralsToggle.OnText = MySpaceTexts.SwitchText_On;
+                TargetNeutralsToggle.OffText = MySpaceTexts.SwitchText_Off;
+                //c.OffText = MyStringId.GetOrCompute("Off");
+                // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
+                TargetNeutralsToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetNeutrals;  // Getting the value
+                TargetNeutralsToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetNeutrals = v; // Setting the value
+
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(TargetNeutralsToggle);
+            }
+            {
+                var TargetEnemiesToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartTargetEnemies");
+                TargetEnemiesToggle.Title = MyStringId.GetOrCompute("Target Enemies");
+                TargetEnemiesToggle.Tooltip = MyStringId.GetOrCompute("TargetEnemiesDesc");
+                TargetEnemiesToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
+                // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
+                // optional, they both default to true.
+                TargetEnemiesToggle.Visible = CustomVisibleCondition;
+                //c.Enabled = CustomVisibleCondition;
+                TargetEnemiesToggle.OnText = MySpaceTexts.SwitchText_On;
+                TargetEnemiesToggle.OffText = MySpaceTexts.SwitchText_Off;
+                //c.OffText = MyStringId.GetOrCompute("Off");
+                // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
+                TargetEnemiesToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetEnemies;  // Getting the value
+                TargetEnemiesToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetEnemies = v; // Setting the value
+
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(TargetEnemiesToggle);
+            }
+            {
+                var TargetUnownedToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartTargetUnowned");
+                TargetUnownedToggle.Title = MyStringId.GetOrCompute("Target Unowned");
+                TargetUnownedToggle.Tooltip = MyStringId.GetOrCompute("TargetUnownedDesc");
+                TargetUnownedToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
+                // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
+                // optional, they both default to true.
+                TargetUnownedToggle.Visible = CustomVisibleCondition;
+                //c.Enabled = CustomVisibleCondition;
+                TargetUnownedToggle.OnText = MySpaceTexts.SwitchText_On;
+                TargetUnownedToggle.OffText = MySpaceTexts.SwitchText_Off;
+                //c.OffText = MyStringId.GetOrCompute("Off");
+                // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
+                TargetUnownedToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetUnowned;  // Getting the value
+                TargetUnownedToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetUnowned = v; // Setting the value
+
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(TargetUnownedToggle);
+            }
+
+
+
         }
 
         static void CreateActions(IMyModContext context)
         {
             var ShootToggleAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleShoot");
-
             ShootToggleAction.Name = new StringBuilder("Toggle Shoot");
-
             // If the action is visible for grouped blocks (as long as they all have this action).
             ShootToggleAction.ValidForGroups = true;
-
             // The icon shown in the list and top-right of the block icon in toolbar.
             ShootToggleAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
-
             // Called when the toolbar slot is triggered
             ShootToggleAction.Action = (b) =>
             {
@@ -131,7 +299,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             };
 
             ShootToggleAction.Enabled = CustomVisibleCondition;
-
             MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(ShootToggleAction);
         }
 
