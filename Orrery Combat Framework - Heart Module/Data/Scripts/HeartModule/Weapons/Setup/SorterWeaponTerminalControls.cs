@@ -91,7 +91,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 var slider = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlSlider, IMyConveyorSorter>(IdPrefix + "HeartAIRange");
                 slider.Title = MyStringId.GetOrCompute("AI Range");
                 slider.Tooltip = MyStringId.GetOrCompute("HeartSliderDesc");
-                slider.SetLimits(1, 100); // Set the minimum and maximum values for the slider
+                slider.SetLimits(1, 10000); // Set the minimum and maximum values for the slider
                 slider.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Range_Slider; // Replace with your property
                 slider.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Range_Slider = v; // Replace with your property
                 slider.Writer = (b, sb) => sb.AppendFormat("Current value: {0}", b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Range_Slider); // Replace with your property
@@ -270,36 +270,109 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         static void CreateActions(IMyModContext context)
         {
-            var ShootToggleAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleShoot");
-            ShootToggleAction.Name = new StringBuilder("Toggle Shoot");
-            // If the action is visible for grouped blocks (as long as they all have this action).
-            ShootToggleAction.ValidForGroups = true;
-            // The icon shown in the list and top-right of the block icon in toolbar.
-            ShootToggleAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
-            // Called when the toolbar slot is triggered
-            ShootToggleAction.Action = (b) =>
             {
-                var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                if (logic != null && logic.ShootState != null)
+                var ShootToggleAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleShoot");
+                ShootToggleAction.Name = new StringBuilder("Toggle Shoot");
+                ShootToggleAction.ValidForGroups = true;
+                ShootToggleAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
+                ShootToggleAction.Action = (b) =>
                 {
-                    // Toggle the shoot state and ensure sync
-                    logic.ShootState.Value = !logic.ShootState.Value;  // Toggling the value
-                    MyAPIGateway.Utilities.ShowNotification($"Shoot Action toggled to: {(logic.ShootState.Value ? "ON" : "OFF")}", 2000, "White");
-                }
-            };
+                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+                    if (logic != null && logic.ShootState != null)
+                    {
+                        // Toggle the shoot state and ensure sync
+                        logic.ShootState.Value = !logic.ShootState.Value;  // Toggling the value
+                        MyAPIGateway.Utilities.ShowNotification($"Shoot Action toggled to: {(logic.ShootState.Value ? "ON" : "OFF")}", 2000, "White");
+                    }
+                };
+                ShootToggleAction.Writer = (b, sb) =>
+                {
+                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+                    if (logic != null && logic.ShootState != null)
+                    {
+                        sb.Append(logic.ShootState.Value ? "Shooting" : "Not Shooting");
+                    }
+                };
 
-            // Define what the action's tooltip/status text should say
-            ShootToggleAction.Writer = (b, sb) =>
+                ShootToggleAction.Enabled = CustomVisibleCondition;
+                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(ShootToggleAction);
+            }
             {
-                var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                if (logic != null && logic.ShootState != null)
+                var ShootToggleAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleShoot");
+                ShootToggleAction.Name = new StringBuilder("Toggle Shoot");
+                ShootToggleAction.ValidForGroups = true;
+                ShootToggleAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
+                ShootToggleAction.Action = (b) =>
                 {
-                    sb.Append(logic.ShootState.Value ? "Shooting" : "Not Shooting");
-                }
-            };
+                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+                    if (logic != null && logic.ShootState != null)
+                    {
+                        // Toggle the shoot state and ensure sync
+                        logic.ShootState.Value = !logic.ShootState.Value;  // Toggling the value
+                        MyAPIGateway.Utilities.ShowNotification($"Shoot Action toggled to: {(logic.ShootState.Value ? "ON" : "OFF")}", 2000, "White");
+                    }
+                };
+                ShootToggleAction.Writer = (b, sb) =>
+                {
+                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+                    if (logic != null && logic.ShootState != null)
+                    {
+                        sb.Append(logic.ShootState.Value ? "Shooting" : "Not Shooting");
+                    }
+                };
 
-            ShootToggleAction.Enabled = CustomVisibleCondition;
-            MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(ShootToggleAction);
+                ShootToggleAction.Enabled = CustomVisibleCondition;
+                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(ShootToggleAction);
+            }
+            {
+                // Action to Increase AI Range
+                var IncreaseAIRangeAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "IncreaseAIRange");
+                IncreaseAIRangeAction.Name = new StringBuilder("Increase AI Range");
+                IncreaseAIRangeAction.ValidForGroups = true;
+                IncreaseAIRangeAction.Icon = @"Textures\GUI\Icons\Actions\Increase.dds";
+                IncreaseAIRangeAction.Action = (b) =>
+                {
+                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+                    if (logic != null)
+                    {
+                        logic.IncreaseAIRange(); // Custom method to increase AI range
+                    }
+                };
+                IncreaseAIRangeAction.Writer = (b, sb) =>
+                {
+                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+                    if (logic != null)
+                    {
+                        sb.Append($"{logic.Terminal_Heart_Range_Slider} Range");
+                    }
+                };
+                IncreaseAIRangeAction.Enabled = CustomVisibleCondition;
+                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(IncreaseAIRangeAction);
+
+                // Action to Decrease AI Range
+                var DecreaseAIRangeAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "DecreaseAIRange");
+                DecreaseAIRangeAction.Name = new StringBuilder("Decrease AI Range");
+                DecreaseAIRangeAction.ValidForGroups = true;
+                DecreaseAIRangeAction.Icon = @"Textures\GUI\Icons\Actions\Decrease.dds";
+                DecreaseAIRangeAction.Action = (b) =>
+                {
+                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+                    if (logic != null)
+                    {
+                        logic.DecreaseAIRange(); // Custom method to decrease AI range
+                    }
+                };
+                DecreaseAIRangeAction.Writer = (b, sb) =>
+                {
+                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+                    if (logic != null)
+                    {
+                        sb.Append($"{logic.Terminal_Heart_Range_Slider} Range");
+                    }
+                };
+                DecreaseAIRangeAction.Enabled = CustomVisibleCondition;
+                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(DecreaseAIRangeAction);
+            }
         }
 
 

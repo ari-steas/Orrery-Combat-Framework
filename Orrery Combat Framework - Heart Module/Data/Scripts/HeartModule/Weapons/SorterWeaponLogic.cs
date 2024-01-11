@@ -252,6 +252,19 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             }
         }
 
+        // In SorterWeaponLogic class, you should implement IncreaseAIRange and DecreaseAIRange methods
+        public void IncreaseAIRange()
+        {
+            // Increase AI Range within limits
+            Terminal_Heart_Range_Slider = Math.Min(Terminal_Heart_Range_Slider + 100, 1000);
+        }
+
+        public void DecreaseAIRange()
+        {
+            // Decrease AI Range within limits
+            Terminal_Heart_Range_Slider = Math.Max(Terminal_Heart_Range_Slider - 100, 1);
+        }
+
         public float Terminal_Heart_Range_Slider
         {
             get
