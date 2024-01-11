@@ -262,7 +262,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public void DecreaseAIRange()
         {
             // Decrease AI Range within limits
-            Terminal_Heart_Range_Slider = Math.Max(Terminal_Heart_Range_Slider - 100, 1);
+            Terminal_Heart_Range_Slider = Math.Max(Terminal_Heart_Range_Slider - 100, 0);
         }
 
         public float Terminal_Heart_Range_Slider
