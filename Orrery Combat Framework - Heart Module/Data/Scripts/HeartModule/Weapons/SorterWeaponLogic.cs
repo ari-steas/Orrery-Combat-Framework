@@ -44,7 +44,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public MySync<bool, SyncDirection.BothWays> TargetFriendliesState; 
         public MySync<bool, SyncDirection.BothWays> TargetNeutralsState; 
         public MySync<bool, SyncDirection.BothWays> TargetEnemiesState; 
-        public MySync<bool, SyncDirection.BothWays> TargetUnownedState; 
+        public MySync<bool, SyncDirection.BothWays> TargetUnownedState;
+        public MySync<long, SyncDirection.BothWays> AmmoLoadedState;          //dang this mysync thing is pretty cool it will surely not bite me in the ass when I need over 32 entries      
+        public MySync<long, SyncDirection.BothWays> ControlTypeState;
 
         public readonly Heart_Settings Settings = new Heart_Settings();
 
@@ -75,6 +77,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             TargetNeutralsState.ValueChanged += OnTargetNeutralsStateChanged;
             TargetEnemiesState.ValueChanged += OnTargetEnemiesStateChanged;
             TargetUnownedState.ValueChanged += OnTargetUnownedStateChanged;
+            ControlTypeState.ValueChanged += OnControlTypeStateChanged;
 
         }
 
@@ -86,6 +89,31 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             bool newValue = obj.Value;
             MyAPIGateway.Utilities.ShowNotification($"Shoot State changed to: {newValue}", 2000, "White");
         }
+
+        private void OnAmmoLoadedStateChanged(MySync<long, SyncDirection.BothWays> obj)
+        {
+            // Accessing the ammo type value using .Value property
+            long newAmmoType = obj.Value;
+
+            // Implement logic based on the new ammo type
+            // For example, changing the characteristics of the shots fired, 
+            // or reloading a different type of ammunition, etc.
+
+            MyAPIGateway.Utilities.ShowNotification($"Ammo Type changed to: {newAmmoType}", 2000, "White");
+        }
+
+        private void OnControlTypeStateChanged(MySync<long, SyncDirection.BothWays> obj)
+        {
+            // Accessing the ammo type value using .Value property
+            long newControlType = obj.Value;
+
+            // Implement logic based on the new ammo type
+            // For example, changing the characteristics of the shots fired, 
+            // or reloading a different type of ammunition, etc.
+
+            MyAPIGateway.Utilities.ShowNotification($"Control Type changed to: {newControlType}", 2000, "White");
+        }
+
 
         private void OnAiRangeChanged(MySync<float, SyncDirection.BothWays> obj)
         {
@@ -250,6 +278,93 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
 
             }
+        }
+
+        // In SorterWeaponLogic class, you should implement IncreaseAIRange and DecreaseAIRange methods
+        public void IncreaseAIRange()
+        {
+            // Increase AI Range within limits
+            Terminal_Heart_Range_Slider = Math.Min(Terminal_Heart_Range_Slider + 100, 1000);
+        }
+
+        public void DecreaseAIRange()
+        {
+            // Decrease AI Range within limits
+            Terminal_Heart_Range_Slider = Math.Max(Terminal_Heart_Range_Slider - 100, 0);
+        }
+
+        public long Terminal_Heart_AmmoComboBox
+        {
+            get
+            {
+                return Settings.AmmoLoadedState;
+            }
+
+            set
+            {
+                Settings.AmmoLoadedState = value;
+                if (AmmoLoadedState != null)
+                {
+                    AmmoLoadedState.Value = value;
+                }
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+            }
+        }
+
+        public void CycleAmmoType(bool forward)
+        {
+            // Assuming you have a predefined list of ammo types
+            long[] ammoTypes = { 0, 1, 2 }; // Replace with actual ammo type keys
+            int currentIndex = Array.IndexOf(ammoTypes, Terminal_Heart_AmmoComboBox);
+
+            if (forward)
+            {
+                currentIndex = (currentIndex + 1) % ammoTypes.Length;
+            }
+            else
+            {
+                currentIndex = (currentIndex - 1 + ammoTypes.Length) % ammoTypes.Length;
+            }
+
+            Terminal_Heart_AmmoComboBox = ammoTypes[currentIndex];
+        }
+
+        public long Terminal_ControlType_ComboBox
+        {
+            get
+            {
+                return Settings.ControlTypeState;
+            }
+
+            set
+            {
+                Settings.ControlTypeState = value;
+                if (ControlTypeState != null)
+                {
+                    ControlTypeState.Value = value;
+                }
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+            }
+        }
+
+        public void CycleControlType(bool controltype)
+        {
+            // Assuming you have a predefined list of ammo types
+            long[] controlTypes = { 0, 1, 2 }; // Replace with actual ammo type keys
+            int currentIndex = Array.IndexOf(controlTypes, Terminal_ControlType_ComboBox);
+
+            if (controltype)
+            {
+                currentIndex = (currentIndex + 1) % controlTypes.Length;
+            }
+            else
+            {
+                currentIndex = (currentIndex - 1 + controlTypes.Length) % controlTypes.Length;
+            }
+
+            Terminal_ControlType_ComboBox = controlTypes[currentIndex];
         }
 
         public float Terminal_Heart_Range_Slider
@@ -480,6 +595,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     Settings.AiRange = loadedSettings.AiRange;
                     AiRange.Value = Settings.AiRange;
 
+                    Settings.AmmoLoadedState = loadedSettings.AmmoLoadedState;
+                    AmmoLoadedState.Value = Settings.AmmoLoadedState;
+
                     // Set the TargetGrids state from loaded settings
                     Settings.TargetGridsState = loadedSettings.TargetGridsState;
                     TargetGridsState.Value = Settings.TargetGridsState;
@@ -507,6 +625,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
                     Settings.TargetUnownedState = loadedSettings.TargetUnownedState;
                     TargetUnownedState.Value = Settings.TargetUnownedState;
+
+                    Settings.ControlTypeState = loadedSettings.ControlTypeState;
+                    ControlTypeState.Value = Settings.ControlTypeState;
 
                     return true;
                 }
@@ -549,16 +670,47 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             base.Close();
 
             // Unsubscribe from the event when the component is closed
-            if (AiRange != null)
-                AiRange.ValueChanged -= OnAiRangeChanged;
-
-            // Unsubscribe from the event when the component is closed
-            if (AiRange != null)
-                AiRange.ValueChanged -= OnAiRangeChanged;
-
-            // Unsubscribe from the event when the component is closed
             if (ShootState != null)
                 ShootState.ValueChanged -= OnShootStateChanged;
+
+            if (AiRange != null)
+                AiRange.ValueChanged -= OnAiRangeChanged;
+
+            if (TargetGridsState != null)
+                TargetGridsState.ValueChanged -= OnTargetGridsStateChanged;
+
+            if (TargetProjectilesState != null)
+                TargetProjectilesState.ValueChanged -= OnTargetProjectilesStateChanged;
+
+            if (TargetCharactersState != null)
+                TargetCharactersState.ValueChanged -= OnTargetCharactersStateChanged;
+
+            if (TargetLargeGridsState != null)
+                TargetLargeGridsState.ValueChanged -= OnTargetLargeGridsStateChanged;
+
+            if (TargetSmallGridsState != null)
+                TargetSmallGridsState.ValueChanged -= OnTargetSmallGridsStateChanged;
+
+            if (TargetFriendliesState != null)
+                TargetFriendliesState.ValueChanged -= OnTargetFriendliesStateChanged;
+
+            if (TargetNeutralsState != null)
+                TargetNeutralsState.ValueChanged -= OnTargetNeutralsStateChanged;
+
+            if (TargetEnemiesState != null)
+                TargetEnemiesState.ValueChanged -= OnTargetEnemiesStateChanged;
+
+            if (TargetUnownedState != null)
+                TargetUnownedState.ValueChanged -= OnTargetUnownedStateChanged;
+
+            if (AmmoLoadedState != null)
+                AmmoLoadedState.ValueChanged -= OnAmmoLoadedStateChanged;
+
+            if (ControlTypeState != null)
+                ControlTypeState.ValueChanged -= OnControlTypeStateChanged;
+
+            // Add any additional cleanup logic here if necessary
         }
+
     }
 }
