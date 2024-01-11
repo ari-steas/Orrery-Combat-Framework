@@ -34,8 +34,17 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         int SyncCountdown;
 
         public MySync<bool, SyncDirection.BothWays> ShootState; //temporary (lmao) magic bullshit in place of actual packet sending
+        //insert ammo loaded state here (how the hell are we gonna do that)
         public MySync<float, SyncDirection.BothWays> AiRange; 
         public MySync<bool, SyncDirection.BothWays> TargetGridsState; 
+        public MySync<bool, SyncDirection.BothWays> TargetProjectilesState; 
+        public MySync<bool, SyncDirection.BothWays> TargetCharactersState; 
+        public MySync<bool, SyncDirection.BothWays> TargetLargeGridsState; 
+        public MySync<bool, SyncDirection.BothWays> TargetSmallGridsState; 
+        public MySync<bool, SyncDirection.BothWays> TargetFriendliesState; 
+        public MySync<bool, SyncDirection.BothWays> TargetNeutralsState; 
+        public MySync<bool, SyncDirection.BothWays> TargetEnemiesState; 
+        public MySync<bool, SyncDirection.BothWays> TargetUnownedState; 
 
         public readonly Heart_Settings Settings = new Heart_Settings();
 
@@ -54,11 +63,22 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
         {
             NeedsUpdate = MyEntityUpdateEnum.BEFORE_NEXT_FRAME;
-            ShootState.ValueChanged += OnShootStateChanged; // Attach the handler
-            AiRange.ValueChanged += OnAiRangeChanged; 
-            TargetGridsState.ValueChanged += OnTargetGridsStateChanged; 
+
+            ShootState.ValueChanged += OnShootStateChanged;
+            AiRange.ValueChanged += OnAiRangeChanged;
+            TargetGridsState.ValueChanged += OnTargetGridsStateChanged;
+            TargetProjectilesState.ValueChanged += OnTargetProjectilesStateChanged;
+            TargetCharactersState.ValueChanged += OnTargetCharactersStateChanged;
+            TargetLargeGridsState.ValueChanged += OnTargetLargeGridsStateChanged;
+            TargetSmallGridsState.ValueChanged += OnTargetSmallGridsStateChanged;
+            TargetFriendliesState.ValueChanged += OnTargetFriendliesStateChanged;
+            TargetNeutralsState.ValueChanged += OnTargetNeutralsStateChanged;
+            TargetEnemiesState.ValueChanged += OnTargetEnemiesStateChanged;
+            TargetUnownedState.ValueChanged += OnTargetUnownedStateChanged;
 
         }
+
+        #region Event Handlers
 
         private void OnShootStateChanged(MySync<bool, SyncDirection.BothWays> obj)
         {
@@ -81,6 +101,63 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             MyAPIGateway.Utilities.ShowNotification($"Target Grids State changed to: {newValue}", 2000, "White");
         }
 
+        private void OnTargetProjectilesStateChanged(MySync<bool, SyncDirection.BothWays> obj)
+        {
+            // Accessing the boolean value using .Value property
+            bool newValue = obj.Value;
+            MyAPIGateway.Utilities.ShowNotification($"Target Projectiles State changed to: {newValue}", 2000, "White");
+        }
+
+        private void OnTargetCharactersStateChanged(MySync<bool, SyncDirection.BothWays> obj)
+        {
+            // Accessing the boolean value using .Value property
+            bool newValue = obj.Value;
+            MyAPIGateway.Utilities.ShowNotification($"Target Characters State changed to: {newValue}", 2000, "White");
+        }
+
+        private void OnTargetLargeGridsStateChanged(MySync<bool, SyncDirection.BothWays> obj)
+        {
+            // Accessing the boolean value using .Value property
+            bool newValue = obj.Value;
+            MyAPIGateway.Utilities.ShowNotification($"Target LargeGrids State changed to: {newValue}", 2000, "White");
+        }
+
+        private void OnTargetSmallGridsStateChanged(MySync<bool, SyncDirection.BothWays> obj)
+        {
+            // Accessing the boolean value using .Value property
+            bool newValue = obj.Value;
+            MyAPIGateway.Utilities.ShowNotification($"Target SmallGrids State changed to: {newValue}", 2000, "White");
+        }
+
+        private void OnTargetFriendliesStateChanged(MySync<bool, SyncDirection.BothWays> obj)
+        {
+            // Accessing the boolean value using .Value property
+            bool newValue = obj.Value;
+            MyAPIGateway.Utilities.ShowNotification($"Target Friendlies State changed to: {newValue}", 2000, "White");
+        }
+
+        private void OnTargetNeutralsStateChanged(MySync<bool, SyncDirection.BothWays> obj)
+        {
+            // Accessing the boolean value using .Value property
+            bool newValue = obj.Value;
+            MyAPIGateway.Utilities.ShowNotification($"Target Neutrals State changed to: {newValue}", 2000, "White");
+        }
+
+        private void OnTargetEnemiesStateChanged(MySync<bool, SyncDirection.BothWays> obj)
+        {
+            // Accessing the boolean value using .Value property
+            bool newValue = obj.Value;
+            MyAPIGateway.Utilities.ShowNotification($"Target Enemies State changed to: {newValue}", 2000, "White");
+        }
+
+        private void OnTargetUnownedStateChanged(MySync<bool, SyncDirection.BothWays> obj)
+        {
+            // Accessing the boolean value using .Value property
+            bool newValue = obj.Value;
+            MyAPIGateway.Utilities.ShowNotification($"Target Unowned State changed to: {newValue}", 2000, "White");
+        }
+
+        #endregion
 
         public override void UpdateOnceBeforeFrame()
         {
@@ -211,6 +288,150 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             }
         }
 
+        public bool Terminal_Heart_TargetProjectiles
+        {
+            get
+            {
+
+                return Settings.TargetProjectilesState;
+            }
+
+            set
+            {
+                Settings.TargetProjectilesState = value;
+                TargetProjectilesState.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+
+            }
+        }
+
+        public bool Terminal_Heart_TargetCharacters
+        {
+            get
+            {
+
+                return Settings.TargetCharactersState;
+            }
+
+            set
+            {
+                Settings.TargetCharactersState = value;
+                TargetCharactersState.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+
+            }
+        }
+
+        public bool Terminal_Heart_TargetLargeGrids
+        {
+            get
+            {
+
+                return Settings.TargetLargeGridsState;
+            }
+
+            set
+            {
+                Settings.TargetLargeGridsState = value;
+                TargetLargeGridsState.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+
+            }
+        }
+
+        public bool Terminal_Heart_TargetSmallGrids
+        {
+            get
+            {
+
+                return Settings.TargetSmallGridsState;
+            }
+
+            set
+            {
+                Settings.TargetSmallGridsState = value;
+                TargetSmallGridsState.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+
+            }
+        }
+
+        public bool Terminal_Heart_TargetFriendlies
+        {
+            get
+            {
+
+                return Settings.TargetFriendliesState;
+            }
+
+            set
+            {
+                Settings.TargetFriendliesState = value;
+                TargetFriendliesState.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+
+            }
+        }
+
+        public bool Terminal_Heart_TargetNeutrals
+        {
+            get
+            {
+
+                return Settings.TargetNeutralsState;
+            }
+
+            set
+            {
+                Settings.TargetNeutralsState = value;
+                TargetNeutralsState.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+
+            }
+        }
+
+        public bool Terminal_Heart_TargetEnemies
+        {
+            get
+            {
+
+                return Settings.TargetEnemiesState;
+            }
+
+            set
+            {
+                Settings.TargetEnemiesState = value;
+                TargetEnemiesState.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+
+            }
+        }
+
+        public bool Terminal_Heart_TargetUnowned
+        {
+            get
+            {
+
+                return Settings.TargetUnownedState;
+            }
+
+            set
+            {
+                Settings.TargetUnownedState = value;
+                TargetUnownedState.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+
+            }
+        }
+
         #endregion
 
         #region Saving
@@ -253,6 +474,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     Settings.ShootState = loadedSettings.ShootState;
                     ShootState.Value = Settings.ShootState;
 
+                    //insert ammo selection state here
+
                     // Set the AI Range from loaded settings
                     Settings.AiRange = loadedSettings.AiRange;
                     AiRange.Value = Settings.AiRange;
@@ -260,6 +483,30 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     // Set the TargetGrids state from loaded settings
                     Settings.TargetGridsState = loadedSettings.TargetGridsState;
                     TargetGridsState.Value = Settings.TargetGridsState;
+
+                    Settings.TargetProjectilesState = loadedSettings.TargetProjectilesState;
+                    TargetProjectilesState.Value = Settings.TargetProjectilesState;
+
+                    Settings.TargetCharactersState = loadedSettings.TargetCharactersState;
+                    TargetCharactersState.Value = Settings.TargetCharactersState;
+
+                    Settings.TargetLargeGridsState = loadedSettings.TargetLargeGridsState;
+                    TargetLargeGridsState.Value = Settings.TargetLargeGridsState;
+
+                    Settings.TargetSmallGridsState = loadedSettings.TargetSmallGridsState;
+                    TargetSmallGridsState.Value = Settings.TargetSmallGridsState;
+
+                    Settings.TargetFriendliesState = loadedSettings.TargetFriendliesState;
+                    TargetFriendliesState.Value = Settings.TargetFriendliesState;
+
+                    Settings.TargetNeutralsState = loadedSettings.TargetNeutralsState;
+                    TargetNeutralsState.Value = Settings.TargetNeutralsState;
+
+                    Settings.TargetEnemiesState = loadedSettings.TargetEnemiesState;
+                    TargetEnemiesState.Value = Settings.TargetEnemiesState;
+
+                    Settings.TargetUnownedState = loadedSettings.TargetUnownedState;
+                    TargetUnownedState.Value = Settings.TargetUnownedState;
 
                     return true;
                 }
