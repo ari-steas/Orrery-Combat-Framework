@@ -44,7 +44,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public SorterWeaponLogic(IMyConveyorSorter sorterWeapon, SerializableWeaponDefinition definition)
         {
-            sorterWeapon.GameLogic = MyCompositeGameLogicComponent.Create(new MyGameLogicComponent[] { this, (MyGameLogicComponent)sorterWeapon.GameLogic }, (MyEntity) sorterWeapon);
+            sorterWeapon.GameLogic = this;
             Init(sorterWeapon.GetObjectBuilder());
             this.Definition = definition;
         }

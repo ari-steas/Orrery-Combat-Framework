@@ -98,6 +98,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
             // Delta time for tickrate-independent weapon movement
             deltaTick = clockTick.ElapsedTicks / (float)TimeSpan.TicksPerSecond;
+            clockTick.Restart();
         }
 
         public SorterWeaponLogic GetWeapon(uint id) => ActiveWeapons.GetValueOrDefault(id, null);

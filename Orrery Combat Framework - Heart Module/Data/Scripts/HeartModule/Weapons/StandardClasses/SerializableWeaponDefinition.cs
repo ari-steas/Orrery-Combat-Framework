@@ -1,4 +1,5 @@
 ﻿using ProtoBuf;
+using System;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
 {
@@ -82,6 +83,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
         [ProtoMember(9)] public float AimTolerance;
         [ProtoMember(10)] public bool LineOfSightCheck;
         [ProtoMember(11)] public bool ControlRotation;
+
+        public bool CanRotateFull => MaxAzimuth >= -(float)Math.PI && MinAzimuth <= -(float)Math.PI;
     }
 
     [ProtoContract]

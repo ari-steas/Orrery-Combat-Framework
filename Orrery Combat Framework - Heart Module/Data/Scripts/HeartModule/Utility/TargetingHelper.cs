@@ -1,5 +1,7 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+using Sandbox.ModAPI;
 using System;
 using VRage.Game.Entity;
 using VRageMath;
@@ -15,7 +17,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
                 return null;
             if (def.PhysicalProjectile.IsHitscan)
                 return target.PositionComp.GetPosition() - target.Physics.LinearVelocity/60; // Because this doesn't run during simulation, offset velocity
-            return InterceptionPoint(startPos + startVel/60, startVel, target.PositionComp.GetPosition() - target.Physics.LinearVelocity / 60, target.Physics.LinearVelocity, def.PhysicalProjectile.Velocity);
+            return InterceptionPoint(startPos, startVel, target.PositionComp.GetPosition(), target.Physics.LinearVelocity, def.PhysicalProjectile.Velocity);
         }
 
         public static Vector3D? InterceptionPoint(Vector3D startPos, Vector3D startVel, Vector3D targetPos, Vector3D targetVel, float projectileSpeed)
@@ -24,10 +26,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
 
             try
             {
-                double t = TimeOfInterception(startPos, targetPos, relativeVelocity, projectileSpeed);
-                
+                double t = TimeOfInterception(targetPos - startPos, relativeVelocity, projectileSpeed);
+                if (t == -1)
+                    return null;
+
                 // Calculate interception point
                 Vector3D interceptionPoint = targetPos + relativeVelocity * t;
+
+                if (!MyAPIGateway.Utilities.IsDedicated)
+                    DebugDraw.AddPoint(interceptionPoint, Color.Red, (float) t);
 
                 return interceptionPoint;
             }
@@ -37,11 +44,40 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
             }
         }
 
-        public static double TimeOfInterception(Vector3 startPos, Vector3 targetPos, Vector3 relativeVelocity, float projectileSpeed)
+        public static double TimeOfInterception(Vector3 relativePosition, Vector3 relativeVelocity, float projectileSpeed) // Adapted from Bunny83 on the Unity forums
         {
-            var deltaPos = targetPos  - startPos;
+            double velocitySquared = relativeVelocity.LengthSquared();
+            if (velocitySquared < double.Epsilon)
+                return 0;
 
-            return 0;
+            double a = velocitySquared - projectileSpeed * projectileSpeed;
+            if (Math.Abs(a) < double.Epsilon)
+            {
+                double t = -relativePosition.LengthSquared() / (2 * Vector3D.Dot(relativeVelocity, relativePosition));
+                return t > 0 ? t : -1;
+            }
+
+            double b = 2 * Vector3D.Dot(relativeVelocity, relativePosition);
+            double c = relativePosition.LengthSquared();
+            double determinant = b * b - 4 * a * c;
+
+            if (determinant > 0) // Two solutions
+            {
+                double t1 = (-b + Math.Sqrt(determinant)) / (2 * a);
+                double t2 = (-b - Math.Sqrt(determinant)) / (2 * a);
+                if (t1 > 0)
+                {
+                    if (t2 > 0)
+                        return t1 < t2 ? t1 : t2;
+                    return t1;
+                }
+                return t2 > 0 ? t2 : -1;
+            }
+            else if (determinant < 0) // No solutions
+                return -1;
+
+            double solution = -b / (2 * a); // One solution
+            return solution > 0 ? solution : -1;
         }
 
         //public static double TimeOfInterception(Vector3 startPos, Vector3 targetPos, Vector3 relativeVelocity, float projectileSpeed)
