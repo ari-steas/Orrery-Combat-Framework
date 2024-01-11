@@ -105,7 +105,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             if ((Definition.PhysicalProjectile.MaxTrajectory != -1 && Definition.PhysicalProjectile.MaxTrajectory < DistanceTravelled) || (Definition.PhysicalProjectile.MaxLifetime != -1 && Definition.PhysicalProjectile.MaxLifetime < Age))
                 QueueDispose();
-
+            Vector3D oldPos = Position;
             Age += delta;
             if (!IsHitscan)
             {
@@ -131,7 +131,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 if (MaxBeamLength <= -1)
                     MaxBeamLength = Definition.PhysicalProjectile.MaxTrajectory;
             }
-
             if (MyAPIGateway.Session.IsServer)
                 UpdateAudio();
         }
@@ -196,7 +195,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 InheritedVelocity = projectile.InheritedVelocity.Value;
             if (projectile.RemainingImpacts.HasValue)
                 RemainingImpacts = projectile.RemainingImpacts.Value;
-
             TickUpdate(delta);
         }
 
