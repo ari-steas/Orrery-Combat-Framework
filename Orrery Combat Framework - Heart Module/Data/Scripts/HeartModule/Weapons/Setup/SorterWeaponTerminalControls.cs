@@ -6,6 +6,7 @@ using VRage.Game.ModAPI;
 using VRage.ModAPI;
 using VRage.Utils;
 using VRageMath;
+using static VRage.Game.MyObjectBuilder_BehaviorTreeDecoratorNode;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
@@ -52,6 +53,30 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         {
             // only visible for the blocks having this gamelogic comp
             return b?.GameLogic?.GetAs<SorterWeaponLogic>() != null;
+        }
+
+        private static string GetAmmoTypeName(long ammoKey)
+        {
+            // Implementation
+            switch (ammoKey)
+            {
+                case 0: return "Value A";
+                case 1: return "Value B";
+                case 2: return "Value C";
+                default: return "Unknown Ammo";
+            }
+        }
+
+        private static string GetControlTypeName(long controltypeKey)
+        {
+            // Implementation
+            switch (controltypeKey)
+            {
+                case 0: return "Value A";
+                case 1: return "Value B";
+                case 2: return "Value C";
+                default: return "Unknown Control";
+            }
         }
 
         static void CreateControls()
@@ -345,7 +370,26 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 ShootAction.Enabled = CustomVisibleCondition;
                 MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(ShootAction);
             }
-
+            {
+                var cycleControlForwardAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "HeartControlType");
+                cycleControlForwardAction.Name = new StringBuilder("Control Type");
+                cycleControlForwardAction.Action = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().CycleControlType(true);
+                cycleControlForwardAction.Writer = (b, sb) => sb.Append($"{GetControlTypeName(b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_ControlType_ComboBox)}");
+                cycleControlForwardAction.Icon = @"Textures\GUI\Icons\Actions\MovingObjectToggle.dds";
+                cycleControlForwardAction.Enabled = CustomVisibleCondition;
+                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(cycleControlForwardAction);
+                MyAPIGateway.Utilities.ShowNotification("Control Type Cycled");
+            }
+            {
+                var cycleAmmoForwardAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "HeartCycleAmmoForward");
+                cycleAmmoForwardAction.Name = new StringBuilder("Cycle Ammo");
+                cycleAmmoForwardAction.Action = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().CycleAmmoType(true);
+                cycleAmmoForwardAction.Writer = (b, sb) => sb.Append($"{GetAmmoTypeName(b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_AmmoComboBox)}");
+                cycleAmmoForwardAction.Icon = @"Textures\GUI\Icons\Actions\MissileToggle.dds";
+                cycleAmmoForwardAction.Enabled = CustomVisibleCondition;
+                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(cycleAmmoForwardAction);
+                MyAPIGateway.Utilities.ShowNotification("Ammo Cycled");
+            }                                    
             {
                 // Action to Increase AI Range
                 var IncreaseAIRangeAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "IncreaseAIRange");

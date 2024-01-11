@@ -312,6 +312,24 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             }
         }
 
+        public void CycleAmmoType(bool forward)
+        {
+            // Assuming you have a predefined list of ammo types
+            long[] ammoTypes = { 0, 1, 2 }; // Replace with actual ammo type keys
+            int currentIndex = Array.IndexOf(ammoTypes, Terminal_Heart_AmmoComboBox);
+
+            if (forward)
+            {
+                currentIndex = (currentIndex + 1) % ammoTypes.Length;
+            }
+            else
+            {
+                currentIndex = (currentIndex - 1 + ammoTypes.Length) % ammoTypes.Length;
+            }
+
+            Terminal_Heart_AmmoComboBox = ammoTypes[currentIndex];
+        }
+
         public long Terminal_ControlType_ComboBox
         {
             get
@@ -331,6 +349,23 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             }
         }
 
+        public void CycleControlType(bool controltype)
+        {
+            // Assuming you have a predefined list of ammo types
+            long[] controlTypes = { 0, 1, 2 }; // Replace with actual ammo type keys
+            int currentIndex = Array.IndexOf(controlTypes, Terminal_ControlType_ComboBox);
+
+            if (controltype)
+            {
+                currentIndex = (currentIndex + 1) % controlTypes.Length;
+            }
+            else
+            {
+                currentIndex = (currentIndex - 1 + controlTypes.Length) % controlTypes.Length;
+            }
+
+            Terminal_ControlType_ComboBox = controlTypes[currentIndex];
+        }
 
         public float Terminal_Heart_Range_Slider
         {
