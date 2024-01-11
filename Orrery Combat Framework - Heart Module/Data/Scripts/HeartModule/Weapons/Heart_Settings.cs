@@ -9,7 +9,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
         public bool ShootState;
 
         [ProtoMember(2)]
-        public int AmmoLoaded;
+        public long AmmoLoadedState;
 
         [ProtoMember(3)]
         public float AiRange;
@@ -40,5 +40,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
 
         [ProtoMember(12)]
         public bool TargetUnownedState;
+
+        [ProtoMember(13)]
+        public long ControlTypeState;
     }
 }
