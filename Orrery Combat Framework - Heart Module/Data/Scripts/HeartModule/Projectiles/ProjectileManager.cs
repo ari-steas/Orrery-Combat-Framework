@@ -51,7 +51,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
             // Delta time for tickrate-independent projectile movement
             //deltaTick = clockTick.ElapsedTicks / (float)TimeSpan.TicksPerSecond;
-            deltaTick = 1/60;
+            deltaTick = 1/60f;
 
             // Tick projectiles
             foreach (var projectile in ActiveProjectiles.Values)
@@ -158,7 +158,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 return;
 
             //deltaTick = (float)clockTick.ElapsedTicks / TimeSpan.TicksPerSecond; // deltaTick is the current offset between tick and draw, to account for variance between FPS and tickrate
-            deltaTick = 1 / 60;
+            deltaTick = 1 / 60f;
             deltaDraw = (float)clockDraw.ElapsedTicks / TimeSpan.TicksPerSecond; // deltaDraw is a standard delta value based on FPS
 
             foreach (var projectile in ActiveProjectiles.Values)
@@ -196,7 +196,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             if (projectile == null || projectile.DefinitionId == -1) return; // Ensure that invalid projectiles don't get added
 
-            projectile.Position -= projectile.InheritedVelocity / 60; // Because this doesn't run during simulation
+            projectile.Position -= projectile.InheritedVelocity / 60f; // Because this doesn't run during simulation
 
             NextId++;
             while (!IsIdAvailable(NextId))

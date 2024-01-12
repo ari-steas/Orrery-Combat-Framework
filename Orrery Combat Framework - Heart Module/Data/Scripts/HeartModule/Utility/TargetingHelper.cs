@@ -16,8 +16,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
             if (def == null || target?.Physics == null)
                 return null;
             if (def.PhysicalProjectile.IsHitscan)
-                return target.PositionComp.GetPosition() - target.Physics.LinearVelocity / 60; // Because this doesn't run during simulation, offset velocity
-            return InterceptionPoint(startPos - startVel / 60, startVel, target.PositionComp.GetPosition() - target.Physics.LinearVelocity / 60, target.Physics.LinearVelocity, def.PhysicalProjectile.Velocity);
+                return target.PositionComp.GetPosition() - target.Physics.LinearVelocity / 60f; // Because this doesn't run during simulation, offset velocity
+            return InterceptionPoint(startPos, startVel, target.PositionComp.GetPosition(), target.Physics.LinearVelocity, def.PhysicalProjectile.Velocity);
         }
 
         public static Vector3D? InterceptionPoint(Vector3D startPos, Vector3D startVel, Vector3D targetPos, Vector3D targetVel, float projectileSpeed)

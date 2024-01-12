@@ -60,7 +60,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             // Delta time for tickrate-independent weapon movement
             //deltaTick = clockTick.ElapsedTicks / (float)TimeSpan.TicksPerSecond;
-            deltaTick = 1/60;
+            deltaTick = 1/60f;
 
             MuzzleMatrix = CalcMuzzleMatrix();
             UpdateTurretSubparts(deltaTick);
