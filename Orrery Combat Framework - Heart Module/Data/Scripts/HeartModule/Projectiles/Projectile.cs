@@ -58,7 +58,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             Firer = projectile.Firer.GetValueOrDefault(0);
             IsHitscan = Definition.PhysicalProjectile.IsHitscan;
             if (IsHitscan)
-                Definition.PhysicalProjectile.MaxLifetime = 1 / 60;
+                Definition.PhysicalProjectile.MaxLifetime = 1 / 60f;
 
             UpdateFromSerializable(projectile);
         }
@@ -96,7 +96,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 this.InheritedVelocity = InitialVelocity;
             }
             else
-                Definition.PhysicalProjectile.MaxLifetime = 1/60;
+                Definition.PhysicalProjectile.MaxLifetime = 1/60f;
 
             RemainingImpacts = Definition.Damage.MaxImpacts;
         }
