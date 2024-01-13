@@ -440,33 +440,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(DecreaseAIRangeAction);
             }
             {
-                var TargetProjectilesAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetProjectiles");
-                TargetProjectilesAction.Name = new StringBuilder("Toggle Target Projectiles");
-                TargetProjectilesAction.ValidForGroups = true;
-                TargetProjectilesAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
-                TargetProjectilesAction.Action = (b) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        // Toggle the targeting of projectiles and ensure sync
-                        logic.Terminal_Heart_TargetProjectiles = !logic.Terminal_Heart_TargetProjectiles; // Toggling the value
-                        MyAPIGateway.Utilities.ShowNotification($"Target Projectiles toggled to: {(logic.Terminal_Heart_TargetProjectiles ? "ON" : "OFF")}", 2000, "White");
-                    }
-                };
-                TargetProjectilesAction.Writer = (b, sb) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        sb.Append(logic.Terminal_Heart_TargetProjectiles ? "Proj. ON" : "Proj. OFF");
-                    }
-                };
-
-                TargetProjectilesAction.Enabled = CustomVisibleCondition;
-                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(TargetProjectilesAction);
-            }
-            {
                 var TargetGridsAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetGrids");
                 TargetGridsAction.Name = new StringBuilder("Toggle Target Grids");
                 TargetGridsAction.ValidForGroups = true;
@@ -546,6 +519,33 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
                 TargetSmallGridsAction.Enabled = CustomVisibleCondition;
                 MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(TargetSmallGridsAction);
+            }
+            {
+                var TargetProjectilesAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetProjectiles");
+                TargetProjectilesAction.Name = new StringBuilder("Toggle Target Projectiles");
+                TargetProjectilesAction.ValidForGroups = true;
+                TargetProjectilesAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
+                TargetProjectilesAction.Action = (b) =>
+                {
+                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+                    if (logic != null)
+                    {
+                        // Toggle the targeting of projectiles and ensure sync
+                        logic.Terminal_Heart_TargetProjectiles = !logic.Terminal_Heart_TargetProjectiles; // Toggling the value
+                        MyAPIGateway.Utilities.ShowNotification($"Target Projectiles toggled to: {(logic.Terminal_Heart_TargetProjectiles ? "ON" : "OFF")}", 2000, "White");
+                    }
+                };
+                TargetProjectilesAction.Writer = (b, sb) =>
+                {
+                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+                    if (logic != null)
+                    {
+                        sb.Append(logic.Terminal_Heart_TargetProjectiles ? "Proj. ON" : "Proj. OFF");
+                    }
+                };
+
+                TargetProjectilesAction.Enabled = CustomVisibleCondition;
+                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(TargetProjectilesAction);
             }
             {
                 var TargetCharactersAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetCharacters");
