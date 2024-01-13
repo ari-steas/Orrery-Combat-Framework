@@ -13,6 +13,9 @@ using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 using VRage.Game.ModAPI.Network;
 using VRage.ObjectBuilders;
 using System.Diagnostics;
+using Sandbox.Game.Entities;
+using Sandbox.Common.ObjectBuilders;
+using Sandbox.Game.EntityComponents;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
@@ -28,6 +31,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         /// </summary>
         private const float deltaTick = 1/60f;
         private Stopwatch clockTick = Stopwatch.StartNew();
+        private MyEntity lastKnownTarget = null;
 
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
         {
@@ -58,10 +62,45 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         public override void UpdateAfterSimulation()
         {
             MuzzleMatrix = CalcMuzzleMatrix();
-            UpdateTurretSubparts(deltaTick);
+
+            MyEntity target = GetTarget(); // Placeholder for getting the target
+
+            UpdateTurretSubparts(deltaTick, target);
 
             base.UpdateAfterSimulation(); // TryShoot is contained in here
             clockTick.Restart();
+        }
+
+        private MyEntity GetTarget()
+        {
+            var grid = SorterWep?.CubeGrid;
+            if (grid == null)
+            {
+                MyAPIGateway.Utilities.ShowNotification("No grid found for SorterWep", 1000 / 60, VRage.Game.MyFontEnum.Red);
+                return null;
+            }
+
+            var myCubeGrid = grid as MyCubeGrid;
+            if (myCubeGrid != null)
+            {
+                var mainCockpit = myCubeGrid.MainCockpit as IMyCockpit;
+                if (mainCockpit != null && mainCockpit.Pilot != null)
+                {
+                    var targetLockingComponent = mainCockpit.Pilot.Components.Get<MyTargetLockingComponent>();
+                    if (targetLockingComponent != null && targetLockingComponent.IsTargetLocked)
+                    {
+                        var targetEntity = targetLockingComponent.TargetEntity;
+                        if (targetEntity != null)
+                        {
+                            lastKnownTarget = targetEntity; // Update last known target
+                            MyAPIGateway.Utilities.ShowNotification($"Target locked: {targetEntity.DisplayName}", 1000 / 60, VRage.Game.MyFontEnum.Green);
+                            return targetEntity;
+                        }
+                    }
+                }
+            }
+
+            return lastKnownTarget; // Return last known target if no current target is locked
         }
 
         public override MatrixD CalcMuzzleMatrix()
@@ -84,12 +123,23 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             return MatrixD.Identity;
         }
 
-        public void UpdateTurretSubparts(float delta)
+        public void UpdateTurretSubparts(float delta, MyEntity target)
         {
-            Vector3D vecToTarget = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, SorterWep.CubeGrid.LinearVelocity, (MyEntity)MyAPIGateway.Session.Player?.Controller?.ControlledEntity?.Entity, 0) ?? Vector3D.MaxValue;
+            if (target == null)
+            {
+                return; // Exit if there is no target
+            }
+
+            // Calculate the vector to the target
+            Vector3D vecToTarget = TargetingHelper.InterceptionPoint(
+                MuzzleMatrix.Translation,
+                SorterWep.CubeGrid.LinearVelocity,
+                target, 0) ?? Vector3D.MaxValue;
 
             if (vecToTarget == Vector3D.MaxValue)
-                return;
+            {
+                return; // Exit if the interception point cannot be calculated
+            }
 
             vecToTarget -= MuzzleMatrix.Translation;
             DebugDraw.AddLine(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * vecToTarget.Length(), Color.Blue, 0);
@@ -97,10 +147,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             MyEntitySubpart azimuth = HeartData.I.SubpartManager.GetSubpart((MyEntity)SorterWep, Definition.Assignments.AzimuthSubpart);
             MyEntitySubpart elevation = HeartData.I.SubpartManager.GetSubpart(azimuth, Definition.Assignments.ElevationSubpart);
 
-            vecToTarget = Vector3D.Rotate(vecToTarget.Normalized(), MatrixD.Invert(SorterWep.WorldMatrix)); // Inverted because subparts are wonky. Pre-rotated.
+            vecToTarget = Vector3D.Rotate(vecToTarget.Normalized(), MatrixD.Invert(SorterWep.WorldMatrix));
             HeartData.I.SubpartManager.LocalRotateSubpartAbs(azimuth, GetAzimuthMatrix(vecToTarget, delta));
             HeartData.I.SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(vecToTarget, delta));
         }
+
 
         float Azimuth = 0;
         float Elevation = 0;
