@@ -20,10 +20,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface
     [MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation)]
     public class TurretBarrelIndicator : MySessionComponentBase
     {
-        readonly MyStringId FixedMaterial = MyStringId.GetOrCompute("WeaponLaser");
-        readonly Vector4 FixedColor = new Vector4(0, 0, 1, 1f);
-        readonly MyStringId TurretMaterial = MyStringId.GetOrCompute("WeaponLaser");
-        readonly Vector4 TurretColor = new Vector4(1, 0, 0, 1f);
+        // TODO: Add global setting for indicator visibility
+
+        readonly MyStringId FixedMaterial = MyStringId.GetOrCompute("WhiteDot");
+        readonly Vector4 FixedColor = new Vector4(1, 0.48f, 0, 0.5f);
+        readonly MyStringId TurretMaterial = MyStringId.GetOrCompute("SquareFullColor");
+        readonly Vector4 TurretColor = new Vector4(1 * 2, 0.48f * 2, 0, 1f);
+        float viewDist = 10000;
+
+        public override void LoadData()
+        {
+            viewDist = MyAPIGateway.Multiplayer.MultiplayerActive ? MyAPIGateway.Session.SessionSettings.SyncDistance : MyAPIGateway.Session.SessionSettings.ViewDistance;
+        }
 
         public override void UpdateAfterSimulation()
         {
@@ -43,13 +51,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface
 
         public void UpdateIndicator(SorterWeaponLogic weapon)
         {
-            Vector3D progradeCtr = Session.Player.GetPosition() + (weapon.MuzzleMatrix.Forward * HeartData.I.SyncRange);
+            double dist = viewDist;
             MyStringId texture;
             Vector4 color;
 
             if (weapon is SorterTurretLogic)
             {
-                //SorterTurretLogic turret = (SorterTurretLogic) weapon;
+                SorterTurretLogic turret = (SorterTurretLogic) weapon;
+                if (turret.AimPoint != Vector3D.MaxValue)
+                    dist = Vector3D.Distance(turret.AimPoint, turret.MuzzleMatrix.Translation);
                 texture = TurretMaterial;
                 color = TurretColor;
             }
@@ -59,23 +69,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface
                 color = FixedColor;
             }
 
-            //var progradeScreenCtr = Session.Camera.WorldToScreen(ref progradeCtr);
-            //if (progradeScreenCtr.Z < 1)
-            //{
-            //    var edgeX = (float)(Session.Camera.ViewportSize.X * 0.5 + (progradeScreenCtr.X * Session.Camera.ViewportSize.X * 0.5));
-            //    var edgeY = (float)(Session.Camera.ViewportSize.Y * 0.5 - (progradeScreenCtr.Y * Session.Camera.ViewportSize.Y * 0.5));
-            //    var WorldCtr = Session.Camera.WorldLineFromScreen(new Vector2(edgeX, edgeY));
-            //    var dirToCtr = Vector3D.Normalize(progradeCtr - Session.Camera.Position);
-            //    WorldCtr.From += dirToCtr * 3 * 70 / MyAPIGateway.Session.Camera.FieldOfViewAngle;
-            //    var tempadjSymbolHeight = 40 * 0.00275f;
-            //    var tempTop = WorldCtr.From + MyAPIGateway.Session.Camera.WorldMatrix.Up * tempadjSymbolHeight;
-            //    var tempBottom = WorldCtr.From - MyAPIGateway.Session.Camera.WorldMatrix.Up * tempadjSymbolHeight;
-            //    var boldColor = color;//Chg
-            //    boldColor.W = 0.75f;
-            //    MySimpleObjectDraw.DrawLine(tempTop, tempBottom, texture, ref boldColor, tempadjSymbolHeight, MyBillboard.BlendTypeEnum.PostPP);
-            //}
-
-            var adjSymbolHeight = 40 / 70 * MyAPIGateway.Session.Camera.FieldOfViewAngle;
+            Vector3D progradeCtr = weapon.MuzzleMatrix.Translation + (weapon.MuzzleMatrix.Forward * dist);
+            float adjSymbolHeight = (float) dist / (40f / 70f * MyAPIGateway.Session.Camera.FieldOfViewAngle);
             var progradeTop = progradeCtr + MyAPIGateway.Session.Camera.WorldMatrix.Up * adjSymbolHeight;
             MySimpleObjectDraw.DrawLine(progradeTop, progradeTop - MyAPIGateway.Session.Camera.WorldMatrix.Up * adjSymbolHeight * 2, texture, ref color, adjSymbolHeight, MyBillboard.BlendTypeEnum.AdditiveTop);
         }

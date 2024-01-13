@@ -33,7 +33,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public bool IsTargetAligned { get; private set; } = false;
         public bool IsTargetInRange { get; private set; } = false;
-        public Vector3D AimPoint { get; private set; } = Vector3D.Zero;
+        public Vector3D AimPoint { get; private set; } = Vector3D.MaxValue;
 
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
         {
@@ -168,7 +168,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 return; // Exit if the interception point cannot be calculated
 
             Vector3D vecToTarget = aimpoint - MuzzleMatrix.Translation;
-            DebugDraw.AddLine(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * vecToTarget.Length(), Color.Blue, 0);
+            //DebugDraw.AddLine(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * vecToTarget.Length(), Color.Blue, 0); // Muzzle line
             DebugDraw.AddPoint(target.PositionComp.GetPosition(), Color.Blue, 0);
 
             MyEntitySubpart azimuth = HeartData.I.SubpartManager.GetSubpart((MyEntity)SorterWep, Definition.Assignments.AzimuthSubpart);
