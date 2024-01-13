@@ -89,6 +89,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 // Assign the new potential target
                 currentTarget = potentialTarget;
 
+                // Debug Info: Display the current target's name
+                string targetName = currentTarget != null ? currentTarget.DisplayName : "None";
+                MyAPIGateway.Utilities.ShowNotification($"Current Target: {targetName}", 2000, VRage.Game.MyFontEnum.Blue);
+
                 // If the potential target is null, reset targeting state
                 if (currentTarget == null)
                 {
@@ -124,6 +128,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             IsTargetInRange = false;
             AutoShoot = false; // Disable automatic shooting
         }
+
 
         private void UpdateTargetState(MyEntity target, Vector3D aimPoint)
         {
