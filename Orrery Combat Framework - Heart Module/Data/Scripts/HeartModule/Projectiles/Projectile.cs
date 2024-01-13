@@ -184,14 +184,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
                 if (MyAPIGateway.Session.IsServer)
                     PlayImpactAudio(hitInfo.Position); // Audio is global
-                else
-                    DrawImpactParticle(hitInfo.Position); // Visuals are clientside
+                if (!MyAPIGateway.Utilities.IsDedicated)
+                    DrawImpactParticle(hitInfo.Position, hitInfo.Normal); // Visuals are clientside
 
                 RemainingImpacts -= 1;
             }
-            MyAPIGateway.Utilities.ShowNotification(intersects.Count + " | " + dist, 1000/6);
-            if (dist != -1)
-                DebugDraw.AddPoint(Position + Direction * dist, Color.Green, 1);
+
             return (float) dist;
         }
 
