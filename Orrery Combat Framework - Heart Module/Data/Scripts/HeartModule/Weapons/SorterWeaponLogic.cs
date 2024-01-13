@@ -25,7 +25,7 @@ using static VRage.Game.MyObjectBuilder_BehaviorTreeDecoratorNode;
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
     //[MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeapon")]
-    public class SorterWeaponLogic : MyGameLogicComponent
+    public partial class SorterWeaponLogic : MyGameLogicComponent
     {
         internal IMyConveyorSorter SorterWep;
         internal SerializableWeaponDefinition Definition;
@@ -219,12 +219,13 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         }
 
         float lastShoot = 0;
-        public void TryShoot()
+        internal bool AutoShoot = false;
+        public virtual void TryShoot()
         {
             if (lastShoot < 60)
                 lastShoot += Definition.Loading.RateOfFire;
 
-            if (ShootState.Value && lastShoot >= 60)
+            if ((ShootState.Value || AutoShoot) && lastShoot >= 60)
             {
                 MatrixD muzzleMatrix = CalcMuzzleMatrix();
                 Vector3D muzzlePos = muzzleMatrix.Translation;

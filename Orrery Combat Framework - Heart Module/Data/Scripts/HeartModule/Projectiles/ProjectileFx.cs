@@ -101,13 +101,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             foreach (var positionTuple in TrailFade.Keys.ToList())
             {
-                float lifetimePct = TrailFade[positionTuple] / Definition.Visual.TrailFadeTime;
-                Vector4 fadedColor = Definition.Visual.TrailColor * (Definition.Visual.TrailFadeTime == 0 ? 1 : lifetimePct);
-
                 // TODO: Make persistent billboard system. DrawLine is very expensive.
                 BoundingSphereD sphere = new BoundingSphereD(positionTuple.Item1, IsHitscan ? MaxBeamLength : Definition.Visual.TrailLength);
-                if (MyAPIGateway.Session.Camera?.IsInFrustum(ref sphere) ?? false)
+                if (MyAPIGateway.Session.Camera?.IsInFrustum(ref sphere) ?? false) // Check if line is visible
+                {
+                    float lifetimePct = TrailFade[positionTuple] / Definition.Visual.TrailFadeTime;
+                    Vector4 fadedColor = Definition.Visual.TrailColor * (Definition.Visual.TrailFadeTime == 0 ? 1 : lifetimePct);
                     MySimpleObjectDraw.DrawLine(positionTuple.Item1, positionTuple.Item2, Definition.Visual.TrailTexture, ref fadedColor, Definition.Visual.TrailWidth);
+                }
                 
                 if (!HeartData.I.IsPaused)
                     TrailFade[positionTuple] -= delta;
