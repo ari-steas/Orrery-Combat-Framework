@@ -21,9 +21,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface
     public class TurretBarrelIndicator : MySessionComponentBase
     {
         readonly MyStringId FixedMaterial = MyStringId.GetOrCompute("WeaponLaser");
-        readonly Vector4 FixedColor = new Vector4(0, 0, 1, 0.01f);
+        readonly Vector4 FixedColor = new Vector4(0, 0, 1, 1f);
         readonly MyStringId TurretMaterial = MyStringId.GetOrCompute("WeaponLaser");
-        readonly Vector4 TurretColor = new Vector4(1, 0, 0, 0.01f);
+        readonly Vector4 TurretColor = new Vector4(1, 0, 0, 1f);
 
         public override void UpdateAfterSimulation()
         {
@@ -78,7 +78,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface
             var adjSymbolHeight = 40 / 70 * MyAPIGateway.Session.Camera.FieldOfViewAngle;
             var progradeTop = progradeCtr + MyAPIGateway.Session.Camera.WorldMatrix.Up * adjSymbolHeight;
             MySimpleObjectDraw.DrawLine(progradeTop, progradeTop - MyAPIGateway.Session.Camera.WorldMatrix.Up * adjSymbolHeight * 2, texture, ref color, adjSymbolHeight, MyBillboard.BlendTypeEnum.AdditiveTop);
-            DebugDraw.AddGPS("Pos", progradeCtr, 1/60f);
         }
     }
 }

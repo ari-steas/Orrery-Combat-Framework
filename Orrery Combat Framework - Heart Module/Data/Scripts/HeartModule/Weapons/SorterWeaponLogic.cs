@@ -1,6 +1,7 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule;
 using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.Common.ObjectBuilders;
 using Sandbox.Game;
@@ -711,7 +712,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             if (ControlTypeState != null)
                 ControlTypeState.ValueChanged -= OnControlTypeStateChanged;
-
             // Add any additional cleanup logic here if necessary
         }
 

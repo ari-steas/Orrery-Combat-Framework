@@ -15,7 +15,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         private Dictionary<uint, SorterWeaponLogic> ActiveWeapons = new Dictionary<uint, SorterWeaponLogic>();
         private uint NextId = 0;
-        public Dictionary<IMyCubeGrid, List<SorterWeaponLogic>> GridWeapons = new Dictionary<IMyCubeGrid, List<SorterWeaponLogic>>();
+        public Dictionary<IMyCubeGrid, List<SorterWeaponLogic>> GridWeapons = new Dictionary<IMyCubeGrid, List<SorterWeaponLogic>>(); // EntityId based because IMyCubeGrid keys break garbage collection
 
         /// <summary>
         /// Delta for engine ticks; 60tps
@@ -92,7 +92,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
             ActiveWeapons.Add(NextId, logic);
             GridWeapons[sorter.CubeGrid].Add(logic); // Add to grid list
-            sorter.OnClose += e => GridWeapons[sorter.CubeGrid].Remove(logic); // Remove weapon from grid list automatically
+
+            sorter.OnMarkForClose += (a) => {
+                ActiveWeapons.Remove(NextId);
+                List<SorterWeaponLogic> values;
+                GridWeapons.TryGetValue(sorter.CubeGrid, out values);
+                values?.Remove(logic);
+            };
         }
 
         protected override void UnloadData()
