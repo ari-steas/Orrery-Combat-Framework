@@ -96,7 +96,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             {
                 double angle = Vector3D.Angle(MuzzleMatrix.Forward, (AimPoint - MuzzleMatrix.Translation).Normalized());
                 IsTargetAligned = angle < Definition.Targeting.AimTolerance;
-                MyAPIGateway.Utilities.ShowNotification($"Angle: {Math.Round(MathHelper.ToDegrees(angle))} [{IsTargetAligned}]", 1000 / 60);
+                //MyAPIGateway.Utilities.ShowNotification($"Angle: {Math.Round(MathHelper.ToDegrees(angle))} [{IsTargetAligned}]", 1000 / 60);
             }
 
             // Update IsTargetInRange
@@ -106,7 +106,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             {
                 double range = Vector3D.Distance(MuzzleMatrix.Translation, AimPoint); // Use aimpoint because that will be the actual intercept position
                 IsTargetInRange = range < Definition.Targeting.MaxTargetingRange && range > Definition.Targeting.MinTargetingRange;
-                MyAPIGateway.Utilities.ShowNotification($"Range: {Math.Round(range)}m [{IsTargetInRange}]", 1000 / 60);
+                //MyAPIGateway.Utilities.ShowNotification($"Range: {Math.Round(range)}m [{IsTargetInRange}]", 1000 / 60);
             }
 
             // Display notifications for debugging (if needed)
