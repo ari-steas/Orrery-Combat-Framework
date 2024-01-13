@@ -44,11 +44,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                     if (targetLockingComponent != null && targetLockingComponent.IsTargetLocked)
                     {
                         var targetEntity = targetLockingComponent.TargetEntity;
-                        if (targetEntity != null && (targetEntity is IMyCubeGrid || !targetGrids))
+                        if (targetEntity != null)
                         {
-                            lastKnownTarget = targetEntity;
-                            MyAPIGateway.Utilities.ShowNotification($"Target locked: {targetEntity.DisplayName}", 1000 / 60, VRage.Game.MyFontEnum.Green);
-                            return targetEntity;
+                            if (targetGrids || !(targetEntity is IMyCubeGrid))
+                            {
+                                lastKnownTarget = targetEntity;
+                                MyAPIGateway.Utilities.ShowNotification($"Target locked: {targetEntity.DisplayName}", 1000 / 60, VRage.Game.MyFontEnum.Green);
+                                return targetEntity;
+                            }
                         }
                     }
                 }
