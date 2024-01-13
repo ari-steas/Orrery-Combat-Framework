@@ -35,6 +35,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         public bool IsTargetAligned { get; private set; } = false;
         public bool IsTargetInRange { get; private set; } = false;
         public Vector3D AimPoint { get; private set; } = Vector3D.Zero;
+        private GenericKeenTargeting targeting = new GenericKeenTargeting();
 
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
         {
@@ -65,46 +66,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             UpdateTargeting();
 
+            MyEntity target = targeting.GetTarget(SorterWep?.CubeGrid); // Using the new targeting class
+
             base.UpdateAfterSimulation(); // TryShoot is contained in here
-        }
-
-        private MyEntity GetTarget()
-        {
-            var grid = SorterWep?.CubeGrid;
-            if (grid == null)
-            {
-                MyAPIGateway.Utilities.ShowNotification("No grid found for SorterWep", 1000 / 60, VRage.Game.MyFontEnum.Red);
-                return null;
-            }
-
-            var myCubeGrid = grid as MyCubeGrid;
-            if (myCubeGrid != null)
-            {
-                var mainCockpit = myCubeGrid.MainCockpit as IMyCockpit;
-                if (mainCockpit != null && mainCockpit.Pilot != null)
-                {
-                    var targetLockingComponent = mainCockpit.Pilot.Components.Get<MyTargetLockingComponent>();
-                    if (targetLockingComponent != null && targetLockingComponent.IsTargetLocked)
-                    {
-                        var targetEntity = targetLockingComponent.TargetEntity;
-                        if (targetEntity != null)
-                        {
-                            lastKnownTarget = targetEntity; // Update last known target
-                            MyAPIGateway.Utilities.ShowNotification($"Target locked: {targetEntity.DisplayName}", 1000 / 60, VRage.Game.MyFontEnum.Green);
-                            return targetEntity;
-                        }
-                    }
-                }
-            }
-
-            return lastKnownTarget; // Return last known target if no current target is locked
         }
 
         public void UpdateTargeting()
         {
             MuzzleMatrix = CalcMuzzleMatrix(); // Set stored MuzzleMatrix
 
-            MyEntity target = GetTarget(); // Placeholder for getting the target
+            MyEntity target = targeting.GetTarget(SorterWep?.CubeGrid);
 
             AimPoint = TargetingHelper.InterceptionPoint(
                 MuzzleMatrix.Translation,
