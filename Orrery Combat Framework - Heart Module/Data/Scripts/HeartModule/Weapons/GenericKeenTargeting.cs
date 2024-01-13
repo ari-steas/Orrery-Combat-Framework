@@ -14,7 +14,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
     public class GenericKeenTargeting
     {
-        //private MyEntity lastKnownTarget = null;
+        //private MyEntity lastKnownTarget = null; //TODO fix this
 
         public MyEntity GetTarget(IMyCubeGrid grid, bool targetGrids, bool targetLargeGrids, bool targetSmallGrids)
         {
