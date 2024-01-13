@@ -33,7 +33,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public bool IsTargetAligned { get; private set; } = false;
         public bool IsTargetInRange { get; private set; } = false;
-        public Vector3D AimPoint { get; private set; } = Vector3D.MaxValue;
+
+        public Vector3D AimPoint { get; private set; } = Vector3D.MaxValue; // TODO fix, should be in targeting CS
+        private GenericKeenTargeting targeting = new GenericKeenTargeting();
 
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
         {
@@ -64,49 +66,27 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             UpdateTargeting();
 
-            base.UpdateAfterSimulation(); // TryShoot is contained in here
-        }
-
-        private MyEntity GetTarget()
-        {
-            var grid = SorterWep?.CubeGrid;
-            if (grid == null)
-            {
-                MyAPIGateway.Utilities.ShowNotification("No grid found for SorterWep", 1000 / 60, VRage.Game.MyFontEnum.Red);
-                return null;
-            }
-
-            var myCubeGrid = grid as MyCubeGrid;
-            if (myCubeGrid != null)
-            {
-                var mainCockpit = myCubeGrid.MainCockpit as IMyCockpit;
-                if (mainCockpit != null && mainCockpit.Pilot != null)
-                {
-                    var targetLockingComponent = mainCockpit.Pilot.Components.Get<MyTargetLockingComponent>();
-                    if (targetLockingComponent != null && targetLockingComponent.IsTargetLocked)
-                    {
-                        var targetEntity = targetLockingComponent.TargetEntity;
-                        if (targetEntity != null)
-                        {
-                            lastKnownTarget = targetEntity; // Update last known target
-                            MyAPIGateway.Utilities.ShowNotification($"Target locked: {targetEntity.DisplayName}", 1000 / 60, VRage.Game.MyFontEnum.Green);
-                            return targetEntity;
-                        }
-                    }
-                }
-            }
-
-            return lastKnownTarget; // Return last known target if no current target is locked
+            base.UpdateAfterSimulation();
         }
 
         public void UpdateTargeting()
         {
-            MyEntity target = GetTarget(); // Placeholder for getting the target
+            MuzzleMatrix = CalcMuzzleMatrix(); // Set stored MuzzleMatrix
 
-            AimPoint = TargetingHelper.InterceptionPoint(
-                MuzzleMatrix.Translation,
-                SorterWep.CubeGrid.LinearVelocity,
-                target, 0) ?? Vector3D.MaxValue;
+            MyEntity target = null;
+            // Only proceed with targeting if TargetGrids is true
+            if (Terminal_Heart_TargetGrids)
+            {
+                target = targeting.GetTarget(SorterWep?.CubeGrid, Terminal_Heart_TargetGrids);
+                if (target != null)
+                {
+                    AimPoint = TargetingHelper.InterceptionPoint(
+                        MuzzleMatrix.Translation,
+                        SorterWep.CubeGrid.LinearVelocity,
+                        target, 0) ?? Vector3D.MaxValue;
+                }
+            }
+
 
             UpdateTurretSubparts(deltaTick, target, AimPoint); // Rotate the turret
 
@@ -129,6 +109,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 IsTargetInRange = range < Definition.Targeting.MaxTargetingRange && range > Definition.Targeting.MinTargetingRange;
                 //MyAPIGateway.Utilities.ShowNotification($"Range: {Math.Round(range)}m [{IsTargetInRange}]", 1000 / 60);
             }
+
+            // Display notifications for debugging (if needed)
+            MyAPIGateway.Utilities.ShowNotification($"IsAligned: {IsTargetAligned}, IsInRange: {IsTargetInRange}", 1000 / 60);
         }
 
         public override void TryShoot()
@@ -179,7 +162,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             HeartData.I.SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(vecToTarget, delta));
         }
 
-
+            
         float Azimuth = 0;
         float Elevation = 0;
 
