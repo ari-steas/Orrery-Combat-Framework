@@ -28,8 +28,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         /// <summary>
         /// Delta for engine ticks; 60tps
         /// </summary>
-        private float deltaTick = 0;
-        private Stopwatch clockTick = Stopwatch.StartNew();
+        private const float deltaTick = 1/60f;
 
         public override void LoadData()
         {
@@ -95,10 +94,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         public override void UpdateBeforeSimulation()
         {
             if (HeartData.I.IsSuspended) return;
-
-            // Delta time for tickrate-independent weapon movement
-            deltaTick = clockTick.ElapsedTicks / (float)TimeSpan.TicksPerSecond;
-            clockTick.Restart();
         }
 
         public SorterWeaponLogic GetWeapon(uint id) => ActiveWeapons.GetValueOrDefault(id, null);

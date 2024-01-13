@@ -85,6 +85,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
         [ProtoMember(11)] public bool ControlRotation;
 
         public bool CanRotateFull => MaxAzimuth >= -(float)Math.PI && MinAzimuth <= -(float)Math.PI;
+        public bool CanElevateFull => MaxElevation >= -(float)Math.PI && MinElevation <= -(float)Math.PI;
     }
 
     [ProtoContract]
