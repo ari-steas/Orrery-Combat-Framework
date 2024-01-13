@@ -16,7 +16,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
     {
         private MyEntity lastKnownTarget = null;
 
-        public MyEntity GetTarget(IMyCubeGrid grid, bool targetGrids)
+        public MyEntity GetTarget(IMyCubeGrid grid, bool targetGrids, bool targetLargeGrids, bool targetSmallGrids)
         {
             if (grid == null)
             {
@@ -46,10 +46,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                         var targetEntity = targetLockingComponent.TargetEntity;
                         if (targetEntity != null)
                         {
-                            if (targetGrids || !(targetEntity is IMyCubeGrid))
+                            bool isLargeGrid = targetEntity is IMyCubeGrid && ((IMyCubeGrid)targetEntity).GridSizeEnum == VRage.Game.MyCubeSize.Large;
+                            bool isSmallGrid = targetEntity is IMyCubeGrid && ((IMyCubeGrid)targetEntity).GridSizeEnum == VRage.Game.MyCubeSize.Small;
+
+                            if ((isLargeGrid && targetLargeGrids) || (isSmallGrid && targetSmallGrids) || !(targetEntity is IMyCubeGrid))
                             {
                                 lastKnownTarget = targetEntity;
-                                //MyAPIGateway.Utilities.ShowNotification($"Target locked: {targetEntity.DisplayName}", 1000 / 60, VRage.Game.MyFontEnum.Green);
                                 return targetEntity;
                             }
                         }
