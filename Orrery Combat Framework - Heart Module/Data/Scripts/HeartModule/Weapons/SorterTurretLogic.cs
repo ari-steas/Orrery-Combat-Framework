@@ -22,7 +22,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
     //[MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeaponTurret")]
     public partial class SorterTurretLogic : SorterWeaponLogic
     {
-        MatrixD MuzzleMatrix = MatrixD.Identity;
         public MySync<float, SyncDirection.FromServer> AzimuthSync;
         public MySync<float, SyncDirection.FromServer> ElevationSync;
 
@@ -102,8 +101,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public void UpdateTargeting()
         {
-            MuzzleMatrix = CalcMuzzleMatrix(); // Set stored MuzzleMatrix
-
             MyEntity target = GetTarget(); // Placeholder for getting the target
 
             AimPoint = TargetingHelper.InterceptionPoint(
@@ -120,7 +117,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             {
                 double angle = Vector3D.Angle(MuzzleMatrix.Forward, (AimPoint - MuzzleMatrix.Translation).Normalized());
                 IsTargetAligned = angle < Definition.Targeting.AimTolerance;
-                MyAPIGateway.Utilities.ShowNotification($"Angle: {Math.Round(MathHelper.ToDegrees(angle))} [{IsTargetAligned}]", 1000 / 60);
+                //MyAPIGateway.Utilities.ShowNotification($"Angle: {Math.Round(MathHelper.ToDegrees(angle))} [{IsTargetAligned}]", 1000 / 60);
             }
 
             // Update IsTargetInRange
@@ -130,7 +127,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             {
                 double range = Vector3D.Distance(MuzzleMatrix.Translation, AimPoint); // Use aimpoint because that will be the actual intercept position
                 IsTargetInRange = range < Definition.Targeting.MaxTargetingRange && range > Definition.Targeting.MinTargetingRange;
-                MyAPIGateway.Utilities.ShowNotification($"Range: {Math.Round(range)}m [{IsTargetInRange}]", 1000 / 60);
+                //MyAPIGateway.Utilities.ShowNotification($"Range: {Math.Round(range)}m [{IsTargetInRange}]", 1000 / 60);
             }
         }
 
@@ -191,7 +188,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             double desiredAzimuth = Math.Atan2(targetDirection.X, targetDirection.Z); // The problem is that rotation jumps from 0 to Pi. This is difficult to limit.
             if (desiredAzimuth == double.NaN)
                 desiredAzimuth = Math.PI;
-
+            // Commented out because it causes jittering. TODO fix!
             //desiredAzimuth = ModularClamp(Azimuth - desiredAzimuth, -Definition.Hardpoint.AzimuthRate * delta, Definition.Hardpoint.AzimuthRate * delta) + Azimuth;
 
             return GetAzimuthMatrix(desiredAzimuth);

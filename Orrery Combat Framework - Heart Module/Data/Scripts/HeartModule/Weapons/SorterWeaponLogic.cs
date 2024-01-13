@@ -35,15 +35,15 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public MySync<bool, SyncDirection.BothWays> ShootState; //temporary (lmao) magic bullshit in place of actual packet sending
         //insert ammo loaded state here (how the hell are we gonna do that)
-        public MySync<float, SyncDirection.BothWays> AiRange; 
-        public MySync<bool, SyncDirection.BothWays> TargetGridsState; 
-        public MySync<bool, SyncDirection.BothWays> TargetProjectilesState; 
-        public MySync<bool, SyncDirection.BothWays> TargetCharactersState; 
-        public MySync<bool, SyncDirection.BothWays> TargetLargeGridsState; 
-        public MySync<bool, SyncDirection.BothWays> TargetSmallGridsState; 
-        public MySync<bool, SyncDirection.BothWays> TargetFriendliesState; 
-        public MySync<bool, SyncDirection.BothWays> TargetNeutralsState; 
-        public MySync<bool, SyncDirection.BothWays> TargetEnemiesState; 
+        public MySync<float, SyncDirection.BothWays> AiRange;
+        public MySync<bool, SyncDirection.BothWays> TargetGridsState;
+        public MySync<bool, SyncDirection.BothWays> TargetProjectilesState;
+        public MySync<bool, SyncDirection.BothWays> TargetCharactersState;
+        public MySync<bool, SyncDirection.BothWays> TargetLargeGridsState;
+        public MySync<bool, SyncDirection.BothWays> TargetSmallGridsState;
+        public MySync<bool, SyncDirection.BothWays> TargetFriendliesState;
+        public MySync<bool, SyncDirection.BothWays> TargetNeutralsState;
+        public MySync<bool, SyncDirection.BothWays> TargetEnemiesState;
         public MySync<bool, SyncDirection.BothWays> TargetUnownedState;
         public MySync<long, SyncDirection.BothWays> AmmoLoadedState;          //dang this mysync thing is pretty cool it will surely not bite me in the ass when I need over 32 entries      
         public MySync<long, SyncDirection.BothWays> ControlTypeState;
@@ -54,6 +54,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         bool shoot = false;
 
         public Dictionary<string, IMyModelDummy> modeldummy { get; set; } = new Dictionary<string, IMyModelDummy>();
+        public MatrixD MuzzleMatrix { get; internal set; } = MatrixD.Identity;
 
         public SorterWeaponLogic(IMyConveyorSorter sorterWeapon, SerializableWeaponDefinition definition)
         {
@@ -215,6 +216,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public override void UpdateAfterSimulation()
         {
+            MuzzleMatrix = CalcMuzzleMatrix(); // Set stored MuzzleMatrix
             TryShoot();
         }
 
