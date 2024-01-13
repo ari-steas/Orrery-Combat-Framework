@@ -37,12 +37,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             {
                 //Model = "Models\\Weapons\\Projectile_Missile.mwm",
                 TrailTexture = MyStringId.GetOrCompute("WeaponLaser"),
-                TrailFadeTime = 1f,
+                TrailFadeTime = 0f,
                 TrailLength = 4,
                 TrailWidth = 0.25f,
                 TrailColor = new VRageMath.Vector4(61, 24, 24, 200),
                 //AttachedParticle = "Smoke_Missile",
-                //ImpactParticle = "Explosion_LargeCaliberShell_Backup",
+                ImpactParticle = "MaterialHit_Metal",
                 VisibleChance = 1f,
             },
             Audio = new Audio()
