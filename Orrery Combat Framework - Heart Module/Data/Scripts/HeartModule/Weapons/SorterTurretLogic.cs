@@ -166,7 +166,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (desiredAzimuth == double.NaN)
                 desiredAzimuth = Math.PI;
             // Commented out because it causes jittering. TODO fix!
-            //desiredAzimuth = ModularClamp(Azimuth - desiredAzimuth, -Definition.Hardpoint.AzimuthRate * delta, Definition.Hardpoint.AzimuthRate * delta) + Azimuth;
+            desiredAzimuth = ModularClamp(Azimuth - desiredAzimuth, -Definition.Hardpoint.AzimuthRate * delta, Definition.Hardpoint.AzimuthRate * delta) + Azimuth;
 
             return GetAzimuthMatrix(desiredAzimuth);
         }
@@ -174,7 +174,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         private Matrix GetAzimuthMatrix(double desiredAzimuth)
         {
             if (!Definition.Hardpoint.CanRotateFull)
-                Azimuth = (float) Clamp(desiredAzimuth, Definition.Hardpoint.MaxAzimuth, Definition.Hardpoint.MinAzimuth); // Basic angle clamp
+                Azimuth = (float) Clamp(desiredAzimuth, Definition.Hardpoint.MinAzimuth, Definition.Hardpoint.MaxAzimuth); // Basic angle clamp
             else
                 Azimuth = (float) NormalizeAngle(desiredAzimuth); // Adjust rotation to (-180, 180), but don't have any limits
 
@@ -189,7 +189,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 desiredElevation = (float)Math.PI;
 
             //desiredElevation = Clamp(desiredElevation - Elevation, Definition.Hardpoint.ElevationRate * delta, -Definition.Hardpoint.ElevationRate * delta) + Elevation;
-            //desiredElevation = (float) ModularClamp(Elevation - desiredElevation, -Definition.Hardpoint.ElevationRate * delta, Definition.Hardpoint.ElevationRate * delta) + Elevation;
+            desiredElevation = (float) ModularClamp(Elevation - desiredElevation, -Definition.Hardpoint.ElevationRate * delta, Definition.Hardpoint.ElevationRate * delta) + Elevation;
 
             return GetElevationMatrix(desiredElevation);
         }
@@ -197,13 +197,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         private Matrix GetElevationMatrix(float desiredElevation)
         {
             if (!Definition.Hardpoint.CanElevateFull)
-                Elevation = (float) -Clamp(-desiredElevation, Definition.Hardpoint.MaxElevation, Definition.Hardpoint.MinElevation);
+                Elevation = (float) -Clamp(-desiredElevation, Definition.Hardpoint.MinElevation, Definition.Hardpoint.MaxElevation);
             else
                 Elevation = (float) NormalizeAngle(desiredElevation);
             return Matrix.CreateFromYawPitchRoll(0, Elevation, 0);
         }
 
-        private static double Clamp(double value, double max, double min)
+        private static double Clamp(double value, double min, double max)
         {
             if (value < min)
                 return min;
@@ -212,13 +212,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             return value;
         }
 
-        private static double ClampAbs(double value, double absMax) => Clamp(value, absMax, -absMax);
+        private static double ClampAbs(double value, double absMax) => Clamp(value, -absMax, absMax);
 
-        private static double ModularClamp(double val, double min, double max, double rangemin = -Math.PI, double rangemax = Math.PI) // https://forum.unity.com/threads/clamping-angle-between-two-values.853771/
+        private static double ModularClamp(double val, double min, double max) // https://forum.unity.com/threads/clamping-angle-between-two-values.853771/
         {
-            var modulus = Math.Abs(rangemax - rangemin);
+            var modulus = Math.PI * 2;
             if ((val %= modulus) < 0f) val += modulus;
-            return Clamp(val + Math.Min(rangemin, rangemax), max, min);
+            return Clamp(val - Math.PI, min, max);
         }
 
         private static double NormalizeAngle(double angleRads)

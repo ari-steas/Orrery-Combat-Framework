@@ -93,7 +93,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             },
             Loading = new Loading()
             {
-                RateOfFire = 10,
+                RateOfFire = 60,
                 BarrelsPerShot = 1,
                 ProjectilesPerBarrel = 1,
                 ReloadTime = 0,
