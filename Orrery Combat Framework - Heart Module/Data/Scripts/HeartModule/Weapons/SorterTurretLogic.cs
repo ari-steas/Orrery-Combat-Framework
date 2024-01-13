@@ -107,22 +107,21 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         private Matrix GetAzimuthMatrix(Vector3D targetDirection, float delta)
         {
-            float desiredAzimuth = (float) Math.Atan2(targetDirection.X, targetDirection.Z); // The problem is that rotation jumps from 0 to Pi. This is difficult to limit.
-            if (desiredAzimuth == float.NaN)
-                desiredAzimuth = (float) Math.PI;
+            double desiredAzimuth = Math.Atan2(targetDirection.X, targetDirection.Z); // The problem is that rotation jumps from 0 to Pi. This is difficult to limit.
+            if (desiredAzimuth == double.NaN)
+                desiredAzimuth = Math.PI;
 
             desiredAzimuth = ModularClamp(Azimuth - desiredAzimuth, -Definition.Hardpoint.AzimuthRate * delta, Definition.Hardpoint.AzimuthRate * delta) + Azimuth;
-            //desiredAzimuth = ModularClamp(desiredAzimuth - Azimuth, Definition.Hardpoint.AzimuthRate * delta, Definition.Hardpoint.AzimuthRate * delta) + Azimuth;
 
             return GetAzimuthMatrix(desiredAzimuth);
         }
 
-        private Matrix GetAzimuthMatrix(float desiredAzimuth)
+        private Matrix GetAzimuthMatrix(double desiredAzimuth)
         {
             if (!Definition.Hardpoint.CanRotateFull)
-                Azimuth = Clamp(desiredAzimuth, Definition.Hardpoint.MaxAzimuth, Definition.Hardpoint.MinAzimuth); // Basic angle clamp
+                Azimuth = (float) Clamp(desiredAzimuth, Definition.Hardpoint.MaxAzimuth, Definition.Hardpoint.MinAzimuth); // Basic angle clamp
             else
-                Azimuth = NormalizeAngle(desiredAzimuth); // Adjust rotation to (-180, 180), but don't have any limits
+                Azimuth = (float) NormalizeAngle(desiredAzimuth); // Adjust rotation to (-180, 180), but don't have any limits
 
             //MyAPIGateway.Utilities.ShowNotification("AZ: " + Math.Round(MathHelper.ToDegrees(Azimuth)), 1000/60);
             return Matrix.CreateFromYawPitchRoll(Azimuth, 0, 0);
@@ -135,7 +134,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 desiredElevation = (float)Math.PI;
 
             //desiredElevation = Clamp(desiredElevation - Elevation, Definition.Hardpoint.ElevationRate * delta, -Definition.Hardpoint.ElevationRate * delta) + Elevation;
-            desiredElevation = ModularClamp(Elevation - desiredElevation, -Definition.Hardpoint.ElevationRate * delta, Definition.Hardpoint.ElevationRate * delta) + Elevation;
+            desiredElevation = (float) ModularClamp(Elevation - desiredElevation, -Definition.Hardpoint.ElevationRate * delta, Definition.Hardpoint.ElevationRate * delta) + Elevation;
 
             return GetElevationMatrix(desiredElevation);
         }
@@ -143,36 +142,36 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         private Matrix GetElevationMatrix(float desiredElevation)
         {
             if (!Definition.Hardpoint.CanElevateFull)
-                Elevation = -Clamp(-desiredElevation, Definition.Hardpoint.MaxElevation, Definition.Hardpoint.MinElevation);
+                Elevation = (float) -Clamp(-desiredElevation, Definition.Hardpoint.MaxElevation, Definition.Hardpoint.MinElevation);
             else
-                Elevation = NormalizeAngle(desiredElevation);
+                Elevation = (float) NormalizeAngle(desiredElevation);
             return Matrix.CreateFromYawPitchRoll(0, Elevation, 0);
         }
 
-        private static float Clamp(double value, double max, double min)
+        private static double Clamp(double value, double max, double min)
         {
             if (value < min)
-                return (float) min;
+                return min;
             if (value > max)
-                return (float) max;
-            return (float) value;
+                return max;
+            return value;
         }
 
-        private static float ClampAbs(double value, double absMax) => Clamp(value, absMax, -absMax);
+        private static double ClampAbs(double value, double absMax) => Clamp(value, absMax, -absMax);
 
-        private static float ModularClamp(float val, float min, float max, float rangemin = (float)-Math.PI, float rangemax = (float)Math.PI) // https://forum.unity.com/threads/clamping-angle-between-two-values.853771/
+        private static double ModularClamp(double val, double min, double max, double rangemin = -Math.PI, double rangemax = Math.PI) // https://forum.unity.com/threads/clamping-angle-between-two-values.853771/
         {
             var modulus = Math.Abs(rangemax - rangemin);
             if ((val %= modulus) < 0f) val += modulus;
             return Clamp(val + Math.Min(rangemin, rangemax), max, min);
         }
 
-        private static float NormalizeAngle(float angleRads)
+        private static double NormalizeAngle(double angleRads)
         {
             if (angleRads > Math.PI)
-                return (float)((angleRads % Math.PI) - Math.PI);
+                return (angleRads % Math.PI) - Math.PI;
             if (angleRads < -Math.PI)
-                return (float)((angleRads % Math.PI) + Math.PI);
+                return (angleRads % Math.PI) + Math.PI;
             return angleRads;
         }
     }
