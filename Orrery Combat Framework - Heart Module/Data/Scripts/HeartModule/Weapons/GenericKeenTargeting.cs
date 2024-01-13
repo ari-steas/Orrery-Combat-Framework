@@ -14,9 +14,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
     public class GenericKeenTargeting
     {
-        private MyEntity lastKnownTarget = null;
+        //private MyEntity lastKnownTarget = null; //TODO fix this
 
-        public MyEntity GetTarget(IMyCubeGrid grid, bool targetGrids)
+        public MyEntity GetTarget(IMyCubeGrid grid, bool targetGrids, bool targetLargeGrids, bool targetSmallGrids)
         {
             if (grid == null)
             {
@@ -44,12 +44,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                     if (targetLockingComponent != null && targetLockingComponent.IsTargetLocked)
                     {
                         var targetEntity = targetLockingComponent.TargetEntity;
-                        if (targetEntity != null)
+                        if (targetEntity != null && targetGrids) // Target grids must be enabled
                         {
-                            if (targetGrids || !(targetEntity is IMyCubeGrid))
+                            bool isLargeGrid = targetEntity is IMyCubeGrid && ((IMyCubeGrid)targetEntity).GridSizeEnum == VRage.Game.MyCubeSize.Large;
+                            bool isSmallGrid = targetEntity is IMyCubeGrid && ((IMyCubeGrid)targetEntity).GridSizeEnum == VRage.Game.MyCubeSize.Small;
+
+                            if ((isLargeGrid && targetLargeGrids) || (isSmallGrid && targetSmallGrids) || !(targetEntity is IMyCubeGrid))
                             {
-                                lastKnownTarget = targetEntity;
-                                //MyAPIGateway.Utilities.ShowNotification($"Target locked: {targetEntity.DisplayName}", 1000 / 60, VRage.Game.MyFontEnum.Green);
+                                //lastKnownTarget = targetEntity;
                                 return targetEntity;
                             }
                         }
@@ -57,7 +59,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 }
             }
 
-            return lastKnownTarget;
+            return null;
         }
     }
 }

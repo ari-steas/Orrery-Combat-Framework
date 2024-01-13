@@ -12,6 +12,11 @@ using VRage.Sync;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 using VRage.Game.ModAPI.Network;
 using VRage.ObjectBuilders;
+using System.Diagnostics;
+using Sandbox.Game.Entities;
+using Sandbox.Common.ObjectBuilders;
+using Sandbox.Game.EntityComponents;
+using VRage.Game;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
@@ -64,48 +69,74 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             base.UpdateAfterSimulation();
         }
 
+        private MyEntity currentTarget = null;
+
         public void UpdateTargeting()
         {
             MuzzleMatrix = CalcMuzzleMatrix(); // Set stored MuzzleMatrix
 
-            MyEntity target = null;
-            // Only proceed with targeting if TargetGrids is true
-            if (Terminal_Heart_TargetGrids)
+            // Retrieve the target based on the targeting settings
+            MyEntity potentialTarget = targeting.GetTarget(
+                SorterWep?.CubeGrid,
+                Terminal_Heart_TargetGrids,
+                Terminal_Heart_TargetLargeGrids,
+                Terminal_Heart_TargetSmallGrids
+            );
+
+            // Check if the potential target is different from the current target
+            if (currentTarget != potentialTarget)
             {
-                target = targeting.GetTarget(SorterWep?.CubeGrid, Terminal_Heart_TargetGrids);
-                if (target != null)
+                // Assign the new potential target
+                currentTarget = potentialTarget;
+
+                // Debug Info: Display the current target's name
+                string targetName = currentTarget != null ? currentTarget.DisplayName : "None";
+                MyAPIGateway.Utilities.ShowNotification($"Current Target: {targetName}", 2000, VRage.Game.MyFontEnum.Blue);
+
+                // If the potential target is null, reset targeting state
+                if (currentTarget == null)
                 {
-                    AimPoint = TargetingHelper.InterceptionPoint(
-                        MuzzleMatrix.Translation,
-                        SorterWep.CubeGrid.LinearVelocity,
-                        target, 0) ?? Vector3D.MaxValue;
+                    ResetTargetingState();
                 }
             }
 
-            if (target != null)
+            // Proceed with targeting if a valid target is found
+            if (currentTarget != null)
+            {
+                AimPoint = TargetingHelper.InterceptionPoint(
+                    MuzzleMatrix.Translation,
+                    SorterWep.CubeGrid.LinearVelocity,
+                    currentTarget, 0) ?? Vector3D.MaxValue;
+
                 UpdateTurretSubparts(deltaTick, AimPoint); // Rotate the turret
 
-            // Update IsTargetAligned
-            if (target ==  null)
+                // Update IsTargetAligned and IsTargetInRange
+                UpdateTargetState(currentTarget, AimPoint);
+            }
+            else
+            {
+                // If no target is found, ensure the turret is not aligned or in range
                 IsTargetAligned = false;
-            else
-            {
-                double angle = Vector3D.Angle(MuzzleMatrix.Forward, (AimPoint - MuzzleMatrix.Translation).Normalized());
-                IsTargetAligned = angle < Definition.Targeting.AimTolerance;
-                //MyAPIGateway.Utilities.ShowNotification($"Angle: {Math.Round(MathHelper.ToDegrees(angle))} [{IsTargetAligned}]", 1000 / 60);
-            }
-
-            // Update IsTargetInRange
-            if (target == null)
                 IsTargetInRange = false;
-            else
-            {
-                double range = Vector3D.Distance(MuzzleMatrix.Translation, AimPoint); // Use aimpoint because that will be the actual intercept position
-                IsTargetInRange = range < Definition.Targeting.MaxTargetingRange && range > Definition.Targeting.MinTargetingRange;
-                //MyAPIGateway.Utilities.ShowNotification($"Range: {Math.Round(range)}m [{IsTargetInRange}]", 1000 / 60);
             }
+        }
 
-            // Display notifications for debugging (if needed)
+        private void ResetTargetingState()
+        {
+            currentTarget = null;
+            IsTargetAligned = false;
+            IsTargetInRange = false;
+            AutoShoot = false; // Disable automatic shooting
+        }
+
+
+        private void UpdateTargetState(MyEntity target, Vector3D aimPoint)
+        {
+            double angle = Vector3D.Angle(MuzzleMatrix.Forward, (aimPoint - MuzzleMatrix.Translation).Normalized());
+            IsTargetAligned = angle < Definition.Targeting.AimTolerance;
+
+            double range = Vector3D.Distance(MuzzleMatrix.Translation, aimPoint);
+            IsTargetInRange = range < Definition.Targeting.MaxTargetingRange && range > Definition.Targeting.MinTargetingRange;
         }
 
         const float GridCheckRange = 200;
