@@ -14,7 +14,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
     public class GenericKeenTargeting
     {
-        private MyEntity lastKnownTarget = null;
+        //private MyEntity lastKnownTarget = null;
 
         public MyEntity GetTarget(IMyCubeGrid grid, bool targetGrids, bool targetLargeGrids, bool targetSmallGrids)
         {
@@ -51,7 +51,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
                             if ((isLargeGrid && targetLargeGrids) || (isSmallGrid && targetSmallGrids) || !(targetEntity is IMyCubeGrid))
                             {
-                                lastKnownTarget = targetEntity;
+                                //lastKnownTarget = targetEntity;
                                 return targetEntity;
                             }
                         }
@@ -59,7 +59,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 }
             }
 
-            return lastKnownTarget;
+            return null;
         }
     }
 }

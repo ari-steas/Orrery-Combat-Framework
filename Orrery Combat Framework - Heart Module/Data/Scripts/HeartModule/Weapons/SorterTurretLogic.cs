@@ -16,6 +16,7 @@ using System.Diagnostics;
 using Sandbox.Game.Entities;
 using Sandbox.Common.ObjectBuilders;
 using Sandbox.Game.EntityComponents;
+using VRage.Game;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
@@ -75,21 +76,27 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             MuzzleMatrix = CalcMuzzleMatrix(); // Set stored MuzzleMatrix
 
             // Retrieve the target based on the targeting settings
-            MyEntity target = targeting.GetTarget(
+            MyEntity potentialTarget = targeting.GetTarget(
                 SorterWep?.CubeGrid,
                 Terminal_Heart_TargetGrids,
                 Terminal_Heart_TargetLargeGrids,
                 Terminal_Heart_TargetSmallGrids
             );
 
-            // Check if target has changed or became invalid
-            if (currentTarget != target)
+            // Check if the potential target is different from the current target
+            if (currentTarget != potentialTarget)
             {
-                currentTarget = target;
-                ResetTargetingState();
+                // Assign the new potential target
+                currentTarget = potentialTarget;
+
+                // If the potential target is null, reset targeting state
+                if (currentTarget == null)
+                {
+                    ResetTargetingState();
+                }
             }
 
-            // Only proceed with targeting if a target is found
+            // Proceed with targeting if a valid target is found
             if (currentTarget != null)
             {
                 AimPoint = TargetingHelper.InterceptionPoint(
@@ -102,15 +109,21 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 // Update IsTargetAligned and IsTargetInRange
                 UpdateTargetState(currentTarget, AimPoint);
             }
+            else
+            {
+                // If no target is found, ensure the turret is not aligned or in range
+                IsTargetAligned = false;
+                IsTargetInRange = false;
+            }
         }
 
         private void ResetTargetingState()
         {
+            currentTarget = null;
             IsTargetAligned = false;
             IsTargetInRange = false;
-            // Other reset actions if needed
+            AutoShoot = false; // Disable automatic shooting
         }
-
 
         private void UpdateTargetState(MyEntity target, Vector3D aimPoint)
         {
