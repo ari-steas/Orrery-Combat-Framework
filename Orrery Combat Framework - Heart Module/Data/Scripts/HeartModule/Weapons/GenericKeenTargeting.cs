@@ -15,7 +15,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
     {
         private MyEntity lastKnownTarget = null;
 
-        public MyEntity GetTarget(IMyCubeGrid grid)
+        public MyEntity GetTarget(IMyCubeGrid grid, bool targetGrids)
         {
             if (grid == null)
             {
@@ -28,13 +28,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             {
                 MyShipController activeController = null;
 
-                // Iterate over all ship controllers on the grid
                 foreach (var block in myCubeGrid.GetFatBlocks<MyShipController>())
                 {
-                    if (block.NeedsPerFrameUpdate)   //this is the most reliable way to get the main cockpit without calling the main cockpit apparently
+                    if (block.NeedsPerFrameUpdate)
                     {
                         activeController = block;
-                        break; // Break the loop once the active controller is found
+                        break;
                     }
                 }
 
@@ -44,7 +43,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                     if (targetLockingComponent != null && targetLockingComponent.IsTargetLocked)
                     {
                         var targetEntity = targetLockingComponent.TargetEntity;
-                        if (targetEntity != null)
+                        if (targetEntity != null && (targetEntity is IMyCubeGrid || !targetGrids))
                         {
                             lastKnownTarget = targetEntity;
                             MyAPIGateway.Utilities.ShowNotification($"Target locked: {targetEntity.DisplayName}", 1000 / 60, VRage.Game.MyFontEnum.Green);

@@ -66,7 +66,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             UpdateTargeting();
 
-            MyEntity target = targeting.GetTarget(SorterWep?.CubeGrid); // Using the new targeting class
+            MyEntity target = targeting.GetTarget(SorterWep?.CubeGrid, Terminal_Heart_TargetGrids);
 
             base.UpdateAfterSimulation(); // TryShoot is contained in here
         }
@@ -75,7 +75,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             MuzzleMatrix = CalcMuzzleMatrix(); // Set stored MuzzleMatrix
 
-            MyEntity target = targeting.GetTarget(SorterWep?.CubeGrid);
+            MyEntity target = targeting.GetTarget(SorterWep?.CubeGrid, Terminal_Heart_TargetGrids);
 
             AimPoint = TargetingHelper.InterceptionPoint(
                 MuzzleMatrix.Translation,
@@ -153,7 +153,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             HeartData.I.SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(vecToTarget, delta));
         }
 
-
+            
         float Azimuth = 0;
         float Elevation = 0;
 
