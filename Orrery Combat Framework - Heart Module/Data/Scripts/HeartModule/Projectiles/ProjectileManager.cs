@@ -29,9 +29,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         /// <summary>
         /// Delta for frames; varies
         /// </summary>
-        private float deltaDraw = 0;
         private Stopwatch clockTick = Stopwatch.StartNew();
-        private Stopwatch clockDraw = Stopwatch.StartNew();
 
         public override void LoadData()
         {
@@ -154,12 +152,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 return;
 
             float deltaDrawTick = (float)clockTick.ElapsedTicks / TimeSpan.TicksPerSecond; // deltaDrawTick is the current offset between tick and draw, to account for variance between FPS and tickrate
-            deltaDraw = (float)clockDraw.ElapsedTicks / TimeSpan.TicksPerSecond; // deltaDraw is a standard delta value based on FPS
 
             foreach (var projectile in ActiveProjectiles.Values)
-                projectile.DrawUpdate(deltaDrawTick, deltaDraw);
-
-            clockDraw.Restart();
+                projectile.DrawUpdate(deltaDrawTick, 1 / 60f); // Draw delta is always 1/60 because Keen:tm:
         }
 
         public void UpdateProjectile(n_SerializableProjectile projectile)

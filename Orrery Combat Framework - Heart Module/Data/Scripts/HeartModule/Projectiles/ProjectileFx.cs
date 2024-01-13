@@ -1,4 +1,5 @@
-﻿using Sandbox.Game;
+﻿using Heart_Module.Data.Scripts.HeartModule.Utility;
+using Sandbox.Game;
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         MyEntity ProjectileEntity = new MyEntity();
         MyParticleEffect ProjectileEffect;
         uint RenderId = 0;
-        Dictionary<MyTuple<Vector3D, Vector3D>, float> TrailFade = new Dictionary<MyTuple<Vector3D, Vector3D>, float>(); // Maybe try a Stack var?
+        List<LineFade> TrailFade = new List<LineFade>(); // Maybe try a Stack var?
         MatrixD ProjectileMatrix = MatrixD.Identity;
         MyEntity3DSoundEmitter ProjectileSound;
         public bool IsVisible = true;
@@ -62,11 +63,19 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 return;
 
             // deltaTick is the current offset between tick and draw, to account for variance between FPS and tickrate
-            Vector3D visualPosition = Position + (InheritedVelocity + Direction * (Velocity + Definition.PhysicalProjectile.Acceleration * deltaTick)) * deltaTick;
-            ProjectileMatrix = MatrixD.CreateWorld(visualPosition, Direction, Vector3D.Cross(Direction, Vector3D.Up)); // TODO: Inherit up vector from firer. Also TODO: Make matrix a projectile var
+            ProjectileMatrix = MatrixD.CreateWorld(Position, Direction, Vector3D.Cross(Direction, Vector3D.Up)); // TODO: Inherit up vector from firer. Also TODO: Make matrix a projectile var
 
             // Temporary debug draw
             //DebugDraw.AddPoint(visualPosition, Color.Green, 0.000001f);
+
+            // Updated in TickUpdate as opposed to Draw because of lasers.
+            if (Definition.Visual.HasTrail && !HeartData.I.IsPaused)
+            {
+                if (IsHitscan)
+                    GlobalEffects.AddLine(Position, Position + Direction * MaxBeamLength, Definition.Visual.TrailFadeTime, Definition.Visual.TrailWidth, Definition.Visual.TrailColor, Definition.Visual.TrailTexture);
+                else
+                    GlobalEffects.AddLine(Position, Position + Direction * Definition.Visual.TrailLength, Definition.Visual.TrailFadeTime, Definition.Visual.TrailWidth, Definition.Visual.TrailColor, Definition.Visual.TrailTexture);
+            }
 
             if (Definition.Visual.HasAttachedParticle && !HeartData.I.IsPaused)
             {
@@ -78,44 +87,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
             ProjectileEntity.WorldMatrix = ProjectileMatrix;
 
-            if (Definition.Visual.HasTrail && !HeartData.I.IsPaused)
-            {
-                if (IsHitscan)
-                    TrailFade.Add(new MyTuple<Vector3D, Vector3D>(visualPosition, visualPosition + Direction * MaxBeamLength), Definition.Visual.TrailFadeTime);
-                else
-                    TrailFade.Add(new MyTuple<Vector3D, Vector3D>(visualPosition, visualPosition + Direction * Definition.Visual.TrailLength), Definition.Visual.TrailFadeTime);
-            }
-                
-            UpdateTrailFade(deltaDraw);
-
             if (HasAudio && Definition.Audio.HasTravelSound)
             {
                 ProjectileSound.SetPosition(Position);
             }
         }
 
-        /// <summary>
-        /// Updates trail fade for this projectile.
-        /// </summary>
-        private void UpdateTrailFade(float delta)
-        {
-            foreach (var positionTuple in TrailFade.Keys.ToList())
-            {
-                // TODO: Make persistent billboard system. DrawLine is very expensive.
-                BoundingSphereD sphere = new BoundingSphereD(positionTuple.Item1, IsHitscan ? MaxBeamLength : Definition.Visual.TrailLength);
-                if (MyAPIGateway.Session.Camera?.IsInFrustum(ref sphere) ?? false) // Check if line is visible
-                {
-                    float lifetimePct = TrailFade[positionTuple] / Definition.Visual.TrailFadeTime;
-                    Vector4 fadedColor = Definition.Visual.TrailColor * (Definition.Visual.TrailFadeTime == 0 ? 1 : lifetimePct);
-                    MySimpleObjectDraw.DrawLine(positionTuple.Item1, positionTuple.Item2, Definition.Visual.TrailTexture, ref fadedColor, Definition.Visual.TrailWidth);
-                }
-                
-                if (!HeartData.I.IsPaused)
-                    TrailFade[positionTuple] -= delta;
-                if (TrailFade[positionTuple] <= 0)
-                    TrailFade.Remove(positionTuple);
-            }
-        }
+        
 
         private void UpdateAudio()
         {
@@ -154,6 +132,20 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             ProjectileEntity?.Close();
             ProjectileSound?.StopSound(true);
             ProjectileSound?.Cleanup();
+        }
+
+        internal class LineFade
+        {
+            public Vector3D Start;
+            public Vector3D End;
+            public float FadeTime;
+
+            public LineFade(Vector3D start, Vector3D end, float fadeTime)
+            {
+                Start = start;
+                End = end;
+                FadeTime = fadeTime;
+            }
         }
     }
 }

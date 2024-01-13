@@ -1,6 +1,8 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
 using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+using Heart_Module.Data.Scripts.HeartModule.Utility;
+using Sandbox.Engine.Physics;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
@@ -41,7 +43,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (!ProjectileManager.I.IsIdAvailable(projectile.Id))
             {
                 SoftHandle.RaiseSyncException("Unable to spawn projectile - duplicate Id!");
-                ProjectileManager.I.GetProjectile(projectile.Id)?.UpdateFromSerializable(projectile);
+                //ProjectileManager.I.GetProjectile(projectile.Id)?.UpdateFromSerializable(projectile);
                 return;
             }
 
@@ -88,6 +90,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             this.Position = Position;
             this.Direction = Direction;
             this.Firer = firer;
+
             IsHitscan = Definition.PhysicalProjectile.IsHitscan;
 
             if (!IsHitscan)
@@ -105,7 +108,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             if ((Definition.PhysicalProjectile.MaxTrajectory != -1 && Definition.PhysicalProjectile.MaxTrajectory < DistanceTravelled) || (Definition.PhysicalProjectile.MaxLifetime != -1 && Definition.PhysicalProjectile.MaxLifetime < Age))
                 QueueDispose();
-            Vector3D oldPos = Position;
+
             Age += delta;
             if (!IsHitscan)
             {
@@ -122,14 +125,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
                 NextMoveStep = Position + (InheritedVelocity + Direction * (Velocity + Definition.PhysicalProjectile.Acceleration * delta)) * delta;
             }
-            else
+            else // Beams are really special, and need their own handling.
             {
                 if (!MyAPIGateway.Session.IsServer)
                     RemainingImpacts = Definition.Damage.MaxImpacts;
                 NextMoveStep = Position + Direction * Definition.PhysicalProjectile.MaxTrajectory;
-                MaxBeamLength = CheckHits(delta);
-                if (MaxBeamLength <= -1)
-                    MaxBeamLength = Definition.PhysicalProjectile.MaxTrajectory;
+
+                if (RemainingImpacts > 0)
+                {
+                    MaxBeamLength = CheckHits(delta); // Set visual beam length
+                    if (MaxBeamLength == -1)
+                        MaxBeamLength = Definition.PhysicalProjectile.MaxTrajectory;
+                }
             }
             if (MyAPIGateway.Session.IsServer)
                 UpdateAudio();
@@ -151,10 +158,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 return -1;
 
             List<IHitInfo> intersects = new List<IHitInfo>();
-            MyAPIGateway.Physics.CastRay(Position, NextMoveStep, intersects);
+            MyAPIGateway.Physics.CastRay(Position, NextMoveStep, intersects, 234);
 
-            double len = IsHitscan ? Definition.PhysicalProjectile.MaxTrajectory : ((Direction * Velocity + InheritedVelocity) * delta).Length();
-            double dist = -2;
+            double len = IsHitscan ? Definition.PhysicalProjectile.MaxTrajectory : Vector3D.Distance(Position, NextMoveStep);
+            double dist = -1;
 
             foreach (var hitInfo in intersects)
             {
@@ -165,8 +172,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     break;
                 }
 
-                if (hitInfo.HitEntity.EntityId == Firer || (DamageHandler.GetCollider(hitInfo.HitEntity as IMyCubeGrid, this)?.FatBlock?.EntityId ?? -1) == Firer)
-                    return -3;
+                if (hitInfo.HitEntity.EntityId == Firer || (DamageHandler.GetCollider(hitInfo.HitEntity as IMyCubeGrid, hitInfo.Position, hitInfo.Normal)?.FatBlock?.EntityId ?? -1) == Firer)
+                    continue; // Skip firer
+
                 dist = len * hitInfo.Fraction;
 
                 if (hitInfo.HitEntity is IMyCubeGrid)
@@ -175,13 +183,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Character, this, hitInfo.Position));
 
                 if (MyAPIGateway.Session.IsServer)
-                    PlayImpactAudio(hitInfo.Position);
+                    PlayImpactAudio(hitInfo.Position); // Audio is global
                 else
-                    DrawImpactParticle(hitInfo.Position);
+                    DrawImpactParticle(hitInfo.Position); // Visuals are clientside
 
                 RemainingImpacts -= 1;
             }
-
+            MyAPIGateway.Utilities.ShowNotification(intersects.Count + " | " + dist, 1000/6);
+            if (dist != -1)
+                DebugDraw.AddPoint(Position + Direction * dist, Color.Green, 1);
             return (float) dist;
         }
 

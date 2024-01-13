@@ -31,13 +31,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 Health = -1,
                 MaxTrajectory = 1000,
                 MaxLifetime = -1,
-                IsHitscan = false,
+                IsHitscan = true,
             },
             Visual = new Visual()
             {
                 //Model = "Models\\Weapons\\Projectile_Missile.mwm",
                 TrailTexture = MyStringId.GetOrCompute("WeaponLaser"),
-                TrailFadeTime = 0,
+                TrailFadeTime = 1f,
                 TrailLength = 4,
                 TrailWidth = 0.25f,
                 TrailColor = new VRageMath.Vector4(61, 24, 24, 200),

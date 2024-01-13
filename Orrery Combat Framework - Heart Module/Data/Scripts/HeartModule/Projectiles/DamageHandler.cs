@@ -57,12 +57,35 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             DamageEvents.Add(damageEvent);
         }
 
+        /// <summary>
+        /// Finds the current projectile impactor.
+        /// </summary>
+        /// <param name="Entity"></param>
+        /// <param name="Projectile"></param>
+        /// <returns></returns>
         public static IMySlimBlock GetCollider(IMyCubeGrid Entity, Projectile Projectile)
         {
             Vector3I? HitPos = Entity?.RayCastBlocks(Projectile.Position, Projectile.NextMoveStep);
             if (HitPos != null)
             {
                 return Entity.GetCubeBlock(HitPos.Value);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Finds the current projectile impactor.
+        /// </summary>
+        /// <param name="Entity"></param>
+        /// <param name="Projectile"></param>
+        /// <returns></returns>
+        public static IMySlimBlock GetCollider(IMyCubeGrid Entity, Vector3D HitPos, Vector3D Normal)
+        {
+            Vector3I? HitBlock = Entity?.RayCastBlocks(HitPos, HitPos + Normal);
+            if (HitBlock != null)
+            {
+                return Entity.GetCubeBlock(HitBlock.Value);
             }
 
             return null;
