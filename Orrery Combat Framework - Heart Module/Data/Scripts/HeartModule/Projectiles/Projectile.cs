@@ -135,9 +135,19 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 UpdateAudio();
         }
 
+        private bool CheckDistToGrids(Vector3D pos, double thresholdSq)
+        {
+            HashSet<IMyEntity> ents = new HashSet<IMyEntity>();
+            MyAPIGateway.Entities.GetEntities(ents);
+            foreach (var ent in ents)
+                if (Vector3D.DistanceSquared(ent.GetPosition(), pos) < thresholdSq)
+                    return true;
+            return false;
+        }
+
         public float CheckHits(float delta)
         {
-            if (NextMoveStep == Vector3D.Zero)
+            if (NextMoveStep == Vector3D.Zero || !CheckDistToGrids(Position, NextMoveStep.LengthSquared()))
                 return -1;
 
             List<IHitInfo> intersects = new List<IHitInfo>();

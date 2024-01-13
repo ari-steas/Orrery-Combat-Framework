@@ -1,5 +1,6 @@
 ﻿using Sandbox.Game;
 using Sandbox.Game.Entities;
+using Sandbox.ModAPI;
 using System.Collections.Generic;
 using System.Linq;
 using VRage;
@@ -102,8 +103,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             {
                 float lifetimePct = TrailFade[positionTuple] / Definition.Visual.TrailFadeTime;
                 Vector4 fadedColor = Definition.Visual.TrailColor * (Definition.Visual.TrailFadeTime == 0 ? 1 : lifetimePct);
-                MySimpleObjectDraw.DrawLine(positionTuple.Item1, positionTuple.Item2, Definition.Visual.TrailTexture, ref fadedColor, Definition.Visual.TrailWidth);
 
+                // TODO: Make persistent billboard system. DrawLine is very expensive.
+                BoundingSphereD sphere = new BoundingSphereD(positionTuple.Item1, IsHitscan ? MaxBeamLength : Definition.Visual.TrailLength);
+                if (MyAPIGateway.Session.Camera?.IsInFrustum(ref sphere) ?? false)
+                    MySimpleObjectDraw.DrawLine(positionTuple.Item1, positionTuple.Item2, Definition.Visual.TrailTexture, ref fadedColor, Definition.Visual.TrailWidth);
+                
                 if (!HeartData.I.IsPaused)
                     TrailFade[positionTuple] -= delta;
                 if (TrailFade[positionTuple] <= 0)
