@@ -29,7 +29,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         /// Delta for engine ticks; 60tps
         /// </summary>
         private const float deltaTick = 1/60f;
-        private MyEntity lastKnownTarget = null;
 
         public bool IsTargetAligned { get; private set; } = false;
         public bool IsTargetInRange { get; private set; } = false;
@@ -87,31 +86,30 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 }
             }
 
-
-            UpdateTurretSubparts(deltaTick, target, AimPoint); // Rotate the turret
+            if (target != null)
+                UpdateTurretSubparts(deltaTick, AimPoint); // Rotate the turret
 
             // Update IsTargetAligned
-            if (lastKnownTarget ==  null)
+            if (target ==  null)
                 IsTargetAligned = false;
             else
             {
                 double angle = Vector3D.Angle(MuzzleMatrix.Forward, (AimPoint - MuzzleMatrix.Translation).Normalized());
                 IsTargetAligned = angle < Definition.Targeting.AimTolerance;
-                //MyAPIGateway.Utilities.ShowNotification($"Angle: {Math.Round(MathHelper.ToDegrees(angle))} [{IsTargetAligned}]", 1000 / 60);
+                MyAPIGateway.Utilities.ShowNotification($"Angle: {Math.Round(MathHelper.ToDegrees(angle))} [{IsTargetAligned}]", 1000 / 60);
             }
 
             // Update IsTargetInRange
-            if (lastKnownTarget == null)
+            if (target == null)
                 IsTargetInRange = false;
             else
             {
                 double range = Vector3D.Distance(MuzzleMatrix.Translation, AimPoint); // Use aimpoint because that will be the actual intercept position
                 IsTargetInRange = range < Definition.Targeting.MaxTargetingRange && range > Definition.Targeting.MinTargetingRange;
-                //MyAPIGateway.Utilities.ShowNotification($"Range: {Math.Round(range)}m [{IsTargetInRange}]", 1000 / 60);
+                MyAPIGateway.Utilities.ShowNotification($"Range: {Math.Round(range)}m [{IsTargetInRange}]", 1000 / 60);
             }
 
             // Display notifications for debugging (if needed)
-            MyAPIGateway.Utilities.ShowNotification($"IsAligned: {IsTargetAligned}, IsInRange: {IsTargetInRange}", 1000 / 60);
         }
 
         public override void TryShoot()
@@ -140,11 +138,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             return MatrixD.Identity;
         }
 
-        public void UpdateTurretSubparts(float delta, MyEntity target, Vector3D aimpoint)
+        public void UpdateTurretSubparts(float delta, Vector3D aimpoint)
         {
-            if (target == null)
-                return; // Exit if there is no target
-
             // Calculate the vector to the target
 
             if (aimpoint == Vector3D.MaxValue)
@@ -152,7 +147,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
             Vector3D vecToTarget = aimpoint - MuzzleMatrix.Translation;
             //DebugDraw.AddLine(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * vecToTarget.Length(), Color.Blue, 0); // Muzzle line
-            DebugDraw.AddPoint(target.PositionComp.GetPosition(), Color.Blue, 0);
 
             MyEntitySubpart azimuth = HeartData.I.SubpartManager.GetSubpart((MyEntity)SorterWep, Definition.Assignments.AzimuthSubpart);
             MyEntitySubpart elevation = HeartData.I.SubpartManager.GetSubpart(azimuth, Definition.Assignments.ElevationSubpart);
