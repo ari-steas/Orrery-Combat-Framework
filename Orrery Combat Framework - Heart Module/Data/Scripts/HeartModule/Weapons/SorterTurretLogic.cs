@@ -118,6 +118,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 // If no target is found, ensure the turret is not aligned or in range
                 IsTargetAligned = false;
                 IsTargetInRange = false;
+
+                UpdateTurretSubparts(deltaTick, Vector3D.MaxValue);
             }
         }
 
@@ -129,7 +131,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             AutoShoot = false; // Disable automatic shooting
         }
 
-
+        /// <summary>
+        /// Sets state of target alignment and target range
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="aimPoint"></param>
         private void UpdateTargetState(MyEntity target, Vector3D aimPoint)
         {
             double angle = Vector3D.Angle(MuzzleMatrix.Forward, (aimPoint - MuzzleMatrix.Translation).Normalized());
@@ -178,22 +184,23 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public void UpdateTurretSubparts(float delta, Vector3D aimpoint)
         {
-            // Calculate the vector to the target
-
-            if (aimpoint == Vector3D.MaxValue)
-                return; // Exit if the interception point cannot be calculated
-
-            Vector3D vecToTarget = aimpoint - MuzzleMatrix.Translation;
-            //DebugDraw.AddLine(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * vecToTarget.Length(), Color.Blue, 0); // Muzzle line
-
             MyEntitySubpart azimuth = HeartData.I.SubpartManager.GetSubpart((MyEntity)SorterWep, Definition.Assignments.AzimuthSubpart);
             MyEntitySubpart elevation = HeartData.I.SubpartManager.GetSubpart(azimuth, Definition.Assignments.ElevationSubpart);
+
+            if (aimpoint == Vector3D.MaxValue)
+            {
+                HeartData.I.SubpartManager.LocalRotateSubpartAbs(azimuth, GetAzimuthMatrix(Math.PI - Definition.Hardpoint.HomeAzimuth, deltaTick));
+                HeartData.I.SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(-Definition.Hardpoint.HomeElevation, deltaTick));
+                return; // Exit if interception point does not exist
+            }
+            
+            Vector3D vecToTarget = aimpoint - MuzzleMatrix.Translation;
+            //DebugDraw.AddLine(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * vecToTarget.Length(), Color.Blue, 0); // Muzzle line
 
             vecToTarget = Vector3D.Rotate(vecToTarget.Normalized(), MatrixD.Invert(SorterWep.WorldMatrix)); // Inverted because subparts are wonky. Pre-rotated.
             HeartData.I.SubpartManager.LocalRotateSubpartAbs(azimuth, GetAzimuthMatrix(vecToTarget, delta));
             HeartData.I.SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(vecToTarget, delta));
         }
-
             
         float Azimuth = (float) Math.PI;
         float Elevation = 0;
@@ -203,14 +210,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             double desiredAzimuth = Math.Atan2(targetDirection.X, targetDirection.Z); // The problem is that rotation jumps from 0 to Pi. This is difficult to limit.
             if (desiredAzimuth == double.NaN)
                 desiredAzimuth = Math.PI;
-
-            desiredAzimuth = LimitRotationSpeed(Azimuth, desiredAzimuth, Definition.Hardpoint.AzimuthRate * delta);
-
-            return GetAzimuthMatrix(desiredAzimuth);
+            return GetAzimuthMatrix(desiredAzimuth, delta);
         }
 
-        private Matrix GetAzimuthMatrix(double desiredAzimuth)
+        private Matrix GetAzimuthMatrix(double desiredAzimuth, float delta)
         {
+            desiredAzimuth = LimitRotationSpeed(Azimuth, desiredAzimuth, Definition.Hardpoint.AzimuthRate * delta);
+
             if (!Definition.Hardpoint.CanRotateFull)
                 Azimuth = (float) Clamp(desiredAzimuth, Definition.Hardpoint.MinAzimuth, Definition.Hardpoint.MaxAzimuth); // Basic angle clamp
             else
@@ -225,14 +231,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             double desiredElevation = Math.Asin(-targetDirection.Y);
             if (desiredElevation == double.NaN)
                 desiredElevation = Math.PI;
-
-            desiredElevation = LimitRotationSpeed(Elevation, desiredElevation, Definition.Hardpoint.ElevationRate * delta);
-
-            return GetElevationMatrix(desiredElevation);
+            return GetElevationMatrix(desiredElevation, delta);
         }
 
-        private Matrix GetElevationMatrix(double desiredElevation)
+        private Matrix GetElevationMatrix(double desiredElevation, float delta)
         {
+            desiredElevation = LimitRotationSpeed(Elevation, desiredElevation, Definition.Hardpoint.ElevationRate * delta);
             if (!Definition.Hardpoint.CanElevateFull)
                 Elevation = (float) -Clamp(-desiredElevation, Definition.Hardpoint.MinElevation, Definition.Hardpoint.MaxElevation);
             else

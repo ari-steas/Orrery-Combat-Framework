@@ -86,6 +86,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 MinAzimuth = (float)-Math.PI,
                 MaxElevation = (float)Math.PI,
                 MinElevation = (float)-Math.PI,
+                HomeAzimuth = 0,
+                HomeElevation = (float) Math.PI / 4,
                 IdlePower = 0,
                 ShotInaccuracy = 0.0025f,
                 LineOfSightCheck = true,
