@@ -158,7 +158,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 return -1;
 
             List<IHitInfo> intersects = new List<IHitInfo>();
-            MyAPIGateway.Physics.CastRay(Position, NextMoveStep, intersects, 234);
+            MyAPIGateway.Physics.CastRay(Position, NextMoveStep, intersects);
 
             double len = IsHitscan ? Definition.PhysicalProjectile.MaxTrajectory : Vector3D.Distance(Position, NextMoveStep);
             double dist = -1;

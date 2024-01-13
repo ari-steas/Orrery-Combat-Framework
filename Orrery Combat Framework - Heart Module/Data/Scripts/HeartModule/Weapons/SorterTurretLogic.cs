@@ -12,10 +12,6 @@ using VRage.Sync;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 using VRage.Game.ModAPI.Network;
 using VRage.ObjectBuilders;
-using System.Diagnostics;
-using Sandbox.Game.Entities;
-using Sandbox.Common.ObjectBuilders;
-using Sandbox.Game.EntityComponents;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
@@ -112,9 +108,20 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             // Display notifications for debugging (if needed)
         }
 
+        const float GridCheckRange = 200;
+        private bool WillHitSelf()
+        {
+            List<IHitInfo> intersects = new List<IHitInfo>();
+            MyAPIGateway.Physics.CastRay(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * GridCheckRange, intersects);
+            foreach (var intersect in intersects)
+                if (intersect.HitEntity.EntityId == SorterWep.CubeGrid.EntityId)
+                    return true;
+            return false;
+        }
+
         public override void TryShoot()
         {
-            AutoShoot = IsTargetAligned && IsTargetInRange;
+            AutoShoot = IsTargetAligned && IsTargetInRange && !WillHitSelf();
             base.TryShoot();
         }
 
@@ -157,7 +164,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         }
 
             
-        float Azimuth = 0;
+        float Azimuth = (float) Math.PI;
         float Elevation = 0;
 
         private Matrix GetAzimuthMatrix(Vector3D targetDirection, float delta)
@@ -165,8 +172,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             double desiredAzimuth = Math.Atan2(targetDirection.X, targetDirection.Z); // The problem is that rotation jumps from 0 to Pi. This is difficult to limit.
             if (desiredAzimuth == double.NaN)
                 desiredAzimuth = Math.PI;
-            // Commented out because it causes jittering. TODO fix!
-            desiredAzimuth = ModularClamp(Azimuth - desiredAzimuth, -Definition.Hardpoint.AzimuthRate * delta, Definition.Hardpoint.AzimuthRate * delta) + Azimuth;
+
+            desiredAzimuth = LimitRotationSpeed(Azimuth, desiredAzimuth, Definition.Hardpoint.AzimuthRate * delta);
 
             return GetAzimuthMatrix(desiredAzimuth);
         }
@@ -184,17 +191,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         private MatrixD GetElevationMatrix(Vector3D targetDirection, float delta)
         {
-            float desiredElevation = (float)Math.Asin(-targetDirection.Y);
-            if (desiredElevation == float.NaN)
-                desiredElevation = (float)Math.PI;
+            double desiredElevation = Math.Asin(-targetDirection.Y);
+            if (desiredElevation == double.NaN)
+                desiredElevation = Math.PI;
 
-            //desiredElevation = Clamp(desiredElevation - Elevation, Definition.Hardpoint.ElevationRate * delta, -Definition.Hardpoint.ElevationRate * delta) + Elevation;
-            desiredElevation = (float) ModularClamp(Elevation - desiredElevation, -Definition.Hardpoint.ElevationRate * delta, Definition.Hardpoint.ElevationRate * delta) + Elevation;
+            desiredElevation = LimitRotationSpeed(Elevation, desiredElevation, Definition.Hardpoint.ElevationRate * delta);
 
             return GetElevationMatrix(desiredElevation);
         }
 
-        private Matrix GetElevationMatrix(float desiredElevation)
+        private Matrix GetElevationMatrix(double desiredElevation)
         {
             if (!Definition.Hardpoint.CanElevateFull)
                 Elevation = (float) -Clamp(-desiredElevation, Definition.Hardpoint.MinElevation, Definition.Hardpoint.MaxElevation);
@@ -214,11 +220,19 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         private static double ClampAbs(double value, double absMax) => Clamp(value, -absMax, absMax);
 
-        private static double ModularClamp(double val, double min, double max) // https://forum.unity.com/threads/clamping-angle-between-two-values.853771/
+        public static double LimitRotationSpeed(double currentAngle, double targetAngle, double maxRotationSpeed)
         {
-            var modulus = Math.PI * 2;
-            if ((val %= modulus) < 0f) val += modulus;
-            return Clamp(val - Math.PI, min, max);
+            // https://yal.cc/angular-rotations-explained/
+            // It should NOT HAVE BEEN THAT HARD
+            // I (aristeas) AM REALLY STUPID
+
+            var diff = NormalizeAngle(targetAngle - currentAngle);
+
+            // clamp rotations by speed:
+            if (diff < -maxRotationSpeed) return currentAngle - maxRotationSpeed;
+            if (diff > maxRotationSpeed) return currentAngle + maxRotationSpeed;
+            // if difference within speed, rotation's done:
+            return targetAngle;
         }
 
         private static double NormalizeAngle(double angleRads)
