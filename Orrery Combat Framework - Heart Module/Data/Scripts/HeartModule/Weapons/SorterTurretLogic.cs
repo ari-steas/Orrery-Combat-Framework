@@ -13,7 +13,6 @@ using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 using VRage.Game.ModAPI.Network;
 using VRage.ObjectBuilders;
 using System.Diagnostics;
-using BulletXNA;
 using Sandbox.Game.Entities;
 using Sandbox.Common.ObjectBuilders;
 using Sandbox.Game.EntityComponents;
@@ -30,7 +29,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         /// <summary>
         /// Delta for engine ticks; 60tps
         /// </summary>
-        private float deltaTick = 0;
+        private const float deltaTick = 1/60f;
         private Stopwatch clockTick = Stopwatch.StartNew();
         private MyEntity lastKnownTarget = null;
 
@@ -62,9 +61,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public override void UpdateAfterSimulation()
         {
-            // Delta time for tickrate-independent weapon movement
-            deltaTick = 1 / 60f;
-
             MuzzleMatrix = CalcMuzzleMatrix();
 
             MyEntity target = GetTarget(); // Placeholder for getting the target
@@ -162,18 +158,23 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         private Matrix GetAzimuthMatrix(Vector3D targetDirection, float delta)
         {
-            float desiredAzimuth = (float) Math.Atan2(targetDirection.X, targetDirection.Z); // The problem is that rotation jumps from 0 to Pi. This is difficult to limit.
-            if (desiredAzimuth == float.NaN)
-                desiredAzimuth = (float) Math.PI;
+            double desiredAzimuth = Math.Atan2(targetDirection.X, targetDirection.Z); // The problem is that rotation jumps from 0 to Pi. This is difficult to limit.
+            if (desiredAzimuth == double.NaN)
+                desiredAzimuth = Math.PI;
 
-            desiredAzimuth = Clamp(desiredAzimuth - Azimuth, Definition.Hardpoint.AzimuthRate * delta, -Definition.Hardpoint.AzimuthRate * delta) + Azimuth;
+            desiredAzimuth = ModularClamp(Azimuth - desiredAzimuth, -Definition.Hardpoint.AzimuthRate * delta, Definition.Hardpoint.AzimuthRate * delta) + Azimuth;
 
             return GetAzimuthMatrix(desiredAzimuth);
         }
 
-        private Matrix GetAzimuthMatrix(float desiredAzimuth)
+        private Matrix GetAzimuthMatrix(double desiredAzimuth)
         {
-            Azimuth = Clamp(desiredAzimuth, Definition.Hardpoint.MaxAzimuth, Definition.Hardpoint.MinAzimuth);
+            if (!Definition.Hardpoint.CanRotateFull)
+                Azimuth = (float) Clamp(desiredAzimuth, Definition.Hardpoint.MaxAzimuth, Definition.Hardpoint.MinAzimuth); // Basic angle clamp
+            else
+                Azimuth = (float) NormalizeAngle(desiredAzimuth); // Adjust rotation to (-180, 180), but don't have any limits
+
+            //MyAPIGateway.Utilities.ShowNotification("AZ: " + Math.Round(MathHelper.ToDegrees(Azimuth)), 1000/60);
             return Matrix.CreateFromYawPitchRoll(Azimuth, 0, 0);
         }
 
@@ -183,46 +184,46 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (desiredElevation == float.NaN)
                 desiredElevation = (float)Math.PI;
 
-            desiredElevation = Clamp(desiredElevation - Elevation, Definition.Hardpoint.ElevationRate * delta, -Definition.Hardpoint.ElevationRate * delta) + Elevation;
+            //desiredElevation = Clamp(desiredElevation - Elevation, Definition.Hardpoint.ElevationRate * delta, -Definition.Hardpoint.ElevationRate * delta) + Elevation;
+            desiredElevation = (float) ModularClamp(Elevation - desiredElevation, -Definition.Hardpoint.ElevationRate * delta, Definition.Hardpoint.ElevationRate * delta) + Elevation;
 
             return GetElevationMatrix(desiredElevation);
         }
 
         private Matrix GetElevationMatrix(float desiredElevation)
         {
-            Elevation = -Clamp(-desiredElevation, Definition.Hardpoint.MaxElevation, Definition.Hardpoint.MinElevation);
-            Elevation = desiredElevation;
+            if (!Definition.Hardpoint.CanElevateFull)
+                Elevation = (float) -Clamp(-desiredElevation, Definition.Hardpoint.MaxElevation, Definition.Hardpoint.MinElevation);
+            else
+                Elevation = (float) NormalizeAngle(desiredElevation);
             return Matrix.CreateFromYawPitchRoll(0, Elevation, 0);
         }
 
-        private static float Clamp(double value, double max, double min)
+        private static double Clamp(double value, double max, double min)
         {
             if (value < min)
-                return (float) min;
+                return min;
             if (value > max)
-                return (float) max;
-            return (float) value;
+                return max;
+            return value;
         }
 
-        private static float ClampAbs(double value, double absMax) => Clamp(value, absMax, -absMax);
+        private static double ClampAbs(double value, double absMax) => Clamp(value, absMax, -absMax);
 
-        private static float AngleDelta(float a, float b)
+        private static double ModularClamp(double val, double min, double max, double rangemin = -Math.PI, double rangemax = Math.PI) // https://forum.unity.com/threads/clamping-angle-between-two-values.853771/
         {
-            var normDeg = a - b % Math.PI;
-            return (float)Math.Min((2*Math.PI)-normDeg, normDeg);
+            var modulus = Math.Abs(rangemax - rangemin);
+            if ((val %= modulus) < 0f) val += modulus;
+            return Clamp(val + Math.Min(rangemin, rangemax), max, min);
         }
 
-        public static float LimitRadiansPI(float angle)
+        private static double NormalizeAngle(double angleRads)
         {
-            if (angle > 3.141593f)
-            {
-                return angle % 3.141593f - 3.141593f;
-            }
-            else if (angle < 3.141593f)
-            {
-                return angle % 3.141593f + 3.141593f;
-            }
-            return angle;
+            if (angleRads > Math.PI)
+                return (angleRads % Math.PI) - Math.PI;
+            if (angleRads < -Math.PI)
+                return (angleRads % Math.PI) + Math.PI;
+            return angleRads;
         }
     }
 }

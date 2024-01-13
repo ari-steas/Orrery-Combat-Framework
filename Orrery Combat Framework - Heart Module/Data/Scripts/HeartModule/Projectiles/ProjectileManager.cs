@@ -25,7 +25,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         /// <summary>
         /// Delta for engine ticks; 60tps
         /// </summary>
-        private float deltaTick = 0;
+        private const float deltaTick = 1/60f;
         /// <summary>
         /// Delta for frames; varies
         /// </summary>
@@ -48,10 +48,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         public override void UpdateAfterSimulation()
         {
             if (HeartData.I.IsSuspended) return;
-
-            // Delta time for tickrate-independent projectile movement
-            //deltaTick = clockTick.ElapsedTicks / (float)TimeSpan.TicksPerSecond;
-            deltaTick = 1/60f;
 
             // Tick projectiles
             foreach (var projectile in ActiveProjectiles.Values)
@@ -157,12 +153,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (HeartData.I.IsSuspended || MyAPIGateway.Utilities.IsDedicated) // We don't want to needlessly use server CPU time
                 return;
 
-            //deltaTick = (float)clockTick.ElapsedTicks / TimeSpan.TicksPerSecond; // deltaTick is the current offset between tick and draw, to account for variance between FPS and tickrate
-            deltaTick = 1 / 60f;
+            float deltaDrawTick = (float)clockTick.ElapsedTicks / TimeSpan.TicksPerSecond; // deltaDrawTick is the current offset between tick and draw, to account for variance between FPS and tickrate
             deltaDraw = (float)clockDraw.ElapsedTicks / TimeSpan.TicksPerSecond; // deltaDraw is a standard delta value based on FPS
 
             foreach (var projectile in ActiveProjectiles.Values)
-                projectile.DrawUpdate(deltaTick, deltaDraw);
+                projectile.DrawUpdate(deltaDrawTick, deltaDraw);
 
             clockDraw.Restart();
         }
