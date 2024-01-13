@@ -66,17 +66,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             UpdateTargeting();
 
-            MyEntity target = targeting.GetTarget(SorterWep?.CubeGrid, Terminal_Heart_TargetGrids);
-
-            base.UpdateAfterSimulation(); // TryShoot is contained in here
+            base.UpdateAfterSimulation();
         }
 
         public void UpdateTargeting()
         {
             MuzzleMatrix = CalcMuzzleMatrix(); // Set stored MuzzleMatrix
 
-            MyEntity target = targeting.GetTarget(SorterWep?.CubeGrid, Terminal_Heart_TargetGrids);
-
+            MyEntity target = targeting.GetTarget(SorterWep?.CubeGrid, Terminal_Heart_TargetGrids); 
             AimPoint = TargetingHelper.InterceptionPoint(
                 MuzzleMatrix.Translation,
                 SorterWep.CubeGrid.LinearVelocity,
