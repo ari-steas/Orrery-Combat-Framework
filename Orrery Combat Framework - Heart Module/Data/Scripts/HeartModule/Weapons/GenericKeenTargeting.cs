@@ -44,7 +44,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                     if (targetLockingComponent != null && targetLockingComponent.IsTargetLocked)
                     {
                         var targetEntity = targetLockingComponent.TargetEntity;
-                        if (targetEntity != null)
+                        if (targetEntity != null && targetGrids) // Target grids must be enabled
                         {
                             bool isLargeGrid = targetEntity is IMyCubeGrid && ((IMyCubeGrid)targetEntity).GridSizeEnum == VRage.Game.MyCubeSize.Large;
                             bool isSmallGrid = targetEntity is IMyCubeGrid && ((IMyCubeGrid)targetEntity).GridSizeEnum == VRage.Game.MyCubeSize.Small;

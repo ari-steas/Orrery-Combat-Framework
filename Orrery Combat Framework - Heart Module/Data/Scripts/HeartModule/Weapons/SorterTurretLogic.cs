@@ -68,6 +68,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             base.UpdateAfterSimulation();
         }
 
+        private MyEntity currentTarget = null;
+
         public void UpdateTargeting()
         {
             MuzzleMatrix = CalcMuzzleMatrix(); // Set stored MuzzleMatrix
@@ -80,25 +82,35 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 Terminal_Heart_TargetSmallGrids
             );
 
+            // Check if target has changed or became invalid
+            if (currentTarget != target)
+            {
+                currentTarget = target;
+                ResetTargetingState();
+            }
+
             // Only proceed with targeting if a target is found
-            if (target != null)
+            if (currentTarget != null)
             {
                 AimPoint = TargetingHelper.InterceptionPoint(
                     MuzzleMatrix.Translation,
                     SorterWep.CubeGrid.LinearVelocity,
-                    target, 0) ?? Vector3D.MaxValue;
+                    currentTarget, 0) ?? Vector3D.MaxValue;
 
                 UpdateTurretSubparts(deltaTick, AimPoint); // Rotate the turret
 
                 // Update IsTargetAligned and IsTargetInRange
-                UpdateTargetState(target, AimPoint);
-            }
-            else
-            {
-                IsTargetAligned = false;
-                IsTargetInRange = false;
+                UpdateTargetState(currentTarget, AimPoint);
             }
         }
+
+        private void ResetTargetingState()
+        {
+            IsTargetAligned = false;
+            IsTargetInRange = false;
+            // Other reset actions if needed
+        }
+
 
         private void UpdateTargetState(MyEntity target, Vector3D aimPoint)
         {
