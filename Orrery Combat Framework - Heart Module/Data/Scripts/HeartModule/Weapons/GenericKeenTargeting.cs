@@ -26,10 +26,21 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             var myCubeGrid = grid as MyCubeGrid;
             if (myCubeGrid != null)
             {
-                var mainCockpit = myCubeGrid.MainCockpit as IMyCockpit;
-                if (mainCockpit != null && mainCockpit.Pilot != null)
+                MyShipController activeController = null;
+
+                // Iterate over all ship controllers on the grid
+                foreach (var block in myCubeGrid.GetFatBlocks<MyShipController>())
                 {
-                    var targetLockingComponent = mainCockpit.Pilot.Components.Get<MyTargetLockingComponent>();
+                    if (block.NeedsPerFrameUpdate)   //this is the most reliable way to get the main cockpit without calling the main cockpit apparently
+                    {
+                        activeController = block;
+                        break; // Break the loop once the active controller is found
+                    }
+                }
+
+                if (activeController != null && activeController.Pilot != null)
+                {
+                    var targetLockingComponent = activeController.Pilot.Components.Get<MyTargetLockingComponent>();
                     if (targetLockingComponent != null && targetLockingComponent.IsTargetLocked)
                     {
                         var targetEntity = targetLockingComponent.TargetEntity;
