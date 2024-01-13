@@ -1,18 +1,9 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles;
-using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
-using Sandbox.Game.Entities;
+﻿using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.ModAPI;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VRage.Game.Components;
-using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
-using VRage.Utils;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
@@ -24,6 +15,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         private Dictionary<uint, SorterWeaponLogic> ActiveWeapons = new Dictionary<uint, SorterWeaponLogic>();
         private uint NextId = 0;
+        public Dictionary<IMyCubeGrid, List<SorterWeaponLogic>> GridWeapons = new Dictionary<IMyCubeGrid, List<SorterWeaponLogic>>(); // EntityId based because IMyCubeGrid keys break garbage collection
 
         /// <summary>
         /// Delta for engine ticks; 60tps
@@ -34,6 +26,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             I = this;
             MyAPIGateway.Entities.OnEntityAdd += OnEntityAdd;
+            MyAPIGateway.Entities.OnEntityRemove += OnEntityRemove;
         }
 
         /// <summary>
@@ -53,9 +46,22 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                     blocks.Add(b);
                 return false;
             });
+            GridWeapons.Add(grid, new List<SorterWeaponLogic>());
             foreach (var block in blocks)
                 OnBlockAdd(block);
             grid.OnBlockAdded += OnBlockAdd;
+        }
+
+        /// <summary>
+        /// Removes grids from the GridWeapons list
+        /// </summary>
+        /// <param name="entity"></param>
+        private void OnEntityRemove(IMyEntity entity)
+        {
+            if (!(entity is IMyCubeGrid))
+                return;
+            IMyCubeGrid grid = (IMyCubeGrid)entity;
+            GridWeapons.Remove(grid);
         }
 
         /// <summary>
@@ -83,12 +89,25 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             NextId++;
             while (!IsIdAvailable(NextId))
                 NextId++;
+
             ActiveWeapons.Add(NextId, logic);
+            GridWeapons[sorter.CubeGrid].Add(logic); // Add to grid list
+
+            sorter.OnMarkForClose += (a) => {
+                ActiveWeapons.Remove(NextId);
+                List<SorterWeaponLogic> values;
+                GridWeapons.TryGetValue(sorter.CubeGrid, out values);
+                values?.Remove(logic);
+            };
         }
 
         protected override void UnloadData()
         {
             I = null;
+            ActiveWeapons.Clear();
+            GridWeapons.Clear();
+            MyAPIGateway.Entities.OnEntityAdd -= OnEntityAdd;
+            MyAPIGateway.Entities.OnEntityRemove -= OnEntityRemove;
         }
 
         public override void UpdateBeforeSimulation()

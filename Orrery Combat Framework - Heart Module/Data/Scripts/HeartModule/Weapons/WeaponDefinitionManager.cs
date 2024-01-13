@@ -40,13 +40,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 MaxElevation = (float)Math.PI / 4,
                 MinElevation = (float)-Math.PI / 4,
                 IdlePower = 0,
-                ShotInaccuracy = (float) Math.PI,
+                ShotInaccuracy = 0,
                 LineOfSightCheck = true,
                 ControlRotation = true,
             },
             Loading = new Loading()
             {
-                RateOfFire = 60,
+                RateOfFire = 30,
                 BarrelsPerShot = 1,
                 ProjectilesPerBarrel = 1,
                 ReloadTime = 0,
@@ -87,13 +87,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 MaxElevation = (float)Math.PI, // /4,
                 MinElevation = 0,
                 IdlePower = 0,
-                ShotInaccuracy = 0,//0.0175f,
+                ShotInaccuracy = 0.0075f,
                 LineOfSightCheck = true,
                 ControlRotation = true,
             },
             Loading = new Loading()
             {
-                RateOfFire = 60,
+                RateOfFire = 15,
                 BarrelsPerShot = 1,
                 ProjectilesPerBarrel = 1,
                 ReloadTime = 0,

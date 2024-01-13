@@ -22,7 +22,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
     //[MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeaponTurret")]
     public partial class SorterTurretLogic : SorterWeaponLogic
     {
-        MatrixD MuzzleMatrix = MatrixD.Identity;
         public MySync<float, SyncDirection.FromServer> AzimuthSync;
         public MySync<float, SyncDirection.FromServer> ElevationSync;
 
@@ -30,11 +29,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         /// Delta for engine ticks; 60tps
         /// </summary>
         private const float deltaTick = 1/60f;
-        private MyEntity lastKnownTarget = null;
 
         public bool IsTargetAligned { get; private set; } = false;
         public bool IsTargetInRange { get; private set; } = false;
-        public Vector3D AimPoint { get; private set; } = Vector3D.Zero;
+
+        public Vector3D AimPoint { get; private set; } = Vector3D.MaxValue; // TODO fix, should be in targeting CS
         private GenericKeenTargeting targeting = new GenericKeenTargeting();
 
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
@@ -71,37 +70,46 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public void UpdateTargeting()
         {
-            // Reset targeting indicators
-            IsTargetAligned = false;
-            IsTargetInRange = false;
+            MuzzleMatrix = CalcMuzzleMatrix(); // Set stored MuzzleMatrix
 
+            MyEntity target = null;
             // Only proceed with targeting if TargetGrids is true
             if (Terminal_Heart_TargetGrids)
             {
-                MuzzleMatrix = CalcMuzzleMatrix(); // Set stored MuzzleMatrix
-
-                MyEntity target = targeting.GetTarget(SorterWep?.CubeGrid, Terminal_Heart_TargetGrids);
+                target = targeting.GetTarget(SorterWep?.CubeGrid, Terminal_Heart_TargetGrids);
                 if (target != null)
                 {
                     AimPoint = TargetingHelper.InterceptionPoint(
                         MuzzleMatrix.Translation,
                         SorterWep.CubeGrid.LinearVelocity,
                         target, 0) ?? Vector3D.MaxValue;
-
-                    UpdateTurretSubparts(deltaTick, target, AimPoint); // Rotate the turret
-
-                    // Update IsTargetAligned
-                    double angle = Vector3D.Angle(MuzzleMatrix.Forward, (AimPoint - MuzzleMatrix.Translation).Normalized());
-                    IsTargetAligned = angle < Definition.Targeting.AimTolerance;
-
-                    // Update IsTargetInRange
-                    double range = Vector3D.Distance(MuzzleMatrix.Translation, AimPoint);
-                    IsTargetInRange = range < Definition.Targeting.MaxTargetingRange && range > Definition.Targeting.MinTargetingRange;
                 }
             }
 
+            if (target != null)
+                UpdateTurretSubparts(deltaTick, AimPoint); // Rotate the turret
+
+            // Update IsTargetAligned
+            if (target ==  null)
+                IsTargetAligned = false;
+            else
+            {
+                double angle = Vector3D.Angle(MuzzleMatrix.Forward, (AimPoint - MuzzleMatrix.Translation).Normalized());
+                IsTargetAligned = angle < Definition.Targeting.AimTolerance;
+                MyAPIGateway.Utilities.ShowNotification($"Angle: {Math.Round(MathHelper.ToDegrees(angle))} [{IsTargetAligned}]", 1000 / 60);
+            }
+
+            // Update IsTargetInRange
+            if (target == null)
+                IsTargetInRange = false;
+            else
+            {
+                double range = Vector3D.Distance(MuzzleMatrix.Translation, AimPoint); // Use aimpoint because that will be the actual intercept position
+                IsTargetInRange = range < Definition.Targeting.MaxTargetingRange && range > Definition.Targeting.MinTargetingRange;
+                MyAPIGateway.Utilities.ShowNotification($"Range: {Math.Round(range)}m [{IsTargetInRange}]", 1000 / 60);
+            }
+
             // Display notifications for debugging (if needed)
-            MyAPIGateway.Utilities.ShowNotification($"IsAligned: {IsTargetAligned}, IsInRange: {IsTargetInRange}", 1000 / 60);
         }
 
         public override void TryShoot()
@@ -130,19 +138,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             return MatrixD.Identity;
         }
 
-        public void UpdateTurretSubparts(float delta, MyEntity target, Vector3D aimpoint)
+        public void UpdateTurretSubparts(float delta, Vector3D aimpoint)
         {
-            if (target == null)
-                return; // Exit if there is no target
-
             // Calculate the vector to the target
 
             if (aimpoint == Vector3D.MaxValue)
                 return; // Exit if the interception point cannot be calculated
 
             Vector3D vecToTarget = aimpoint - MuzzleMatrix.Translation;
-            DebugDraw.AddLine(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * vecToTarget.Length(), Color.Blue, 0);
-            DebugDraw.AddPoint(target.PositionComp.GetPosition(), Color.Blue, 0);
+            //DebugDraw.AddLine(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * vecToTarget.Length(), Color.Blue, 0); // Muzzle line
 
             MyEntitySubpart azimuth = HeartData.I.SubpartManager.GetSubpart((MyEntity)SorterWep, Definition.Assignments.AzimuthSubpart);
             MyEntitySubpart elevation = HeartData.I.SubpartManager.GetSubpart(azimuth, Definition.Assignments.ElevationSubpart);
@@ -161,7 +165,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             double desiredAzimuth = Math.Atan2(targetDirection.X, targetDirection.Z); // The problem is that rotation jumps from 0 to Pi. This is difficult to limit.
             if (desiredAzimuth == double.NaN)
                 desiredAzimuth = Math.PI;
-
+            // Commented out because it causes jittering. TODO fix!
             //desiredAzimuth = ModularClamp(Azimuth - desiredAzimuth, -Definition.Hardpoint.AzimuthRate * delta, Definition.Hardpoint.AzimuthRate * delta) + Azimuth;
 
             return GetAzimuthMatrix(desiredAzimuth);
