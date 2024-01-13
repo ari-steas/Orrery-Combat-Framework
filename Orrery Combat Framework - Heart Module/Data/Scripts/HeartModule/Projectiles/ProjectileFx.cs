@@ -103,12 +103,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             ProjectileSound.SetVelocity(Direction * Velocity);
         }
 
-        private void DrawImpactParticle(Vector3D ImpactPosition)
+        private void DrawImpactParticle(Vector3D ImpactPosition, Vector3D ImpactNormal)
         {
             if (!IsVisible || Definition.Visual.ImpactParticle == "")
                 return;
 
-            MatrixD matrix = MatrixD.CreateTranslation(ImpactPosition);
+            MatrixD matrix = MatrixD.CreateWorld(ImpactPosition, ImpactNormal, Vector3D.CalculatePerpendicularVector(ImpactNormal));
             MyParticleEffect hitEffect;
             if (MyParticlesManager.TryCreateParticleEffect(Definition.Visual.ImpactParticle, ref matrix, ref ImpactPosition, uint.MaxValue, out hitEffect))
             {
