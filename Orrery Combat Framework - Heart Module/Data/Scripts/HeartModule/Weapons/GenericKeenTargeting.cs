@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VRage.Game.Entity;
+using VRage.ModAPI;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
