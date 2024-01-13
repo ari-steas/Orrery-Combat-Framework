@@ -71,35 +71,37 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public void UpdateTargeting()
         {
-            MuzzleMatrix = CalcMuzzleMatrix(); // Set stored MuzzleMatrix
+            // Reset targeting indicators
+            IsTargetAligned = false;
+            IsTargetInRange = false;
 
-            MyEntity target = targeting.GetTarget(SorterWep?.CubeGrid, Terminal_Heart_TargetGrids); 
-            AimPoint = TargetingHelper.InterceptionPoint(
-                MuzzleMatrix.Translation,
-                SorterWep.CubeGrid.LinearVelocity,
-                target, 0) ?? Vector3D.MaxValue;
-
-            UpdateTurretSubparts(deltaTick, target, AimPoint); // Rotate the turret
-
-            // Update IsTargetAligned
-            if (lastKnownTarget ==  null)
-                IsTargetAligned = false;
-            else
+            // Only proceed with targeting if TargetGrids is true
+            if (Terminal_Heart_TargetGrids)
             {
-                double angle = Vector3D.Angle(MuzzleMatrix.Forward, (AimPoint - MuzzleMatrix.Translation).Normalized());
-                IsTargetAligned = angle < Definition.Targeting.AimTolerance;
-                MyAPIGateway.Utilities.ShowNotification($"Angle: {Math.Round(MathHelper.ToDegrees(angle))} [{IsTargetAligned}]", 1000 / 60);
+                MuzzleMatrix = CalcMuzzleMatrix(); // Set stored MuzzleMatrix
+
+                MyEntity target = targeting.GetTarget(SorterWep?.CubeGrid, Terminal_Heart_TargetGrids);
+                if (target != null)
+                {
+                    AimPoint = TargetingHelper.InterceptionPoint(
+                        MuzzleMatrix.Translation,
+                        SorterWep.CubeGrid.LinearVelocity,
+                        target, 0) ?? Vector3D.MaxValue;
+
+                    UpdateTurretSubparts(deltaTick, target, AimPoint); // Rotate the turret
+
+                    // Update IsTargetAligned
+                    double angle = Vector3D.Angle(MuzzleMatrix.Forward, (AimPoint - MuzzleMatrix.Translation).Normalized());
+                    IsTargetAligned = angle < Definition.Targeting.AimTolerance;
+
+                    // Update IsTargetInRange
+                    double range = Vector3D.Distance(MuzzleMatrix.Translation, AimPoint);
+                    IsTargetInRange = range < Definition.Targeting.MaxTargetingRange && range > Definition.Targeting.MinTargetingRange;
+                }
             }
 
-            // Update IsTargetInRange
-            if (lastKnownTarget == null)
-                IsTargetInRange = false;
-            else
-            {
-                double range = Vector3D.Distance(MuzzleMatrix.Translation, AimPoint); // Use aimpoint because that will be the actual intercept position
-                IsTargetInRange = range < Definition.Targeting.MaxTargetingRange && range > Definition.Targeting.MinTargetingRange;
-                MyAPIGateway.Utilities.ShowNotification($"Range: {Math.Round(range)}m [{IsTargetInRange}]", 1000 / 60);
-            }
+            // Display notifications for debugging (if needed)
+            MyAPIGateway.Utilities.ShowNotification($"IsAligned: {IsTargetAligned}, IsInRange: {IsTargetInRange}", 1000 / 60);
         }
 
         public override void TryShoot()
