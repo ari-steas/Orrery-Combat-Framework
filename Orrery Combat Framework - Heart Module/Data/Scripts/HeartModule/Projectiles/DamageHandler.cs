@@ -58,24 +58,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         }
 
         /// <summary>
-        /// Finds the current projectile impactor.
-        /// </summary>
-        /// <param name="Entity"></param>
-        /// <param name="Projectile"></param>
-        /// <returns></returns>
-        public static IMySlimBlock GetCollider(IMyCubeGrid Entity, Projectile Projectile)
-        {
-            Vector3I? HitPos = Entity?.RayCastBlocks(Projectile.Position, Projectile.NextMoveStep);
-            if (HitPos != null)
-            {
-                return Entity.GetCubeBlock(HitPos.Value);
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Finds the current projectile impactor.
+        /// Finds the closest impactee.
         /// </summary>
         /// <param name="Entity"></param>
         /// <param name="Projectile"></param>
@@ -93,7 +76,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         private void m_GridDamageHandler(IMyCubeGrid Entity, DamageEvent DamageEvent)
         {
-            IMySlimBlock block = GetCollider(Entity, DamageEvent.Projectile);
+            IMySlimBlock block = GetCollider(Entity, DamageEvent.HitPosition, DamageEvent.HitNormal);
 
             if (block != null)
             {
@@ -136,13 +119,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         internal Projectile Projectile;
         internal object Entity;
         internal Vector3D HitPosition;
+        internal Vector3D HitNormal;
 
-        internal DamageEvent(object Entity, DamageEntType type, Projectile projectile, Vector3D hitPosition)
+        internal DamageEvent(object Entity, DamageEntType type, Projectile projectile, Vector3D hitPosition, Vector3D hitNormal)
         {
             this.Entity = Entity;
             Type = type;
             Projectile = projectile;
             HitPosition = hitPosition;
+            HitNormal = hitNormal;
         }
 
         public enum DamageEntType

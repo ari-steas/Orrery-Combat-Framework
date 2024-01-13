@@ -6,6 +6,7 @@ using Sandbox.Engine.Physics;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
 using VRageMath;
@@ -178,9 +179,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 dist = len * hitInfo.Fraction;
 
                 if (hitInfo.HitEntity is IMyCubeGrid)
-                    DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Grid, this, hitInfo.Position));
+                    DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Grid, this, hitInfo.Position, hitInfo.Normal));
                 else if (hitInfo.HitEntity is IMyCharacter)
-                    DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Character, this, hitInfo.Position));
+                    DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Character, this, hitInfo.Position, hitInfo.Normal));
 
                 if (MyAPIGateway.Session.IsServer)
                     PlayImpactAudio(hitInfo.Position); // Audio is global

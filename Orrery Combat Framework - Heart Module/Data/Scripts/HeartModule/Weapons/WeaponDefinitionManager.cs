@@ -87,13 +87,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 MaxElevation = (float)Math.PI,
                 MinElevation = (float)-Math.PI,
                 IdlePower = 0,
-                ShotInaccuracy = 0,//0.0075f,
+                ShotInaccuracy = 0.0025f,
                 LineOfSightCheck = true,
                 ControlRotation = true,
             },
             Loading = new Loading()
             {
-                RateOfFire = 60,
+                RateOfFire = 10,
                 BarrelsPerShot = 1,
                 ProjectilesPerBarrel = 1,
                 ReloadTime = 0,
