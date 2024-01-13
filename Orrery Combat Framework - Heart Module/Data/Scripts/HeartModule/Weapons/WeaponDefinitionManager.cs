@@ -10,6 +10,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
     {
         private static SerializableWeaponDefinition DefaultDefinition = new SerializableWeaponDefinition()
         {
+            Targeting = new Targeting()
+            {
+                MinTargetingRange = 0,
+                MaxTargetingRange = 1000,
+                CanAutoShoot = true,
+                RetargetTime = -1,
+                AimTolerance = 0.0175f,
+            },
             Assignments = new Assignments()
             {
                 BlockSubtype = "TestWeapon",
@@ -33,7 +41,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 MinElevation = (float)-Math.PI / 4,
                 IdlePower = 0,
                 ShotInaccuracy = (float) Math.PI,
-                AimTolerance = 0.1f,
                 LineOfSightCheck = true,
                 ControlRotation = true,
             },
@@ -50,6 +57,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         private static SerializableWeaponDefinition TurretDefinition = new SerializableWeaponDefinition()
         {
+            Targeting = new Targeting()
+            {
+                MinTargetingRange = 0,
+                MaxTargetingRange = 1000,
+                CanAutoShoot = true,
+                RetargetTime = -1,
+                AimTolerance = 0.0175f,
+            },
             Assignments = new Assignments()
             {
                 BlockSubtype = "TestWeaponTurret",
@@ -73,7 +88,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 MinElevation = 0,
                 IdlePower = 0,
                 ShotInaccuracy = 0,//0.0175f,
-                AimTolerance = 0.1f,
                 LineOfSightCheck = true,
                 ControlRotation = true,
             },

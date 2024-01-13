@@ -35,6 +35,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
         /// Time until the turret is forced to find a new target
         /// </summary>
         [ProtoMember(6)] public float RetargetTime;
+        [ProtoMember(7)] public float AimTolerance;
 
         public enum IFF_Enum
         {
@@ -80,9 +81,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
         [ProtoMember(6)] public float MinElevation;
         [ProtoMember(7)] public float IdlePower;
         [ProtoMember(8)] public float ShotInaccuracy;
-        [ProtoMember(9)] public float AimTolerance;
-        [ProtoMember(10)] public bool LineOfSightCheck;
-        [ProtoMember(11)] public bool ControlRotation;
+        [ProtoMember(9)] public bool LineOfSightCheck;
+        [ProtoMember(10)] public bool ControlRotation;
 
         public bool CanRotateFull => MaxAzimuth >= -(float)Math.PI && MinAzimuth <= -(float)Math.PI;
         public bool CanElevateFull => MaxElevation >= -(float)Math.PI && MinElevation <= -(float)Math.PI;

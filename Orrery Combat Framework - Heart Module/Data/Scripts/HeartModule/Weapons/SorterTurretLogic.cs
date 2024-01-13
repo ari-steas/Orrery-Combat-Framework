@@ -20,7 +20,7 @@ using Sandbox.Game.EntityComponents;
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
     //[MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeaponTurret")]
-    public class SorterTurretLogic : SorterWeaponLogic
+    public partial class SorterTurretLogic : SorterWeaponLogic
     {
         MatrixD MuzzleMatrix = MatrixD.Identity;
         public MySync<float, SyncDirection.FromServer> AzimuthSync;
@@ -30,13 +30,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         /// Delta for engine ticks; 60tps
         /// </summary>
         private const float deltaTick = 1/60f;
-        private Stopwatch clockTick = Stopwatch.StartNew();
         private MyEntity lastKnownTarget = null;
+
+        public bool IsTargetAligned { get; private set; } = false;
+        public bool IsTargetInRange { get; private set; } = false;
+        public Vector3D AimPoint { get; private set; } = Vector3D.Zero;
 
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
         {
             base.Init(objectBuilder);
-
 
             AzimuthSync.ValueChanged += OnAzimuthChanged;
             ElevationSync.ValueChanged += OnElevationChanged;
@@ -61,14 +63,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public override void UpdateAfterSimulation()
         {
-            MuzzleMatrix = CalcMuzzleMatrix();
-
-            MyEntity target = GetTarget(); // Placeholder for getting the target
-
-            UpdateTurretSubparts(deltaTick, target);
+            UpdateTargeting();
 
             base.UpdateAfterSimulation(); // TryShoot is contained in here
-            clockTick.Restart();
         }
 
         private MyEntity GetTarget()
@@ -103,6 +100,46 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             return lastKnownTarget; // Return last known target if no current target is locked
         }
 
+        public void UpdateTargeting()
+        {
+            MuzzleMatrix = CalcMuzzleMatrix(); // Set stored MuzzleMatrix
+
+            MyEntity target = GetTarget(); // Placeholder for getting the target
+
+            AimPoint = TargetingHelper.InterceptionPoint(
+                MuzzleMatrix.Translation,
+                SorterWep.CubeGrid.LinearVelocity,
+                target, 0) ?? Vector3D.MaxValue;
+
+            UpdateTurretSubparts(deltaTick, target, AimPoint); // Rotate the turret
+
+            // Update IsTargetAligned
+            if (lastKnownTarget ==  null)
+                IsTargetAligned = false;
+            else
+            {
+                double angle = Vector3D.Angle(MuzzleMatrix.Forward, (AimPoint - MuzzleMatrix.Translation).Normalized());
+                IsTargetAligned = angle < Definition.Targeting.AimTolerance;
+                MyAPIGateway.Utilities.ShowNotification($"Angle: {Math.Round(MathHelper.ToDegrees(angle))} [{IsTargetAligned}]", 1000 / 60);
+            }
+
+            // Update IsTargetInRange
+            if (lastKnownTarget == null)
+                IsTargetInRange = false;
+            else
+            {
+                double range = Vector3D.Distance(MuzzleMatrix.Translation, AimPoint); // Use aimpoint because that will be the actual intercept position
+                IsTargetInRange = range < Definition.Targeting.MaxTargetingRange && range > Definition.Targeting.MinTargetingRange;
+                MyAPIGateway.Utilities.ShowNotification($"Range: {Math.Round(range)}m [{IsTargetInRange}]", 1000 / 60);
+            }
+        }
+
+        public override void TryShoot()
+        {
+            AutoShoot = IsTargetAligned && IsTargetInRange;
+            base.TryShoot();
+        }
+
         public override MatrixD CalcMuzzleMatrix()
         {
             try
@@ -123,21 +160,17 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             return MatrixD.Identity;
         }
 
-        public void UpdateTurretSubparts(float delta, MyEntity target)
+        public void UpdateTurretSubparts(float delta, MyEntity target, Vector3D aimpoint)
         {
             if (target == null)
                 return; // Exit if there is no target
 
             // Calculate the vector to the target
-            Vector3D vecToTarget = TargetingHelper.InterceptionPoint(
-                MuzzleMatrix.Translation,
-                SorterWep.CubeGrid.LinearVelocity,
-                target, 0) ?? Vector3D.MaxValue;
 
-            if (vecToTarget == Vector3D.MaxValue)
+            if (aimpoint == Vector3D.MaxValue)
                 return; // Exit if the interception point cannot be calculated
 
-            vecToTarget -= MuzzleMatrix.Translation;
+            Vector3D vecToTarget = aimpoint - MuzzleMatrix.Translation;
             DebugDraw.AddLine(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * vecToTarget.Length(), Color.Blue, 0);
             DebugDraw.AddPoint(target.PositionComp.GetPosition(), Color.Blue, 0);
 
