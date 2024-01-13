@@ -4,6 +4,7 @@ using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Sandbox.ModAPI;
 using System;
 using VRage.Game.Entity;
+using VRage.Game.ModAPI;
 using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Utility
@@ -17,7 +18,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
                 return null;
             if (def.PhysicalProjectile.IsHitscan)
                 return target.PositionComp.GetPosition() - target.Physics.LinearVelocity / 60f; // Because this doesn't run during simulation, offset velocity
-            return InterceptionPoint(startPos, startVel, target.PositionComp.GetPosition(), target.Physics.LinearVelocity, def.PhysicalProjectile.Velocity);
+
+            if (target is IMyCubeGrid)
+                return InterceptionPoint(startPos, startVel, ((IMyCubeGrid)target).Physics.CenterOfMassWorld, target.Physics.LinearVelocity, def.PhysicalProjectile.Velocity);
+            else
+                return InterceptionPoint(startPos, startVel, target.PositionComp.GetPosition(), target.Physics.LinearVelocity, def.PhysicalProjectile.Velocity);
         }
 
         public static Vector3D? InterceptionPoint(Vector3D startPos, Vector3D startVel, Vector3D targetPos, Vector3D targetVel, float projectileSpeed)

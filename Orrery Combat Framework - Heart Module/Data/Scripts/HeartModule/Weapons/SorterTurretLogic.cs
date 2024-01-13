@@ -126,9 +126,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         public void UpdateTurretSubparts(float delta, MyEntity target)
         {
             if (target == null)
-            {
                 return; // Exit if there is no target
-            }
 
             // Calculate the vector to the target
             Vector3D vecToTarget = TargetingHelper.InterceptionPoint(
@@ -137,17 +135,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 target, 0) ?? Vector3D.MaxValue;
 
             if (vecToTarget == Vector3D.MaxValue)
-            {
                 return; // Exit if the interception point cannot be calculated
-            }
 
             vecToTarget -= MuzzleMatrix.Translation;
             DebugDraw.AddLine(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * vecToTarget.Length(), Color.Blue, 0);
+            DebugDraw.AddPoint(target.PositionComp.GetPosition(), Color.Blue, 0);
 
             MyEntitySubpart azimuth = HeartData.I.SubpartManager.GetSubpart((MyEntity)SorterWep, Definition.Assignments.AzimuthSubpart);
             MyEntitySubpart elevation = HeartData.I.SubpartManager.GetSubpart(azimuth, Definition.Assignments.ElevationSubpart);
 
-            vecToTarget = Vector3D.Rotate(vecToTarget.Normalized(), MatrixD.Invert(SorterWep.WorldMatrix));
+            vecToTarget = Vector3D.Rotate(vecToTarget.Normalized(), MatrixD.Invert(SorterWep.WorldMatrix)); // Inverted because subparts are wonky. Pre-rotated.
             HeartData.I.SubpartManager.LocalRotateSubpartAbs(azimuth, GetAzimuthMatrix(vecToTarget, delta));
             HeartData.I.SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(vecToTarget, delta));
         }
@@ -162,7 +159,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (desiredAzimuth == double.NaN)
                 desiredAzimuth = Math.PI;
 
-            desiredAzimuth = ModularClamp(Azimuth - desiredAzimuth, -Definition.Hardpoint.AzimuthRate * delta, Definition.Hardpoint.AzimuthRate * delta) + Azimuth;
+            //desiredAzimuth = ModularClamp(Azimuth - desiredAzimuth, -Definition.Hardpoint.AzimuthRate * delta, Definition.Hardpoint.AzimuthRate * delta) + Azimuth;
 
             return GetAzimuthMatrix(desiredAzimuth);
         }
@@ -185,7 +182,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 desiredElevation = (float)Math.PI;
 
             //desiredElevation = Clamp(desiredElevation - Elevation, Definition.Hardpoint.ElevationRate * delta, -Definition.Hardpoint.ElevationRate * delta) + Elevation;
-            desiredElevation = (float) ModularClamp(Elevation - desiredElevation, -Definition.Hardpoint.ElevationRate * delta, Definition.Hardpoint.ElevationRate * delta) + Elevation;
+            //desiredElevation = (float) ModularClamp(Elevation - desiredElevation, -Definition.Hardpoint.ElevationRate * delta, Definition.Hardpoint.ElevationRate * delta) + Elevation;
 
             return GetElevationMatrix(desiredElevation);
         }
