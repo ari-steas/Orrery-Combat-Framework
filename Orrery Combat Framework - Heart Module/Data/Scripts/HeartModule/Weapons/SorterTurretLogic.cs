@@ -80,7 +80,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 SorterWep?.CubeGrid,
                 Terminal_Heart_TargetGrids,
                 Terminal_Heart_TargetLargeGrids,
-                Terminal_Heart_TargetSmallGrids
+                Terminal_Heart_TargetSmallGrids,
+                Terminal_Heart_TargetFriendlies, 
+                Terminal_Heart_TargetNeutrals,   
+                Terminal_Heart_TargetEnemies,    
+                Terminal_Heart_TargetUnowned     
             );
 
             // Check if the potential target is different from the current target
