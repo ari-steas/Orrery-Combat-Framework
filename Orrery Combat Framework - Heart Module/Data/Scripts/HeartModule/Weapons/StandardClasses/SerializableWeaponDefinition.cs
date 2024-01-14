@@ -84,6 +84,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
         [ProtoMember(9)] public bool LineOfSightCheck;
         [ProtoMember(10)] public bool ControlRotation;
 
+        [ProtoMember(11)] public float HomeAzimuth;
+        [ProtoMember(12)] public float HomeElevation;
+
         public bool CanRotateFull => MaxAzimuth >= -(float)Math.PI && MinAzimuth <= -(float)Math.PI;
         public bool CanElevateFull => MaxElevation >= -(float)Math.PI && MinElevation <= -(float)Math.PI;
     }
