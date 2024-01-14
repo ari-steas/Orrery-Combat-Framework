@@ -2,11 +2,7 @@
 using Sandbox.Game.EntityComponents;
 using Sandbox.ModAPI;
 using VRage.Game.ModAPI;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VRage.Game.Entity;
 using VRage.ModAPI;
 
@@ -14,8 +10,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
     public class GenericKeenTargeting
     {
-        //private MyEntity lastKnownTarget = null; //TODO fix this
-
         public MyEntity GetTarget(IMyCubeGrid grid, bool targetGrids, bool targetLargeGrids, bool targetSmallGrids)
         {
             if (grid == null)
@@ -27,38 +21,51 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             var myCubeGrid = grid as MyCubeGrid;
             if (myCubeGrid != null)
             {
-                MyShipController activeController = null;
-
-                foreach (var block in myCubeGrid.GetFatBlocks<MyShipController>())
+                MyShipController activeController = GetActiveController(myCubeGrid);
+                if (activeController != null)
                 {
-                    if (block.NeedsPerFrameUpdate)
+                    MyEntity targetEntity = GetLockedTarget(activeController);
+                    if (targetEntity != null && targetGrids)
                     {
-                        activeController = block;
-                        break;
-                    }
-                }
-
-                if (activeController != null && activeController.Pilot != null)
-                {
-                    var targetLockingComponent = activeController.Pilot.Components.Get<MyTargetLockingComponent>();
-                    if (targetLockingComponent != null && targetLockingComponent.IsTargetLocked)
-                    {
-                        var targetEntity = targetLockingComponent.TargetEntity;
-                        if (targetEntity != null && targetGrids) // Target grids must be enabled
-                        {
-                            bool isLargeGrid = targetEntity is IMyCubeGrid && ((IMyCubeGrid)targetEntity).GridSizeEnum == VRage.Game.MyCubeSize.Large;
-                            bool isSmallGrid = targetEntity is IMyCubeGrid && ((IMyCubeGrid)targetEntity).GridSizeEnum == VRage.Game.MyCubeSize.Small;
-
-                            if ((isLargeGrid && targetLargeGrids) || (isSmallGrid && targetSmallGrids) || !(targetEntity is IMyCubeGrid))
-                            {
-                                //lastKnownTarget = targetEntity;
-                                return targetEntity;
-                            }
-                        }
+                        return FilterTargetBasedOnGridSize(targetEntity, targetLargeGrids, targetSmallGrids);
                     }
                 }
             }
 
+            return null;
+        }
+
+        private MyShipController GetActiveController(MyCubeGrid myCubeGrid)
+        {
+            foreach (var block in myCubeGrid.GetFatBlocks<MyShipController>())
+            {
+                if (block.NeedsPerFrameUpdate)
+                {
+                    return block;
+                }
+            }
+            return null;
+        }
+
+        private MyEntity GetLockedTarget(MyShipController controller)
+        {
+            var targetLockingComponent = controller.Pilot.Components.Get<MyTargetLockingComponent>();
+            if (targetLockingComponent != null && targetLockingComponent.IsTargetLocked)
+            {
+                return targetLockingComponent.TargetEntity;
+            }
+            return null;
+        }
+
+        private MyEntity FilterTargetBasedOnGridSize(MyEntity targetEntity, bool targetLargeGrids, bool targetSmallGrids)
+        {
+            bool isLargeGrid = targetEntity is IMyCubeGrid && ((IMyCubeGrid)targetEntity).GridSizeEnum == VRage.Game.MyCubeSize.Large;
+            bool isSmallGrid = targetEntity is IMyCubeGrid && ((IMyCubeGrid)targetEntity).GridSizeEnum == VRage.Game.MyCubeSize.Small;
+
+            if ((isLargeGrid && targetLargeGrids) || (isSmallGrid && targetSmallGrids) || !(targetEntity is IMyCubeGrid))
+            {
+                return targetEntity;
+            }
             return null;
         }
     }
