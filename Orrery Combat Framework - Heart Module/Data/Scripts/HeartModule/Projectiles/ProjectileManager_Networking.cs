@@ -11,7 +11,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 {
     partial class ProjectileManager
     {
-        const int MaxProjectilesSynced = 75; // This value should result in ~100kB/s up per player.
+        const int MaxProjectilesSynced = 50; // This value should result in ~100kB/s up per player.
 
         public Dictionary<ulong, LinkedList<n_SerializableProjectile>> SyncStream = new Dictionary<ulong, LinkedList<n_SerializableProjectile>>();
 
