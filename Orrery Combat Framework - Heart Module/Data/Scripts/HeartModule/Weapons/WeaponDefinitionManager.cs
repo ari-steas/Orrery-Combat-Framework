@@ -40,15 +40,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 MaxElevation = (float)Math.PI / 4,
                 MinElevation = (float)-Math.PI / 4,
                 IdlePower = 0,
-                ShotInaccuracy = 0,
+                ShotInaccuracy = 0.0175f,
                 LineOfSightCheck = true,
                 ControlRotation = true,
             },
             Loading = new Loading()
             {
-                RateOfFire = 30,
+                RateOfFire = 1,
                 BarrelsPerShot = 1,
-                ProjectilesPerBarrel = 1,
+                ProjectilesPerBarrel = 10,
                 ReloadTime = 0,
                 MagsToLoad = 1,
                 DelayUntilFire = 0,

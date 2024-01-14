@@ -17,7 +17,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
         [ProtoMember(5)] public Loading Loading;
         [ProtoMember(6)] public Audio Audio;
         [ProtoMember(7)] public Visuals Visuals;
-        [ProtoMember(8)] public string[] Ammos;
+        [ProtoMember(8)] public string[] Ammos; // TODO
     }
 
     [ProtoContract]
@@ -85,7 +85,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
         [ProtoMember(4)] public float MinAzimuth;
         [ProtoMember(5)] public float MaxElevation;
         [ProtoMember(6)] public float MinElevation;
-        [ProtoMember(7)] public float IdlePower; // TODO
+        [ProtoMember(7)] public float IdlePower;
         [ProtoMember(8)] public float ShotInaccuracy;
         [ProtoMember(9)] public bool LineOfSightCheck;
         [ProtoMember(10)] public bool ControlRotation;
