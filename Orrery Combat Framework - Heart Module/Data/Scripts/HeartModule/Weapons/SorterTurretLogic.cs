@@ -60,7 +60,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             // Additional logic to apply elevation changes, if needed
         }
 
-        public SorterTurretLogic(IMyConveyorSorter sorterWeapon, SerializableWeaponDefinition definition) : base(sorterWeapon, definition) { }
+        public SorterTurretLogic(IMyConveyorSorter sorterWeapon, SerializableWeaponDefinition definition, uint id) : base(sorterWeapon, definition, id) { }
 
         public override void UpdateAfterSimulation()
         {

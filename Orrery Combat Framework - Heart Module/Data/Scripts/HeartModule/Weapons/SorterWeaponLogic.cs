@@ -55,13 +55,15 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public Dictionary<string, IMyModelDummy> MuzzleDummies { get; set; } = new Dictionary<string, IMyModelDummy>();
         public SubpartManager SubpartManager = new SubpartManager();
         public MatrixD MuzzleMatrix { get; internal set; } = MatrixD.Identity;
+        public readonly uint Id;
 
-        public SorterWeaponLogic(IMyConveyorSorter sorterWeapon, SerializableWeaponDefinition definition)
+        public SorterWeaponLogic(IMyConveyorSorter sorterWeapon, SerializableWeaponDefinition definition, uint id)
         {
             sorterWeapon.GameLogic = this;
             Init(sorterWeapon.GetObjectBuilder());
             this.Definition = definition;
             Magazines = new WeaponLogic_Magazines(definition.Loading);
+            Id = id;
         }
 
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)

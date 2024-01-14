@@ -25,7 +25,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public void UpdateReload()
         {
-            MyAPIGateway.Utilities.ShowNotification("Shots: " + ShotsInMag, 1000/60);
             if (RemainingReloads == 0)
                 return;
 

@@ -35,9 +35,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
                 // Calculate interception point
                 Vector3D interceptionPoint = targetPos + relativeVelocity * t;
 
-                if (!MyAPIGateway.Utilities.IsDedicated)
-                    DebugDraw.AddPoint(interceptionPoint, Color.Red, (float) t);
-
                 return interceptionPoint;
             }
             catch

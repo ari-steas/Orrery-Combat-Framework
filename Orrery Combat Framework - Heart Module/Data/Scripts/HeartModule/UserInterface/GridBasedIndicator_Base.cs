@@ -21,7 +21,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface
         {
             IMyEntity controlledEntity = MyAPIGateway.Session.Player?.Controller?.ControlledEntity?.Entity?.GetTopMostParent(); // Get the currently controlled grid.
             if (!(controlledEntity is IMyCubeGrid))
+            {
+                controlledGrid = null;
                 return;
+            }
+                
             controlledGrid = (IMyCubeGrid)controlledEntity; // TODO: Make work on subparts
 
             foreach (var gridWeapon in WeaponManager.I.GridWeapons[controlledGrid])

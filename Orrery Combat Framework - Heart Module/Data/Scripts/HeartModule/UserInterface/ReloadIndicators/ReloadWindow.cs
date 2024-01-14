@@ -1,6 +1,12 @@
-﻿using RichHudFramework.UI;
+﻿using Heart_Module.Data.Scripts.HeartModule.Weapons;
+using RichHudFramework.UI;
+using Sandbox.ModAPI;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using VRage.Game;
 using VRageMath;
+using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 
 namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
@@ -15,14 +21,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
             debugInfo = new Label(body)
             {
                 ParentAlignment = ParentAlignments.Bottom | ParentAlignments.InnerV,
-                DimAlignment = DimAlignments.Width
-            };
-
-            weaponStatus = new ListBox<uint>()
-            {
-                ParentAlignment = ParentAlignments.Top | ParentAlignments.InnerV,
                 DimAlignment = DimAlignments.Width,
             };
+
+            weaponStatus = new ListBox<uint>(body)
+            {
+                ParentAlignment = ParentAlignments.Top | ParentAlignments.InnerV,
+                DimAlignment = DimAlignments.Both,
+                EnableScrolling = false,
+                InputEnabled = false,
+                Color = new Color(0, 0, 0, 0),
+            };
+            weaponStatus.hudChain.ScrollBar.Visible = false;
 
             // Window styling:
             BodyColor = new Color(41, 54, 62, 150);
@@ -48,9 +58,61 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
             debugInfo.Text = $"Projectiles: {numProjectiles} | Weapons: {numWeapons}";
         }
 
-        public void UpdateWeaponText(uint weaponId)
+        public void UpdateWeaponText(SorterWeaponLogic weapon)
         {
+            if (!weapon.SorterWep.ShowInTerminal) // Hide weapons that aren't shown in terminal
+                return;
 
+            //MyAPIGateway.Utilities.ShowMessage("OCF", "Show weapon " + weapon.Id);
+            var entry = GetEntry(weapon.Id);
+            if (entry == null)
+                entry = weaponStatus.Add("AWAIT INIT", weapon.Id);
+
+            
+            string targetStatus = "";
+            if (weapon is SorterTurretLogic)
+            {
+                SorterTurretLogic turret = weapon as SorterTurretLogic;
+                if (turret.AimPoint != Vector3D.MaxValue)
+                    targetStatus = (turret.IsTargetAligned ? "" : "ALIGN") + " " + (turret.IsTargetInRange ? "" : "RANGE");
+                else
+                    targetStatus = "NO TARGET";
+            }
+            
+            string ammoStatus = $"{weapon.Magazines.ShotsInMag}/10"; // Placeholder value for max ammo
+            if (weapon.Magazines.ShotsInMag == 0)
+                ammoStatus = $"{Math.Round(weapon.Magazines.NextReloadTime, 1)}";
+
+            entry.Element.Text = $"{weapon.Id}: [{ammoStatus}] {targetStatus}";
+        }
+
+        private ListBoxEntry<uint> GetEntry(uint id)
+        {
+            foreach (var value in weaponStatus.EntryList)
+                if (value.AssocMember == id)
+                    return value;
+            return null;
+        }
+
+        public void UpdateWeaponText(List<SorterWeaponLogic> weapons)
+        {
+            foreach (var weaponTextId in weaponStatus.EntryList.ToArray()) // Check to see if any list items should be removed
+            {
+                bool shouldRemove = true;
+                foreach (var weapon in weapons)
+                {
+                    if (weaponTextId.AssocMember == weapon.Id)
+                    {
+                        shouldRemove = !weapon.SorterWep.ShowInTerminal;
+                        break;
+                    }
+                }
+                if (shouldRemove)
+                    weaponStatus.Remove(weaponTextId);
+            }
+                
+            foreach (var weapon in weapons)
+                UpdateWeaponText(weapon);
         }
 
         public void ClearWeaponText()

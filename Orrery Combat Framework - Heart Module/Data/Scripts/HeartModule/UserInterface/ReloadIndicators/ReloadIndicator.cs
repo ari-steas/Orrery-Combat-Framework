@@ -33,8 +33,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
                 InitHud();
 
             int numWeapons = 0;
-            if (controlledGrid != null && WeaponManager.I.GridWeapons.ContainsKey(controlledGrid))
+            if (controlledGrid != null)
+            {
                 numWeapons = WeaponManager.I.GridWeapons[controlledGrid].Count;
+                Window.UpdateWeaponText(WeaponManager.I.GridWeapons[controlledGrid]);
+            }
+            else
+                Window.ClearWeaponText();
+                
             Window.UpdateDebugText(ProjectileManager.I.NumProjectiles, numWeapons);
         }
 
@@ -50,7 +56,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
 
         public override void PerWeaponUpdate(SorterWeaponLogic weapon)
         {
-
+            Window?.UpdateWeaponText(weapon);
         }
     }
 }
