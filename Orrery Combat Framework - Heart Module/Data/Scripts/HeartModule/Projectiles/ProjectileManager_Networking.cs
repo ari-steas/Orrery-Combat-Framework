@@ -15,22 +15,26 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public Dictionary<ulong, LinkedList<n_SerializableProjectile>> SyncStream = new Dictionary<ulong, LinkedList<n_SerializableProjectile>>();
 
-        public void QueueSync(Projectile projectile, int DetailLevel = 1, IMyPlayer Player = null)
+        public void QueueSync(Projectile projectile, int DetailLevel = 1)
         {
-            n_SerializableProjectile sP = projectile.AsSerializable(DetailLevel);
-            if (DetailLevel == 2 && SyncStream[Player.SteamUserId].Count > MaxProjectilesSynced) // Don't sync projectile closing if network load is too high
+            // Sync to everyone if player is undefined
+            foreach (var player in HeartData.I.Players) // Ensure that all players are being synced
+                QueueSync(projectile, player, DetailLevel);
+            return;
+        }
+
+        public void QueueSync(Projectile projectile, IMyPlayer Player, int DetailLevel = 1)
+        {
+            if (!SyncStream.ContainsKey(Player.SteamUserId)) // Avoid throwing an error if the player hasn't been added yet
                 return;
 
-            if (Player == null) // Sync to everyone if a server
-                foreach (var player in HeartData.I.Players) // Ensure that all players are being synced
-                    QueueSync(projectile, DetailLevel, player);
-
-            if (!SyncStream.ContainsKey(Player.SteamUserId)) // Avoid throwing an error if the player hasn't been added yet
+            if (DetailLevel == 2 && SyncStream[Player.SteamUserId].Count > MaxProjectilesSynced) // Don't sync projectile closing if network load is too high
                 return;
 
             if (projectile.Position != null && Vector3D.DistanceSquared(projectile.Position, Player.GetPosition()) > HeartData.I.SyncRangeSq) // Don't sync if the player is out of sync range
                 return;
 
+            n_SerializableProjectile sP = projectile.AsSerializable(DetailLevel);
             if (DetailLevel == 0)
                 SyncStream[Player.SteamUserId].AddFirst(sP); // Queue new projectiles first
             else
