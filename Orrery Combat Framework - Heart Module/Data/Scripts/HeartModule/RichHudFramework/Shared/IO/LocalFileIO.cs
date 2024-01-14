@@ -63,7 +63,7 @@ namespace RichHudFramework.IO
         {
             KnownException exception = null;
             BinaryReader reader = null;
-            
+
             lock (fileLock)
             {
                 try

@@ -1,15 +1,12 @@
 ﻿using RichHudFramework.UI.Rendering;
-using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using VRageMath;
 
 namespace RichHudFramework.UI
 {
     using Client;
-    using Server;
 
     /// <summary>
     /// Clickable text box. Supports text highlighting and has its own text caret. Text only, no background.
@@ -112,7 +109,7 @@ namespace RichHudFramework.UI
             caret.SetPosition(0);
             caret.SetPosition(short.MaxValue);
         }
-        
+
         /// <summary>
         /// Closes textbox input and clears the text selection.
         /// </summary>
@@ -404,7 +401,7 @@ namespace RichHudFramework.UI
             public void SetPosition(Vector2I index)
             {
                 index = ClampIndex(index);
-                
+
                 if (CaretIndex != index)
                     caretMoved = true;
 
@@ -444,8 +441,8 @@ namespace RichHudFramework.UI
                     CaretIndex = ClampIndex(CaretIndex);
 
                     // If line visible
-                    if ((text.Count > 0 && text[0].Count > 0) && 
-                        (CaretIndex.X >= text.VisibleLineRange.X && CaretIndex.X <= text.VisibleLineRange.Y) )
+                    if ((text.Count > 0 && text[0].Count > 0) &&
+                        (CaretIndex.X >= text.VisibleLineRange.X && CaretIndex.X <= text.VisibleLineRange.Y))
                     {
                         // Damned special cases
                         Vector2I index = Vector2I.Max(CaretIndex, Vector2I.Zero);
@@ -491,7 +488,7 @@ namespace RichHudFramework.UI
 
                     if (CaretIndex.Y == -1)
                     {
-                       
+
                         offset = ch.Offset + text.TextOffset;
                         offset.X -= ch.Size.X * .5f + 1f;
                     }

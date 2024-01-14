@@ -1,5 +1,5 @@
-﻿using VRageMath;
-using System;
+﻿using System;
+using VRageMath;
 
 namespace RichHudFramework.UI
 {

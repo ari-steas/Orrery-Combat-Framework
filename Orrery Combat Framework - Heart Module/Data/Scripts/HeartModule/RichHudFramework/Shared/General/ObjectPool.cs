@@ -1,8 +1,6 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using VRage;
-using System;
 
 namespace RichHudFramework
 {
@@ -45,7 +43,7 @@ namespace RichHudFramework
         {
             if (GetNewObjectFunc == null || ResetObjectAction == null)
                 throw new Exception("Neither GetNewObjectFunc nor ResetObjectAction can be null.");
-        
+
             this.GetNewObjectFunc = GetNewObjectFunc;
             this.ResetObjectAction = ResetObjectAction;
         }

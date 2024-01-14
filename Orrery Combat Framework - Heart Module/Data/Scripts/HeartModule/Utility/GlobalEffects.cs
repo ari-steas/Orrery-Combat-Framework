@@ -1,5 +1,4 @@
 ﻿using Sandbox.ModAPI;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using VRage.Game;
@@ -33,7 +32,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
 
         public override void UpdateAfterSimulation()
         {
-            
+
         }
 
         public override void Draw()

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Text;
+﻿using RichHudFramework.UI.Rendering;
+using System.Collections;
+using System.Collections.Generic;
 using VRage;
 using VRageMath;
-using System.Collections.Generic;
-using RichHudFramework.UI.Rendering;
-using GlyphFormatMembers = VRage.MyTuple<byte, float, VRageMath.Vector2I, VRageMath.Color>;
-using ApiMemberAccessor = System.Func<object, int, object>;
-using System.Collections;
 
 namespace RichHudFramework.UI
 {
@@ -97,7 +93,7 @@ namespace RichHudFramework.UI
     /// <typeparam name="TContainer">Container element type wrapping the UI element</typeparam>
     /// <typeparam name="TElement">UI element in the list</typeparam>
     /// <typeparam name="TChain">HudChain type used by the SelectionBox as the list container</typeparam>
-    public class SelectionBoxBase<TChain, TContainer, TElement> 
+    public class SelectionBoxBase<TChain, TContainer, TElement>
         : HudElementBase, IEntryBox<TContainer, TElement>, IClickableElement
         where TElement : HudElementBase, IMinLabelElement
         where TChain : HudChain<TContainer, TElement>, new()
@@ -224,9 +220,9 @@ namespace RichHudFramework.UI
             hudChain = new TChain()
             {
                 AlignVertical = true,
-                SizingMode = 
-                    HudChainSizingModes.FitMembersOffAxis | 
-                    HudChainSizingModes.ClampMembersAlignAxis | 
+                SizingMode =
+                    HudChainSizingModes.FitMembersOffAxis |
+                    HudChainSizingModes.ClampMembersAlignAxis |
                     HudChainSizingModes.ClampChainOffAxis,
                 DimAlignment = DimAlignments.Both | DimAlignments.IgnorePadding,
             };
@@ -343,8 +339,8 @@ namespace RichHudFramework.UI
                 Vector2 offset = entry.Element.Position - highlightBox.Origin;
                 offset.X -= (ListSize.X - entryWidth - HighlightPadding.X) / 2f;
 
-                highlightBox.Visible = 
-                    (listInput.IsMousedOver || listInput.HasFocus) 
+                highlightBox.Visible =
+                    (listInput.IsMousedOver || listInput.HasFocus)
                     && entry.Element.Visible && entry.AllowHighlighting;
 
                 highlightBox.Height = entry.Element.Height - HighlightPadding.Y;

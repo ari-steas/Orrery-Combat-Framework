@@ -31,7 +31,7 @@ namespace RichHudFramework.UI
         /// <summary>
         /// Background color used when the control gains focus.
         /// </summary>
-        public Color FocusColor { get; set; } 
+        public Color FocusColor { get; set; }
 
         /// <summary>
         /// If true, then the button will change formatting when it takes focus.

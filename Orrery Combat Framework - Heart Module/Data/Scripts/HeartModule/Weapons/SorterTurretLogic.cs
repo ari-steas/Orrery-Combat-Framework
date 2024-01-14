@@ -1,22 +1,13 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
-using Heart_Module.Data.Scripts.HeartModule.Utility;
+﻿using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.ModAPI;
 using System;
-using System.Collections.Generic;
 using VRage.Game.Entity;
-using VRage.Game.ModAPI;
-using VRage.ModAPI;
-using VRageMath;
-using VRage.Sync;
-using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 using VRage.Game.ModAPI.Network;
 using VRage.ObjectBuilders;
-using System.Diagnostics;
-using Sandbox.Game.Entities;
-using Sandbox.Common.ObjectBuilders;
-using Sandbox.Game.EntityComponents;
-using VRage.Game;
+using VRage.Sync;
+using VRageMath;
+using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
@@ -29,7 +20,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         /// <summary>
         /// Delta for engine ticks; 60tps
         /// </summary>
-        private const float deltaTick = 1/60f;
+        private const float deltaTick = 1 / 60f;
 
         public bool IsTargetAligned { get; private set; } = false;
         public bool IsTargetInRange { get; private set; } = false;
@@ -204,7 +195,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(-Definition.Hardpoint.HomeElevation, deltaTick));
                 return; // Exit if interception point does not exist
             }
-            
+
             Vector3D vecToTarget = aimpoint - MuzzleMatrix.Translation;
             //DebugDraw.AddLine(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * vecToTarget.Length(), Color.Blue, 0); // Muzzle line
 
@@ -212,7 +203,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             SubpartManager.LocalRotateSubpartAbs(azimuth, GetAzimuthMatrix(vecToTarget, delta));
             SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(vecToTarget, delta));
         }
-            
+
         //float Azimuth = (float) Math.PI;
         //float Elevation = 0;
 
@@ -229,9 +220,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             desiredAzimuth = LimitRotationSpeed(Azimuth, desiredAzimuth, Definition.Hardpoint.AzimuthRate * delta);
 
             if (!Definition.Hardpoint.CanRotateFull)
-                Azimuth.Value = (float) Clamp(desiredAzimuth, Definition.Hardpoint.MinAzimuth, Definition.Hardpoint.MaxAzimuth); // Basic angle clamp
+                Azimuth.Value = (float)Clamp(desiredAzimuth, Definition.Hardpoint.MinAzimuth, Definition.Hardpoint.MaxAzimuth); // Basic angle clamp
             else
-                Azimuth.Value = (float) NormalizeAngle(desiredAzimuth); // Adjust rotation to (-180, 180), but don't have any limits
+                Azimuth.Value = (float)NormalizeAngle(desiredAzimuth); // Adjust rotation to (-180, 180), but don't have any limits
 
             //MyAPIGateway.Utilities.ShowNotification("AZ: " + Math.Round(MathHelper.ToDegrees(Azimuth)), 1000/60);
             return Matrix.CreateFromYawPitchRoll(Azimuth, 0, 0);
@@ -249,9 +240,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             desiredElevation = LimitRotationSpeed(Elevation, desiredElevation, Definition.Hardpoint.ElevationRate * delta);
             if (!Definition.Hardpoint.CanElevateFull)
-                Elevation.Value = (float) -Clamp(-desiredElevation, Definition.Hardpoint.MinElevation, Definition.Hardpoint.MaxElevation);
+                Elevation.Value = (float)-Clamp(-desiredElevation, Definition.Hardpoint.MinElevation, Definition.Hardpoint.MaxElevation);
             else
-                Elevation.Value = (float) NormalizeAngle(desiredElevation);
+                Elevation.Value = (float)NormalizeAngle(desiredElevation);
             return Matrix.CreateFromYawPitchRoll(0, Elevation, 0);
         }
 

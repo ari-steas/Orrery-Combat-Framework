@@ -1,5 +1,4 @@
 ﻿using VRageMath;
-using System;
 
 namespace RichHudFramework.UI
 {
@@ -89,5 +88,5 @@ namespace RichHudFramework.UI
                 slide.SliderVisible = slide.SliderWidth < slide.BarWidth;
             }
         }
-    }    
+    }
 }

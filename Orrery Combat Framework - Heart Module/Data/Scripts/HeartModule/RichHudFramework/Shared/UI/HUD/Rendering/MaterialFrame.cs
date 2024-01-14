@@ -16,7 +16,7 @@ namespace RichHudFramework
                 /// <summary>
                 /// Determines how or if the material is scaled w/respect to its aspect ratio.
                 /// </summary>
-                Material Material { get;}
+                Material Material { get; }
 
                 /// <summary>
                 /// Texture coordinate offset

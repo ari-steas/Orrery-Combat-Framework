@@ -1,15 +1,7 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
-using Heart_Module.Data.Scripts.HeartModule.Weapons;
-using Sandbox.Game.Entities;
+﻿using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Sandbox.ModAPI;
-using System.Collections.Generic;
-using System.Linq;
 using VRage.Game;
 using VRage.Game.Components;
-using VRage.Game.Entity;
-using VRage.Game.ModAPI;
-using VRage.ModAPI;
-using VRage.Render.Scene;
 using VRage.Utils;
 using VRageMath;
 using VRageRender;

@@ -1,8 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
-using Heart_Module.Data.Scripts.HeartModule.Network;
 using RichHudFramework.Client;
-using RichHudFramework.UI;
 using Sandbox.ModAPI;
 using System;
 using VRage.Game.Components;

@@ -1,11 +1,8 @@
-﻿using RichHudFramework;
-using RichHudFramework.Internal;
+﻿using RichHudFramework.Internal;
 using RichHudFramework.IO;
 using Sandbox.ModAPI;
 using System;
 using VRage;
-using VRage.Game.Components;
-using VRage.Game.ModAPI;
 using VRageMath;
 using ApiMemberAccessor = System.Func<object, int, object>;
 using ClientData = VRage.MyTuple<string, System.Action<int, object>, System.Action, int>;
@@ -116,7 +113,7 @@ namespace RichHudFramework.Client
 
         private object GetOrSetMember(object data, int memberEnum)
         {
-            switch((ClientDataAccessors)memberEnum)
+            switch ((ClientDataAccessors)memberEnum)
             {
                 case ClientDataAccessors.GetVersionID:
                     return versionID;
@@ -175,14 +172,14 @@ namespace RichHudFramework.Client
 
         private void RemoteReset()
         {
-            ExceptionHandler.Run(() => 
+            ExceptionHandler.Run(() =>
             {
                 if (registered)
                 {
                     ExceptionHandler.ReloadClients();
                     OnResetAction();
                 }
-            });  
+            });
         }
 
         /// <summary>

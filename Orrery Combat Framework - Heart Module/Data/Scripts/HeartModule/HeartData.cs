@@ -1,6 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Network;
-using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;

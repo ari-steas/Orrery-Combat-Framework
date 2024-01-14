@@ -12,7 +12,7 @@ namespace RichHudFramework.UI
     /// </summary>
     /// <typeparam name="TContainer">Container element type wrapping the UI element</typeparam>
     /// <typeparam name="TElement">UI element in the list</typeparam>
-    public class TreeBoxBase<TContainer, TElement> 
+    public class TreeBoxBase<TContainer, TElement>
         : TreeBoxBase<
             ChainSelectionBoxBase<TContainer, TElement>,
             HudChain<TContainer, TElement>,

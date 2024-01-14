@@ -19,7 +19,7 @@ namespace RichHudFramework
     namespace UI.Client
     {
         public class TerminalPageCategory : TerminalPageCategoryBase
-        { 
+        {
             public TerminalPageCategory() : base(RichHudTerminal.GetNewPageCategory())
             { }
         }

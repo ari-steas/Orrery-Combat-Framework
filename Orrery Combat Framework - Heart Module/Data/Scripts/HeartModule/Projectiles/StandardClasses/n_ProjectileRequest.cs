@@ -1,7 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Network;
 using ProtoBuf;
 using Sandbox.ModAPI;
-using System;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
 {
@@ -22,7 +21,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
             {
                 Projectile p = ProjectileManager.I.GetProjectile(projectileId);
                 if (p != null)
-                ProjectileManager.I.QueueSync(p, 0, HeartData.I.GetPlayerFromSteamId(SenderSteamId));
+                    ProjectileManager.I.QueueSync(p, 0, HeartData.I.GetPlayerFromSteamId(SenderSteamId));
             }
         }
     }

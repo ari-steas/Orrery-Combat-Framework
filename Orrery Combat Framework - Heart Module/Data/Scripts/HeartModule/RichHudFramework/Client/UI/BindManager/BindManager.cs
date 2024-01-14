@@ -1,17 +1,13 @@
-﻿using RichHudFramework.Client;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Sandbox.ModAPI;
 using VRage;
-using VRageMath;
 using VRage.Input;
-using BindDefinitionData = VRage.MyTuple<string, string[]>;
+using VRageMath;
 using ApiMemberAccessor = System.Func<object, int, object>;
 
 namespace RichHudFramework
 {
     using Client;
-    using UI;
 
     namespace UI.Client
     {
@@ -44,10 +40,10 @@ namespace RichHudFramework
             /// </summary>
             public static SeBlacklistModes BlacklistMode
             {
-                get 
-                { 
-                    if (_instance == null) Init(); 
-                        return (SeBlacklistModes)_instance.GetOrSetMemberFunc(null, (int)BindClientAccessors.RequestBlacklistMode); 
+                get
+                {
+                    if (_instance == null) Init();
+                    return (SeBlacklistModes)_instance.GetOrSetMemberFunc(null, (int)BindClientAccessors.RequestBlacklistMode);
                 }
                 set
                 {

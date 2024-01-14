@@ -1,12 +1,11 @@
-﻿using RichHudFramework.IO;
-using Sandbox.ModAPI;
+﻿using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using VRage.Game;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
-using VRage.Game;
 using VRage.Utils;
 
 namespace RichHudFramework.Internal
@@ -447,7 +446,7 @@ namespace RichHudFramework.Internal
                     bool success = true;
                     string typeName = clients[n].GetType().Name;
 
-                    Run(() => 
+                    Run(() =>
                     {
                         WriteToLog($"[{typeName}] Restarting session component...", true);
                         clients[n].ManualStart();

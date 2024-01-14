@@ -1,10 +1,8 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using RichHudFramework.UI;
-using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using VRage.Game;
 using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
@@ -77,7 +75,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
             if (entry == null)
                 entry = weaponStatus.Add("AWAIT INIT", weapon.Id);
 
-            
+
             string targetStatus = "";
             if (weapon is SorterTurretLogic)
             {
@@ -87,7 +85,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
                 else
                     targetStatus = "NO TARGET";
             }
-            
+
             string ammoStatus = $"{weapon.Magazines.ShotsInMag}/10"; // Placeholder value for max ammo
             if (weapon.Magazines.ShotsInMag == 0)
                 ammoStatus = $"{Math.Round(weapon.Magazines.NextReloadTime, 1)}";
@@ -119,7 +117,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
                 if (shouldRemove)
                     weaponStatus.Remove(weaponTextId);
             }
-                
+
             foreach (var weapon in weapons)
                 UpdateWeaponText(weapon);
         }

@@ -3,11 +3,7 @@ using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using VRage.Game.Components;
-using VRage.Game.Entity;
-using VRage.Game.ModAPI;
-using VRage.Utils;
 using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
@@ -23,7 +19,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         /// <summary>
         /// Delta for engine ticks; 60tps
         /// </summary>
-        private const float deltaTick = 1/60f;
+        private const float deltaTick = 1 / 60f;
         /// <summary>
         /// Delta for frames; varies
         /// </summary>

@@ -47,8 +47,8 @@ namespace RichHudFramework.UI
                 CroppedBox box = default(CroppedBox);
                 box.mask = maskingBox;
 
-                float thickness = _thickness, 
-                    height = cachedSize.Y - cachedPadding.Y, 
+                float thickness = _thickness,
+                    height = cachedSize.Y - cachedPadding.Y,
                     width = cachedSize.X - cachedPadding.X;
                 Vector2 halfSize, pos;
 

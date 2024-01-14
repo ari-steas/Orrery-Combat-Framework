@@ -10,7 +10,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
     public class SerializableWeaponDefinition
     {
         public SerializableWeaponDefinition() { }
-    
+
         [ProtoMember(2)] public Targeting Targeting;
         [ProtoMember(3)] public Assignments Assignments;
         [ProtoMember(4)] public Hardpoint Hardpoint;

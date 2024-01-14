@@ -1,5 +1,4 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
-using Sandbox.ModAPI;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {

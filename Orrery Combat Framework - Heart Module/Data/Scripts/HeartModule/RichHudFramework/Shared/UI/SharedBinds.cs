@@ -4,7 +4,6 @@ using VRage.Input;
 namespace RichHudFramework.UI
 {
     using Client;
-    using Server;
 
     /// <summary>
     /// Wrapper used to provide easy access to library key binds.
@@ -71,7 +70,7 @@ namespace RichHudFramework.UI
                 { "downarrow", MyKeys.Down },
                 { "leftarrow", MyKeys.Left },
                 { "rightarrow", MyKeys.Right },
-                
+
                 { "pageup", MyKeys.PageUp },
                 { "pagedown", MyKeys.PageDown },
                 { "space", MyKeys.Space },

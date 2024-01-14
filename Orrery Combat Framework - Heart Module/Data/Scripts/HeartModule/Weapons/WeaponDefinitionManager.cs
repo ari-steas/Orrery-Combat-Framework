@@ -1,5 +1,4 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
-using Sandbox.Definitions;
 using System;
 using System.Collections.Generic;
 using VRage.Utils;
@@ -104,7 +103,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 MaxElevation = (float)Math.PI,
                 MinElevation = -0.1745f,
                 HomeAzimuth = 0,
-                HomeElevation = (float) Math.PI / 4,
+                HomeElevation = (float)Math.PI / 4,
                 IdlePower = 10,
                 ShotInaccuracy = 0.0025f,
                 LineOfSightCheck = true,

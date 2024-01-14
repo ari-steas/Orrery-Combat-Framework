@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Text;
-using VRage;
 using VRageMath;
-using GlyphFormatMembers = VRage.MyTuple<byte, float, VRageMath.Vector2I, VRageMath.Color>;
 
 namespace RichHudFramework.UI
 {
@@ -11,7 +8,7 @@ namespace RichHudFramework.UI
     /// resemble on/off button used in the SE terminal, sans name tag.
     /// </summary>
     public class OnOffButton : HudElementBase, IClickableElement
-    {   
+    {
         /// <summary>
         /// Distance between the on and off buttons
         /// </summary>
@@ -20,15 +17,15 @@ namespace RichHudFramework.UI
         /// <summary>
         /// Color of the border surrounding the on and off buttons
         /// </summary>
-        public Color BorderColor 
-        { 
-            get { return onBorder.Color; } 
-            set 
+        public Color BorderColor
+        {
+            get { return onBorder.Color; }
+            set
             {
                 onBorder.Color = value;
                 offBorder.Color = value;
                 bgBorder.Color = value;
-            } 
+            }
         }
 
         /// <summary>

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using RichHudFramework.UI.Rendering;
+using System;
 using System.Collections.Generic;
 using VRage;
 using VRageMath;
-using RichHudFramework.UI.Rendering;
 using ApiMemberAccessor = System.Func<object, int, object>;
 using FloatProp = VRage.MyTuple<System.Func<float>, System.Action<float>>;
 using HudSpaceDelegate = System.Func<VRage.MyTuple<bool, float, VRageMath.MatrixD>>;
@@ -11,8 +11,8 @@ using Vec2Prop = VRage.MyTuple<System.Func<VRageMath.Vector2>, System.Action<VRa
 
 namespace RichHudFramework
 {
-    using Internal;
     using Client;
+    using Internal;
     using CursorMembers = MyTuple<
         Func<HudSpaceDelegate, bool>, // IsCapturingSpace
         Func<float, HudSpaceDelegate, bool>, // TryCaptureHudSpace
@@ -244,7 +244,7 @@ namespace RichHudFramework
                 {
                     BillBoardUtils.FinishDraw();
                 }
- 
+
                 public override void Close()
                 {
                     UnregisterAction?.Invoke();

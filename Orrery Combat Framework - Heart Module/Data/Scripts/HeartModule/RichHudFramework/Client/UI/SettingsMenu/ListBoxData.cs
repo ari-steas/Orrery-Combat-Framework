@@ -2,22 +2,22 @@
 using System.Collections.Generic;
 using System.Text;
 using VRage;
-using GlyphFormatMembers = VRage.MyTuple<byte, float, VRageMath.Vector2I, VRageMath.Color>;
 using ApiMemberAccessor = System.Func<object, int, object>;
+using GlyphFormatMembers = VRage.MyTuple<byte, float, VRageMath.Vector2I, VRageMath.Color>;
 
 namespace RichHudFramework.UI
 {
-    using RichStringMembers = MyTuple<StringBuilder, GlyphFormatMembers>;
     using CollectionData = MyTuple<Func<int, ApiMemberAccessor>, Func<int>>;
+    using RichStringMembers = MyTuple<StringBuilder, GlyphFormatMembers>;
 
     public class ListBoxData<T> : ReadOnlyApiCollection<EntryData<T>>
     {
         /// <summary>
         /// Current selection. Null if empty.
         /// </summary>
-        public EntryData<T> Selection 
+        public EntryData<T> Selection
         {
-            get 
+            get
             {
                 var index = (int)GetOrSetMemberFunc(null, (int)ListBoxAccessors.SelectionIndex);
                 return (index != -1) ? this[index] : null;

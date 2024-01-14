@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using VRageMath;
 using VRage;
+using VRageMath;
 
 namespace RichHudFramework.UI
 {
     using Rendering;
-    using Server;
     using System.Collections;
 
     /// <summary>
@@ -52,10 +51,10 @@ namespace RichHudFramework.UI
         /// <summary>
         /// Invoked when a member of the list is selected.
         /// </summary>
-        public event EventHandler SelectionChanged 
-        { 
-            add { listBox.SelectionChanged += value; } 
-            remove { listBox.SelectionChanged -= value; } 
+        public event EventHandler SelectionChanged
+        {
+            add { listBox.SelectionChanged += value; }
+            remove { listBox.SelectionChanged -= value; }
         }
 
         /// <summary>
@@ -188,7 +187,7 @@ namespace RichHudFramework.UI
                 TabColor = new Color(0, 0, 0, 0),
             };
             listBox.Register(display, true);
-            
+
             Size = new Vector2(331f, 43f);
 
             display.MouseInput.LeftClicked += ClickDisplay;
@@ -326,10 +325,10 @@ namespace RichHudFramework.UI
 
             public RichText Text { get { return name.Text; } set { name.Text = value; } }
 
-            public GlyphFormat Format 
-            { 
-                get { return name.Format; } 
-                set { name.Format = value; } 
+            public GlyphFormat Format
+            {
+                get { return name.Format; }
+                set { name.Format = value; }
             }
 
             /// <summary>
@@ -374,7 +373,7 @@ namespace RichHudFramework.UI
 
                 name = new Label()
                 {
-                    AutoResize = false,   
+                    AutoResize = false,
                     Padding = new Vector2(10f, 0f)
                 };
 

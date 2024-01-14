@@ -1,11 +1,8 @@
-﻿using VRageMath;
-using System;
+﻿using System;
+using VRageMath;
 
 namespace RichHudFramework.UI
 {
-    using Client;
-    using Server;
-
     /// <summary>
     /// Generic clickable slider bar. Can be oriented vertically or horizontally. Current value
     /// automatically clamped between min and max.
@@ -17,7 +14,7 @@ namespace RichHudFramework.UI
         /// </summary>
         public override float Width
         {
-            get 
+            get
             {
                 if (Vertical)
                     return (Math.Max(_barSize.X, _sliderSize.X) + _padding.X);
@@ -313,7 +310,7 @@ namespace RichHudFramework.UI
 
                 if (Reverse)
                     Percent = 1f - ((pos - minOffset) / (maxOffset - minOffset));
-                else 
+                else
                     Percent = (pos - minOffset) / (maxOffset - minOffset);
             }
 

@@ -1,12 +1,8 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
-using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
-using Heart_Module.Data.Scripts.HeartModule.Utility;
-using Sandbox.Engine.Physics;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
 using VRageMath;
@@ -100,7 +96,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 this.InheritedVelocity = InitialVelocity;
             }
             else
-                Definition.PhysicalProjectile.MaxLifetime = 1/60f;
+                Definition.PhysicalProjectile.MaxLifetime = 1 / 60f;
 
             RemainingImpacts = Definition.Damage.MaxImpacts;
         }
@@ -191,7 +187,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 RemainingImpacts -= 1;
             }
 
-            return (float) dist;
+            return (float)dist;
         }
 
         public Vector3D NextMoveStep = Vector3D.Zero;

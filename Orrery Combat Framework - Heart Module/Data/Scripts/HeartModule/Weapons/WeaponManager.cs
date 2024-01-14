@@ -20,7 +20,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         /// <summary>
         /// Delta for engine ticks; 60tps
         /// </summary>
-        private const float deltaTick = 1/60f;
+        private const float deltaTick = 1 / 60f;
 
         public override void LoadData()
         {
@@ -37,7 +37,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             if (!(entity is IMyCubeGrid))
                 return;
-            IMyCubeGrid grid = (IMyCubeGrid) entity;
+            IMyCubeGrid grid = (IMyCubeGrid)entity;
 
             List<IMySlimBlock> blocks = new List<IMySlimBlock>();
             grid.GetBlocks(null, b =>
@@ -93,7 +93,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             ActiveWeapons.Add(NextId, logic);
             GridWeapons[sorter.CubeGrid].Add(logic); // Add to grid list
 
-            sorter.OnMarkForClose += (a) => {
+            sorter.OnMarkForClose += (a) =>
+            {
                 ActiveWeapons.Remove(NextId);
                 List<SorterWeaponLogic> values;
                 GridWeapons.TryGetValue(sorter.CubeGrid, out values);

@@ -6,7 +6,6 @@ using VRage.Game.ModAPI;
 using VRage.ModAPI;
 using VRage.Utils;
 using VRageMath;
-using static VRage.Game.MyObjectBuilder_BehaviorTreeDecoratorNode;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
@@ -389,7 +388,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 cycleAmmoForwardAction.Enabled = CustomVisibleCondition;
                 MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(cycleAmmoForwardAction);
                 MyAPIGateway.Utilities.ShowNotification("Ammo Cycled");
-            }                                    
+            }
             {
                 // Action to Increase AI Range
                 var IncreaseAIRangeAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "IncreaseAIRange");

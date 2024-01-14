@@ -93,7 +93,7 @@ namespace RichHudFramework
                     /// <summary>
                     /// Returns a list of the current key combo for this bind.
                     /// </summary>
-                    public List<IControl> GetCombo() 
+                    public List<IControl> GetCombo()
                     {
                         var indices = _instance.GetOrSetBindMemberFunc(index, null, (int)BindAccesssors.GetCombo) as List<int>;
                         var combo = new List<IControl>(indices.Count);

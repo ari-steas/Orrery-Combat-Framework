@@ -1,13 +1,8 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using VRageMath;
 using VRage;
 
 namespace RichHudFramework.UI
 {
-    using Rendering;
-
     /// <summary>
     /// Indented, collapsable list. Designed to fit in with SE UI elements.
     /// </summary>
@@ -43,7 +38,7 @@ namespace RichHudFramework.UI
     /// <typeparam name="TContainer">Container element type wrapping the UI element</typeparam>
     /// <typeparam name="TElement">UI element in the list</typeparam>
     /// <typeparam name="TValue">Value paired with the list entry</typeparam>
-    public class TreeList<TContainer, TElement, TValue> 
+    public class TreeList<TContainer, TElement, TValue>
         : TreeBoxBase<
             ChainSelectionBox<TContainer, TElement, TValue>,
             HudChain<TContainer, TElement>,
@@ -81,9 +76,9 @@ namespace RichHudFramework.UI
         public TreeList(HudParentBase parent) : base(parent)
         {
             selectionBox.border.Visible = false;
-            selectionBox.hudChain.SizingMode = 
-                HudChainSizingModes.FitMembersBoth | 
-                HudChainSizingModes.ClampChainOffAxis | 
+            selectionBox.hudChain.SizingMode =
+                HudChainSizingModes.FitMembersBoth |
+                HudChainSizingModes.ClampChainOffAxis |
                 HudChainSizingModes.FitChainAlignAxis;
         }
 

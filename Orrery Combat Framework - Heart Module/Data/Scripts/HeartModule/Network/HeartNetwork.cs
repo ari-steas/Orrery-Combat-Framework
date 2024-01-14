@@ -33,7 +33,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
                 NetworkLoad = 0;
                 foreach (int i in networkLoadArray)
                     NetworkLoad += i;
-                NetworkLoad /= (NetworkLoadTicks/60); // Average per-second
+                NetworkLoad /= (NetworkLoadTicks / 60); // Average per-second
                 networkLoadArray.Clear();
             }
         }

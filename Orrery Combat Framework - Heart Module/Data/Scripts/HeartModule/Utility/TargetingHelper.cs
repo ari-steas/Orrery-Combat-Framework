@@ -1,10 +1,7 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
-using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
-using Sandbox.ModAPI;
 using System;
 using VRage.Game.Entity;
-using VRage.Game.ModAPI;
 using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Utility

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VRage.Game.Entity;
 using VRage.ModAPI;
 using VRageMath;
@@ -35,7 +32,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
             {
                 MyEntitySubpart subpart = null;
                 entity.TryGetSubpart(name, out subpart);
-                
+
                 if (CachedSubparts[entity][name] == null)
                 {
                     CachedSubparts[entity].Remove(name);

@@ -1,10 +1,6 @@
-﻿
-using RichHudFramework.UI.Rendering;
-using Sandbox.ModAPI;
-using System.Text;
-using VRage.Collections;
+﻿using Sandbox.ModAPI;
 using System;
-using VRageMath;
+using VRage.Collections;
 
 namespace RichHudFramework.UI
 {
@@ -15,7 +11,7 @@ namespace RichHudFramework.UI
         private readonly Action<char> OnAppendAction;
         private readonly Action OnBackspaceAction;
 
-        public TextInput(Action<char> OnAppendAction, Action OnBackspaceAction, Func<char, bool> IsCharAllowedFunc = null) 
+        public TextInput(Action<char> OnAppendAction, Action OnBackspaceAction, Func<char, bool> IsCharAllowedFunc = null)
         {
             this.OnAppendAction = OnAppendAction;
             this.OnBackspaceAction = OnBackspaceAction;
