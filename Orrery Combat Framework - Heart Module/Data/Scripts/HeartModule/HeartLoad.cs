@@ -1,5 +1,7 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
+using RichHudFramework.Client;
+using RichHudFramework.UI;
 using Sandbox.ModAPI;
 using System;
 using VRage.Game.Components;
@@ -23,6 +25,14 @@ namespace Heart_Module.Data.Scripts.HeartModule
             try
             {
                 HeartData.I.Net.LoadData();
+
+                if (!MyAPIGateway.Utilities.IsDedicated)
+                {
+                    RichHudClient.Init("HeartModule", () => { }, () => { });
+                    HeartData.I.Log.Log($"Loaded RichHudClient");
+                }
+                else
+                    HeartData.I.Log.Log($"Skipped loading RichHudClient");
 
                 HeartData.I.IsSuspended = false;
                 HeartData.I.Log.Log($"Finished loading core.");

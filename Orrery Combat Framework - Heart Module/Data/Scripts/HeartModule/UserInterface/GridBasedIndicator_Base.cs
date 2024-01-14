@@ -15,14 +15,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface
     [MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation)]
     internal abstract class GridBasedIndicator_Base : MySessionComponentBase
     {
+        internal IMyCubeGrid controlledGrid;
+
         public override void UpdateAfterSimulation()
         {
             IMyEntity controlledEntity = MyAPIGateway.Session.Player?.Controller?.ControlledEntity?.Entity?.GetTopMostParent(); // Get the currently controlled grid.
             if (!(controlledEntity is IMyCubeGrid))
                 return;
-            IMyCubeGrid controlledGrid = (IMyCubeGrid)controlledEntity; // TODO: Make work on subparts
-
-            MyAPIGateway.Utilities.ShowNotification("Weapons: " + (WeaponManager.I.GridWeapons[controlledGrid]?.Count), 1000 / 60);
+            controlledGrid = (IMyCubeGrid)controlledEntity; // TODO: Make work on subparts
 
             foreach (var gridWeapon in WeaponManager.I.GridWeapons[controlledGrid])
                 PerWeaponUpdate(gridWeapon);
