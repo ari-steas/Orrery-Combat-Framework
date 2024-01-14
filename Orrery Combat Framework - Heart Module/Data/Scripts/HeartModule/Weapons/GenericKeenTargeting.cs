@@ -14,7 +14,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
     public class GenericKeenTargeting
     {
         public MyEntity GetTarget(IMyCubeGrid grid, bool targetGrids, bool targetLargeGrids, bool targetSmallGrids,
-                                  bool targetFriendlies, bool targetNeutrals, bool targetEnemies, bool targetUnowned)
+                                  bool targetFriendlies, bool targetNeutrals, bool targetEnemies, bool targetUnowned, bool targetCharacters)
         {
             if (grid == null)
             {
@@ -64,6 +64,35 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                                 return filteredTarget;
                             }
                         }
+                    }
+                }
+
+            }
+
+            if (targetCharacters)
+            {
+                var entities = new HashSet<IMyEntity>();
+                MyAPIGateway.Entities.GetEntities(entities, e => e is IMyCharacter);
+
+                foreach (var entity in entities)
+                {
+                    var character = entity as IMyCharacter;
+
+                    if (character != null && character.IsDead == false && character.Integrity > 0 && character.Physics != null && character.Physics.Enabled)
+                    {
+                        // Cast IMyCharacter to MyEntity before passing it
+                        var filteredTarget = FilterTargetBasedOnFactionRelation(entity as MyEntity, targetFriendlies, targetNeutrals, targetEnemies, targetUnowned);
+
+                        if (filteredTarget != null)
+                        {
+                            MyAPIGateway.Utilities.ShowNotification("Target selected: " + filteredTarget.DisplayName, 1000 / 60, VRage.Game.MyFontEnum.Blue);
+                        }
+                        else
+                        {
+                            MyAPIGateway.Utilities.ShowNotification("Target filtered out based on faction relationship", 1000 / 60, VRage.Game.MyFontEnum.Red);
+                        }
+
+                        return filteredTarget;
                     }
                 }
             }

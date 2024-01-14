@@ -84,6 +84,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 Terminal_Heart_TargetGrids,
                 Terminal_Heart_TargetLargeGrids,
                 Terminal_Heart_TargetSmallGrids,
+               // Terminal_Heart_TargetProjectiles,
+                Terminal_Heart_TargetCharacters,
                 Terminal_Heart_TargetFriendlies,
                 Terminal_Heart_TargetNeutrals,
                 Terminal_Heart_TargetEnemies,
