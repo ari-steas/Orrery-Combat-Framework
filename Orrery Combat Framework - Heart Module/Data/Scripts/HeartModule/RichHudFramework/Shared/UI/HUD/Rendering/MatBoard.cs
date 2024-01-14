@@ -1,17 +1,11 @@
 ﻿using VRageMath;
-using System;
 
 namespace RichHudFramework
 {
     namespace UI
     {
-        using Client;
-
         namespace Rendering
         {
-            using Client;
-            using Server;
-
             public class MatBoard
             {
                 /// <summary>
@@ -111,7 +105,7 @@ namespace RichHudFramework
                         if (containment != ContainmentType.Disjoint)
                             minBoard.Draw(ref box, matrixRef);
                     }
-                }     
+                }
             }
         }
     }

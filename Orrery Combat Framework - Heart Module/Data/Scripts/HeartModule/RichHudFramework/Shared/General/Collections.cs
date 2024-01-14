@@ -1,7 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using VRage;
-using System;
 
 namespace RichHudFramework
 {

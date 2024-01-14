@@ -23,8 +23,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         [ProtoMember(26)] public Vector3D? Direction;
         [ProtoMember(27)] public Vector3D? InheritedVelocity;
         [ProtoMember(28)] public float? Velocity;
-        [ProtoMember(29)] public int? RemainingImpacts;
-        [ProtoMember(210)] public Dictionary<string, byte[]> OverridenValues;
+        //[ProtoMember(29)] public int? RemainingImpacts;
+        //[ProtoMember(210)] public Dictionary<string, byte[]> OverridenValues;
         [ProtoMember(212)] public long? Firer;
 
 

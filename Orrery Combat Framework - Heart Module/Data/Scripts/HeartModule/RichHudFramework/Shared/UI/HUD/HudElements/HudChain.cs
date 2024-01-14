@@ -1,5 +1,4 @@
 ﻿using System;
-using VRage;
 using VRageMath;
 
 namespace RichHudFramework
@@ -164,10 +163,10 @@ namespace RichHudFramework
             /// <summary>
             /// Determines whether or not chain elements will be aligned vertically.
             /// </summary>
-            public virtual bool AlignVertical 
-            { 
+            public virtual bool AlignVertical
+            {
                 get { return _alignVertical; }
-                set 
+                set
                 {
                     if (value)
                     {
@@ -347,7 +346,7 @@ namespace RichHudFramework
                 for (int n = 0; n < hudCollectionList.Count; n++)
                 {
                     TElement element = hudCollectionList[n].Element;
-                    
+
                     if ((element.State & (nodeSetVisible)) == nodeSetVisible)
                     {
                         Vector2 elementSize = element.Size;

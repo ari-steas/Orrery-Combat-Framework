@@ -1,10 +1,8 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using RichHudFramework.UI;
-using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using VRage.Game;
 using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
@@ -14,6 +12,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
     internal class ReloadWindow : WindowBase
     {
         Label debugInfo;
+        Label debugInfo2;
         ListBox<uint> weaponStatus;
 
         public ReloadWindow(HudParentBase parent) : base(parent)
@@ -22,6 +21,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
             {
                 ParentAlignment = ParentAlignments.Bottom | ParentAlignments.InnerV,
                 DimAlignment = DimAlignments.Width,
+            };
+
+            debugInfo2 = new Label(body)
+            {
+                ParentAlignment = ParentAlignments.Bottom | ParentAlignments.InnerV,
+                DimAlignment = DimAlignments.Width,
+                Offset = new Vector2(0, debugInfo.Height),
             };
 
             weaponStatus = new ListBox<uint>(body)
@@ -53,9 +59,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
             MinimumSize = new Vector2(Math.Max(1, MinimumSize.X), MinimumSize.Y);
         }
 
-        public void UpdateDebugText(int numProjectiles, int numWeapons)
+        public void UpdateDebugText(int numProjectiles, int numWeapons, int networkLoad)
         {
             debugInfo.Text = $"Projectiles: {numProjectiles} | Weapons: {numWeapons}";
+            debugInfo2.Text = $"Estimated Network Load: {Math.Round(networkLoad / 1000f, 1)}kb/s";
         }
 
         public void UpdateWeaponText(SorterWeaponLogic weapon)
@@ -68,7 +75,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
             if (entry == null)
                 entry = weaponStatus.Add("AWAIT INIT", weapon.Id);
 
-            
+
             string targetStatus = "";
             if (weapon is SorterTurretLogic)
             {
@@ -78,7 +85,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
                 else
                     targetStatus = "NO TARGET";
             }
-            
+
             string ammoStatus = $"{weapon.Magazines.ShotsInMag}/10"; // Placeholder value for max ammo
             if (weapon.Magazines.ShotsInMag == 0)
                 ammoStatus = $"{Math.Round(weapon.Magazines.NextReloadTime, 1)}";
@@ -110,7 +117,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
                 if (shouldRemove)
                     weaponStatus.Remove(weaponTextId);
             }
-                
+
             foreach (var weapon in weapons)
                 UpdateWeaponText(weapon);
         }

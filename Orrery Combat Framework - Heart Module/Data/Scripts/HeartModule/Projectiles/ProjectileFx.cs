@@ -1,10 +1,7 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Sandbox.Game;
 using Sandbox.Game.Entities;
-using Sandbox.ModAPI;
 using System.Collections.Generic;
-using System.Linq;
-using VRage;
 using VRage.Game;
 using VRage.Game.Entity;
 using VRage.ModAPI;
@@ -26,7 +23,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         internal void InitEffects()
         {
-            float f = (float) HeartData.I.Random.NextDouble();
+            float f = (float)HeartData.I.Random.NextDouble();
             IsVisible = f <= Definition.Visual.VisibleChance;
             HasAudio = f <= Definition.Audio.SoundChance;
 
@@ -93,7 +90,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
         }
 
-        
+
 
         private void UpdateAudio()
         {

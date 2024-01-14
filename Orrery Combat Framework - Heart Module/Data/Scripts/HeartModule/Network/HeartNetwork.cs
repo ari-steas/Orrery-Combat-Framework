@@ -8,6 +8,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
 {
     public class HeartNetwork
     {
+        public int NetworkLoadTicks = 240;
+        public int NetworkLoad { get; private set; } = 0;
+
+        private List<int> networkLoadArray = new List<int>();
+        private int networkLoadUpdate = 0;
+
         public void LoadData()
         {
             MyAPIGateway.Multiplayer.RegisterSecureMessageHandler(HeartData.HeartNetworkId, ReceivedPacket);
@@ -18,8 +24,23 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
             MyAPIGateway.Multiplayer.UnregisterSecureMessageHandler(HeartData.HeartNetworkId, ReceivedPacket);
         }
 
+        public void Update()
+        {
+            networkLoadUpdate--;
+            if (networkLoadUpdate <= 0 && networkLoadArray.Count > 0) // Update NetworkLoad average once per second
+            {
+                networkLoadUpdate = NetworkLoadTicks;
+                NetworkLoad = 0;
+                foreach (int i in networkLoadArray)
+                    NetworkLoad += i;
+                NetworkLoad /= (NetworkLoadTicks / 60); // Average per-second
+                networkLoadArray.Clear();
+            }
+        }
+
         void ReceivedPacket(ushort channelId, byte[] serialized, ulong senderSteamId, bool isSenderServer)
         {
+            networkLoadArray.Add(serialized.Length);
             try
             {
                 PacketBase packet = MyAPIGateway.Utilities.SerializeFromBinary<PacketBase>(serialized);

@@ -1,10 +1,7 @@
-﻿using RichHudFramework.UI.Client;
-using RichHudFramework.UI.Rendering;
+﻿using RichHudFramework.UI.Rendering;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using VRageMath;
-using EventHandler = RichHudFramework.EventHandler;
 
 namespace RichHudFramework.UI
 {
@@ -25,9 +22,9 @@ namespace RichHudFramework.UI
         /// <summary>
         /// Currently highlighted entry
         /// </summary>
-        public virtual TContainer Selection 
+        public virtual TContainer Selection
         {
-            get 
+            get
             {
                 if (SelectionIndex >= 0 && SelectionIndex < hudCollectionList.Count)
                     return hudCollectionList[SelectionIndex];

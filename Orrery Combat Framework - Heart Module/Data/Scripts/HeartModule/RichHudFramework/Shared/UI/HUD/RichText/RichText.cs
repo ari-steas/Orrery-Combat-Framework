@@ -1,5 +1,4 @@
-﻿using RichHudFramework.UI.Rendering;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -183,7 +182,7 @@ namespace RichHudFramework
 
                 // If format is equal, reuse last StringBuilder
                 if (!formatEqual)
-                { 
+                {
                     var richString = new RichStringMembers(sb, format);
                     richStrings.Add(richString);
                 }
@@ -301,7 +300,7 @@ namespace RichHudFramework
                     return false;
                 else if (apiData == other.apiData)
                     return true;
-                else if(apiData.Count == other.apiData.Count)
+                else if (apiData.Count == other.apiData.Count)
                 {
                     for (int i = 0; i < apiData.Count; i++)
                     {
@@ -373,7 +372,7 @@ namespace RichHudFramework
                     for (int b = 0; b < richText[i].Item1.Length; b++)
                         rawText.Append(richText[i].Item1[b]);
                 }
-                
+
                 return rawText.ToString();
             }
 
@@ -392,7 +391,7 @@ namespace RichHudFramework
 
                 for (int i = 0; i < original.Count; i++)
                 {
-                    StringBuilder oldSb = original[i].Item1, 
+                    StringBuilder oldSb = original[i].Item1,
                         sb = new StringBuilder(oldSb.Length);
 
                     for (int j = 0; j < oldSb.Length; j++)

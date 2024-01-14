@@ -1,12 +1,10 @@
-﻿using System;
+﻿using RichHudFramework.UI.Rendering;
+using System;
 using System.Text;
-using RichHudFramework.UI.Rendering;
 using VRageMath;
 
 namespace RichHudFramework.UI
 {
-    using UI;
-
     /// <summary>
     /// Named color picker using sliders designed to mimic the appearance of the color picker in the SE terminal.
     /// RGB only. Alpha not supported.
@@ -32,13 +30,13 @@ namespace RichHudFramework.UI
         /// Formatting used by the color value labels
         /// </summary>
         public GlyphFormat ValueFormat
-        { 
-            get { return sliderText[0].Format; } 
-            set 
+        {
+            get { return sliderText[0].Format; }
+            set
             {
                 foreach (Label label in sliderText)
                     label.TextBoard.SetFormatting(value);
-            } 
+            }
         }
 
         public override float Width
@@ -71,10 +69,10 @@ namespace RichHudFramework.UI
         /// <summary>
         /// Color currently specified by the color picker
         /// </summary>
-        public Color Color 
-        { 
+        public Color Color
+        {
             get { return _color; }
-            set 
+            set
             {
                 sliders[0].Current = value.R;
                 sliders[1].Current = value.G;
@@ -147,7 +145,7 @@ namespace RichHudFramework.UI
                 CollectionContainer = { sliderText[0], sliderText[1], sliderText[2] }
             };
 
-            sliders = new SliderBox[] 
+            sliders = new SliderBox[]
             {
                 new SliderBox() { Min = 0f, Max = 255f, Height = 47f },
                 new SliderBox() { Min = 0f, Max = 255f, Height = 47f },

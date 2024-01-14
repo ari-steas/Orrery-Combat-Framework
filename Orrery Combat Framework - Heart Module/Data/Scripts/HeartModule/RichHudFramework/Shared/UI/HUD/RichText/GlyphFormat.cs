@@ -1,7 +1,4 @@
-﻿using System.Text;
-using System;
-using System.Collections.Generic;
-using VRage;
+﻿using System;
 using VRageMath;
 using GlyphFormatMembers = VRage.MyTuple<byte, float, VRageMath.Vector2I, VRageMath.Color>;
 
@@ -9,9 +6,8 @@ namespace RichHudFramework
 {
     namespace UI
     {
-        using Rendering.Client;
-        using Rendering.Server;
         using Rendering;
+        using Rendering.Client;
 
         /// <summary>
         /// Used to determine text alignment.
@@ -28,9 +24,9 @@ namespace RichHudFramework
         /// </summary>
         public struct GlyphFormat : IEquatable<GlyphFormat>
         {
-            public static readonly GlyphFormat 
+            public static readonly GlyphFormat
                 Black = new GlyphFormat(),
-                White = new GlyphFormat(color: Color.White), 
+                White = new GlyphFormat(color: Color.White),
                 Blueish = new GlyphFormat(color: new Color(220, 235, 242)),
                 Empty = new GlyphFormat(default(GlyphFormatMembers));
 

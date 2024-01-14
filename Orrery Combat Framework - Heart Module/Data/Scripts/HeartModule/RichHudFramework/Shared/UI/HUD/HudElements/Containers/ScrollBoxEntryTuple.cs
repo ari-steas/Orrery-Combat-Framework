@@ -4,8 +4,8 @@
     /// Basic container class used to associate a scrollbox element with an arbitrary object
     /// of type TData.
     /// </summary>
-    public class ScrollBoxEntryTuple<TElement, TData> 
-        : ScrollBoxEntry<TElement>, IScrollBoxEntryTuple<TElement, TData> 
+    public class ScrollBoxEntryTuple<TElement, TData>
+        : ScrollBoxEntry<TElement>, IScrollBoxEntryTuple<TElement, TData>
         where TElement : HudElementBase
     {
         /// <summary>
@@ -21,6 +21,6 @@
     /// Basic container class used to associate a scrollbox element with an arbitrary object
     /// of type TData.
     /// </summary>
-    public class ScrollBoxEntryTuple<TData> : ScrollBoxEntryTuple<HudElementBase, TData> 
+    public class ScrollBoxEntryTuple<TData> : ScrollBoxEntryTuple<HudElementBase, TData>
     { }
 }

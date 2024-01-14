@@ -1,12 +1,8 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
-using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
-using Heart_Module.Data.Scripts.HeartModule.Utility;
-using Sandbox.Engine.Physics;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
 using VRageMath;
@@ -60,7 +56,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             Definition = ProjectileDefinitionManager.GetDefinition(projectile.DefinitionId.Value);
             Firer = projectile.Firer.GetValueOrDefault(0);
             IsHitscan = Definition.PhysicalProjectile.IsHitscan;
-            if (IsHitscan)
+            if (!IsHitscan)
+                Velocity = Definition.PhysicalProjectile.Velocity;
+            else
                 Definition.PhysicalProjectile.MaxLifetime = 1 / 60f;
 
             UpdateFromSerializable(projectile);
@@ -100,7 +98,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 this.InheritedVelocity = InitialVelocity;
             }
             else
-                Definition.PhysicalProjectile.MaxLifetime = 1/60f;
+                Definition.PhysicalProjectile.MaxLifetime = 1 / 60f;
 
             RemainingImpacts = Definition.Damage.MaxImpacts;
         }
@@ -191,7 +189,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 RemainingImpacts -= 1;
             }
 
-            return (float) dist;
+            return (float)dist;
         }
 
         public Vector3D NextMoveStep = Vector3D.Zero;
@@ -212,8 +210,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 Velocity = projectile.Velocity.Value;
             if (projectile.InheritedVelocity.HasValue)
                 InheritedVelocity = projectile.InheritedVelocity.Value;
-            if (projectile.RemainingImpacts.HasValue)
-                RemainingImpacts = projectile.RemainingImpacts.Value;
+            if (projectile.Firer.HasValue)
+                Firer = projectile.Firer.Value;
             TickUpdate(delta);
         }
 
@@ -246,7 +244,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     projectile.Position = Position;
                     projectile.Direction = Direction;
                     projectile.InheritedVelocity = InheritedVelocity;
-                    projectile.Velocity = Velocity;
+                    projectile.Firer = Firer;
+                    //projectile.Velocity = Velocity;
                     break;
                 case 1:
                     projectile.Position = Position;
@@ -262,8 +261,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public void QueueDispose()
         {
-            if (MyAPIGateway.Session.IsServer)
-                QueuedDispose = true;
+            QueuedDispose = true;
         }
 
         public void SetId(uint id)

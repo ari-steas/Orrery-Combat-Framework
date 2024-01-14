@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using VRage;
 using VRageMath;
 using BindDefinitionData = VRage.MyTuple<string, string[]>;
@@ -18,9 +18,9 @@ namespace RichHudFramework
                 /// <summary>
                 /// Returns the bind with the name given, if it exists.
                 /// </summary>
-                public IBind this[string name] 
-                { 
-                    get 
+                public IBind this[string name]
+                {
+                    get
                     {
                         IBind bind = GetBind(name);
 
@@ -28,7 +28,7 @@ namespace RichHudFramework
                             throw new Exception($"Bind: {name} was not found in bind group {Name}.");
                         else
                             return bind;
-                    } 
+                    }
                 }
 
                 /// <summary>
@@ -46,7 +46,7 @@ namespace RichHudFramework
                 /// </summary>
                 public object ID => _instance.GetOrSetGroupMemberFunc(Index, null, (int)BindGroupAccessors.ID);
 
-                public BindGroup(int index) 
+                public BindGroup(int index)
                     : base(x => new Bind(new Vector2I(index, x)), () => _instance.GetBindCountFunc(index))
                 {
                     Index = index;

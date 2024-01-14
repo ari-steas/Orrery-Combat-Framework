@@ -1,6 +1,6 @@
-﻿using System;
+﻿using RichHudFramework.Internal;
+using System;
 using System.Collections.Generic;
-using RichHudFramework.Internal;
 
 namespace RichHudFramework.IO
 {
@@ -10,10 +10,10 @@ namespace RichHudFramework.IO
     public sealed class LogIO : RichHudParallelComponentBase
     {
         public static bool Accessible => Instance.accessible;
-        public static string FileName 
-        { 
-            get { return _fileName; } 
-            set 
+        public static string FileName
+        {
+            get { return _fileName; }
+            set
             {
                 if (value != _fileName)
                     Instance.logFile = new LocalFileIO(value);
@@ -23,16 +23,16 @@ namespace RichHudFramework.IO
         }
 
         private static LogIO Instance
-        { 
-            get 
+        {
+            get
             {
                 if (_instance == null)
                     _instance = new LogIO();
                 else if (_instance.Parent == null && RichHudCore.Instance != null)
                     _instance.RegisterComponent(RichHudCore.Instance);
 
-                return _instance; 
-            } 
+                return _instance;
+            }
             set { _instance = value; }
         }
 

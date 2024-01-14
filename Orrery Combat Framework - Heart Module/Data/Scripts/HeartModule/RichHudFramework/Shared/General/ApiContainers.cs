@@ -1,8 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using VRage;
-using VRageMath;
-using System;
 
 namespace RichHudFramework
 {
@@ -16,7 +15,7 @@ namespace RichHudFramework
         /// </summary>
         public virtual TValue this[int index]
         {
-            get 
+            get
             {
                 int count = GetCountFunc();
 

@@ -47,7 +47,7 @@ namespace RichHudFramework
         /// </summary>
         public static Color SetChannel(this Color color, int channel, byte value)
         {
-            switch(channel)
+            switch (channel)
             {
                 case 0:
                     color.R = value;

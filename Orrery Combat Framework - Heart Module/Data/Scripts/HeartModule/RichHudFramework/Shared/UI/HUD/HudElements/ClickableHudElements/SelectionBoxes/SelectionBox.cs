@@ -1,12 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using VRage;
 using VRageMath;
-using System.Collections.Generic;
-using RichHudFramework.UI.Rendering;
-using GlyphFormatMembers = VRage.MyTuple<byte, float, VRageMath.Vector2I, VRageMath.Color>;
 using ApiMemberAccessor = System.Func<object, int, object>;
-using System.Collections;
+using GlyphFormatMembers = VRage.MyTuple<byte, float, VRageMath.Vector2I, VRageMath.Color>;
 
 namespace RichHudFramework.UI
 {
@@ -93,7 +91,7 @@ namespace RichHudFramework.UI
     /// <summary>
     /// Generic list of pooled, selectable entries of fixed size.
     /// </summary>
-    public class SelectionBox<TChain, TContainer, TElement, TValue> 
+    public class SelectionBox<TChain, TContainer, TElement, TValue>
         : SelectionBoxBase<TChain, TContainer, TElement>
         where TChain : HudChain<TContainer, TElement>, new()
         where TContainer : class, IListBoxEntry<TElement, TValue>, new()

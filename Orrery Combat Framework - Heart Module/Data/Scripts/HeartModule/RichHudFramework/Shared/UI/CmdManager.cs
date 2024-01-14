@@ -1,16 +1,14 @@
 ﻿using RichHudFramework.Internal;
-using Sandbox.ModAPI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using VRage;
-using VRage.Game;
 using VRage.Game.Components;
 
 namespace RichHudFramework.UI
 {
-    public interface ICommandGroup: IIndexedCollection<IChatCommand>
+    public interface ICommandGroup : IIndexedCollection<IChatCommand>
     {
         string Prefix { get; }
 

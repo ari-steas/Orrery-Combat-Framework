@@ -1,7 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using RichHudFramework.Client;
-using RichHudFramework.UI;
 using Sandbox.ModAPI;
 using System;
 using VRage.Game.Components;
@@ -56,6 +55,14 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
                 if (!MyAPIGateway.Utilities.IsDedicated && HeartData.I.SteamId == 0)
                     HeartData.I.SteamId = MyAPIGateway.Session?.Player?.SteamUserId ?? 0;
+
+                HeartData.I.Net.Update();
+
+                if (MyAPIGateway.Session.IsServer)
+                {
+                    HeartData.I.Players.Clear(); // KEEN DOESN'T. CLEAR. THE LIST. AUTOMATICALLY. AUGH. -aristeas
+                    MyAPIGateway.Multiplayer.Players.GetPlayers(HeartData.I.Players);
+                }
             }
             catch (Exception ex)
             {

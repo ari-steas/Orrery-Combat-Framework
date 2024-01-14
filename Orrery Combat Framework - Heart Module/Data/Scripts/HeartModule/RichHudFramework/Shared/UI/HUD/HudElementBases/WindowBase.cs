@@ -1,12 +1,10 @@
-﻿using System;
+﻿using RichHudFramework.UI.Rendering;
+using System;
 using VRageMath;
-using RichHudFramework.UI.Rendering;
-using RichHudFramework.Internal;
 
 namespace RichHudFramework.UI
 {
     using Client;
-    using Server;
 
     /// <summary>
     /// Base type for HUD windows. Supports dragging/resizing like pretty much every other window ever.
@@ -134,7 +132,7 @@ namespace RichHudFramework.UI
                 DimAlignment = DimAlignments.Both,
                 CanIgnoreMasking = true
             };
-            
+
             inputInner = new MouseInputElement(resizeInput)
             {
                 DimAlignment = DimAlignments.Both | DimAlignments.IgnorePadding,

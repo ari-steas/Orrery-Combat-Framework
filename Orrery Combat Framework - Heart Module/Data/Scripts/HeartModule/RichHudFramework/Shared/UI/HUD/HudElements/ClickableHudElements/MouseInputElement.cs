@@ -1,13 +1,9 @@
 ﻿using System;
-using VRage;
 using VRageMath;
-using HudSpaceDelegate = System.Func<VRage.MyTuple<bool, float, VRageMath.MatrixD>>;
 
 namespace RichHudFramework.UI
 {
     using Client;
-    using Server;
-    using Internal;
 
     /// <summary>
     /// A clickable box. Doesn't render any textures or text. Must be used in conjunction with other elements.
@@ -15,9 +11,9 @@ namespace RichHudFramework.UI
     /// </summary>
     public class MouseInputElement : HudElementBase, IMouseInput
     {
-        public override bool Visible 
-        { 
-            set 
+        public override bool Visible
+        {
+            set
             {
                 if (value)
                     State |= HudElementStates.IsVisible;
@@ -213,7 +209,7 @@ namespace RichHudFramework.UI
                     LoseFocus();
 
                 IsNewLeftClicked = false;
-                IsNewRightClicked = false;                
+                IsNewRightClicked = false;
             }
 
             if (!SharedBinds.LeftButton.IsPressed && IsLeftClicked)

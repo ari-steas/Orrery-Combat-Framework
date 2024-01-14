@@ -1,5 +1,5 @@
-﻿using VRageMath;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using VRageMath;
 
 namespace RichHudFramework
 {

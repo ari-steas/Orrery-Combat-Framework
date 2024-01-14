@@ -1,5 +1,5 @@
-﻿using System;
-using RichHudFramework.UI.Rendering;
+﻿using RichHudFramework.UI.Rendering;
+using System;
 using VRageMath;
 
 namespace RichHudFramework.UI

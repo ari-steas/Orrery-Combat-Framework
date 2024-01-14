@@ -4,9 +4,6 @@ using VRageMath;
 
 namespace RichHudFramework.UI.Rendering
 {
-    using Client;
-    using Server;
-
     /// <summary>
     /// Renders a 2D polygon using billboards with the center punched out.
     /// </summary>
@@ -83,7 +80,7 @@ namespace RichHudFramework.UI.Rendering
             range.Y -= range.Y % 2;
 
             int max = vertices.Count;
-            Vector2 sum = 
+            Vector2 sum =
                 vertices[range.X] +
                 vertices[range.X + 1] +
                 vertices[(range.Y) % max] +

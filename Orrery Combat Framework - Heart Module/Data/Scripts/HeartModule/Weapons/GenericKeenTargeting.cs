@@ -1,13 +1,9 @@
 ﻿using Sandbox.Game.Entities;
 using Sandbox.Game.EntityComponents;
 using Sandbox.ModAPI;
-using VRage.Game.ModAPI;
-using System.Collections.Generic;
-using VRage.Game.Entity;
-using VRage.ModAPI;
 using VRage.Game;
-using Sandbox.Game;
-using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+using VRage.Game.Entity;
+using VRage.Game.ModAPI;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {

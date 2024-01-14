@@ -17,7 +17,7 @@
     }
 
     public enum ClientDataAccessors : int
-    {   
+    {
         GetVersionID = 1,
         GetSubtype = 2
     }

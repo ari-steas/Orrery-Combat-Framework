@@ -1,10 +1,6 @@
-﻿using RichHudFramework.UI.Rendering;
-using System;
-using System.Text;
+﻿using System;
 using VRage;
 using ApiMemberAccessor = System.Func<object, int, object>;
-using EventAccessor = VRage.MyTuple<bool, System.Action>;
-using GlyphFormatMembers = VRage.MyTuple<byte, float, VRageMath.Vector2I, VRageMath.Color>;
 
 namespace RichHudFramework
 {
@@ -18,7 +14,6 @@ namespace RichHudFramework
         ApiMemberAccessor, // GetOrSetMember
         object // ID
     >;
-    using RichStringMembers = MyTuple<StringBuilder, GlyphFormatMembers>;
 
     namespace UI.Client
     {
@@ -68,7 +63,7 @@ namespace RichHudFramework
                 GetNewContainerFunc = data.Item4;
                 GetNewPageFunc = data.Item5;
 
-                GetNewPageCategoryFunc = 
+                GetNewPageCategoryFunc =
                     GetOrSetMembersFunc(null, (int)TerminalAccessors.GetNewPageCategoryFunc) as Func<ControlContainerMembers>;
 
                 menuRoot = new ModControlRoot(data.Item2);

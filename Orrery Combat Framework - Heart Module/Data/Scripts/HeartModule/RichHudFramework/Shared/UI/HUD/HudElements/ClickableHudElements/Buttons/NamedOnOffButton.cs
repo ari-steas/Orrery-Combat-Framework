@@ -1,7 +1,4 @@
-﻿using System.Text;
-using VRage;
-using VRageMath;
-using GlyphFormatMembers = VRage.MyTuple<byte, float, VRageMath.Vector2I, VRageMath.Color>;
+﻿using VRageMath;
 
 namespace RichHudFramework.UI
 {
@@ -71,8 +68,8 @@ namespace RichHudFramework.UI
                 Height = 22f,
             };
 
-            onOffButton = new OnOffButton() 
-            { 
+            onOffButton = new OnOffButton()
+            {
                 Padding = new Vector2(78f, 0f),
             };
 

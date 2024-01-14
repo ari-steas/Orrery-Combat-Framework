@@ -1,13 +1,9 @@
-﻿using RichHudFramework.UI.Rendering;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using VRageMath;
 
 namespace RichHudFramework.UI.Rendering
 {
-    using Client;
-    using Server;
-
     /// <summary>
     /// Renders a 2D polygon using billboards
     /// </summary>
@@ -168,8 +164,8 @@ namespace RichHudFramework.UI.Rendering
                 GeneratePolygon();
 
             int max = vertices.Count;
-            Vector2 start = vertices[range.X], 
-                end = vertices[(range.Y + 1) % max], 
+            Vector2 start = vertices[range.X],
+                end = vertices[(range.Y + 1) % max],
                 center = Vector2.Zero;
 
             return bbSize * (start + end + center) / 3f;

@@ -2,12 +2,6 @@
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using RichHudFramework.Client;
 using RichHudFramework.UI.Client;
-using Sandbox.ModAPI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VRage.Game;
 using VRage.Game.Components;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
@@ -31,17 +25,20 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
                 return;
             if (!HasInitedHud)
                 InitHud();
-
-            int numWeapons = 0;
-            if (controlledGrid != null)
+            try // TODO: Fix error that throws here on DS
             {
-                numWeapons = WeaponManager.I.GridWeapons[controlledGrid].Count;
-                Window.UpdateWeaponText(WeaponManager.I.GridWeapons[controlledGrid]);
+                int numWeapons = 0;
+                if (controlledGrid != null)
+                {
+                    numWeapons = WeaponManager.I.GridWeapons[controlledGrid].Count;
+                    Window.UpdateWeaponText(WeaponManager.I.GridWeapons[controlledGrid]);
+                }
+                else
+                    Window.ClearWeaponText();
+
+                Window.UpdateDebugText(ProjectileManager.I.NumProjectiles, numWeapons, HeartData.I.Net.NetworkLoad);
             }
-            else
-                Window.ClearWeaponText();
-                
-            Window.UpdateDebugText(ProjectileManager.I.NumProjectiles, numWeapons);
+            catch { }
         }
 
         void InitHud()
@@ -56,7 +53,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
 
         public override void PerWeaponUpdate(SorterWeaponLogic weapon)
         {
-            Window?.UpdateWeaponText(weapon);
+            //Window?.UpdateWeaponText(weapon);
         }
     }
 }

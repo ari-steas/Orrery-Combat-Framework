@@ -3,29 +3,23 @@ using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using VRage.Game.Components;
-using VRage.Game.Entity;
-using VRage.Game.ModAPI;
-using VRage.Utils;
 using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 {
     [MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation)]
-    public class ProjectileManager : MySessionComponentBase
+    public partial class ProjectileManager : MySessionComponentBase
     {
         public static ProjectileManager I = new ProjectileManager();
-        const int MaxProjectilesSynced = 25; // This value should result in ~100kB/s per player.
 
         private Dictionary<uint, Projectile> ActiveProjectiles = new Dictionary<uint, Projectile>();
-        private Dictionary<ulong, List<uint>> ProjectileSyncStream = new Dictionary<ulong, List<uint>>();
         public uint NextId { get; private set; } = 0;
         private List<Projectile> QueuedCloseProjectiles = new List<Projectile>();
         /// <summary>
         /// Delta for engine ticks; 60tps
         /// </summary>
-        private const float deltaTick = 1/60f;
+        private const float deltaTick = 1 / 60f;
         /// <summary>
         /// Delta for frames; varies
         /// </summary>
@@ -62,7 +56,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             {
                 //MyAPIGateway.Utilities.ShowMessage("Heart", $"Closing projectile {projectile.Id}. Age: {projectile.Age} ");
                 if (MyAPIGateway.Session.IsServer)
-                    SyncProjectile(projectile, 2);
+                    QueueSync(projectile, 2);
 
                 if (!MyAPIGateway.Utilities.IsDedicated)
                     projectile.CloseDrawing();
@@ -73,70 +67,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             QueuedCloseProjectiles.Clear();
 
             // Sync stuff
-            if (MyAPIGateway.Session.IsServer && MyAPIGateway.Multiplayer.MultiplayerActive)
-            {
-                List<IMyPlayer> players = new List<IMyPlayer>();
-                MyAPIGateway.Multiplayer.Players.GetPlayers(players);
-
-                foreach (var player in players) // Ensure that all players are being synced
-                {
-                    if (!ProjectileSyncStream.ContainsKey(player.SteamUserId))
-                    {
-                        ProjectileSyncStream.Add(player.SteamUserId, new List<uint>());
-                        MyLog.Default.WriteLineAndConsole($"Heart Module: Added player {player.SteamUserId}");
-                    }
-                }
-
-                foreach (ulong syncedPlayerSteamId in ProjectileSyncStream.Keys.ToList())
-                {
-                    bool remove = true;
-                    foreach (var player in players)
-                    {
-                        if (syncedPlayerSteamId == player.SteamUserId)
-                        {
-                            SyncPlayerProjectiles(player); // Sync individual players to lower network load
-                            remove = false;
-                        }
-                    }
-                    if (remove) // Remove disconnected players from sync list
-                    {
-                        ProjectileSyncStream.Remove(syncedPlayerSteamId);
-                        MyLog.Default.WriteLineAndConsole($"Heart Module: Removed player {syncedPlayerSteamId}");
-                    }
-                }
-            }
+            UpdateSync();
 
             DamageHandler.Update();
 
             clockTick.Restart();
-        }
-
-        private void SyncPlayerProjectiles(IMyPlayer player)
-        { // NOTE - BEAMS SHOULD NOT BE SYNCED ASIDE FROM ON SHOOT.
-            int numSyncs = 0;
-
-            for (int i = 0; i < MaxProjectilesSynced && i < ProjectileSyncStream[player.SteamUserId].Count; i++)
-            {
-                uint id = ProjectileSyncStream[player.SteamUserId][i];
-
-                if (ActiveProjectiles.ContainsKey(id))
-                {
-                    SyncProjectile(ActiveProjectiles[id], 1, player.SteamUserId);
-                    numSyncs++;
-                }
-            }
-
-            if (ProjectileSyncStream[player.SteamUserId].Count < MaxProjectilesSynced)
-            {
-                // Limits projectile syncing to within sync range. 
-                // Syncing is based off of character position for now, camera position may be wise in the future
-                ProjectileSyncStream[player.SteamUserId].Clear();
-                foreach (var projectile in ActiveProjectiles.Values)
-                    if (Vector3D.DistanceSquared(projectile.Position, player.GetPosition()) < HeartData.I.SyncRangeSq)
-                        ProjectileSyncStream[player.SteamUserId].Add(projectile.Id);
-            }
-            else
-                ProjectileSyncStream[player.SteamUserId].RemoveRange(0, MaxProjectilesSynced);
         }
 
         public override void UpdatingStopped()
@@ -167,7 +102,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 Projectile p = GetProjectile(projectile.Id);
                 if (p != null)
                     p.UpdateFromSerializable(projectile);
-                else
+                else if (projectile.IsActive)
                     HeartData.I.Net.SendToServer(new n_ProjectileRequest(projectile.Id));
             }
         }
@@ -191,7 +126,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 NextId++;
             projectile.SetId(NextId);
             ActiveProjectiles.Add(projectile.Id, projectile);
-            SyncProjectile(projectile, 0);
+            if (MyAPIGateway.Session.IsServer)
+                QueueSync(projectile, 0);
             if (!MyAPIGateway.Utilities.IsDedicated)
                 projectile.InitEffects();
         }
@@ -208,14 +144,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
 
             GetProjectile(HitscanList[sorterWep.EntityId])?.UpdateHitscan(position, direction);
-        }
-
-        public void SyncProjectile(Projectile projectile, int DetailLevel = 1, ulong PlayerSteamId = 0)
-        {
-            if (PlayerSteamId == 0)
-                HeartData.I.Net.SendToEveryone(projectile.AsSerializable(DetailLevel));
-            else
-                HeartData.I.Net.SendToPlayer(projectile.AsSerializable(DetailLevel), PlayerSteamId);
         }
 
         public Projectile GetProjectile(uint id) => ActiveProjectiles.GetValueOrDefault(id, null);
