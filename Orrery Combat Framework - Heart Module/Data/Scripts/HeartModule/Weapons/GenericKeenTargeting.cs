@@ -13,7 +13,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
     public class GenericKeenTargeting
     {
-        public MyEntity GetTarget(IMyCubeGrid grid, bool targetGrids, bool targetLargeGrids, bool targetSmallGrids, bool targetFriendlies, bool targetNeutrals, bool targetEnemies, bool targetUnowned)
+        public MyEntity GetTarget(IMyCubeGrid grid, bool targetGrids, bool targetLargeGrids, bool targetSmallGrids,
+                                  bool targetFriendlies, bool targetNeutrals, bool targetEnemies, bool targetUnowned)
         {
             if (grid == null)
             {
@@ -46,16 +47,28 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                             bool isLargeGrid = targetEntity is IMyCubeGrid && ((IMyCubeGrid)targetEntity).GridSizeEnum == VRage.Game.MyCubeSize.Large;
                             bool isSmallGrid = targetEntity is IMyCubeGrid && ((IMyCubeGrid)targetEntity).GridSizeEnum == VRage.Game.MyCubeSize.Small;
 
-                            if ((isLargeGrid && targetLargeGrids) || (isSmallGrid && targetSmallGrids) || !(targetEntity is IMyCubeGrid))
+                            if ((isLargeGrid && targetLargeGrids) || (isSmallGrid && targetSmallGrids))
                             {
                                 // Filter the target based on faction relationship
-                                return FilterTargetBasedOnFactionRelation(targetEntity, targetFriendlies, targetNeutrals, targetEnemies, targetUnowned);
+                                var filteredTarget = FilterTargetBasedOnFactionRelation(targetEntity, targetFriendlies, targetNeutrals, targetEnemies, targetUnowned);
+
+                                if (filteredTarget != null)
+                                {
+                                    MyAPIGateway.Utilities.ShowNotification("Target selected: " + filteredTarget.DisplayName, 1000 / 60, VRage.Game.MyFontEnum.Blue);
+                                }
+                                else
+                                {
+                                    MyAPIGateway.Utilities.ShowNotification("Target filtered out based on faction relationship", 1000 / 60, VRage.Game.MyFontEnum.Red);
+                                }
+
+                                return filteredTarget;
                             }
                         }
                     }
                 }
             }
 
+            MyAPIGateway.Utilities.ShowNotification("No valid target found", 1000 / 60, VRage.Game.MyFontEnum.Red);
             return null;
         }
 
@@ -78,9 +91,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                     return targetEntity;
                 }
             }
+
             return null;
         }
-
 
         private MyRelationsBetweenPlayerAndBlock GetRelationsToGrid(IMyCubeGrid grid)
         {
@@ -99,6 +112,4 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             return (MyRelationsBetweenPlayerAndBlock)relationInt; // Explicitly cast the int to MyRelationsBetweenPlayerAndBlock
         }
     }
-
 }
-
