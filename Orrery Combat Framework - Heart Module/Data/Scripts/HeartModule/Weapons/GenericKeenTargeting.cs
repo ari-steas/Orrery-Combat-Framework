@@ -49,7 +49,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
                             if ((isLargeGrid && targetLargeGrids) || (isSmallGrid && targetSmallGrids))
                             {
-                                // Pass the player parameter when calling the filtering method
+                                // Pass the grid owner parameter when calling the filtering method
                                 var filteredTarget = FilterTargetBasedOnFactionRelation(targetEntity, targetFriendlies, targetNeutrals, targetEnemies, targetUnowned);
 
                                 if (filteredTarget != null)
@@ -81,6 +81,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 bool isFriendly = relation == MyRelationsBetweenPlayerAndBlock.Friends;
                 bool isNeutral = relation == MyRelationsBetweenPlayerAndBlock.Neutral;
                 bool isEnemy = relation == MyRelationsBetweenPlayerAndBlock.Enemies;
+                bool isOwner = relation == MyRelationsBetweenPlayerAndBlock.Owner;
+                bool isFactionShare = relation == MyRelationsBetweenPlayerAndBlock.FactionShare;
+                bool isNoOwnership = relation == MyRelationsBetweenPlayerAndBlock.NoOwnership;
 
                 // Check if the grid has no owners
                 bool isUnowned = grid.BigOwners == null || (relation == MyRelationsBetweenPlayerAndBlock.NoOwnership || grid.BigOwners.Count == 0);
@@ -88,20 +91,23 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 // Display the faction relationship as a debug message
                 MyAPIGateway.Utilities.ShowNotification($"Faction Relation: {relation}", 1000 / 60, VRage.Game.MyFontEnum.White);
 
-                // Debug gridOwner value
-                long gridOwner = grid.BigOwners != null && grid.BigOwners.Count > 0 ? grid.BigOwners[0] : 0;
-                MyAPIGateway.Utilities.ShowNotification($"Grid Owner ID: {gridOwner}", 1000 / 60, VRage.Game.MyFontEnum.White);
-
-                // Check TryGetPlayerFaction
-                IMyFaction ownerFaction = gridOwner != 0 ? MyAPIGateway.Session.Factions.TryGetPlayerFaction(gridOwner) : null;
-                IMyFaction playerFaction = MyAPIGateway.Session.Factions.TryGetPlayerFaction(MyAPIGateway.Session.Player.IdentityId);
-                MyAPIGateway.Utilities.ShowNotification($"Player Faction: {playerFaction?.Tag}", 1000 / 60, VRage.Game.MyFontEnum.White);
-                MyAPIGateway.Utilities.ShowNotification($"Owner Faction: {ownerFaction?.Tag}", 1000 / 60, VRage.Game.MyFontEnum.White);
-
-                if ((isFriendly && targetFriendlies) ||
-                    (isNeutral && targetNeutrals) ||
-                    (isEnemy && targetEnemies) ||
-                    (isUnowned && targetUnowned))
+                if ((isFriendly || isFactionShare) && targetFriendlies) // Consider same faction and faction share as friendly
+                {
+                    return targetEntity;
+                }
+                else if (isNeutral && targetNeutrals)
+                {
+                    return targetEntity;
+                }
+                else if (isEnemy && targetEnemies)
+                {
+                    return targetEntity;
+                }
+                else if (isOwner && targetFriendlies) // Consider owner as friendly as well
+                {
+                    return targetEntity;
+                }
+                else if (isNoOwnership && targetUnowned)
                 {
                     return targetEntity;
                 }
@@ -118,29 +124,21 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             long gridOwner = grid.BigOwners[0];
 
             IMyFaction ownerFaction = gridOwner != 0 ? MyAPIGateway.Session.Factions.TryGetPlayerFaction(gridOwner) : null;
-            IMyFaction playerFaction = MyAPIGateway.Session.Factions.TryGetPlayerFaction(MyAPIGateway.Session.Player.IdentityId);
 
-            if (ownerFaction != null && playerFaction != null)
+            if (ownerFaction != null)
             {
-                // Use the GetRelationBetweenFactions method to get the relationship between factions
-                MyRelationsBetweenFactions relation = MyAPIGateway.Session.Factions.GetRelationBetweenFactions(ownerFaction.FactionId, playerFaction.FactionId);
+                IMyFaction playerFaction = MyAPIGateway.Session.Factions.TryGetPlayerFaction(MyAPIGateway.Session.Player.IdentityId);
 
-                switch (relation)
+                if (playerFaction != null)
                 {
-                    case MyRelationsBetweenFactions.Friends:
+                    if (ownerFaction.FactionId == playerFaction.FactionId)
                         return MyRelationsBetweenPlayerAndBlock.Friends;
-                    case MyRelationsBetweenFactions.Neutral:
-                        return MyRelationsBetweenPlayerAndBlock.Neutral;
-                    case MyRelationsBetweenFactions.Enemies:
+                    else
                         return MyRelationsBetweenPlayerAndBlock.Enemies;
-                    default:
-                        return MyRelationsBetweenPlayerAndBlock.Neutral; // Default to neutral if not allies or enemies
                 }
             }
-            else
-            {
-                return MyRelationsBetweenPlayerAndBlock.Neutral; // Treat as neutral if the owner has no faction or if the player has no faction
-            }
+
+            return MyRelationsBetweenPlayerAndBlock.NoOwnership; // Treat as unowned if the owner has no faction
         }
     }
 }
