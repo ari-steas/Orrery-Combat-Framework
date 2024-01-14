@@ -2,21 +2,19 @@
 using Sandbox.Game.EntityComponents;
 using Sandbox.ModAPI;
 using VRage.Game.ModAPI;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VRage.Game.Entity;
 using VRage.ModAPI;
+using VRage.Game;
+using Sandbox.Game;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
     public class GenericKeenTargeting
     {
-        //private MyEntity lastKnownTarget = null; //TODO fix this
-
-        public MyEntity GetTarget(IMyCubeGrid grid, bool targetGrids, bool targetLargeGrids, bool targetSmallGrids)
+        public MyEntity GetTarget(IMyCubeGrid grid, bool targetGrids, bool targetLargeGrids, bool targetSmallGrids,
+                                  bool targetFriendlies, bool targetNeutrals, bool targetEnemies, bool targetUnowned)
         {
             if (grid == null)
             {
@@ -44,22 +42,129 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                     if (targetLockingComponent != null && targetLockingComponent.IsTargetLocked)
                     {
                         var targetEntity = targetLockingComponent.TargetEntity;
-                        if (targetEntity != null && targetGrids) // Target grids must be enabled
+                        if (targetEntity != null && targetGrids)
                         {
                             bool isLargeGrid = targetEntity is IMyCubeGrid && ((IMyCubeGrid)targetEntity).GridSizeEnum == VRage.Game.MyCubeSize.Large;
                             bool isSmallGrid = targetEntity is IMyCubeGrid && ((IMyCubeGrid)targetEntity).GridSizeEnum == VRage.Game.MyCubeSize.Small;
 
-                            if ((isLargeGrid && targetLargeGrids) || (isSmallGrid && targetSmallGrids) || !(targetEntity is IMyCubeGrid))
+                            if ((isLargeGrid && targetLargeGrids) || (isSmallGrid && targetSmallGrids))
                             {
-                                //lastKnownTarget = targetEntity;
-                                return targetEntity;
+                                // Pass the grid owner parameter when calling the filtering method
+                                var filteredTarget = FilterTargetBasedOnFactionRelation(targetEntity, targetFriendlies, targetNeutrals, targetEnemies, targetUnowned);
+
+                                if (filteredTarget != null)
+                                {
+                                    MyAPIGateway.Utilities.ShowNotification("Target selected: " + filteredTarget.DisplayName, 1000 / 60, VRage.Game.MyFontEnum.Blue);
+                                }
+                                else
+                                {
+                                    MyAPIGateway.Utilities.ShowNotification("Target filtered out based on faction relationship", 1000 / 60, VRage.Game.MyFontEnum.Red);
+                                }
+
+                                return filteredTarget;
                             }
                         }
                     }
                 }
             }
 
+            MyAPIGateway.Utilities.ShowNotification("No valid target found", 1000 / 60, VRage.Game.MyFontEnum.Red);
             return null;
         }
+
+        private MyEntity FilterTargetBasedOnFactionRelation(MyEntity targetEntity, bool targetFriendlies, bool targetNeutrals, bool targetEnemies, bool targetUnowned)
+        {
+            IMyCubeGrid grid = targetEntity as IMyCubeGrid;
+            if (grid != null)
+            {
+                MyRelationsBetweenPlayerAndBlock relation = GetRelationsToGrid(grid);
+                bool isFriendly = relation == MyRelationsBetweenPlayerAndBlock.Friends;
+                bool isNeutral = relation == MyRelationsBetweenPlayerAndBlock.Neutral;
+                bool isEnemy = relation == MyRelationsBetweenPlayerAndBlock.Enemies;
+                bool isOwner = relation == MyRelationsBetweenPlayerAndBlock.Owner;
+                bool isFactionShare = relation == MyRelationsBetweenPlayerAndBlock.FactionShare;
+                bool isNoOwnership = relation == MyRelationsBetweenPlayerAndBlock.NoOwnership;
+
+                // Get reputation if the grid is owned
+                int reputation = 0;
+                if (grid.BigOwners.Count > 0)
+                {
+                    long gridOwner = grid.BigOwners[0];
+                    IMyFaction ownerFaction = MyAPIGateway.Session.Factions.TryGetPlayerFaction(gridOwner);
+                    if (ownerFaction != null)
+                    {
+                        reputation = MyAPIGateway.Session.Factions.GetReputationBetweenPlayerAndFaction(MyAPIGateway.Session.Player.IdentityId, ownerFaction.FactionId);
+                    }
+                }
+
+                // Special condition: Treat enemies with reputation above -500 as neutrals
+                if (isEnemy && reputation > -500)
+                {
+                    isNeutral = true;
+                    isEnemy = false;
+                }
+
+                // Display the faction relationship and reputation as a debug message
+                MyAPIGateway.Utilities.ShowNotification($"Faction Relation: {relation}, Reputation: {reputation}", 1000 / 60, VRage.Game.MyFontEnum.White);
+
+                if ((isFriendly || isFactionShare) && targetFriendlies) // Consider same faction and faction share as friendly
+                {
+                    return targetEntity;
+                }
+                else if (isNeutral && targetNeutrals)
+                {
+                    return targetEntity;
+                }
+                else if (isEnemy && targetEnemies)
+                {
+                    return targetEntity;
+                }
+                else if (isOwner && targetFriendlies) // Consider owner as friendly as well
+                {
+                    return targetEntity;
+                }
+                else if (isNoOwnership && targetUnowned)
+                {
+                    return targetEntity;
+                }
+            }
+
+            return null;
+        }
+
+
+        private MyRelationsBetweenPlayerAndBlock GetRelationsToGrid(IMyCubeGrid grid)
+        {
+            if (grid.BigOwners == null || grid.BigOwners.Count == 0)
+                return MyRelationsBetweenPlayerAndBlock.NoOwnership; // Unowned grid
+
+            long gridOwner = grid.BigOwners[0];
+
+            IMyFaction ownerFaction = gridOwner != 0 ? MyAPIGateway.Session.Factions.TryGetPlayerFaction(gridOwner) : null;
+
+            if (ownerFaction != null)
+            {
+                IMyFaction playerFaction = MyAPIGateway.Session.Factions.TryGetPlayerFaction(MyAPIGateway.Session.Player.IdentityId);
+
+                if (playerFaction != null)
+                {
+                    if (ownerFaction.FactionId == playerFaction.FactionId)
+                        return MyRelationsBetweenPlayerAndBlock.Friends;
+
+                    // Add reputation check here
+                    int reputation = MyAPIGateway.Session.Factions.GetReputationBetweenPlayerAndFaction(MyAPIGateway.Session.Player.IdentityId, ownerFaction.FactionId);
+                    if (reputation > -500)
+                        return MyRelationsBetweenPlayerAndBlock.Neutral;
+
+                    if (ownerFaction.IsNeutral(playerFaction.FactionId))
+                        return MyRelationsBetweenPlayerAndBlock.Neutral; // what the FUCK KEEN. WHY? FUCKING WHY?
+                    else
+                        return MyRelationsBetweenPlayerAndBlock.Enemies;
+                }
+            }
+
+            return MyRelationsBetweenPlayerAndBlock.NoOwnership; // Treat as unowned if the owner has no faction
+        }
+
     }
 }
