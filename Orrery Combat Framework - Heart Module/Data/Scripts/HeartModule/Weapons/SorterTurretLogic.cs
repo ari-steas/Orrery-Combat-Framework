@@ -64,6 +64,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public override void UpdateAfterSimulation()
         {
+            if (!SorterWep.IsWorking) // Don't turn if the turret is disabled
+                return;
+
             UpdateTargeting();
 
             base.UpdateAfterSimulation();
@@ -145,24 +148,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             IsTargetInRange = range < Definition.Targeting.MaxTargetingRange && range > Definition.Targeting.MinTargetingRange;
         }
 
-        const float GridCheckRange = 200;
-        private bool WillHitSelf()
-        {
-            List<IHitInfo> intersects = new List<IHitInfo>();
-            MyAPIGateway.Physics.CastRay(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * GridCheckRange, intersects);
-            foreach (var intersect in intersects)
-                if (intersect.HitEntity.EntityId == SorterWep.CubeGrid.EntityId)
-                    return true;
-            return false;
-        }
-
         public override void TryShoot()
         {
-            AutoShoot = IsTargetAligned && IsTargetInRange && !WillHitSelf();
+            AutoShoot = Definition.Targeting.CanAutoShoot && IsTargetAligned && IsTargetInRange;
             base.TryShoot();
         }
 
-        public override MatrixD CalcMuzzleMatrix()
+        public override MatrixD CalcMuzzleMatrix(bool local = false)
         {
             try
             {
@@ -175,6 +167,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 MatrixD partMatrix = evSubpart.WorldMatrix;
                 Matrix muzzleMatrix = dummies[Definition.Assignments.Muzzles[0]].Matrix;
 
+                if (local)
+                {
+                    return muzzleMatrix * evSubpart.PositionComp.LocalMatrixRef * azSubpart.PositionComp.LocalMatrixRef;
+                }
+
                 if (muzzleMatrix != null)
                     return muzzleMatrix * partMatrix;
             }
@@ -184,6 +181,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public void UpdateTurretSubparts(float delta, Vector3D aimpoint)
         {
+            if (!Definition.Hardpoint.ControlRotation)
+                return;
+
             MyEntitySubpart azimuth = HeartData.I.SubpartManager.GetSubpart((MyEntity)SorterWep, Definition.Assignments.AzimuthSubpart);
             MyEntitySubpart elevation = HeartData.I.SubpartManager.GetSubpart(azimuth, Definition.Assignments.ElevationSubpart);
 

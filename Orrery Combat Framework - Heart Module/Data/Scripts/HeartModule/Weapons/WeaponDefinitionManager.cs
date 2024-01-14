@@ -53,17 +53,32 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 MagsToLoad = 1,
                 DelayUntilFire = 0,
             },
+            Audio = new Audio()
+            {
+                PreShootSound = "",
+                ShootSound = "",
+                ReloadSound = "",
+                RotationSound = "",
+            },
+            Visuals = new Visuals()
+            {
+                ShootParticle = "Muzzle_Flash_Autocannon",
+                ContinuousShootParticle = false,
+                ReloadParticle = "",
+            },
         };
 
         private static SerializableWeaponDefinition TurretDefinition = new SerializableWeaponDefinition()
         {
             Targeting = new Targeting()
             {
-                MinTargetingRange = 0,
                 MaxTargetingRange = 1000,
+                MinTargetingRange = 0,
                 CanAutoShoot = true,
                 RetargetTime = -1,
                 AimTolerance = 0.0175f,
+                IFF = Targeting.IFF_Enum.TargetEnemies,
+                TargetTypes = Targeting.TargetType_Enum.TargetGrids | Targeting.TargetType_Enum.TargetProjectiles | Targeting.TargetType_Enum.TargetCharacters
             },
             Assignments = new Assignments()
             {
@@ -88,7 +103,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 MinElevation = (float)-Math.PI,
                 HomeAzimuth = 0,
                 HomeElevation = (float) Math.PI / 4,
-                IdlePower = 0,
+                IdlePower = 10,
                 ShotInaccuracy = 0.0025f,
                 LineOfSightCheck = true,
                 ControlRotation = true,
@@ -102,12 +117,19 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 MagsToLoad = 1,
                 DelayUntilFire = 0,
             },
+            Audio = new Audio()
+            {
+                PreShootSound = "",
+                ShootSound = "",
+                ReloadSound = "",
+                RotationSound = "",
+            },
             Visuals = new Visuals()
             {
-                ShootParticle = "",//"BlockDestroyedExplosion_Small",
+                ShootParticle = "Muzzle_Flash_Autocannon",
                 ContinuousShootParticle = false,
                 ReloadParticle = "",
-    },
+            },
         };
 
         // this is after the definitions because FUCKING STATICS ARE THE WORK OF THE DEVIL
