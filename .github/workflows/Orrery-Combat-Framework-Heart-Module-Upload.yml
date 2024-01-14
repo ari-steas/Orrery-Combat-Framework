@@ -1,9 +1,9 @@
-name: "Upload Orrery-Combat-Framework"
+name: "Upload Orrery Combat Framework - Heart Module"
 
 on:
   push:
     paths:
-      - "Orrery-Combat-Framework/**"
+      - "Orrery Combat Framework - Heart Module/**"
 
 jobs:
   upload:
@@ -14,7 +14,7 @@ jobs:
         with:
           appID: 244850
           publishedFileID: 3130655435
-          path: "Orrery-Combat-Framework"
+          path: "Orrery Combat Framework - Heart Module"
           changelog: ${{ github.event.head_commit.message }}             
         env:
           STEAM_ACCOUNT_NAME: ${{ secrets.accountname }}
