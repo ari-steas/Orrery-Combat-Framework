@@ -50,7 +50,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 BarrelsPerShot = 1,
                 ProjectilesPerBarrel = 10,
                 ReloadTime = 0,
-                MagsToLoad = 1,
                 DelayUntilFire = 0,
             },
             Audio = new Audio()
@@ -91,6 +90,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 Muzzles = new string[]
                 {
                     "muzzle01",
+                    "muzzle02",
                 },
             },
             Hardpoint = new Hardpoint()
@@ -114,7 +114,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 BarrelsPerShot = 1,
                 ProjectilesPerBarrel = 1,
                 ReloadTime = 0,
-                MagsToLoad = 1,
                 DelayUntilFire = 0,
             },
             Audio = new Audio()

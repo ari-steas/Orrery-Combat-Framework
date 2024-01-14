@@ -62,7 +62,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
     public struct Assignments
     {
         [ProtoMember(1)] public string BlockSubtype;
-        [ProtoMember(2)] public string MuzzleSubpart; // TODO allow recursion
+        [ProtoMember(2)] public string MuzzleSubpart;
         [ProtoMember(3)] public string ElevationSubpart;
         [ProtoMember(4)] public string AzimuthSubpart;
         [ProtoMember(5)] public float DurabilityModifier;
@@ -102,11 +102,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
     {
         [ProtoMember(1)] public int RateOfFire; // Shots per second
         [ProtoMember(2)] public int BarrelsPerShot; // TODO
-        [ProtoMember(3)] public int ProjectilesPerBarrel; // TODO
+        [ProtoMember(3)] public int ProjectilesPerBarrel;
         [ProtoMember(4)] public float ReloadTime; // Seconds // TODO
-        [ProtoMember(5)] public int MagsToLoad; // TODO
-        [ProtoMember(6)] public float DelayUntilFire; // Seconds // TODO
-        [ProtoMember(7)] public Resource[] Resources; // TODO
+        [ProtoMember(5)] public float DelayUntilFire; // Seconds // TODO
+        [ProtoMember(6)] public Resource[] Resources; // TODO
 
         [ProtoContract]
         public struct Resource // TODO

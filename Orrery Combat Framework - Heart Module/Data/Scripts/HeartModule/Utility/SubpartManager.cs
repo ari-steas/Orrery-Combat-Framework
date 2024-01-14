@@ -48,6 +48,21 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
             return CachedSubparts[entity][name];
         }
 
+        /// <summary>
+        /// Recursively find subparts.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public MyEntitySubpart RecursiveGetSubpart(IMyEntity entity, string name)
+        {
+            MyEntitySubpart desiredSubpart = GetSubpart(entity, name);
+            if (desiredSubpart == null)
+                foreach (var subpart in ((MyEntity)entity).Subparts.Values)
+                    return RecursiveGetSubpart(subpart, name);
+            return desiredSubpart;
+        }
+
         public string[] GetAllSubparts(IMyEntity entity)
         {
             return ((MyEntity)entity).Subparts.Keys.ToArray();
