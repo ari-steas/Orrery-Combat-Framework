@@ -3,6 +3,8 @@ using Heart_Module.Data.Scripts.HeartModule.Network;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Sandbox.ModAPI;
 using System;
+using System.Collections.Generic;
+using VRage.Game.ModAPI;
 
 namespace Heart_Module.Data.Scripts.HeartModule
 {
@@ -19,5 +21,13 @@ namespace Heart_Module.Data.Scripts.HeartModule
         public int SyncRangeSq = MyAPIGateway.Session.SessionSettings.SyncDistance * MyAPIGateway.Session.SessionSettings.SyncDistance;
         public Random Random = new Random();
         public ulong SteamId = 0;
+        public List<IMyPlayer> Players = new List<IMyPlayer>();
+        public IMyPlayer GetPlayerFromSteamId(ulong id)
+        {
+            foreach (var player in Players)
+                if (player.SteamUserId == id)
+                    return player;
+            return null;
+        }
     }
 }

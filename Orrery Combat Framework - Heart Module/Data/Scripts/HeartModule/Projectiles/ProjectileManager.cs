@@ -18,7 +18,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         public static ProjectileManager I = new ProjectileManager();
 
         private Dictionary<uint, Projectile> ActiveProjectiles = new Dictionary<uint, Projectile>();
-        private Dictionary<ulong, List<uint>> ProjectileSyncStream = new Dictionary<ulong, List<uint>>();
         public uint NextId { get; private set; } = 0;
         private List<Projectile> QueuedCloseProjectiles = new List<Projectile>();
         /// <summary>
@@ -107,7 +106,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 Projectile p = GetProjectile(projectile.Id);
                 if (p != null)
                     p.UpdateFromSerializable(projectile);
-                else
+                else if (projectile.IsActive)
                     HeartData.I.Net.SendToServer(new n_ProjectileRequest(projectile.Id));
             }
         }

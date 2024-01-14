@@ -262,8 +262,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public void QueueDispose()
         {
-            if (MyAPIGateway.Session.IsServer)
-                QueuedDispose = true;
+            QueuedDispose = true;
         }
 
         public void SetId(uint id)

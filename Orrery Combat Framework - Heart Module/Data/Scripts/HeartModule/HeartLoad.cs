@@ -59,6 +59,9 @@ namespace Heart_Module.Data.Scripts.HeartModule
                     HeartData.I.SteamId = MyAPIGateway.Session?.Player?.SteamUserId ?? 0;
 
                 HeartData.I.Net.Update();
+
+                if (MyAPIGateway.Session.IsServer)
+                    MyAPIGateway.Multiplayer.Players.GetPlayers(HeartData.I.Players);
             }
             catch (Exception ex)
             {
