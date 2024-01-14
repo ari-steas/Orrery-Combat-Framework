@@ -23,8 +23,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
     //[MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeaponTurret")]
     public partial class SorterTurretLogic : SorterWeaponLogic
     {
-        public MySync<float, SyncDirection.FromServer> AzimuthSync;
-        public MySync<float, SyncDirection.FromServer> ElevationSync;
+        public MySync<float, SyncDirection.FromServer> Azimuth;
+        public MySync<float, SyncDirection.FromServer> Elevation;
 
         /// <summary>
         /// Delta for engine ticks; 60tps
@@ -41,22 +41,24 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             base.Init(objectBuilder);
 
-            AzimuthSync.ValueChanged += OnAzimuthChanged;
-            ElevationSync.ValueChanged += OnElevationChanged;
+            Azimuth.ValueChanged += OnAzimuthChanged;
+            Elevation.ValueChanged += OnElevationChanged;
+            Azimuth.Value = (float)Math.PI; // defaults
+            Elevation.Value = 0;
         }
 
 
         private void OnAzimuthChanged(MySync<float, SyncDirection.FromServer> obj)
         {
             // Handle the change in azimuth
-            Azimuth = obj.Value;
+            //Azimuth = obj.Value;
             // Additional logic to apply azimuth changes, if needed
         }
 
         private void OnElevationChanged(MySync<float, SyncDirection.FromServer> obj)
         {
             // Handle the change in elevation
-            Elevation = obj.Value;
+            //Elevation = obj.Value;
             // Additional logic to apply elevation changes, if needed
         }
 
@@ -214,8 +216,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(vecToTarget, delta));
         }
             
-        float Azimuth = (float) Math.PI;
-        float Elevation = 0;
+        //float Azimuth = (float) Math.PI;
+        //float Elevation = 0;
 
         private Matrix GetAzimuthMatrix(Vector3D targetDirection, float delta)
         {
@@ -230,9 +232,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             desiredAzimuth = LimitRotationSpeed(Azimuth, desiredAzimuth, Definition.Hardpoint.AzimuthRate * delta);
 
             if (!Definition.Hardpoint.CanRotateFull)
-                Azimuth = (float) Clamp(desiredAzimuth, Definition.Hardpoint.MinAzimuth, Definition.Hardpoint.MaxAzimuth); // Basic angle clamp
+                Azimuth.Value = (float) Clamp(desiredAzimuth, Definition.Hardpoint.MinAzimuth, Definition.Hardpoint.MaxAzimuth); // Basic angle clamp
             else
-                Azimuth = (float) NormalizeAngle(desiredAzimuth); // Adjust rotation to (-180, 180), but don't have any limits
+                Azimuth.Value = (float) NormalizeAngle(desiredAzimuth); // Adjust rotation to (-180, 180), but don't have any limits
 
             //MyAPIGateway.Utilities.ShowNotification("AZ: " + Math.Round(MathHelper.ToDegrees(Azimuth)), 1000/60);
             return Matrix.CreateFromYawPitchRoll(Azimuth, 0, 0);
@@ -250,9 +252,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             desiredElevation = LimitRotationSpeed(Elevation, desiredElevation, Definition.Hardpoint.ElevationRate * delta);
             if (!Definition.Hardpoint.CanElevateFull)
-                Elevation = (float) -Clamp(-desiredElevation, Definition.Hardpoint.MinElevation, Definition.Hardpoint.MaxElevation);
+                Elevation.Value = (float) -Clamp(-desiredElevation, Definition.Hardpoint.MinElevation, Definition.Hardpoint.MaxElevation);
             else
-                Elevation = (float) NormalizeAngle(desiredElevation);
+                Elevation.Value = (float) NormalizeAngle(desiredElevation);
             return Matrix.CreateFromYawPitchRoll(0, Elevation, 0);
         }
 
