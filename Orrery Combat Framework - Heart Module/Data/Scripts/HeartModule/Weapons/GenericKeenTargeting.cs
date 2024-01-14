@@ -9,6 +9,7 @@ using VRage.Game;
 using Sandbox.Game;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 
+
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
     public class GenericKeenTargeting
@@ -49,7 +50,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
                             if ((isLargeGrid && targetLargeGrids) || (isSmallGrid && targetSmallGrids))
                             {
-                                // Filter the target based on faction relationship
+                                // Pass the player parameter when calling the filtering method
                                 var filteredTarget = FilterTargetBasedOnFactionRelation(targetEntity, targetFriendlies, targetNeutrals, targetEnemies, targetUnowned);
 
                                 if (filteredTarget != null)
@@ -72,16 +73,19 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             return null;
         }
 
-        private MyEntity FilterTargetBasedOnFactionRelation(MyEntity targetEntity, bool targetFriendlies, bool targetNeutrals, bool targetEnemies, bool targetUnowned)
+        private MyEntity FilterTargetBasedOnFactionRelation(MyEntity targetEntity, bool targetFriendlies, bool targetNeutrals, bool targetEnemies, bool targetUnowned, IMyPlayer player = null)
         {
             IMyCubeGrid grid = targetEntity as IMyCubeGrid;
             if (grid != null)
             {
-                MyRelationsBetweenPlayerAndBlock relation = GetRelationsToGrid(grid);
-                bool isFriendly = relation == MyRelationsBetweenPlayerAndBlock.Friends || relation == MyRelationsBetweenPlayerAndBlock.FactionShare;
-                bool isNeutral = relation == MyRelationsBetweenPlayerAndBlock.NoOwnership || relation == MyRelationsBetweenPlayerAndBlock.Neutral;
+                MyRelationsBetweenPlayerAndBlock relation = GetRelationsToGrid(grid, player);
+                bool isFriendly = relation == MyRelationsBetweenPlayerAndBlock.Friends;
+                bool isNeutral = relation == MyRelationsBetweenPlayerAndBlock.Neutral;
                 bool isEnemy = relation == MyRelationsBetweenPlayerAndBlock.Enemies;
-                bool isUnowned = grid.BigOwners.Count == 0;
+                bool isUnowned = relation == MyRelationsBetweenPlayerAndBlock.NoOwnership || grid.BigOwners.Count == 0;
+
+                // Display the faction relationship as a debug message
+                MyAPIGateway.Utilities.ShowNotification($"Faction Relation: {relation}", 1000 / 60, VRage.Game.MyFontEnum.White);
 
                 if ((isFriendly && targetFriendlies) ||
                     (isNeutral && targetNeutrals) ||
@@ -95,21 +99,38 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             return null;
         }
 
-        private MyRelationsBetweenPlayerAndBlock GetRelationsToGrid(IMyCubeGrid grid)
+
+
+        private MyRelationsBetweenPlayerAndBlock GetRelationsToGrid(IMyCubeGrid grid, IMyPlayer player)
         {
             if (grid.BigOwners.Count == 0)
                 return MyRelationsBetweenPlayerAndBlock.NoOwnership; // Unowned grid
 
-            long playerId = MyAPIGateway.Session.Player?.IdentityId ?? 0;
+            long playerId = player?.IdentityId ?? 0;
             long gridOwner = grid.BigOwners[0];
+
+            if (playerId == gridOwner)
+                return MyRelationsBetweenPlayerAndBlock.Owner;
 
             IMyFaction ownerFaction = MyAPIGateway.Session.Factions.TryGetPlayerFaction(gridOwner);
             if (ownerFaction == null)
-                return MyRelationsBetweenPlayerAndBlock.NoOwnership; // No faction, treat as unowned
+                return MyRelationsBetweenPlayerAndBlock.Neutral; // No faction, treat as neutral
 
-            // Get the relationship status using the faction tag
-            int relationInt = MyVisualScriptLogicProvider.GetRelationBetweenPlayerAndFaction(playerId, ownerFaction.Tag);
-            return (MyRelationsBetweenPlayerAndBlock)relationInt; // Explicitly cast the int to MyRelationsBetweenPlayerAndBlock
+            // Check if the player is a friend or enemy of the faction
+            if (ownerFaction.IsFriendly(playerId))
+            {
+                return MyRelationsBetweenPlayerAndBlock.Friends;
+            }
+            else if (ownerFaction.IsEnemy(playerId))
+            {
+                return MyRelationsBetweenPlayerAndBlock.Enemies;
+            }
+            else
+            {
+                return MyRelationsBetweenPlayerAndBlock.Neutral;
+            }
         }
+
+
     }
 }

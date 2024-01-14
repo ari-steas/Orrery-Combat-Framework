@@ -81,11 +81,21 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 Terminal_Heart_TargetGrids,
                 Terminal_Heart_TargetLargeGrids,
                 Terminal_Heart_TargetSmallGrids,
-                Terminal_Heart_TargetFriendlies, 
-                Terminal_Heart_TargetNeutrals,   
-                Terminal_Heart_TargetEnemies,    
-                Terminal_Heart_TargetUnowned     
+                Terminal_Heart_TargetFriendlies,
+                Terminal_Heart_TargetNeutrals,
+                Terminal_Heart_TargetEnemies,
+                Terminal_Heart_TargetUnowned
             );
+
+            // Debug Info: Display whether a potential target is found
+            if (potentialTarget != null)
+            {
+                MyAPIGateway.Utilities.ShowNotification("Potential Target Found", 1000 / 60, VRage.Game.MyFontEnum.Green);
+            }
+            else
+            {
+                MyAPIGateway.Utilities.ShowNotification("No Potential Target", 1000 / 60, VRage.Game.MyFontEnum.Red);
+            }
 
             // Check if the potential target is different from the current target
             if (currentTarget != potentialTarget)
