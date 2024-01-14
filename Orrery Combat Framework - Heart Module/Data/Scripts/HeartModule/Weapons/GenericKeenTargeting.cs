@@ -141,30 +141,33 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             long gridOwner = grid.BigOwners[0];
 
             IMyFaction ownerFaction = gridOwner != 0 ? MyAPIGateway.Session.Factions.TryGetPlayerFaction(gridOwner) : null;
+            IMyFaction playerFaction = MyAPIGateway.Session.Factions.TryGetPlayerFaction(MyAPIGateway.Session.Player.IdentityId);
 
-            if (ownerFaction != null)
+            // Check if player is not in any faction
+            if (playerFaction == null)
             {
-                IMyFaction playerFaction = MyAPIGateway.Session.Factions.TryGetPlayerFaction(MyAPIGateway.Session.Player.IdentityId);
+                // If player is not in a faction, determine the relation based on grid ownership
+                return gridOwner == MyAPIGateway.Session.Player.IdentityId ? MyRelationsBetweenPlayerAndBlock.Owner : MyRelationsBetweenPlayerAndBlock.Enemies; // Example logic
+            }
 
-                if (playerFaction != null)
-                {
-                    if (ownerFaction.FactionId == playerFaction.FactionId)
-                        return MyRelationsBetweenPlayerAndBlock.Friends;
+            if (ownerFaction != null && playerFaction != null)
+            {
+                if (ownerFaction.FactionId == playerFaction.FactionId)
+                    return MyRelationsBetweenPlayerAndBlock.Friends;
 
-                    // Add reputation check here
-                    int reputation = MyAPIGateway.Session.Factions.GetReputationBetweenPlayerAndFaction(MyAPIGateway.Session.Player.IdentityId, ownerFaction.FactionId);
-                    if (reputation > -500)
-                        return MyRelationsBetweenPlayerAndBlock.Neutral;
+                int reputation = MyAPIGateway.Session.Factions.GetReputationBetweenPlayerAndFaction(MyAPIGateway.Session.Player.IdentityId, ownerFaction.FactionId);
+                if (reputation > -500)
+                    return MyRelationsBetweenPlayerAndBlock.Neutral;
 
-                    if (ownerFaction.IsNeutral(playerFaction.FactionId))
-                        return MyRelationsBetweenPlayerAndBlock.Neutral; // what the FUCK KEEN. WHY? FUCKING WHY?
-                    else
-                        return MyRelationsBetweenPlayerAndBlock.Enemies;
-                }
+                if (ownerFaction.IsNeutral(playerFaction.FactionId))
+                    return MyRelationsBetweenPlayerAndBlock.Neutral;
+                else
+                    return MyRelationsBetweenPlayerAndBlock.Enemies;
             }
 
             return MyRelationsBetweenPlayerAndBlock.NoOwnership; // Treat as unowned if the owner has no faction
         }
+
 
     }
 }
