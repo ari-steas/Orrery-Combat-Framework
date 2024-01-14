@@ -133,6 +133,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 {
                     if (ownerFaction.FactionId == playerFaction.FactionId)
                         return MyRelationsBetweenPlayerAndBlock.Friends;
+                    else if (ownerFaction.IsNeutral(playerFaction.FactionId))
+                        return MyRelationsBetweenPlayerAndBlock.Neutral;
                     else
                         return MyRelationsBetweenPlayerAndBlock.Enemies;
                 }
