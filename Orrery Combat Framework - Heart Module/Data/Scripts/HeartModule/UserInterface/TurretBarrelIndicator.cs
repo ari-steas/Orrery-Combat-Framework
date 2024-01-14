@@ -35,31 +35,35 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface
 
         public override void PerWeaponUpdate(SorterWeaponLogic weapon)
         {
-            if (!weapon.SorterWep.IsWorking)
-                return;
-
-            double dist = viewDist;
-            MyStringId texture;
-            Vector4 color;
-
-            if (weapon is SorterTurretLogic)
+            try // TODO: Fix error that occurs here
             {
-                SorterTurretLogic turret = (SorterTurretLogic) weapon;
-                if (turret.AimPoint != Vector3D.MaxValue)
-                    dist = Vector3D.Distance(turret.AimPoint, turret.MuzzleMatrix.Translation);
-                texture = TurretMaterial;
-                color = TurretColor;
-            }
-            else
-            {
-                texture = FixedMaterial;
-                color = FixedColor;
-            }
+                if (!weapon.SorterWep.IsWorking)
+                    return;
 
-            Vector3D progradeCtr = weapon.MuzzleMatrix.Translation + (weapon.MuzzleMatrix.Forward * dist);
-            float adjSymbolHeight = (float) dist / (40f / 70f * MyAPIGateway.Session.Camera.FieldOfViewAngle);
-            var progradeTop = progradeCtr + MyAPIGateway.Session.Camera.WorldMatrix.Up * adjSymbolHeight;
-            MySimpleObjectDraw.DrawLine(progradeTop, progradeTop - MyAPIGateway.Session.Camera.WorldMatrix.Up * adjSymbolHeight * 2, texture, ref color, adjSymbolHeight, MyBillboard.BlendTypeEnum.AdditiveTop); // Based on BDCarrillo's Flight Vector mod
+                double dist = viewDist;
+                MyStringId texture;
+                Vector4 color;
+
+                if (weapon is SorterTurretLogic)
+                {
+                    SorterTurretLogic turret = (SorterTurretLogic)weapon;
+                    if (turret.AimPoint != Vector3D.MaxValue)
+                        dist = Vector3D.Distance(turret.AimPoint, turret.MuzzleMatrix.Translation);
+                    texture = TurretMaterial;
+                    color = TurretColor;
+                }
+                else
+                {
+                    texture = FixedMaterial;
+                    color = FixedColor;
+                }
+
+                Vector3D progradeCtr = weapon.MuzzleMatrix.Translation + (weapon.MuzzleMatrix.Forward * dist);
+                float adjSymbolHeight = (float)dist / (40f / 70f * MyAPIGateway.Session.Camera.FieldOfViewAngle);
+                var progradeTop = progradeCtr + MyAPIGateway.Session.Camera.WorldMatrix.Up * adjSymbolHeight;
+                MySimpleObjectDraw.DrawLine(progradeTop, progradeTop - MyAPIGateway.Session.Camera.WorldMatrix.Up * adjSymbolHeight * 2, texture, ref color, adjSymbolHeight, MyBillboard.BlendTypeEnum.AdditiveTop); // Based on BDCarrillo's Flight Vector mod
+            }
+            catch { }
         }
     }
 }

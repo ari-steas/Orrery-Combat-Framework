@@ -128,9 +128,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                     currentTarget, 0) ?? Vector3D.MaxValue;
 
                 UpdateTurretSubparts(deltaTick, AimPoint); // Rotate the turret
-
-                // Update IsTargetAligned and IsTargetInRange
-                UpdateTargetState(currentTarget, AimPoint);
             }
             else
             {
