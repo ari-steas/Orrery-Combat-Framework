@@ -31,6 +31,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         /// </summary>
         private Stopwatch clockTick = Stopwatch.StartNew();
 
+        public int NumProjectiles => ActiveProjectiles.Count;
+
         public override void LoadData()
         {
             I = this;
@@ -102,10 +104,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                         MyLog.Default.WriteLineAndConsole($"Heart Module: Removed player {syncedPlayerSteamId}");
                     }
                 }
-            }
-            else
-            {
-                MyAPIGateway.Utilities.ShowNotification("Projectiles: " + ActiveProjectiles.Count, 1000 / 60);
             }
 
             DamageHandler.Update();

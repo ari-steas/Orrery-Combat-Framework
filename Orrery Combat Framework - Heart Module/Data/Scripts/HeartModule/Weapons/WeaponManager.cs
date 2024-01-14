@@ -81,14 +81,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             SerializableWeaponDefinition def = WeaponDefinitionManager.GetDefinition(sorter.BlockDefinition.SubtypeName);
             SorterWeaponLogic logic;
-            if (def.Assignments.IsTurret)
-                logic = new SorterTurretLogic(sorter, def);
-            else
-                logic = new SorterWeaponLogic(sorter, def);
 
-            NextId++;
             while (!IsIdAvailable(NextId))
                 NextId++;
+
+            if (def.Assignments.IsTurret)
+                logic = new SorterTurretLogic(sorter, def, NextId);
+            else
+                logic = new SorterWeaponLogic(sorter, def, NextId);
 
             ActiveWeapons.Add(NextId, logic);
             GridWeapons[sorter.CubeGrid].Add(logic); // Add to grid list

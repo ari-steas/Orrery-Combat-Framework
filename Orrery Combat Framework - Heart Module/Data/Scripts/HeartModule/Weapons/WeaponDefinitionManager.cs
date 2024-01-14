@@ -100,7 +100,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 MaxAzimuth = (float)Math.PI,
                 MinAzimuth = (float)-Math.PI,
                 MaxElevation = (float)Math.PI,
-                MinElevation = (float)-Math.PI,
+                MinElevation = -0.1745f,
                 HomeAzimuth = 0,
                 HomeElevation = (float) Math.PI / 4,
                 IdlePower = 10,
@@ -113,8 +113,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 RateOfFire = 10,
                 BarrelsPerShot = 1,
                 ProjectilesPerBarrel = 1,
-                ReloadTime = 0,
+                ReloadTime = 2,
                 DelayUntilFire = 0,
+
+                MaxReloads = -1,
             },
             Audio = new Audio()
             {

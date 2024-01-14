@@ -18,7 +18,7 @@ using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 namespace Heart_Module.Data.Scripts.HeartModule.UserInterface
 {
     [MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation)]
-    public class TurretBarrelIndicator : MySessionComponentBase
+    internal class TurretBarrelIndicator : GridBasedIndicator_Base
     {
         // TODO: Add global setting for indicator visibility
 
@@ -33,23 +33,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface
             viewDist = MyAPIGateway.Multiplayer.MultiplayerActive ? MyAPIGateway.Session.SessionSettings.SyncDistance : MyAPIGateway.Session.SessionSettings.ViewDistance;
         }
 
-        public override void UpdateAfterSimulation()
-        {
-            if (MyAPIGateway.Utilities.IsDedicated)
-                return;
-
-            IMyEntity controlledEntity = MyAPIGateway.Session.Player?.Controller?.ControlledEntity?.Entity?.GetTopMostParent(); // Get the currently controlled grid.
-            if (!(controlledEntity is IMyCubeGrid))
-                return;
-            IMyCubeGrid controlledGrid = (IMyCubeGrid) controlledEntity; // TODO: Make work on subparts
-
-            MyAPIGateway.Utilities.ShowNotification("Weapons: " + (WeaponManager.I.GridWeapons[controlledGrid]?.Count), 1000/60);
-
-            foreach (var gridWeapon in WeaponManager.I.GridWeapons[controlledGrid])
-                UpdateIndicator(gridWeapon);
-        }
-
-        public void UpdateIndicator(SorterWeaponLogic weapon)
+        public override void PerWeaponUpdate(SorterWeaponLogic weapon)
         {
             if (!weapon.SorterWep.IsWorking)
                 return;
@@ -75,7 +59,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface
             Vector3D progradeCtr = weapon.MuzzleMatrix.Translation + (weapon.MuzzleMatrix.Forward * dist);
             float adjSymbolHeight = (float) dist / (40f / 70f * MyAPIGateway.Session.Camera.FieldOfViewAngle);
             var progradeTop = progradeCtr + MyAPIGateway.Session.Camera.WorldMatrix.Up * adjSymbolHeight;
-            MySimpleObjectDraw.DrawLine(progradeTop, progradeTop - MyAPIGateway.Session.Camera.WorldMatrix.Up * adjSymbolHeight * 2, texture, ref color, adjSymbolHeight, MyBillboard.BlendTypeEnum.AdditiveTop);
+            MySimpleObjectDraw.DrawLine(progradeTop, progradeTop - MyAPIGateway.Session.Camera.WorldMatrix.Up * adjSymbolHeight * 2, texture, ref color, adjSymbolHeight, MyBillboard.BlendTypeEnum.AdditiveTop); // Based on BDCarrillo's Flight Vector mod
         }
     }
 }

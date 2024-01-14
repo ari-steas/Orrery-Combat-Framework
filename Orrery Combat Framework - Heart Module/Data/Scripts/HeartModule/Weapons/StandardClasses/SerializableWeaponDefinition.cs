@@ -101,11 +101,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
     public struct Loading
     {
         [ProtoMember(1)] public int RateOfFire; // Shots per second
-        [ProtoMember(2)] public int BarrelsPerShot; // TODO
+        [ProtoMember(2)] public int BarrelsPerShot;
         [ProtoMember(3)] public int ProjectilesPerBarrel;
-        [ProtoMember(4)] public float ReloadTime; // Seconds // TODO
-        [ProtoMember(5)] public float DelayUntilFire; // Seconds // TODO
-        [ProtoMember(6)] public Resource[] Resources; // TODO
+        [ProtoMember(4)] public float ReloadTime; // Seconds
+        [ProtoMember(6)] public int MagazinesToLoad; // Like an autoloader clip.
+        /// <summary>
+        /// The maximum number of times the gun can reload.
+        /// </summary>
+        [ProtoMember(7)] public int MaxReloads;
+        [ProtoMember(8)] public float DelayUntilFire; // Seconds // TODO
+        [ProtoMember(9)] public Resource[] Resources; // TODO
 
         [ProtoContract]
         public struct Resource // TODO
