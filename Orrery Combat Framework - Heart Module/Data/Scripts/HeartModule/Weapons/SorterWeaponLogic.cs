@@ -47,6 +47,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public readonly Heart_Settings Settings = new Heart_Settings();
 
+        public WeaponLogic_Magazines Magazines;
+
         //the state of shoot
         bool shoot = false;
 
@@ -59,6 +61,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             sorterWeapon.GameLogic = this;
             Init(sorterWeapon.GetObjectBuilder());
             this.Definition = definition;
+            Magazines = new WeaponLogic_Magazines(definition.Loading);
         }
 
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
@@ -222,6 +225,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public override void UpdateAfterSimulation()
         {
             MuzzleMatrix = CalcMuzzleMatrix(0); // Set stored MuzzleMatrix
+            Magazines.UpdateReload();
 
             if (!SorterWep.IsWorking) // Don't try shoot if the turret is disabled
                 return;
@@ -254,7 +258,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (lastShoot < 60)
                 lastShoot += Definition.Loading.RateOfFire;
 
-            if ((ShootState.Value || AutoShoot) && lastShoot >= 60 && HasLineOfSight())
+            if ((ShootState.Value || AutoShoot) && Magazines.IsLoaded && lastShoot >= 60 && HasLineOfSight())
             {
                 int barrelIndex = 0;
                 for (int i = nextBarrel; i < Definition.Loading.BarrelsPerShot + nextBarrel; i++)
@@ -284,6 +288,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     }
                 }
                 nextBarrel = barrelIndex + 1;
+                Magazines.UseShot();
             }
         }
 
