@@ -20,7 +20,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             // Sync to everyone if player is undefined
             foreach (var player in HeartData.I.Players) // Ensure that all players are being synced
                 QueueSync(projectile, player, DetailLevel);
-            return;
         }
 
         public void QueueSync(Projectile projectile, IMyPlayer Player, int DetailLevel = 1)

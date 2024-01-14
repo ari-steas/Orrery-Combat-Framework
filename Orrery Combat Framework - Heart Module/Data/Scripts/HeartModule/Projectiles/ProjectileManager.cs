@@ -126,7 +126,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 NextId++;
             projectile.SetId(NextId);
             ActiveProjectiles.Add(projectile.Id, projectile);
-            QueueSync(projectile, 0);
+            if (MyAPIGateway.Session.IsServer)
+                QueueSync(projectile, 0);
             if (!MyAPIGateway.Utilities.IsDedicated)
                 projectile.InitEffects();
         }

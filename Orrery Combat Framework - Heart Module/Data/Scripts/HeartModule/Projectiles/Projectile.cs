@@ -56,7 +56,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             Definition = ProjectileDefinitionManager.GetDefinition(projectile.DefinitionId.Value);
             Firer = projectile.Firer.GetValueOrDefault(0);
             IsHitscan = Definition.PhysicalProjectile.IsHitscan;
-            if (IsHitscan)
+            if (!IsHitscan)
+                Velocity = Definition.PhysicalProjectile.Velocity;
+            else
                 Definition.PhysicalProjectile.MaxLifetime = 1 / 60f;
 
             UpdateFromSerializable(projectile);
@@ -208,8 +210,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 Velocity = projectile.Velocity.Value;
             if (projectile.InheritedVelocity.HasValue)
                 InheritedVelocity = projectile.InheritedVelocity.Value;
-            if (projectile.RemainingImpacts.HasValue)
-                RemainingImpacts = projectile.RemainingImpacts.Value;
+            if (projectile.Firer.HasValue)
+                Firer = projectile.Firer.Value;
             TickUpdate(delta);
         }
 
@@ -242,7 +244,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     projectile.Position = Position;
                     projectile.Direction = Direction;
                     projectile.InheritedVelocity = InheritedVelocity;
-                    projectile.Velocity = Velocity;
+                    projectile.Firer = Firer;
+                    //projectile.Velocity = Velocity;
                     break;
                 case 1:
                     projectile.Position = Position;
