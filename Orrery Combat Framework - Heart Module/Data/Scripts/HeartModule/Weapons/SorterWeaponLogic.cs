@@ -1,27 +1,23 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule;
 using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.Common.ObjectBuilders;
-using Sandbox.Game;
-using Sandbox.Game.Entities;
 using Sandbox.Game.EntityComponents;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using VRage.Game;
 using VRage.Game.Components;
-using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRage.Game.ModAPI.Network;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
 using VRage.Sync;
-using VRage.Utils;
 using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding;
-using static VRage.Game.MyObjectBuilder_BehaviorTreeDecoratorNode;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
@@ -54,7 +50,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         //the state of shoot
         bool shoot = false;
 
-        public Dictionary<string, IMyModelDummy> modeldummy { get; set; } = new Dictionary<string, IMyModelDummy>();
+        public Dictionary<string, IMyModelDummy> MuzzleDummies { get; set; } = new Dictionary<string, IMyModelDummy>();
+        public SubpartManager SubpartManager = new SubpartManager();
         public MatrixD MuzzleMatrix { get; internal set; } = MatrixD.Identity;
 
         public SorterWeaponLogic(IMyConveyorSorter sorterWeapon, SerializableWeaponDefinition definition)
@@ -80,7 +77,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             TargetEnemiesState.ValueChanged += OnTargetEnemiesStateChanged;
             TargetUnownedState.ValueChanged += OnTargetUnownedStateChanged;
             ControlTypeState.ValueChanged += OnControlTypeStateChanged;
-
         }
 
         #region Event Handlers
@@ -205,9 +201,17 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 NeedsUpdate = MyEntityUpdateEnum.EACH_FRAME;
             }
 
-            SorterWep.Model.GetDummies(modeldummy);
-            MyAPIGateway.Utilities.ShowNotification($"Model Dummies: {modeldummy.Count}", 2000, "White");
-          
+            if (Definition.Assignments.HasMuzzleSubpart) // Get muzzle dummies
+                ((IMyEntity) SubpartManager.RecursiveGetSubpart(SorterWep, Definition.Assignments.MuzzleSubpart))?.Model?.GetDummies(MuzzleDummies);
+            else
+                SorterWep.Model.GetDummies(MuzzleDummies); // From base model if muzzle subpart is not set
+
+            MyAPIGateway.Utilities.ShowNotification($"Model Dummies: {MuzzleDummies.Count}", 2000, "White");
+
+            SorterWep.SlimBlock.BlockGeneralDamageModifier = Definition.Assignments.DurabilityModifier;
+            SorterWep.ResourceSink.SetRequiredInputByType(MyResourceDistributorComponent.ElectricityId, Definition.Hardpoint.IdlePower);
+            //SorterWep.ResourceSink.SetMaxRequiredInputByType(MyResourceDistributorComponent.ElectricityId, Definition.Hardpoint.IdlePower); // TODO: Set max power to include projectiles and RoF
+
             LoadSettings();
 
             // Implement weapon UI defaults here
@@ -217,47 +221,84 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public override void UpdateAfterSimulation()
         {
-            MuzzleMatrix = CalcMuzzleMatrix(); // Set stored MuzzleMatrix
+            MuzzleMatrix = CalcMuzzleMatrix(0); // Set stored MuzzleMatrix
+
+            if (!SorterWep.IsWorking) // Don't try shoot if the turret is disabled
+                return;
             TryShoot();
+        }
+
+        const float GridCheckRange = 200;
+        /// <summary>
+        /// Checks if the turret would intersect the grid.
+        /// </summary>
+        /// <returns></returns>
+        private bool HasLineOfSight()
+        {
+            if (!Definition.Hardpoint.LineOfSightCheck) // Ignore if LoS check is disabled
+                return true;
+
+            List<IHitInfo> intersects = new List<IHitInfo>();
+            MyAPIGateway.Physics.CastRay(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * GridCheckRange, intersects);
+            foreach (var intersect in intersects)
+                if (intersect.HitEntity.EntityId == SorterWep.CubeGrid.EntityId)
+                    return false;
+            return true;
         }
 
         float lastShoot = 0;
         internal bool AutoShoot = false;
+        int nextBarrel = 0; // For alternate firing
         public virtual void TryShoot()
         {
             if (lastShoot < 60)
                 lastShoot += Definition.Loading.RateOfFire;
 
-            if ((ShootState.Value || AutoShoot) && lastShoot >= 60)
+            if ((ShootState.Value || AutoShoot) && lastShoot >= 60 && HasLineOfSight())
             {
-                MatrixD muzzleMatrix = CalcMuzzleMatrix();
-                Vector3D muzzlePos = muzzleMatrix.Translation;
-
-                ProjectileManager.I.AddProjectile(0, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
-                lastShoot -= 60f;
-
-                if (Definition.Visuals.HasShootParticle)
+                int barrelIndex = 0;
+                for (int i = nextBarrel; i < Definition.Loading.BarrelsPerShot + nextBarrel; i++)
                 {
-                    MatrixD matrix = MatrixD.CreateTranslation(muzzlePos);
-                    MyParticleEffect hitEffect;
-                    if (MyParticlesManager.TryCreateParticleEffect(Definition.Visuals.ShootParticle, ref matrix, ref muzzlePos, uint.MaxValue, out hitEffect))
-                    {
-                        //MyAPIGateway.Utilities.ShowNotification("Spawned particle at " + hitEffect.WorldMatrix.Translation);
-                        hitEffect.Velocity = SorterWep.CubeGrid.LinearVelocity;
+                    barrelIndex = i % Definition.Assignments.Muzzles.Length;
 
-                        if (hitEffect.Loop)
-                            hitEffect.Stop();
+                    MatrixD muzzleMatrix = CalcMuzzleMatrix(barrelIndex);
+                    Vector3D muzzlePos = muzzleMatrix.Translation;
+
+                    for (int j = 0; j < Definition.Loading.ProjectilesPerBarrel; j++)
+                        ProjectileManager.I.AddProjectile(0, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
+                    lastShoot -= 60f;
+
+                    if (Definition.Visuals.HasShootParticle)
+                    {
+                        MatrixD localMuzzleMatrix = CalcMuzzleMatrix(barrelIndex, true);
+
+                        MyParticleEffect hitEffect;
+                        if (MyParticlesManager.TryCreateParticleEffect(Definition.Visuals.ShootParticle, ref localMuzzleMatrix, ref muzzlePos, SorterWep.Render.GetRenderObjectID(), out hitEffect))
+                        {
+                            //MyAPIGateway.Utilities.ShowNotification("Spawned particle at " + hitEffect.WorldMatrix.Translation);
+                            //hitEffect.Velocity = SorterWep.CubeGrid.LinearVelocity;
+
+                            if (hitEffect.Loop)
+                                hitEffect.Stop();
+                        }
                     }
                 }
+                nextBarrel = barrelIndex + 1;
             }
         }
 
-        public virtual MatrixD CalcMuzzleMatrix()
+
+
+        public virtual MatrixD CalcMuzzleMatrix(int id, bool local = false)
         {
+            MatrixD dummyMatrix = MuzzleDummies[Definition.Assignments.Muzzles[id]].Matrix; // Dummy's local matrix
+            if (local)
+                return dummyMatrix;
+
             MatrixD worldMatrix = SorterWep.WorldMatrix; // Block's world matrix
-            MatrixD dummyMatrix = modeldummy[Definition.Assignments.Muzzles[0]].Matrix; // Dummy's local matrix
 
             // Combine the matrices by multiplying them to get the transformation of the dummy in world space
+
             return dummyMatrix * worldMatrix;
 
             // Now combinedMatrix.Translation is the muzzle position in world coordinates,

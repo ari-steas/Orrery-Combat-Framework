@@ -17,24 +17,30 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
         [ProtoMember(5)] public Loading Loading;
         [ProtoMember(6)] public Audio Audio;
         [ProtoMember(7)] public Visuals Visuals;
-        [ProtoMember(8)] public string[] Ammos;
+        [ProtoMember(8)] public string[] Ammos; // TODO
     }
 
     [ProtoContract]
     public struct Targeting
     {
+        /// <summary>
+        /// The furthest target a turret can shoot.
+        /// </summary>
         [ProtoMember(1)] public float MaxTargetingRange;
+        /// <summary>
+        /// The closest target a turret can shoot.
+        /// </summary>
         [ProtoMember(2)] public float MinTargetingRange;
         /// <summary>
         /// Can the turret fire by itself? Tracks regardless.
         /// </summary>
         [ProtoMember(3)] public bool CanAutoShoot;
-        [ProtoMember(4)] public IFF_Enum IFF;
-        [ProtoMember(5)] public TargetType_Enum TargetTypes;
+        [ProtoMember(4)] public IFF_Enum IFF; // TODO
+        [ProtoMember(5)] public TargetType_Enum TargetTypes; // TODO
         /// <summary>
         /// Time until the turret is forced to find a new target
         /// </summary>
-        [ProtoMember(6)] public float RetargetTime;
+        [ProtoMember(6)] public float RetargetTime; // TODO
         [ProtoMember(7)] public float AimTolerance;
 
         public enum IFF_Enum
@@ -95,15 +101,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
     public struct Loading
     {
         [ProtoMember(1)] public int RateOfFire; // Shots per second
-        [ProtoMember(2)] public int BarrelsPerShot;
+        [ProtoMember(2)] public int BarrelsPerShot; // TODO
         [ProtoMember(3)] public int ProjectilesPerBarrel;
-        [ProtoMember(4)] public float ReloadTime; // Seconds
-        [ProtoMember(5)] public int MagsToLoad;
-        [ProtoMember(6)] public float DelayUntilFire; // Seconds
-        [ProtoMember(7)] public Resource[] Resources;
+        [ProtoMember(4)] public float ReloadTime; // Seconds // TODO
+        [ProtoMember(5)] public float DelayUntilFire; // Seconds // TODO
+        [ProtoMember(6)] public Resource[] Resources; // TODO
 
         [ProtoContract]
-        public struct Resource
+        public struct Resource // TODO
         {
             [ProtoMember(1)] public string ResourceType;
             [ProtoMember(2)] public float ResourceGeneration; // Per second
@@ -117,18 +122,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
     [ProtoContract]
     public struct Audio
     {
-        [ProtoMember(1)] public string PreShootSound;
-        [ProtoMember(2)] public string ShootSound;
-        [ProtoMember(3)] public string ReloadSound;
-        [ProtoMember(4)] public string RotationSound;
+        [ProtoMember(1)] public string PreShootSound; // TODO
+        [ProtoMember(2)] public string ShootSound; // TODO
+        [ProtoMember(3)] public string ReloadSound; // TODO
+        [ProtoMember(4)] public string RotationSound; // TODO
     }
 
     [ProtoContract]
     public struct Visuals
     {
         [ProtoMember(1)] public string ShootParticle;
-        [ProtoMember(2)] public bool ContinuousShootParticle;
-        [ProtoMember(3)] public string ReloadParticle;
+        [ProtoMember(2)] public bool ContinuousShootParticle; // TODO
+        [ProtoMember(3)] public string ReloadParticle; // TODO
 
         public bool HasShootParticle => !ShootParticle?.Equals("") ?? false;
         public bool HasReloadParticle => !ReloadParticle?.Equals("") ?? false;

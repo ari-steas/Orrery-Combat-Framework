@@ -51,6 +51,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface
 
         public void UpdateIndicator(SorterWeaponLogic weapon)
         {
+            if (!weapon.SorterWep.IsWorking)
+                return;
+
             double dist = viewDist;
             MyStringId texture;
             Vector4 color;
