@@ -85,11 +85,27 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 bool isFactionShare = relation == MyRelationsBetweenPlayerAndBlock.FactionShare;
                 bool isNoOwnership = relation == MyRelationsBetweenPlayerAndBlock.NoOwnership;
 
-                // Check if the grid has no owners
-                bool isUnowned = grid.BigOwners == null || (relation == MyRelationsBetweenPlayerAndBlock.NoOwnership || grid.BigOwners.Count == 0);
+                // Get reputation if the grid is owned
+                int reputation = 0;
+                if (grid.BigOwners.Count > 0)
+                {
+                    long gridOwner = grid.BigOwners[0];
+                    IMyFaction ownerFaction = MyAPIGateway.Session.Factions.TryGetPlayerFaction(gridOwner);
+                    if (ownerFaction != null)
+                    {
+                        reputation = MyAPIGateway.Session.Factions.GetReputationBetweenPlayerAndFaction(MyAPIGateway.Session.Player.IdentityId, ownerFaction.FactionId);
+                    }
+                }
 
-                // Display the faction relationship as a debug message
-                MyAPIGateway.Utilities.ShowNotification($"Faction Relation: {relation}", 1000 / 60, VRage.Game.MyFontEnum.White);
+                // Special condition: Treat enemies with reputation above -500 as neutrals
+                if (isEnemy && reputation > -500)
+                {
+                    isNeutral = true;
+                    isEnemy = false;
+                }
+
+                // Display the faction relationship and reputation as a debug message
+                MyAPIGateway.Utilities.ShowNotification($"Faction Relation: {relation}, Reputation: {reputation}", 1000 / 60, VRage.Game.MyFontEnum.White);
 
                 if ((isFriendly || isFactionShare) && targetFriendlies) // Consider same faction and faction share as friendly
                 {
@@ -116,6 +132,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             return null;
         }
 
+
         private MyRelationsBetweenPlayerAndBlock GetRelationsToGrid(IMyCubeGrid grid)
         {
             if (grid.BigOwners == null || grid.BigOwners.Count == 0)
@@ -133,8 +150,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 {
                     if (ownerFaction.FactionId == playerFaction.FactionId)
                         return MyRelationsBetweenPlayerAndBlock.Friends;
-                    else if (ownerFaction.IsNeutral(playerFaction.FactionId))
+
+                    // Add reputation check here
+                    int reputation = MyAPIGateway.Session.Factions.GetReputationBetweenPlayerAndFaction(MyAPIGateway.Session.Player.IdentityId, ownerFaction.FactionId);
+                    if (reputation > -500)
                         return MyRelationsBetweenPlayerAndBlock.Neutral;
+
+                    if (ownerFaction.IsNeutral(playerFaction.FactionId))
+                        return MyRelationsBetweenPlayerAndBlock.Neutral; // what the FUCK KEEN. WHY? FUCKING WHY?
                     else
                         return MyRelationsBetweenPlayerAndBlock.Enemies;
                 }
@@ -142,5 +165,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
             return MyRelationsBetweenPlayerAndBlock.NoOwnership; // Treat as unowned if the owner has no faction
         }
+
     }
 }
