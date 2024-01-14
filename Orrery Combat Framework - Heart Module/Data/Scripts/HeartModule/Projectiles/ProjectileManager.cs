@@ -13,7 +13,7 @@ using VRageMath;
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 {
     [MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation)]
-    public class ProjectileManager : MySessionComponentBase
+    public partial class ProjectileManager : MySessionComponentBase
     {
         public static ProjectileManager I = new ProjectileManager();
         const int MaxProjectilesSynced = 25; // This value should result in ~100kB/s per player.
@@ -210,13 +210,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             GetProjectile(HitscanList[sorterWep.EntityId])?.UpdateHitscan(position, direction);
         }
 
-        public void SyncProjectile(Projectile projectile, int DetailLevel = 1, ulong PlayerSteamId = 0)
-        {
-            if (PlayerSteamId == 0)
-                HeartData.I.Net.SendToEveryone(projectile.AsSerializable(DetailLevel));
-            else
-                HeartData.I.Net.SendToPlayer(projectile.AsSerializable(DetailLevel), PlayerSteamId);
-        }
+        
 
         public Projectile GetProjectile(uint id) => ActiveProjectiles.GetValueOrDefault(id, null);
         public bool IsIdAvailable(uint id) => !ActiveProjectiles.ContainsKey(id);

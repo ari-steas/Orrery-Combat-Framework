@@ -42,7 +42,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
                 else
                     Window.ClearWeaponText();
 
-                Window.UpdateDebugText(ProjectileManager.I.NumProjectiles, numWeapons);
+                Window.UpdateDebugText(ProjectileManager.I.NumProjectiles, numWeapons, HeartData.I.Net.NetworkLoad);
             }
             catch { }
         }

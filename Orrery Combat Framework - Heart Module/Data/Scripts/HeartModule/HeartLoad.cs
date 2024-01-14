@@ -1,5 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
+using Heart_Module.Data.Scripts.HeartModule.Network;
 using RichHudFramework.Client;
 using RichHudFramework.UI;
 using Sandbox.ModAPI;
@@ -56,6 +57,8 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
                 if (!MyAPIGateway.Utilities.IsDedicated && HeartData.I.SteamId == 0)
                     HeartData.I.SteamId = MyAPIGateway.Session?.Player?.SteamUserId ?? 0;
+
+                HeartData.I.Net.Update();
             }
             catch (Exception ex)
             {

@@ -14,6 +14,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
     internal class ReloadWindow : WindowBase
     {
         Label debugInfo;
+        Label debugInfo2;
         ListBox<uint> weaponStatus;
 
         public ReloadWindow(HudParentBase parent) : base(parent)
@@ -22,6 +23,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
             {
                 ParentAlignment = ParentAlignments.Bottom | ParentAlignments.InnerV,
                 DimAlignment = DimAlignments.Width,
+            };
+
+            debugInfo2 = new Label(body)
+            {
+                ParentAlignment = ParentAlignments.Bottom | ParentAlignments.InnerV,
+                DimAlignment = DimAlignments.Width,
+                Offset = new Vector2(0, debugInfo.Height),
             };
 
             weaponStatus = new ListBox<uint>(body)
@@ -53,9 +61,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
             MinimumSize = new Vector2(Math.Max(1, MinimumSize.X), MinimumSize.Y);
         }
 
-        public void UpdateDebugText(int numProjectiles, int numWeapons)
+        public void UpdateDebugText(int numProjectiles, int numWeapons, int networkLoad)
         {
             debugInfo.Text = $"Projectiles: {numProjectiles} | Weapons: {numWeapons}";
+            debugInfo2.Text = $"Estimated Network Load: {Math.Round(networkLoad / 1000f, 1)}kb/s";
         }
 
         public void UpdateWeaponText(SorterWeaponLogic weapon)
