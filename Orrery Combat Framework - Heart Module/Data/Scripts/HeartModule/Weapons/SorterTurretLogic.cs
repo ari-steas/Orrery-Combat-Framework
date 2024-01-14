@@ -137,6 +137,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 // If no target is found, ensure the turret is not aligned or in range
                 IsTargetAligned = false;
                 IsTargetInRange = false;
+                AimPoint = Vector3D.MaxValue;
 
                 UpdateTurretSubparts(deltaTick, Vector3D.MaxValue);
             }
