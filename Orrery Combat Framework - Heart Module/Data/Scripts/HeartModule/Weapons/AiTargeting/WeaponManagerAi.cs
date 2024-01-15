@@ -10,14 +10,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
     [MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation)]
     internal class WeaponManagerAi : MySessionComponentBase
     {
-        public WeaponManagerAi I;
         private Dictionary<IMyCubeGrid, GridAiTargeting> AiPreparedGrids = new Dictionary<IMyCubeGrid, GridAiTargeting>();
         private List<IMyCubeGrid> AiActivatedGrids = new List<IMyCubeGrid>();
-        Dictionary<IMyCubeGrid, List<SorterWeaponLogic>> GridWeapons => WeaponManager.I.GridWeapons;
+        private Dictionary<IMyCubeGrid, List<SorterWeaponLogic>> GridWeapons => WeaponManager.I.GridWeapons;
 
         public override void LoadData()
         {
-            I = this;
             // Ensure this runs only on the server to avoid unnecessary calculations on clients
             if (!MyAPIGateway.Session.IsServer)
             {
@@ -32,7 +30,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
         protected override void UnloadData()
         {
-            I = null;
             HeartData.I.OnGridAdd -= InitializeGridAI;
             HeartData.I.OnGridRemove -= CloseGridAI;
         }
@@ -45,64 +42,68 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
         private void InitializeGridAI(IMyCubeGrid grid)
         {
-            if (grid.Physics != null)
+            if (grid.Physics == null) return;
+
+            var aiTargeting = new GridAiTargeting(grid);
+            bool hasConveyorSorter = CheckGridForConveyorSorter(grid);
+            aiTargeting.EnableAi(hasConveyorSorter);
+
+            string status = hasConveyorSorter ? "enabled" : "disabled";
+            MyAPIGateway.Utilities.ShowNotification($"Grid AI {status} initialized for grid '{grid.DisplayName}'", 1000, "White");
+
+            AiPreparedGrids.Add(grid, aiTargeting);
+
+            if (hasConveyorSorter)
             {
-                var aiTargeting = new GridAiTargeting(grid);
-                bool hasConveyorSorter = CheckGridForConveyorSorter(grid);
-                aiTargeting.EnableAi(hasConveyorSorter);
-
-                string status = hasConveyorSorter ? "enabled" : "disabled";
-                MyAPIGateway.Utilities.ShowNotification($"Grid AI {status} initialized for grid '{grid.DisplayName}'", 1000, "White");
-
-                AiPreparedGrids.Add(grid, aiTargeting);
-
-                if (hasConveyorSorter)
-                {
-                    AiActivatedGrids.Add(grid);
-                }
+                AiActivatedGrids.Add(grid);
             }
         }
 
         private bool CheckGridForConveyorSorter(IMyCubeGrid grid)
         {
-            bool hasConveyorSorter = false;
+            bool hasConveyorSorter = HasSorterWeaponLogic(grid);
 
-            // Check the main grid for ConveyorSorter
-            hasConveyorSorter |= HasConveyorSorterBlock(grid);
-
-            // Check all subgrids (connected grids) for ConveyorSorter
-            var connectedGrids = new List<IMyCubeGrid>(); // Create your own collection
-            MyAPIGateway.GridGroups.GetGroup(grid, GridLinkTypeEnum.Mechanical, connectedGrids);
-            foreach (var subGrid in connectedGrids)
+            if (!hasConveyorSorter)
             {
-                hasConveyorSorter |= HasConveyorSorterBlock(subGrid);
-                if (hasConveyorSorter) break; // If found in any grid, no need to check further
+                var connectedGrids = new List<IMyCubeGrid>(); // Create your own collection
+                MyAPIGateway.GridGroups.GetGroup(grid, GridLinkTypeEnum.Mechanical, connectedGrids);
+                foreach (var subGrid in connectedGrids)
+                {
+                    if (HasSorterWeaponLogic(subGrid))
+                    {
+                        hasConveyorSorter = true;
+                        break; // If found in any grid, no need to check further
+                    }
+                }
             }
+
             return hasConveyorSorter;
         }
 
-        private bool HasConveyorSorterBlock(IMyCubeGrid grid)
+        private bool HasSorterWeaponLogic(IMyCubeGrid grid)
         {
-            var blocks = new List<IMySlimBlock>();
-            grid.GetBlocks(blocks, b => b.FatBlock != null && b.FatBlock is IMyConveyorSorter);
-            return blocks.Count > 0;
+            List<SorterWeaponLogic> weaponsOnGrid;
+            if (GridWeapons.TryGetValue(grid, out weaponsOnGrid))
+            {
+                return weaponsOnGrid.Exists(weaponLogic => weaponLogic is SorterWeaponLogic);
+            }
+            return false;
         }
 
         private void CloseGridAI(IMyCubeGrid grid)
         {
-            if (grid.Physics != null)
+            if (grid.Physics == null) return;
+
+            if (AiPreparedGrids.ContainsKey(grid))
             {
-                if (AiPreparedGrids.ContainsKey(grid))
-                {
-                    AiPreparedGrids[grid].Close();
-                    AiPreparedGrids.Remove(grid);
-                    AiActivatedGrids.Remove(grid);
-                    MyAPIGateway.Utilities.ShowNotification($"Grid AI closed for grid '{grid.DisplayName}'", 1000, "White");
-                }
-                else
-                {
-                    MyAPIGateway.Utilities.ShowNotification($"Attempted to close Grid AI on a non-tracked grid: '{grid.DisplayName}'", 1000, "Red");
-                }
+                AiPreparedGrids[grid].Close();
+                AiPreparedGrids.Remove(grid);
+                AiActivatedGrids.Remove(grid);
+                MyAPIGateway.Utilities.ShowNotification($"Grid AI closed for grid '{grid.DisplayName}'", 1000, "White");
+            }
+            else
+            {
+                MyAPIGateway.Utilities.ShowNotification($"Attempted to close Grid AI on a non-tracked grid: '{grid.DisplayName}'", 1000, "Red");
             }
         }
 
