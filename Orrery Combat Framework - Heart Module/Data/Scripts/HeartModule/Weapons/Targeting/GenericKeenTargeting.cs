@@ -5,7 +5,7 @@ using VRage.Game;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 
-namespace Heart_Module.Data.Scripts.HeartModule.Weapons
+namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Targeting
 {
     public class GenericKeenTargeting
     {
@@ -14,7 +14,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             if (grid == null)
             {
-                MyAPIGateway.Utilities.ShowNotification("No grid found", 1000 / 60, VRage.Game.MyFontEnum.Red);
+                MyAPIGateway.Utilities.ShowNotification("No grid found", 1000 / 60, MyFontEnum.Red);
                 return null;
             }
 
@@ -40,21 +40,21 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                         var targetEntity = targetLockingComponent.TargetEntity;
                         if (targetEntity != null && targetGrids)
                         {
-                            bool isLargeGrid = targetEntity is IMyCubeGrid && ((IMyCubeGrid)targetEntity).GridSizeEnum == VRage.Game.MyCubeSize.Large;
-                            bool isSmallGrid = targetEntity is IMyCubeGrid && ((IMyCubeGrid)targetEntity).GridSizeEnum == VRage.Game.MyCubeSize.Small;
+                            bool isLargeGrid = targetEntity is IMyCubeGrid && ((IMyCubeGrid)targetEntity).GridSizeEnum == MyCubeSize.Large;
+                            bool isSmallGrid = targetEntity is IMyCubeGrid && ((IMyCubeGrid)targetEntity).GridSizeEnum == MyCubeSize.Small;
 
-                            if ((isLargeGrid && targetLargeGrids) || (isSmallGrid && targetSmallGrids))
+                            if (isLargeGrid && targetLargeGrids || isSmallGrid && targetSmallGrids)
                             {
                                 // Pass the grid owner parameter when calling the filtering method
                                 var filteredTarget = FilterTargetBasedOnFactionRelation(targetEntity, targetFriendlies, targetNeutrals, targetEnemies, targetUnowned);
 
                                 if (filteredTarget != null)
                                 {
-                                    MyAPIGateway.Utilities.ShowNotification("Target selected: " + filteredTarget.DisplayName, 1000 / 60, VRage.Game.MyFontEnum.Blue);
+                                    MyAPIGateway.Utilities.ShowNotification("Target selected: " + filteredTarget.DisplayName, 1000 / 60, MyFontEnum.Blue);
                                 }
                                 else
                                 {
-                                    MyAPIGateway.Utilities.ShowNotification("Target filtered out based on faction relationship", 1000 / 60, VRage.Game.MyFontEnum.Red);
+                                    MyAPIGateway.Utilities.ShowNotification("Target filtered out based on faction relationship", 1000 / 60, MyFontEnum.Red);
                                 }
 
                                 return filteredTarget;
@@ -64,7 +64,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 }
             }
 
-            MyAPIGateway.Utilities.ShowNotification("No valid target found", 1000 / 60, VRage.Game.MyFontEnum.Red);
+            MyAPIGateway.Utilities.ShowNotification("No valid target found", 1000 / 60, MyFontEnum.Red);
             return null;
         }
 
@@ -101,7 +101,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 }
 
                 // Display the faction relationship and reputation as a debug message
-                MyAPIGateway.Utilities.ShowNotification($"Faction Relation: {relation}, Reputation: {reputation}", 1000 / 60, VRage.Game.MyFontEnum.White);
+                MyAPIGateway.Utilities.ShowNotification($"Faction Relation: {relation}, Reputation: {reputation}", 1000 / 60, MyFontEnum.White);
 
                 if ((isFriendly || isFactionShare) && targetFriendlies) // Consider same faction and faction share as friendly
                 {
