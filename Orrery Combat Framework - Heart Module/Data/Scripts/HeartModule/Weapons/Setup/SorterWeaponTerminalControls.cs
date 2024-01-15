@@ -97,7 +97,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
-                ControlsHelper.CreateToggle(
+                ControlsHelper.CreateToggle<SorterWeaponLogic>(
                    "HeartWeaponShoot",
                    "Toogle Shoot",
                    "TargetGridsDesc",
@@ -163,7 +163,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     );
             }
             {
-                ControlsHelper.CreateToggle(
+                ControlsHelper.CreateToggle<SorterTurretLogic>(
                     "HeartTargetGrids",
                     "Target Grids",
                     "TargetGridsDesc",
@@ -172,7 +172,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     );
             }
             {
-                ControlsHelper.CreateToggle(
+                ControlsHelper.CreateToggle<SorterTurretLogic>(
                     "HeartTargetLargeGrids",
                     "Target Large Grids",
                     "TargetLargeGridsDesc",
@@ -181,7 +181,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     );
             }
             {
-                ControlsHelper.CreateToggle(
+                ControlsHelper.CreateToggle<SorterTurretLogic>(
                     "HeartTargetSmallGrids",
                     "Target Small Grids",
                     "TargetSmallGridsDesc",
@@ -190,7 +190,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     );
             }
             {
-                ControlsHelper.CreateToggle(
+                ControlsHelper.CreateToggle<SorterTurretLogic>(
                     "HeartTargetProjectiles",
                     "Target Projectiles",
                     "TargetProjectilesDesc",
@@ -199,7 +199,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     );
             }
             {
-                ControlsHelper.CreateToggle(
+                ControlsHelper.CreateToggle<SorterTurretLogic>(
                     "HeartTargetCharacters",
                     "Target Characters",
                     "TargetCharactersDesc",
@@ -208,7 +208,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     );
             }
             {
-                ControlsHelper.CreateToggle(
+                ControlsHelper.CreateToggle<SorterTurretLogic>(
                     "HeartTargetFriendlies",
                     "Target Friendlies",
                     "TargetFriendliesDesc",
@@ -217,7 +217,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     );
             }
             {
-                ControlsHelper.CreateToggle(
+                ControlsHelper.CreateToggle<SorterTurretLogic>(
                     "HeartTargetNeutrals",
                     "Target Neutrals",
                     "TargetNeutralsDesc",
@@ -226,7 +226,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     );
             }
             {
-                ControlsHelper.CreateToggle(
+                ControlsHelper.CreateToggle<SorterTurretLogic>(
                     "HeartTargetEnemies",
                     "Target Enemies",
                     "TargetEnemiesDesc",
@@ -235,7 +235,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     );
             }
             {
-                ControlsHelper.CreateToggle(
+                ControlsHelper.CreateToggle<SorterTurretLogic>(
                     "HeartTargetUnowned",
                     "Target Unowned",
                     "TargetUnownedDesc",

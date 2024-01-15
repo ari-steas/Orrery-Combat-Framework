@@ -15,7 +15,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup
     {
         const string IdPrefix = "ModularHeartMod_"; // highly recommended to tag your properties/actions like this to avoid colliding with other mods'
 
-        public static IMyTerminalControlOnOffSwitch CreateToggle(string id, string displayName, string toolTip, Func<IMyTerminalBlock, bool> getter, Action<IMyTerminalBlock, bool> setter)
+        public static IMyTerminalControlOnOffSwitch CreateToggle<T>(string id, string displayName, string toolTip, Func<IMyTerminalBlock, bool> getter, Action<IMyTerminalBlock, bool> setter) where T : SorterWeaponLogic
         {
             var ShootToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + id);
             ShootToggle.Title = MyStringId.GetOrCompute(displayName);
@@ -23,7 +23,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup
             ShootToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
                                                        // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
                                                        // optional, they both default to true.
-            ShootToggle.Visible = CustomVisibleCondition;
+            Func<IMyTerminalBlock, bool> visibleFunc;
+            if (typeof(T) == typeof(SorterTurretLogic))
+                visibleFunc = TurretVisibleCondition;
+            else
+                visibleFunc = CustomVisibleCondition;
+
+            ShootToggle.Visible = visibleFunc;
             //c.Enabled = CustomVisibleCondition;
             ShootToggle.OnText = MySpaceTexts.SwitchText_On;
             ShootToggle.OffText = MySpaceTexts.SwitchText_Off;
@@ -58,6 +64,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup
         {
             // only visible for the blocks having this gamelogic comp
             return b?.GameLogic?.GetAs<SorterWeaponLogic>() != null;
+        }
+
+        static bool TurretVisibleCondition(IMyTerminalBlock b)
+        {
+            // only visible for the blocks having this gamelogic comp
+            return b?.GameLogic?.GetAs<SorterTurretLogic>() != null;
         }
     }
 }
