@@ -115,12 +115,12 @@ namespace Heart_Module.Data.Scripts.HeartModule
             return targetAngle;
         }
 
-        public static double NormalizeAngle(double angleRads)
+        public static double NormalizeAngle(double angleRads, double limit = Math.PI)
         {
-            if (angleRads > Math.PI)
-                return (angleRads % Math.PI) - Math.PI;
-            if (angleRads < -Math.PI)
-                return (angleRads % Math.PI) + Math.PI;
+            if (angleRads > limit)
+                return (angleRads % limit) - limit;
+            if (angleRads < -limit)
+                return (angleRads % limit) + limit;
             return angleRads;
         }
     }
