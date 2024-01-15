@@ -77,5 +77,40 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
             return MapPlayerRelationsToBlock(GetRelationsBetweenPlayers(owner, targetOwner));
         }
+
+        public static double Clamp(double value, double min, double max)
+        {
+            if (value < min)
+                return min;
+            if (value > max)
+                return max;
+            return value;
+        }
+
+        public static double ClampAbs(double value, double absMax) => Clamp(value, -absMax, absMax);
+
+        public static double LimitRotationSpeed(double currentAngle, double targetAngle, double maxRotationSpeed)
+        {
+            // https://yal.cc/angular-rotations-explained/
+            // It should NOT HAVE BEEN THAT HARD
+            // I (aristeas) AM REALLY STUPID
+
+            var diff = NormalizeAngle(targetAngle - currentAngle);
+
+            // clamp rotations by speed:
+            if (diff < -maxRotationSpeed) return currentAngle - maxRotationSpeed;
+            if (diff > maxRotationSpeed) return currentAngle + maxRotationSpeed;
+            // if difference within speed, rotation's done:
+            return targetAngle;
+        }
+
+        public static double NormalizeAngle(double angleRads)
+        {
+            if (angleRads > Math.PI)
+                return (angleRads % Math.PI) - Math.PI;
+            if (angleRads < -Math.PI)
+                return (angleRads % Math.PI) + Math.PI;
+            return angleRads;
+        }
     }
 }
