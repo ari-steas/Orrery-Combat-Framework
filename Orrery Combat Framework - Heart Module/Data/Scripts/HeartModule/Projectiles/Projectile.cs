@@ -1,8 +1,10 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
+using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
 using VRageMath;
@@ -153,7 +155,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public float CheckHits(float delta)
         {
-            if (NextMoveStep == Vector3D.Zero || !CheckDistToGrids(Position, NextMoveStep.LengthSquared()))
+            if (NextMoveStep == Vector3D.Zero)
                 return -1;
 
             List<IHitInfo> intersects = new List<IHitInfo>();
