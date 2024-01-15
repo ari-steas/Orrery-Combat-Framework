@@ -46,7 +46,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
             var aiTargeting = new GridAiTargeting(grid);
             bool hasConveyorSorter = CheckGridForConveyorSorter(grid);
-            aiTargeting.EnableAi(hasConveyorSorter);
+            aiTargeting.Enabled = hasConveyorSorter;
 
             string status = hasConveyorSorter ? "enabled" : "disabled";
             MyAPIGateway.Utilities.ShowNotification($"Grid AI {status} initialized for grid '{grid.DisplayName}'", 1000, "White");

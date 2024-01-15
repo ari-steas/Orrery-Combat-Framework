@@ -44,6 +44,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public MatrixD MuzzleMatrix { get; internal set; } = MatrixD.Identity;
         public bool HasLoS = false;
         public readonly uint Id;
+        public int CurrentAmmo { get; private set; } = 0;
 
         public SorterWeaponLogic(IMyConveyorSorter sorterWeapon, SerializableWeaponDefinition definition, uint id)
         {
@@ -179,7 +180,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     Vector3D muzzlePos = muzzleMatrix.Translation;
 
                     for (int j = 0; j < Definition.Loading.ProjectilesPerBarrel; j++)
-                        ProjectileManager.I.AddProjectile(0, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
+                        ProjectileManager.I.AddProjectile(CurrentAmmo, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
                     lastShoot -= 60f;
 
                     if (Definition.Visuals.HasShootParticle && !HeartData.I.DegradedMode)

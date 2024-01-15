@@ -1,4 +1,5 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
+using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
@@ -152,7 +153,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             //MyAPIGateway.Physics.CastRay(Position, NextMoveStep, intersects);
 
             LineD ray = new LineD(Position, NextMoveStep);
-            MyGamePruningStructure.GetTopmostEntitiesOverlappingRay(ref ray, intersects);
+            MyGamePruningStructure.GetTopmostEntitiesOverlappingRay(ref ray, intersects); // TODO: This is causing problems with hitting own grid
 
             double len = IsHitscan ? Definition.PhysicalProjectile.MaxTrajectory : Vector3D.Distance(Position, NextMoveStep);
             double dist = -1;
@@ -167,15 +168,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 }
                 Vector3D hitPos = ray.From + ray.Direction * hitInfo.Distance;
 
-                if (hitInfo.Element.EntityId == Firer || (DamageHandler.GetCollider(hitInfo.Element as IMyCubeGrid, hitPos, -ray.Direction)?.FatBlock?.EntityId ?? -1) == Firer)
+                if (hitInfo.Element.EntityId == Firer || (DamageHandler.GetCollider(hitInfo.Element as IMyCubeGrid, hitPos, ray.Direction)?.FatBlock?.EntityId ?? -1) == Firer)
                     continue; // Skip firer
 
                 dist = hitInfo.Distance;
 
                 if (hitInfo.Element is IMyCubeGrid)
-                    DamageHandler.QueueEvent(new DamageEvent(hitInfo.Element, DamageEvent.DamageEntType.Grid, this, hitPos, -ray.Direction));
+                    DamageHandler.QueueEvent(new DamageEvent(hitInfo.Element, DamageEvent.DamageEntType.Grid, this, hitPos, ray.Direction));
                 else if (hitInfo.Element is IMyCharacter)
-                    DamageHandler.QueueEvent(new DamageEvent(hitInfo.Element, DamageEvent.DamageEntType.Character, this, hitPos, -ray.Direction));
+                    DamageHandler.QueueEvent(new DamageEvent(hitInfo.Element, DamageEvent.DamageEntType.Character, this, hitPos, ray.Direction));
 
                 if (MyAPIGateway.Session.IsServer)
                     PlayImpactAudio(hitPos); // Audio is global
