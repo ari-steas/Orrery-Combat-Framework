@@ -1,6 +1,7 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Sandbox.Game;
 using Sandbox.Game.Entities;
+using Sandbox.ModAPI;
 using System.Collections.Generic;
 using VRage.Game;
 using VRage.Game.Entity;
@@ -56,7 +57,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public void DrawUpdate(float deltaTick, float deltaDraw)
         {
-            if (!IsVisible)
+            if (!IsVisible || HeartData.I.DegradedMode)
                 return;
 
             // deltaTick is the current offset between tick and draw, to account for variance between FPS and tickrate
@@ -102,7 +103,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         private void DrawImpactParticle(Vector3D ImpactPosition, Vector3D ImpactNormal)
         {
-            if (!IsVisible || Definition.Visual.ImpactParticle == "")
+            if (!IsVisible || Definition.Visual.ImpactParticle == "" || HeartData.I.DegradedMode)
                 return;
 
             MatrixD matrix = MatrixD.CreateWorld(ImpactPosition, ImpactNormal, Vector3D.CalculatePerpendicularVector(ImpactNormal));

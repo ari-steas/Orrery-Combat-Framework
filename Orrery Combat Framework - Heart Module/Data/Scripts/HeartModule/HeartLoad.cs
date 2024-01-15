@@ -11,7 +11,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
     internal class HeartLoad : MySessionComponentBase
     {
         CriticalHandle handle;
-
+        int remainingDegradedModeTicks = 600;
 
         public override void LoadData()
         {
@@ -56,12 +56,37 @@ namespace Heart_Module.Data.Scripts.HeartModule
                 if (!MyAPIGateway.Utilities.IsDedicated && HeartData.I.SteamId == 0)
                     HeartData.I.SteamId = MyAPIGateway.Session?.Player?.SteamUserId ?? 0;
 
-                HeartData.I.Net.Update();
+                HeartData.I.Net.Update(); // Update network stats
 
-                if (MyAPIGateway.Session.IsServer)
+                if (MyAPIGateway.Session.IsServer) // Get players
                 {
                     HeartData.I.Players.Clear(); // KEEN DOESN'T. CLEAR. THE LIST. AUTOMATICALLY. AUGH. -aristeas
                     MyAPIGateway.Multiplayer.Players.GetPlayers(HeartData.I.Players);
+                }
+
+                if (MyAPIGateway.Physics.SimulationRatio < 0.5) // Set degraded mode
+                {
+                    if (!HeartData.I.DegradedMode)
+                    {
+                        HeartData.I.DegradedMode = true;
+                        if (MyAPIGateway.Session.IsServer)
+                            MyAPIGateway.Utilities.SendMessage("[OCF] Entering degraded mode!");
+                        MyAPIGateway.Utilities.ShowMessage("[OCF]", "Entering client degraded mode!");
+                    }
+                    
+                    remainingDegradedModeTicks = 600;
+                }
+                else if (MyAPIGateway.Physics.SimulationRatio > 0.87)
+                {
+                    if (remainingDegradedModeTicks <= 0 && HeartData.I.DegradedMode)
+                    {
+                        HeartData.I.DegradedMode = false;
+                        if (MyAPIGateway.Session.IsServer)
+                            MyAPIGateway.Utilities.SendMessage("[OCF] Exiting degraded mode.");
+                        MyAPIGateway.Utilities.ShowMessage("[OCF]", "Exiting client degraded mode.");
+                    }
+                    else
+                        remainingDegradedModeTicks--;
                 }
             }
             catch (Exception ex)
