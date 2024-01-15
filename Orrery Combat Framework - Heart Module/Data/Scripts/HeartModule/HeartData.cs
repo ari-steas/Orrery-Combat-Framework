@@ -29,5 +29,8 @@ namespace Heart_Module.Data.Scripts.HeartModule
                     return player;
             return null;
         }
+
+        public Action<IMyCubeGrid> OnGridAdd = (a) => { };
+        public Action<IMyCubeGrid> OnGridRemove = (a) => { };
     }
 }

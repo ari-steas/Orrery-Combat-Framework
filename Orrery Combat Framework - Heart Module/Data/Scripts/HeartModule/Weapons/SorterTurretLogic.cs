@@ -1,6 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
-using Heart_Module.Data.Scripts.HeartModule.Weapons.Targeting;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting;
 using Sandbox.ModAPI;
 using System;
 using VRage.Game.Entity;

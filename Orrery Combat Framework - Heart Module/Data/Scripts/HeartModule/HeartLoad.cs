@@ -4,10 +4,13 @@ using RichHudFramework.Client;
 using Sandbox.ModAPI;
 using System;
 using VRage.Game.Components;
+using VRage.Game.Entity;
+using VRage.Game.ModAPI;
+using VRage.ModAPI;
 
 namespace Heart_Module.Data.Scripts.HeartModule
 {
-    [MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation)]
+    [MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation, priority: int.MinValue)]
     internal class HeartLoad : MySessionComponentBase
     {
         CriticalHandle handle;
@@ -32,6 +35,9 @@ namespace Heart_Module.Data.Scripts.HeartModule
                 }
                 else
                     HeartData.I.Log.Log($"Skipped loading RichHudClient");
+
+                MyAPIGateway.Entities.OnEntityAdd += OnEntityAdd;
+                MyAPIGateway.Entities.OnEntityRemove += OnEntityRemove;
 
                 HeartData.I.IsSuspended = false;
                 HeartData.I.Log.Log($"Finished loading core.");
@@ -104,9 +110,25 @@ namespace Heart_Module.Data.Scripts.HeartModule
         {
             handle.UnloadData();
             HeartData.I.Net.UnloadData();
+
+            MyAPIGateway.Entities.OnEntityAdd -= OnEntityAdd;
+            MyAPIGateway.Entities.OnEntityRemove -= OnEntityRemove;
+
             HeartData.I.Log.Log($"Closing core, log finishes here.");
             HeartData.I.Log.Close();
             HeartData.I = null;
+        }
+
+        private void OnEntityAdd(IMyEntity entity)
+        {
+            if (entity is IMyCubeGrid)
+                HeartData.I?.OnGridAdd?.Invoke(entity as IMyCubeGrid);
+        }
+
+        private void OnEntityRemove(IMyEntity entity)
+        {
+            if (entity is IMyCubeGrid)
+                HeartData.I?.OnGridRemove?.Invoke(entity as IMyCubeGrid);
         }
     }
 }

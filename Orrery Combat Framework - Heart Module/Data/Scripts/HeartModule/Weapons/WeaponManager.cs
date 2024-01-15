@@ -25,20 +25,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         public override void LoadData()
         {
             I = this;
-            MyAPIGateway.Entities.OnEntityAdd += OnEntityAdd;
-            MyAPIGateway.Entities.OnEntityRemove += OnEntityRemove;
+            HeartData.I.OnGridAdd += OnGridAdd;
+            HeartData.I.OnGridRemove += OnGridRemove;
         }
 
         /// <summary>
         /// Check if new grids contain valid weapons.
         /// </summary>
         /// <param name="entity"></param>
-        private void OnEntityAdd(IMyEntity entity)
+        private void OnGridAdd(IMyCubeGrid grid)
         {
-            if (!(entity is IMyCubeGrid))
-                return;
-            IMyCubeGrid grid = (IMyCubeGrid)entity;
-
             List<IMySlimBlock> blocks = new List<IMySlimBlock>();
             grid.GetBlocks(null, b =>
             {
@@ -56,11 +52,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         /// Removes grids from the GridWeapons list
         /// </summary>
         /// <param name="entity"></param>
-        private void OnEntityRemove(IMyEntity entity)
+        private void OnGridRemove(IMyCubeGrid grid)
         {
-            if (!(entity is IMyCubeGrid))
-                return;
-            IMyCubeGrid grid = (IMyCubeGrid)entity;
             GridWeapons.Remove(grid);
         }
 
@@ -107,8 +100,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             I = null;
             ActiveWeapons.Clear();
             GridWeapons.Clear();
-            MyAPIGateway.Entities.OnEntityAdd -= OnEntityAdd;
-            MyAPIGateway.Entities.OnEntityRemove -= OnEntityRemove;
+            HeartData.I.OnGridAdd -= OnGridAdd;
+            HeartData.I.OnGridRemove -= OnGridRemove;
         }
 
         public override void UpdateBeforeSimulation()

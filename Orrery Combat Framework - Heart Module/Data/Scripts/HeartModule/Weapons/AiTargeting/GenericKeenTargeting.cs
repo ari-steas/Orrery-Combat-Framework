@@ -5,7 +5,7 @@ using VRage.Game;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 
-namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Targeting
+namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 {
     public class GenericKeenTargeting
     {
