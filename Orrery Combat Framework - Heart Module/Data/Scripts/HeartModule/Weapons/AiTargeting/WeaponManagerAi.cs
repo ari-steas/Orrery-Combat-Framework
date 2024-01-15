@@ -5,7 +5,7 @@ using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
-namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Targeting
+namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 {
     [MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation)]
     internal class WeaponManagerAi : MySessionComponentBase
