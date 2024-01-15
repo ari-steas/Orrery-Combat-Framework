@@ -37,6 +37,23 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup
             return ShootToggle;
         }
 
+        public static IMyTerminalControlSlider CreateSlider(string id, string displayName, string toolTip, float min, float max, Func<IMyTerminalBlock, float> getter, Action<IMyTerminalBlock, float> setter, Action<IMyTerminalBlock, StringBuilder> writer)
+        {
+            var slider = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlSlider, IMyConveyorSorter>(IdPrefix + id);
+            slider.Title = MyStringId.GetOrCompute(displayName);
+            slider.Tooltip = MyStringId.GetOrCompute(toolTip);
+            slider.SetLimits(min, max); // Set the minimum and maximum values for the slider
+            slider.Getter = getter; // Replace with your property
+            slider.Setter = setter; // Replace with your property
+            slider.Writer = writer; // Replace with your property
+            slider.Visible = CustomVisibleCondition;
+            slider.Enabled = (b) => true; // or your custom condition
+            slider.SupportsMultipleBlocks = true;
+
+            MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(slider);
+            return slider;
+        }
+
         static bool CustomVisibleCondition(IMyTerminalBlock b)
         {
             // only visible for the blocks having this gamelogic comp

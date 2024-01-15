@@ -1,4 +1,5 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Weapons.Setup;
+﻿using Heart_Module.Data.Scripts.HeartModule.Weapons;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.Setup;
 using Sandbox.Game.Localization;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces.Terminal;
@@ -45,7 +46,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             Done = true;
             // these are all the options and they're not all required so use only what you need.
             CreateControls();
-            CreateActions(context);
+            //CreateActions(context);
             CreateProperties();
         }
 
@@ -150,526 +151,442 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
-                var slider = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlSlider, IMyConveyorSorter>(IdPrefix + "HeartAIRange");
-                slider.Title = MyStringId.GetOrCompute("AI Range");
-                slider.Tooltip = MyStringId.GetOrCompute("HeartSliderDesc");
-                slider.SetLimits(0, 10000); // Set the minimum and maximum values for the slider
-                slider.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Range_Slider; // Replace with your property
-                slider.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Range_Slider = v; // Replace with your property
-                slider.Writer = (b, sb) => sb.AppendFormat("Current value: {0}", b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Range_Slider); // Replace with your property
-                slider.Visible = CustomVisibleCondition;
-                slider.Enabled = (b) => true; // or your custom condition
-                slider.SupportsMultipleBlocks = true;
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(slider);
+                ControlsHelper.CreateSlider(
+                    "HeartAIRange",
+                    "AI Range",
+                    "HeartSliderDesc",
+                    0,
+                    10000,
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_Range_Slider,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_Range_Slider = v,
+                    (b, sb) => sb.AppendFormat("Current value: {0}", b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_Range_Slider)
+                    );
             }
             {
                 ControlsHelper.CreateToggle(
                     "HeartTargetGrids",
                     "Target Grids",
                     "TargetGridsDesc",
-                    (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetGrids,
-                    (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetGrids = v
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetGrids,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetGrids = v
                     );
             }
             {
-                var TargetLargeGridsToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartTargetLargeGrids");
-                TargetLargeGridsToggle.Title = MyStringId.GetOrCompute("Target Large Grids");
-                TargetLargeGridsToggle.Tooltip = MyStringId.GetOrCompute("TargetLargeGridsDesc");
-                TargetLargeGridsToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
-                // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
-                // optional, they both default to true.
-                TargetLargeGridsToggle.Visible = CustomVisibleCondition;
-                //c.Enabled = CustomVisibleCondition;
-                TargetLargeGridsToggle.OnText = MySpaceTexts.SwitchText_On;
-                TargetLargeGridsToggle.OffText = MySpaceTexts.SwitchText_Off;
-                //c.OffText = MyStringId.GetOrCompute("Off");
-                // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
-                TargetLargeGridsToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetLargeGrids;  // Getting the value
-                TargetLargeGridsToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetLargeGrids = v; // Setting the value
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(TargetLargeGridsToggle);
+                ControlsHelper.CreateToggle(
+                    "HeartTargetLargeGrids",
+                    "Target Large Grids",
+                    "TargetLargeGridsDesc",
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetLargeGrids,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetLargeGrids = v
+                    );
             }
             {
-                var TargetSmallGridsToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartTargetSmallGrids");
-                TargetSmallGridsToggle.Title = MyStringId.GetOrCompute("Target Small Grids");
-                TargetSmallGridsToggle.Tooltip = MyStringId.GetOrCompute("TargetSmallGridsDesc");
-                TargetSmallGridsToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
-                // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
-                // optional, they both default to true.
-                TargetSmallGridsToggle.Visible = CustomVisibleCondition;
-                //c.Enabled = CustomVisibleCondition;
-                TargetSmallGridsToggle.OnText = MySpaceTexts.SwitchText_On;
-                TargetSmallGridsToggle.OffText = MySpaceTexts.SwitchText_Off;
-                //c.OffText = MyStringId.GetOrCompute("Off");
-                // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
-                TargetSmallGridsToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetSmallGrids;  // Getting the value
-                TargetSmallGridsToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetSmallGrids = v; // Setting the value
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(TargetSmallGridsToggle);
+                ControlsHelper.CreateToggle(
+                    "HeartTargetSmallGrids",
+                    "Target Small Grids",
+                    "TargetSmallGridsDesc",
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetSmallGrids,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetSmallGrids = v
+                    );
             }
             {
-                var TargetProjectilesToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartTargetProjectiles");
-                TargetProjectilesToggle.Title = MyStringId.GetOrCompute("Target Projectiles");
-                TargetProjectilesToggle.Tooltip = MyStringId.GetOrCompute("TargetProjectilesDesc");
-                TargetProjectilesToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
-                // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
-                // optional, they both default to true.
-                TargetProjectilesToggle.Visible = CustomVisibleCondition;
-                //c.Enabled = CustomVisibleCondition;
-                TargetProjectilesToggle.OnText = MySpaceTexts.SwitchText_On;
-                TargetProjectilesToggle.OffText = MySpaceTexts.SwitchText_Off;
-                //c.OffText = MyStringId.GetOrCompute("Off");
-                // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
-                TargetProjectilesToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetProjectiles;  // Getting the value
-                TargetProjectilesToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetProjectiles = v; // Setting the value
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(TargetProjectilesToggle);
+                ControlsHelper.CreateToggle(
+                    "HeartTargetProjectiles",
+                    "Target Projectiles",
+                    "TargetProjectilesDesc",
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetProjectiles,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetProjectiles = v
+                    );
             }
             {
-                var TargetCharactersToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartTargetCharacters");
-                TargetCharactersToggle.Title = MyStringId.GetOrCompute("Target Characters");
-                TargetCharactersToggle.Tooltip = MyStringId.GetOrCompute("TargetCharactersDesc");
-                TargetCharactersToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
-                // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
-                // optional, they both default to true.
-                TargetCharactersToggle.Visible = CustomVisibleCondition;
-                //c.Enabled = CustomVisibleCondition;
-                TargetCharactersToggle.OnText = MySpaceTexts.SwitchText_On;
-                TargetCharactersToggle.OffText = MySpaceTexts.SwitchText_Off;
-                //c.OffText = MyStringId.GetOrCompute("Off");
-                // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
-                TargetCharactersToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetCharacters;  // Getting the value
-                TargetCharactersToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetCharacters = v; // Setting the value
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(TargetCharactersToggle);
+                ControlsHelper.CreateToggle(
+                    "HeartTargetCharacters",
+                    "Target Characters",
+                    "TargetCharactersDesc",
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetCharacters,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetCharacters = v
+                    );
             }
             {
-                var TargetFriendliesToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartTargetFriendlies");
-                TargetFriendliesToggle.Title = MyStringId.GetOrCompute("Target Friendlies");
-                TargetFriendliesToggle.Tooltip = MyStringId.GetOrCompute("TargetFriendliesDesc");
-                TargetFriendliesToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
-                // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
-                // optional, they both default to true.
-                TargetFriendliesToggle.Visible = CustomVisibleCondition;
-                //c.Enabled = CustomVisibleCondition;
-                TargetFriendliesToggle.OnText = MySpaceTexts.SwitchText_On;
-                TargetFriendliesToggle.OffText = MySpaceTexts.SwitchText_Off;
-                //c.OffText = MyStringId.GetOrCompute("Off");
-                // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
-                TargetFriendliesToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetFriendlies;  // Getting the value
-                TargetFriendliesToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetFriendlies = v; // Setting the value
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(TargetFriendliesToggle);
+                ControlsHelper.CreateToggle(
+                    "HeartTargetFriendlies",
+                    "Target Friendlies",
+                    "TargetFriendliesDesc",
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetFriendlies,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetFriendlies = v
+                    );
             }
             {
-                var TargetNeutralsToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartTargetNeutrals");
-                TargetNeutralsToggle.Title = MyStringId.GetOrCompute("Target Neutrals");
-                TargetNeutralsToggle.Tooltip = MyStringId.GetOrCompute("TargetNeutralsDesc");
-                TargetNeutralsToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
-                // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
-                // optional, they both default to true.
-                TargetNeutralsToggle.Visible = CustomVisibleCondition;
-                //c.Enabled = CustomVisibleCondition;
-                TargetNeutralsToggle.OnText = MySpaceTexts.SwitchText_On;
-                TargetNeutralsToggle.OffText = MySpaceTexts.SwitchText_Off;
-                //c.OffText = MyStringId.GetOrCompute("Off");
-                // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
-                TargetNeutralsToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetNeutrals;  // Getting the value
-                TargetNeutralsToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetNeutrals = v; // Setting the value
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(TargetNeutralsToggle);
+                ControlsHelper.CreateToggle(
+                    "HeartTargetNeutrals",
+                    "Target Neutrals",
+                    "TargetNeutralsDesc",
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetNeutrals,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetNeutrals = v
+                    );
             }
             {
-                var TargetEnemiesToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartTargetEnemies");
-                TargetEnemiesToggle.Title = MyStringId.GetOrCompute("Target Enemies");
-                TargetEnemiesToggle.Tooltip = MyStringId.GetOrCompute("TargetEnemiesDesc");
-                TargetEnemiesToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
-                // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
-                // optional, they both default to true.
-                TargetEnemiesToggle.Visible = CustomVisibleCondition;
-                //c.Enabled = CustomVisibleCondition;
-                TargetEnemiesToggle.OnText = MySpaceTexts.SwitchText_On;
-                TargetEnemiesToggle.OffText = MySpaceTexts.SwitchText_Off;
-                //c.OffText = MyStringId.GetOrCompute("Off");
-                // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
-                TargetEnemiesToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetEnemies;  // Getting the value
-                TargetEnemiesToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetEnemies = v; // Setting the value
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(TargetEnemiesToggle);
+                ControlsHelper.CreateToggle(
+                    "HeartTargetEnemies",
+                    "Target Enemies",
+                    "TargetEnemiesDesc",
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetEnemies,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetEnemies = v
+                    );
             }
             {
-                var TargetUnownedToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartTargetUnowned");
-                TargetUnownedToggle.Title = MyStringId.GetOrCompute("Target Unowned");
-                TargetUnownedToggle.Tooltip = MyStringId.GetOrCompute("TargetUnownedDesc");
-                TargetUnownedToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
-                // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
-                // optional, they both default to true.
-                TargetUnownedToggle.Visible = CustomVisibleCondition;
-                //c.Enabled = CustomVisibleCondition;
-                TargetUnownedToggle.OnText = MySpaceTexts.SwitchText_On;
-                TargetUnownedToggle.OffText = MySpaceTexts.SwitchText_Off;
-                //c.OffText = MyStringId.GetOrCompute("Off");
-                // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
-                TargetUnownedToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetUnowned;  // Getting the value
-                TargetUnownedToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetUnowned = v; // Setting the value
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(TargetUnownedToggle);
+                ControlsHelper.CreateToggle(
+                    "HeartTargetUnowned",
+                    "Target Unowned",
+                    "TargetUnownedDesc",
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetUnowned,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetUnowned = v
+                    );
             }
-
-
-
-
-
         }
 
-        static void CreateActions(IMyModContext context)
-        {
-            {
-                var ShootAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleShoot");
-                ShootAction.Name = new StringBuilder("Toggle Shoot");
-                ShootAction.ValidForGroups = true;
-                ShootAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
-                ShootAction.Action = (b) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        // Toggle the "Shoot" option and ensure sync
-                        logic.Terminal_Heart_Shoot = !logic.Terminal_Heart_Shoot; // Toggling the value
-                        MyAPIGateway.Utilities.ShowNotification($"Shoot toggled to: {(logic.Terminal_Heart_Shoot ? "ON" : "OFF")}", 2000, "White");
-                    }
-                };
-                ShootAction.Writer = (b, sb) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        sb.Append(logic.Terminal_Heart_Shoot ? "Shoot ON" : "Shoot OFF");
-                    }
-                };
-
-                ShootAction.Enabled = CustomVisibleCondition;
-                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(ShootAction);
-            }
-            {
-                var cycleControlForwardAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "HeartControlType");
-                cycleControlForwardAction.Name = new StringBuilder("Control Type");
-                cycleControlForwardAction.Action = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().CycleControlType(true);
-                cycleControlForwardAction.Writer = (b, sb) => sb.Append($"{GetControlTypeName(b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_ControlType_ComboBox)}");
-                cycleControlForwardAction.Icon = @"Textures\GUI\Icons\Actions\MovingObjectToggle.dds";
-                cycleControlForwardAction.Enabled = CustomVisibleCondition;
-                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(cycleControlForwardAction);
-                MyAPIGateway.Utilities.ShowNotification("Control Type Cycled");
-            }
-            {
-                var cycleAmmoForwardAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "HeartCycleAmmoForward");
-                cycleAmmoForwardAction.Name = new StringBuilder("Cycle Ammo");
-                cycleAmmoForwardAction.Action = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().CycleAmmoType(true);
-                cycleAmmoForwardAction.Writer = (b, sb) => sb.Append($"{GetAmmoTypeName(b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_AmmoComboBox)}");
-                cycleAmmoForwardAction.Icon = @"Textures\GUI\Icons\Actions\MissileToggle.dds";
-                cycleAmmoForwardAction.Enabled = CustomVisibleCondition;
-                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(cycleAmmoForwardAction);
-                MyAPIGateway.Utilities.ShowNotification("Ammo Cycled");
-            }
-            {
-                // Action to Increase AI Range
-                var IncreaseAIRangeAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "IncreaseAIRange");
-                IncreaseAIRangeAction.Name = new StringBuilder("Increase AI Range");
-                IncreaseAIRangeAction.ValidForGroups = true;
-                IncreaseAIRangeAction.Icon = @"Textures\GUI\Icons\Actions\Increase.dds";
-                IncreaseAIRangeAction.Action = (b) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        logic.IncreaseAIRange(); // Custom method to increase AI range
-                    }
-                };
-                IncreaseAIRangeAction.Writer = (b, sb) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        sb.Append($"{logic.Terminal_Heart_Range_Slider} Range");
-                    }
-                };
-                IncreaseAIRangeAction.Enabled = CustomVisibleCondition;
-                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(IncreaseAIRangeAction);
-
-                // Action to Decrease AI Range
-                var DecreaseAIRangeAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "DecreaseAIRange");
-                DecreaseAIRangeAction.Name = new StringBuilder("Decrease AI Range");
-                DecreaseAIRangeAction.ValidForGroups = true;
-                DecreaseAIRangeAction.Icon = @"Textures\GUI\Icons\Actions\Decrease.dds";
-                DecreaseAIRangeAction.Action = (b) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        logic.DecreaseAIRange(); // Custom method to decrease AI range
-                    }
-                };
-                DecreaseAIRangeAction.Writer = (b, sb) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        sb.Append($"{logic.Terminal_Heart_Range_Slider} Range");
-                    }
-                };
-                DecreaseAIRangeAction.Enabled = CustomVisibleCondition;
-                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(DecreaseAIRangeAction);
-            }
-            {
-                var TargetGridsAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetGrids");
-                TargetGridsAction.Name = new StringBuilder("Toggle Target Grids");
-                TargetGridsAction.ValidForGroups = true;
-                TargetGridsAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
-                TargetGridsAction.Action = (b) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        // Toggle the "Target Grids" option and ensure sync
-                        logic.Terminal_Heart_TargetGrids = !logic.Terminal_Heart_TargetGrids; // Toggling the value
-                        MyAPIGateway.Utilities.ShowNotification($"Target Grids toggled to: {(logic.Terminal_Heart_TargetGrids ? "ON" : "OFF")}", 2000, "White");
-                    }
-                };
-                TargetGridsAction.Writer = (b, sb) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        sb.Append(logic.Terminal_Heart_TargetGrids ? "Grid ON" : "Grid OFF");
-                    }
-                };
-
-                TargetGridsAction.Enabled = CustomVisibleCondition;
-                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(TargetGridsAction);
-            }
-            {
-                var TargetLargeGridsAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetLargeGrids");
-                TargetLargeGridsAction.Name = new StringBuilder("Toggle Target Large Grids");
-                TargetLargeGridsAction.ValidForGroups = true;
-                TargetLargeGridsAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
-                TargetLargeGridsAction.Action = (b) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        // Toggle the "Target Large Grids" option and ensure sync
-                        logic.Terminal_Heart_TargetLargeGrids = !logic.Terminal_Heart_TargetLargeGrids; // Toggling the value
-                        MyAPIGateway.Utilities.ShowNotification($"Target Large Grids toggled to: {(logic.Terminal_Heart_TargetLargeGrids ? "ON" : "OFF")}", 2000, "White");
-                    }
-                };
-                TargetLargeGridsAction.Writer = (b, sb) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        sb.Append(logic.Terminal_Heart_TargetLargeGrids ? "LGrid ON" : "LGrid OFF");
-                    }
-                };
-
-                TargetLargeGridsAction.Enabled = CustomVisibleCondition;
-                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(TargetLargeGridsAction);
-            }
-            {
-                var TargetSmallGridsAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetSmallGrids");
-                TargetSmallGridsAction.Name = new StringBuilder("Toggle Target Small Grids");
-                TargetSmallGridsAction.ValidForGroups = true;
-                TargetSmallGridsAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
-                TargetSmallGridsAction.Action = (b) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        // Toggle the "Target Small Grids" option and ensure sync
-                        logic.Terminal_Heart_TargetSmallGrids = !logic.Terminal_Heart_TargetSmallGrids; // Toggling the value
-                        MyAPIGateway.Utilities.ShowNotification($"Target Small Grids toggled to: {(logic.Terminal_Heart_TargetSmallGrids ? "ON" : "OFF")}", 2000, "White");
-                    }
-                };
-                TargetSmallGridsAction.Writer = (b, sb) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        sb.Append(logic.Terminal_Heart_TargetSmallGrids ? "SGrid ON" : "SGrid OFF");
-                    }
-                };
-
-                TargetSmallGridsAction.Enabled = CustomVisibleCondition;
-                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(TargetSmallGridsAction);
-            }
-            {
-                var TargetProjectilesAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetProjectiles");
-                TargetProjectilesAction.Name = new StringBuilder("Toggle Target Projectiles");
-                TargetProjectilesAction.ValidForGroups = true;
-                TargetProjectilesAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
-                TargetProjectilesAction.Action = (b) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        // Toggle the targeting of projectiles and ensure sync
-                        logic.Terminal_Heart_TargetProjectiles = !logic.Terminal_Heart_TargetProjectiles; // Toggling the value
-                        MyAPIGateway.Utilities.ShowNotification($"Target Projectiles toggled to: {(logic.Terminal_Heart_TargetProjectiles ? "ON" : "OFF")}", 2000, "White");
-                    }
-                };
-                TargetProjectilesAction.Writer = (b, sb) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        sb.Append(logic.Terminal_Heart_TargetProjectiles ? "Proj. ON" : "Proj. OFF");
-                    }
-                };
-
-                TargetProjectilesAction.Enabled = CustomVisibleCondition;
-                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(TargetProjectilesAction);
-            }
-            {
-                var TargetCharactersAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetCharacters");
-                TargetCharactersAction.Name = new StringBuilder("Toggle Target Characters");
-                TargetCharactersAction.ValidForGroups = true;
-                TargetCharactersAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
-                TargetCharactersAction.Action = (b) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        // Toggle the "Target Characters" option and ensure sync
-                        logic.Terminal_Heart_TargetCharacters = !logic.Terminal_Heart_TargetCharacters; // Toggling the value
-                        MyAPIGateway.Utilities.ShowNotification($"Target Characters toggled to: {(logic.Terminal_Heart_TargetCharacters ? "ON" : "OFF")}", 2000, "White");
-                    }
-                };
-                TargetCharactersAction.Writer = (b, sb) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        sb.Append(logic.Terminal_Heart_TargetCharacters ? "Char. ON" : "Char. OFF");
-                    }
-                };
-
-                TargetCharactersAction.Enabled = CustomVisibleCondition;
-                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(TargetCharactersAction);
-            }
-            {
-                var TargetFriendliesAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetFriendlies");
-                TargetFriendliesAction.Name = new StringBuilder("Toggle Target Friendlies");
-                TargetFriendliesAction.ValidForGroups = true;
-                TargetFriendliesAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
-                TargetFriendliesAction.Action = (b) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        // Toggle the "Target Friendlies" option and ensure sync
-                        logic.Terminal_Heart_TargetFriendlies = !logic.Terminal_Heart_TargetFriendlies; // Toggling the value
-                        MyAPIGateway.Utilities.ShowNotification($"Target Friendlies toggled to: {(logic.Terminal_Heart_TargetFriendlies ? "ON" : "OFF")}", 2000, "White");
-                    }
-                };
-                TargetFriendliesAction.Writer = (b, sb) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        sb.Append(logic.Terminal_Heart_TargetFriendlies ? "Fr. ON" : "Fr. OFF");
-                    }
-                };
-
-                TargetFriendliesAction.Enabled = CustomVisibleCondition;
-                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(TargetFriendliesAction);
-            }
-            {
-                var TargetNeutralsAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetNeutrals");
-                TargetNeutralsAction.Name = new StringBuilder("Toggle Target Neutrals");
-                TargetNeutralsAction.ValidForGroups = true;
-                TargetNeutralsAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
-                TargetNeutralsAction.Action = (b) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        // Toggle the "Target Neutrals" option and ensure sync
-                        logic.Terminal_Heart_TargetNeutrals = !logic.Terminal_Heart_TargetNeutrals; // Toggling the value
-                        MyAPIGateway.Utilities.ShowNotification($"Target Neutrals toggled to: {(logic.Terminal_Heart_TargetNeutrals ? "ON" : "OFF")}", 2000, "White");
-                    }
-                };
-                TargetNeutralsAction.Writer = (b, sb) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        sb.Append(logic.Terminal_Heart_TargetNeutrals ? "Neu. ON" : "Neu. OFF");
-                    }
-                };
-
-                TargetNeutralsAction.Enabled = CustomVisibleCondition;
-                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(TargetNeutralsAction);
-            }
-            {
-                var TargetEnemiesAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetEnemies");
-                TargetEnemiesAction.Name = new StringBuilder("Toggle Target Enemies");
-                TargetEnemiesAction.ValidForGroups = true;
-                TargetEnemiesAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
-                TargetEnemiesAction.Action = (b) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        // Toggle the "Target Enemies" option and ensure sync
-                        logic.Terminal_Heart_TargetEnemies = !logic.Terminal_Heart_TargetEnemies; // Toggling the value
-                        MyAPIGateway.Utilities.ShowNotification($"Target Enemies toggled to: {(logic.Terminal_Heart_TargetEnemies ? "ON" : "OFF")}", 2000, "White");
-                    }
-                };
-                TargetEnemiesAction.Writer = (b, sb) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        sb.Append(logic.Terminal_Heart_TargetEnemies ? "Enem. ON" : "Enem. OFF");
-                    }
-                };
-
-                TargetEnemiesAction.Enabled = CustomVisibleCondition;
-                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(TargetEnemiesAction);
-            }
-            {
-                var TargetUnownedAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetUnowned");
-                TargetUnownedAction.Name = new StringBuilder("Toggle Target Unowned");
-                TargetUnownedAction.ValidForGroups = true;
-                TargetUnownedAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
-                TargetUnownedAction.Action = (b) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        // Toggle the "Target Unowned" option and ensure sync
-                        logic.Terminal_Heart_TargetUnowned = !logic.Terminal_Heart_TargetUnowned; // Toggling the value
-                        MyAPIGateway.Utilities.ShowNotification($"Target Unowned toggled to: {(logic.Terminal_Heart_TargetUnowned ? "ON" : "OFF")}", 2000, "White");
-                    }
-                };
-                TargetUnownedAction.Writer = (b, sb) =>
-                {
-                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null)
-                    {
-                        sb.Append(logic.Terminal_Heart_TargetUnowned ? "Unow. ON" : "Unow. OFF");
-                    }
-                };
-
-                TargetUnownedAction.Enabled = CustomVisibleCondition;
-                MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(TargetUnownedAction);
-            }
-
-
-
-
-
-        }
+        //static void CreateActions(IMyModContext context)
+        //{
+        //    {
+        //        var ShootAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleShoot");
+        //        ShootAction.Name = new StringBuilder("Toggle Shoot");
+        //        ShootAction.ValidForGroups = true;
+        //        ShootAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
+        //        ShootAction.Action = (b) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                // Toggle the "Shoot" option and ensure sync
+        //                logic.Terminal_Heart_Shoot = !logic.Terminal_Heart_Shoot; // Toggling the value
+        //                MyAPIGateway.Utilities.ShowNotification($"Shoot toggled to: {(logic.Terminal_Heart_Shoot ? "ON" : "OFF")}", 2000, "White");
+        //            }
+        //        };
+        //        ShootAction.Writer = (b, sb) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                sb.Append(logic.Terminal_Heart_Shoot ? "Shoot ON" : "Shoot OFF");
+        //            }
+        //        };
+        //
+        //        ShootAction.Enabled = CustomVisibleCondition;
+        //        MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(ShootAction);
+        //    }
+        //    {
+        //        var cycleControlForwardAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "HeartControlType");
+        //        cycleControlForwardAction.Name = new StringBuilder("Control Type");
+        //        cycleControlForwardAction.Action = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().CycleControlType(true);
+        //        cycleControlForwardAction.Writer = (b, sb) => sb.Append($"{GetControlTypeName(b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_ControlType_ComboBox)}");
+        //        cycleControlForwardAction.Icon = @"Textures\GUI\Icons\Actions\MovingObjectToggle.dds";
+        //        cycleControlForwardAction.Enabled = CustomVisibleCondition;
+        //        MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(cycleControlForwardAction);
+        //        MyAPIGateway.Utilities.ShowNotification("Control Type Cycled");
+        //    }
+        //    {
+        //        var cycleAmmoForwardAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "HeartCycleAmmoForward");
+        //        cycleAmmoForwardAction.Name = new StringBuilder("Cycle Ammo");
+        //        cycleAmmoForwardAction.Action = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().CycleAmmoType(true);
+        //        cycleAmmoForwardAction.Writer = (b, sb) => sb.Append($"{GetAmmoTypeName(b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_AmmoComboBox)}");
+        //        cycleAmmoForwardAction.Icon = @"Textures\GUI\Icons\Actions\MissileToggle.dds";
+        //        cycleAmmoForwardAction.Enabled = CustomVisibleCondition;
+        //        MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(cycleAmmoForwardAction);
+        //        MyAPIGateway.Utilities.ShowNotification("Ammo Cycled");
+        //    }
+        //    {
+        //        // Action to Increase AI Range
+        //        var IncreaseAIRangeAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "IncreaseAIRange");
+        //        IncreaseAIRangeAction.Name = new StringBuilder("Increase AI Range");
+        //        IncreaseAIRangeAction.ValidForGroups = true;
+        //        IncreaseAIRangeAction.Icon = @"Textures\GUI\Icons\Actions\Increase.dds";
+        //        IncreaseAIRangeAction.Action = (b) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                logic.IncreaseAIRange(); // Custom method to increase AI range
+        //            }
+        //        };
+        //        IncreaseAIRangeAction.Writer = (b, sb) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                sb.Append($"{logic.Terminal_Heart_Range_Slider} Range");
+        //            }
+        //        };
+        //        IncreaseAIRangeAction.Enabled = CustomVisibleCondition;
+        //        MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(IncreaseAIRangeAction);
+        //
+        //        // Action to Decrease AI Range
+        //        var DecreaseAIRangeAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "DecreaseAIRange");
+        //        DecreaseAIRangeAction.Name = new StringBuilder("Decrease AI Range");
+        //        DecreaseAIRangeAction.ValidForGroups = true;
+        //        DecreaseAIRangeAction.Icon = @"Textures\GUI\Icons\Actions\Decrease.dds";
+        //        DecreaseAIRangeAction.Action = (b) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                logic.DecreaseAIRange(); // Custom method to decrease AI range
+        //            }
+        //        };
+        //        DecreaseAIRangeAction.Writer = (b, sb) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                sb.Append($"{logic.Terminal_Heart_Range_Slider} Range");
+        //            }
+        //        };
+        //        DecreaseAIRangeAction.Enabled = CustomVisibleCondition;
+        //        MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(DecreaseAIRangeAction);
+        //    }
+        //    {
+        //        var TargetGridsAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetGrids");
+        //        TargetGridsAction.Name = new StringBuilder("Toggle Target Grids");
+        //        TargetGridsAction.ValidForGroups = true;
+        //        TargetGridsAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
+        //        TargetGridsAction.Action = (b) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                // Toggle the "Target Grids" option and ensure sync
+        //                logic.Terminal_Heart_TargetGrids = !logic.Terminal_Heart_TargetGrids; // Toggling the value
+        //                MyAPIGateway.Utilities.ShowNotification($"Target Grids toggled to: {(logic.Terminal_Heart_TargetGrids ? "ON" : "OFF")}", 2000, "White");
+        //            }
+        //        };
+        //        TargetGridsAction.Writer = (b, sb) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                sb.Append(logic.Terminal_Heart_TargetGrids ? "Grid ON" : "Grid OFF");
+        //            }
+        //        };
+        //
+        //        TargetGridsAction.Enabled = CustomVisibleCondition;
+        //        MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(TargetGridsAction);
+        //    }
+        //    {
+        //        var TargetLargeGridsAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetLargeGrids");
+        //        TargetLargeGridsAction.Name = new StringBuilder("Toggle Target Large Grids");
+        //        TargetLargeGridsAction.ValidForGroups = true;
+        //        TargetLargeGridsAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
+        //        TargetLargeGridsAction.Action = (b) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                // Toggle the "Target Large Grids" option and ensure sync
+        //                logic.Terminal_Heart_TargetLargeGrids = !logic.Terminal_Heart_TargetLargeGrids; // Toggling the value
+        //                MyAPIGateway.Utilities.ShowNotification($"Target Large Grids toggled to: {(logic.Terminal_Heart_TargetLargeGrids ? "ON" : "OFF")}", 2000, "White");
+        //            }
+        //        };
+        //        TargetLargeGridsAction.Writer = (b, sb) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                sb.Append(logic.Terminal_Heart_TargetLargeGrids ? "LGrid ON" : "LGrid OFF");
+        //            }
+        //        };
+        //
+        //        TargetLargeGridsAction.Enabled = CustomVisibleCondition;
+        //        MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(TargetLargeGridsAction);
+        //    }
+        //    {
+        //        var TargetSmallGridsAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetSmallGrids");
+        //        TargetSmallGridsAction.Name = new StringBuilder("Toggle Target Small Grids");
+        //        TargetSmallGridsAction.ValidForGroups = true;
+        //        TargetSmallGridsAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
+        //        TargetSmallGridsAction.Action = (b) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                // Toggle the "Target Small Grids" option and ensure sync
+        //                logic.Terminal_Heart_TargetSmallGrids = !logic.Terminal_Heart_TargetSmallGrids; // Toggling the value
+        //                MyAPIGateway.Utilities.ShowNotification($"Target Small Grids toggled to: {(logic.Terminal_Heart_TargetSmallGrids ? "ON" : "OFF")}", 2000, "White");
+        //            }
+        //        };
+        //        TargetSmallGridsAction.Writer = (b, sb) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                sb.Append(logic.Terminal_Heart_TargetSmallGrids ? "SGrid ON" : "SGrid OFF");
+        //            }
+        //        };
+        //
+        //        TargetSmallGridsAction.Enabled = CustomVisibleCondition;
+        //        MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(TargetSmallGridsAction);
+        //    }
+        //    {
+        //        var TargetProjectilesAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetProjectiles");
+        //        TargetProjectilesAction.Name = new StringBuilder("Toggle Target Projectiles");
+        //        TargetProjectilesAction.ValidForGroups = true;
+        //        TargetProjectilesAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
+        //        TargetProjectilesAction.Action = (b) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                // Toggle the targeting of projectiles and ensure sync
+        //                logic.Terminal_Heart_TargetProjectiles = !logic.Terminal_Heart_TargetProjectiles; // Toggling the value
+        //                MyAPIGateway.Utilities.ShowNotification($"Target Projectiles toggled to: {(logic.Terminal_Heart_TargetProjectiles ? "ON" : "OFF")}", 2000, "White");
+        //            }
+        //        };
+        //        TargetProjectilesAction.Writer = (b, sb) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                sb.Append(logic.Terminal_Heart_TargetProjectiles ? "Proj. ON" : "Proj. OFF");
+        //            }
+        //        };
+        //
+        //        TargetProjectilesAction.Enabled = CustomVisibleCondition;
+        //        MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(TargetProjectilesAction);
+        //    }
+        //    {
+        //        var TargetCharactersAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetCharacters");
+        //        TargetCharactersAction.Name = new StringBuilder("Toggle Target Characters");
+        //        TargetCharactersAction.ValidForGroups = true;
+        //        TargetCharactersAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
+        //        TargetCharactersAction.Action = (b) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                // Toggle the "Target Characters" option and ensure sync
+        //                logic.Terminal_Heart_TargetCharacters = !logic.Terminal_Heart_TargetCharacters; // Toggling the value
+        //                MyAPIGateway.Utilities.ShowNotification($"Target Characters toggled to: {(logic.Terminal_Heart_TargetCharacters ? "ON" : "OFF")}", 2000, "White");
+        //            }
+        //        };
+        //        TargetCharactersAction.Writer = (b, sb) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                sb.Append(logic.Terminal_Heart_TargetCharacters ? "Char. ON" : "Char. OFF");
+        //            }
+        //        };
+        //
+        //        TargetCharactersAction.Enabled = CustomVisibleCondition;
+        //        MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(TargetCharactersAction);
+        //    }
+        //    {
+        //        var TargetFriendliesAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetFriendlies");
+        //        TargetFriendliesAction.Name = new StringBuilder("Toggle Target Friendlies");
+        //        TargetFriendliesAction.ValidForGroups = true;
+        //        TargetFriendliesAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
+        //        TargetFriendliesAction.Action = (b) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                // Toggle the "Target Friendlies" option and ensure sync
+        //                logic.Terminal_Heart_TargetFriendlies = !logic.Terminal_Heart_TargetFriendlies; // Toggling the value
+        //                MyAPIGateway.Utilities.ShowNotification($"Target Friendlies toggled to: {(logic.Terminal_Heart_TargetFriendlies ? "ON" : "OFF")}", 2000, "White");
+        //            }
+        //        };
+        //        TargetFriendliesAction.Writer = (b, sb) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                sb.Append(logic.Terminal_Heart_TargetFriendlies ? "Fr. ON" : "Fr. OFF");
+        //            }
+        //        };
+        //
+        //        TargetFriendliesAction.Enabled = CustomVisibleCondition;
+        //        MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(TargetFriendliesAction);
+        //    }
+        //    {
+        //        var TargetNeutralsAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetNeutrals");
+        //        TargetNeutralsAction.Name = new StringBuilder("Toggle Target Neutrals");
+        //        TargetNeutralsAction.ValidForGroups = true;
+        //        TargetNeutralsAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
+        //        TargetNeutralsAction.Action = (b) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                // Toggle the "Target Neutrals" option and ensure sync
+        //                logic.Terminal_Heart_TargetNeutrals = !logic.Terminal_Heart_TargetNeutrals; // Toggling the value
+        //                MyAPIGateway.Utilities.ShowNotification($"Target Neutrals toggled to: {(logic.Terminal_Heart_TargetNeutrals ? "ON" : "OFF")}", 2000, "White");
+        //            }
+        //        };
+        //        TargetNeutralsAction.Writer = (b, sb) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                sb.Append(logic.Terminal_Heart_TargetNeutrals ? "Neu. ON" : "Neu. OFF");
+        //            }
+        //        };
+        //
+        //        TargetNeutralsAction.Enabled = CustomVisibleCondition;
+        //        MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(TargetNeutralsAction);
+        //    }
+        //    {
+        //        var TargetEnemiesAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetEnemies");
+        //        TargetEnemiesAction.Name = new StringBuilder("Toggle Target Enemies");
+        //        TargetEnemiesAction.ValidForGroups = true;
+        //        TargetEnemiesAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
+        //        TargetEnemiesAction.Action = (b) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                // Toggle the "Target Enemies" option and ensure sync
+        //                logic.Terminal_Heart_TargetEnemies = !logic.Terminal_Heart_TargetEnemies; // Toggling the value
+        //                MyAPIGateway.Utilities.ShowNotification($"Target Enemies toggled to: {(logic.Terminal_Heart_TargetEnemies ? "ON" : "OFF")}", 2000, "White");
+        //            }
+        //        };
+        //        TargetEnemiesAction.Writer = (b, sb) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                sb.Append(logic.Terminal_Heart_TargetEnemies ? "Enem. ON" : "Enem. OFF");
+        //            }
+        //        };
+        //
+        //        TargetEnemiesAction.Enabled = CustomVisibleCondition;
+        //        MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(TargetEnemiesAction);
+        //    }
+        //    {
+        //        var TargetUnownedAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + "ToggleTargetUnowned");
+        //        TargetUnownedAction.Name = new StringBuilder("Toggle Target Unowned");
+        //        TargetUnownedAction.ValidForGroups = true;
+        //        TargetUnownedAction.Icon = @"Textures\GUI\Icons\Actions\Toggle.dds";
+        //        TargetUnownedAction.Action = (b) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                // Toggle the "Target Unowned" option and ensure sync
+        //                logic.Terminal_Heart_TargetUnowned = !logic.Terminal_Heart_TargetUnowned; // Toggling the value
+        //                MyAPIGateway.Utilities.ShowNotification($"Target Unowned toggled to: {(logic.Terminal_Heart_TargetUnowned ? "ON" : "OFF")}", 2000, "White");
+        //            }
+        //        };
+        //        TargetUnownedAction.Writer = (b, sb) =>
+        //        {
+        //            var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+        //            if (logic != null)
+        //            {
+        //                sb.Append(logic.Terminal_Heart_TargetUnowned ? "Unow. ON" : "Unow. OFF");
+        //            }
+        //        };
+        //
+        //        TargetUnownedAction.Enabled = CustomVisibleCondition;
+        //        MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(TargetUnownedAction);
+        //    }
+        //}
 
 
         static void CreateProperties()
