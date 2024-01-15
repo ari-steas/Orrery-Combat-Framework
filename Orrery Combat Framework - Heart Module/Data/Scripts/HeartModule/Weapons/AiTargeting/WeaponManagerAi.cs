@@ -17,15 +17,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
         public override void LoadData()
         {
             I = this;
+            // Ensure this runs only on the server to avoid unnecessary calculations on clients
             if (!MyAPIGateway.Session.IsServer)
             {
                 SetUpdateOrder(MyUpdateOrder.NoUpdate);
                 return;
             }
 
+            // Subscribe to grid addition and removal events
             HeartData.I.OnGridAdd += InitializeGridAI;
             HeartData.I.OnGridRemove += CloseGridAI;
-            // Additional AI initialization logic here
         }
 
         protected override void UnloadData()
@@ -33,50 +34,45 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             I = null;
             HeartData.I.OnGridAdd -= InitializeGridAI;
             HeartData.I.OnGridRemove -= CloseGridAI;
-            // Clean up AI resources here
         }
 
         public override void UpdateAfterSimulation()
         {
-            // AI update logic here
-            // TODO: Throttle how often grid targeting is updated based on... option?
+            // AI update logic here, potentially throttled for performance
+            UpdateAITargeting();
         }
 
         private void InitializeGridAI(IMyCubeGrid grid)
         {
-            // Initialize AI targeting for the grid and store in gridAITargeting
-            GridAITargeting.Add(grid, new GridAiTargeting(grid));
+            // Check if the grid has valid physics before initializing AI
+            if (grid.Physics != null)
+            {
+                GridAITargeting.Add(grid, new GridAiTargeting(grid));
+                //debug shownotification
+                MyAPIGateway.Utilities.ShowNotification("Grid AI Initialized on " + grid, 1000, "White");
+            }
         }
 
         private void CloseGridAI(IMyCubeGrid grid)
         {
             GridAITargeting[grid].Close();
             GridAITargeting.Remove(grid);
+            MyAPIGateway.Utilities.ShowNotification("Grid AI closed on " + grid, 1000, "White");
         }
 
         private void UpdateAITargeting()
         {
-            // Logic for updating AI targeting for each grid
+            foreach (var gridAi in GridAITargeting)
+            {
+                // Execute AI targeting logic only for grids with SorterWeaponLogic
+                if (GridWeapons.ContainsKey(gridAi.Key))
+                {
+                    gridAi.Value.UpdateTargeting(); // Method to be implemented in GridAiTargeting class
+                }
+            }
         }
 
-        // Define the AITargeting class or struct here, with properties like Range, CurrentTarget, etc.
-
-        List<IMyCubeGrid> TargetableGrids = new List<IMyCubeGrid>();
-        private void UpdateGridTargetList()
-        {
-
-        }
-
-        List<IMyCharacter> TargetableCharacters = new List<IMyCharacter>();
-        private void UpdateCharacterTargetList()
-        {
-
-        }
-
-        List<uint> TargetableProjectiles = new List<uint>();
-        private void UpdateProjectileTargetList()
-        {
-
-        }
+        // The GridAiTargeting class should handle the AI logic for each grid
+        // Including targeting range and target selection logic
     }
 }
