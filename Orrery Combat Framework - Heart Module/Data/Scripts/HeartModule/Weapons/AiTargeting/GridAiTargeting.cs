@@ -198,7 +198,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
             foreach (var entity in entities)
             {
-                if (entity == Grid)
+                if (entity == Grid || entity.Physics == null)
                     continue;
                 if (entity is IMyCubeGrid)
                 {
