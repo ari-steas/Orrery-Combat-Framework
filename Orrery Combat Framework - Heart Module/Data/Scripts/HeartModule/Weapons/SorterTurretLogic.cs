@@ -271,6 +271,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         }
 
         public MySync<float, SyncDirection.BothWays> AiRange;
+        public MySync<bool, SyncDirection.BothWays> PreferUniqueTargets;
         public MySync<bool, SyncDirection.BothWays> TargetGridsState;
         public MySync<bool, SyncDirection.BothWays> TargetProjectilesState;
         public MySync<bool, SyncDirection.BothWays> TargetCharactersState;
@@ -297,7 +298,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             }
         }
 
-        public bool Terminal_Heart_PreferUniqueTargets
+        public bool Terminal_Heart_PreferUniqueTargets // TODO
         {
             get
             {
@@ -308,7 +309,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 //Settings.TargetGridsState = value;
-                //TargetGridsState.Value = value;
+                PreferUniqueTargets.Value = value;
                 //if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
                 //    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
 

@@ -10,6 +10,7 @@ using VRage.Game;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
+using VRage.Utils;
 using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
@@ -71,23 +72,49 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             if (closestProj != null)
                 DebugDraw.AddLine(Grid.PositionComp.WorldAABB.Center, closestProj.Position, Color.Blue, 0);
 
-            TargetedGrids.Clear();
-            TargetedProjectiles.Clear();
-            TargetedCharacters.Clear();
-
-            foreach (var weapon in Weapons)
+            foreach (var weapon in Weapons) // In desperate need of a refactoring
             {
-                if (weapon is SorterTurretLogic)
+                if (!(weapon is SorterTurretLogic))
+                    continue;
+
+                SorterTurretLogic turret = weapon as SorterTurretLogic;
+                turret.TargetProjectile = null;
+                turret.TargetEntity = null;
+                bool turretHasTarget = false;
+
+                if (turret.TargetProjectilesState)
                 {
-                    SorterTurretLogic turret = weapon as SorterTurretLogic;
-                    turret.TargetProjectile = null;
-                    turret.TargetEntity = null;
-                    bool turretHasTarget = false;
-
-                    if (turret.TargetProjectilesState)
+                    if (turret.PreferUniqueTargets) // Try to balance targeting
                     {
-                        
+                        List<Projectile> targetable = new List<Projectile>();
+                        ValidProjectiles.ForEach(p =>
+                        {
+                            Projectile proj = ProjectileManager.I.GetProjectile(p);
+                            if (turret.ShouldConsiderTarget(proj))
+                                targetable.Add(proj);
+                        });
 
+                        if (targetable.Count == 0) // If zero targetable, go to next weapon
+                            continue;
+
+                        Projectile minTargeted = targetable[0];
+                        int minCount = int.MaxValue;
+                        targetable.ForEach(p =>
+                        {
+                            if (TargetedProjectiles[p.Id] < minCount)
+                            {
+                                minTargeted = p;
+                                minCount = TargetedProjectiles[p.Id];
+                            }
+                        });
+
+                        turret.TargetProjectile = minTargeted;
+                        turretHasTarget = true;
+
+                        TargetedProjectiles[minTargeted.Id]++; // Keep track of the number of turrets shooting a target
+                    }
+                    else
+                    {
                         foreach (var projectile in ValidProjectiles) // Tell turrets to focus on the closest valid target
                         {
                             if (turret.ShouldConsiderTarget(ProjectileManager.I.GetProjectile(projectile)))
@@ -101,7 +128,38 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                             }
                         }
                     }
-                    if (!turretHasTarget && turret.TargetCharactersState)
+                }
+                if (!turretHasTarget && turret.TargetCharactersState)
+                {
+                    if (turret.PreferUniqueTargets) // Try to balance targeting
+                    {
+                        List<IMyCharacter> targetable = new List<IMyCharacter>();
+                        ValidCharacters.ForEach(p =>
+                        {
+                            if (turret.ShouldConsiderTarget(p))
+                                targetable.Add(p);
+                        });
+
+                        if (targetable.Count == 0) // If zero targetable, go to next weapon
+                            continue;
+
+                        IMyCharacter minTargeted = targetable[0];
+                        int minCount = int.MaxValue;
+                        targetable.ForEach(p =>
+                        {
+                            if (TargetedCharacters[p] < minCount)
+                            {
+                                minTargeted = p;
+                                minCount = TargetedCharacters[p];
+                            }
+                        });
+
+                        turret.TargetEntity = minTargeted;
+                        turretHasTarget = true;
+
+                        TargetedCharacters[minTargeted]++; // Keep track of the number of turrets shooting a target
+                    }
+                    else
                     {
                         foreach (var character in ValidCharacters)
                         {
@@ -116,7 +174,38 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                             }
                         }
                     }
-                    if (!turretHasTarget && turret.TargetGridsState)
+                }
+                if (!turretHasTarget && turret.TargetGridsState)
+                {
+                    if (turret.PreferUniqueTargets) // Try to balance targeting
+                    {
+                        List<IMyCubeGrid> targetable = new List<IMyCubeGrid>();
+                        ValidGrids.ForEach(p =>
+                        {
+                            if (turret.ShouldConsiderTarget(p))
+                                targetable.Add(p);
+                        });
+
+                        if (targetable.Count == 0) // If zero targetable, go to next weapon
+                            continue;
+
+                        IMyCubeGrid minTargeted = targetable[0];
+                        int minCount = int.MaxValue;
+                        targetable.ForEach(p =>
+                        {
+                            if (TargetedGrids[p] < minCount)
+                            {
+                                minTargeted = p;
+                                minCount = TargetedGrids[p];
+                            }
+                        });
+
+                        turret.TargetEntity = minTargeted;
+                        turretHasTarget = true;
+                        MyAPIGateway.Utilities.ShowNotification(TargetedGrids[minTargeted] + "", 1000/60);
+                        TargetedGrids[minTargeted]++; // Keep track of the number of turrets shooting a target
+                    }
+                    else
                     {
                         foreach (var grid in ValidGrids)
                         {
