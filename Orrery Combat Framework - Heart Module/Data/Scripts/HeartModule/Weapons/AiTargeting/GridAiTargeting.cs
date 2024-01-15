@@ -53,6 +53,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             SetTargetingFlags();
             ScanForTargets();
             MyAPIGateway.Utilities.ShowNotification("Grids: " + ValidGrids.Count, 1000/60);
+            MyAPIGateway.Utilities.ShowNotification("Characters: " + ValidCharacters.Count, 1000/60);
+            MyAPIGateway.Utilities.ShowNotification("Projectiles: " + ValidProjectiles.Count, 1000/60);
 
             IMyCubeGrid closestGrid = GetClosestGrid();
             if (closestGrid != null)

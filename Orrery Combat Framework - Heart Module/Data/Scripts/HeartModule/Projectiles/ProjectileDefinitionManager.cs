@@ -28,7 +28,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             {
                 Velocity = 800,
                 Acceleration = 0,
-                Health = -1,
+                Health = 1,
                 MaxTrajectory = 1000,
                 MaxLifetime = -1,
                 IsHitscan = false,
