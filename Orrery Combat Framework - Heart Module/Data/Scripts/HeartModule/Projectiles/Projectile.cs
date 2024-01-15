@@ -149,11 +149,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (NextMoveStep == Vector3D.Zero)
                 return -1;
 
-            List<MyLineSegmentOverlapResult<MyEntity>> intersects = new List<MyLineSegmentOverlapResult<MyEntity>>();
-            //MyAPIGateway.Physics.CastRay(Position, NextMoveStep, intersects);
+            //List<MyLineSegmentOverlapResult<MyEntity>> intersects = new List<MyLineSegmentOverlapResult<MyEntity>>();
+            List<IHitInfo> intersects = new List<IHitInfo>();
+            MyAPIGateway.Physics.CastRay(Position, NextMoveStep, intersects);
 
-            LineD ray = new LineD(Position, NextMoveStep);
-            MyGamePruningStructure.GetTopmostEntitiesOverlappingRay(ref ray, intersects); // TODO: This is causing problems with hitting own grid
+            //LineD ray = new LineD(Position, NextMoveStep);
+            //MyGamePruningStructure.GetTopmostEntitiesOverlappingRay(ref ray, intersects); // TODO: This is causing problems with hitting own grid
 
             double len = IsHitscan ? Definition.PhysicalProjectile.MaxTrajectory : Vector3D.Distance(Position, NextMoveStep);
             double dist = -1;
@@ -166,22 +167,21 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                         QueueDispose();
                     break;
                 }
-                Vector3D hitPos = ray.From + ray.Direction * hitInfo.Distance;
 
-                if (hitInfo.Element.EntityId == Firer || (DamageHandler.GetCollider(hitInfo.Element as IMyCubeGrid, hitPos, ray.Direction)?.FatBlock?.EntityId ?? -1) == Firer)
+                if (hitInfo.HitEntity.EntityId == Firer)
                     continue; // Skip firer
 
-                dist = hitInfo.Distance;
+                dist = hitInfo.Fraction * len;
 
-                if (hitInfo.Element is IMyCubeGrid)
-                    DamageHandler.QueueEvent(new DamageEvent(hitInfo.Element, DamageEvent.DamageEntType.Grid, this, hitPos, ray.Direction));
-                else if (hitInfo.Element is IMyCharacter)
-                    DamageHandler.QueueEvent(new DamageEvent(hitInfo.Element, DamageEvent.DamageEntType.Character, this, hitPos, ray.Direction));
+                if (hitInfo.HitEntity is IMyCubeGrid)
+                    DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Grid, this, hitInfo.Position, hitInfo.Normal));
+                else if (hitInfo.HitEntity is IMyCharacter)
+                    DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Character, this, hitInfo.Position, hitInfo.Normal));
 
                 if (MyAPIGateway.Session.IsServer)
-                    PlayImpactAudio(hitPos); // Audio is global
+                    PlayImpactAudio(hitInfo.Position); // Audio is global
                 if (!MyAPIGateway.Utilities.IsDedicated)
-                    DrawImpactParticle(hitPos, -ray.Direction); // Visuals are clientside
+                    DrawImpactParticle(hitInfo.Position, hitInfo.Normal); // Visuals are clientside
 
                 RemainingImpacts -= 1;
             }
