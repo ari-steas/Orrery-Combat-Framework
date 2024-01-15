@@ -1,4 +1,5 @@
-﻿using Sandbox.Game.Localization;
+﻿using Heart_Module.Data.Scripts.HeartModule.Weapons.Setup;
+using Sandbox.Game.Localization;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces.Terminal;
 using System.Text;
@@ -95,22 +96,13 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
             }
             {
-                var ShootToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartWeaponShoot");
-                ShootToggle.Title = MyStringId.GetOrCompute("Toogle Shoot");
-                ShootToggle.Tooltip = MyStringId.GetOrCompute("TargetGridsDesc");
-                ShootToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
-                // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
-                // optional, they both default to true.
-                ShootToggle.Visible = CustomVisibleCondition;
-                //c.Enabled = CustomVisibleCondition;
-                ShootToggle.OnText = MySpaceTexts.SwitchText_On;
-                ShootToggle.OffText = MySpaceTexts.SwitchText_Off;
-                //c.OffText = MyStringId.GetOrCompute("Off");
-                // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
-                ShootToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Shoot;  // Getting the value
-                ShootToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Shoot = v; // Setting the value
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(ShootToggle);
+                ControlsHelper.CreateToggle(
+                   "HeartWeaponShoot",
+                   "Toogle Shoot",
+                   "TargetGridsDesc",
+                   (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Shoot,
+                   (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Shoot = v
+                   );
             }
             {
                 var ControlComboBox = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlCombobox, IMyConveyorSorter>(IdPrefix + "HeartControlComboBox");
@@ -172,22 +164,13 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(slider);
             }
             {
-                var TargetGridsToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartTargetGrids");
-                TargetGridsToggle.Title = MyStringId.GetOrCompute("Target Grids");
-                TargetGridsToggle.Tooltip = MyStringId.GetOrCompute("TargetGridsDesc");
-                TargetGridsToggle.SupportsMultipleBlocks = true; // wether this control should be visible when multiple blocks are selected (as long as they all have this control).
-                // callbacks to determine if the control should be visible or not-grayed-out(Enabled) depending on whatever custom condition you want, given a block instance.
-                // optional, they both default to true.
-                TargetGridsToggle.Visible = CustomVisibleCondition;
-                //c.Enabled = CustomVisibleCondition;
-                TargetGridsToggle.OnText = MySpaceTexts.SwitchText_On;
-                TargetGridsToggle.OffText = MySpaceTexts.SwitchText_Off;
-                //c.OffText = MyStringId.GetOrCompute("Off");
-                // setters and getters should both be assigned on all controls that have them, to avoid errors in mods or PB scripts getting exceptions from them.
-                TargetGridsToggle.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetGrids;  // Getting the value
-                TargetGridsToggle.Setter = (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetGrids = v; // Setting the value
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(TargetGridsToggle);
+                ControlsHelper.CreateToggle(
+                    "HeartTargetGrids",
+                    "Target Grids",
+                    "TargetGridsDesc",
+                    (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetGrids,
+                    (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_TargetGrids = v
+                    );
             }
             {
                 var TargetLargeGridsToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + "HeartTargetLargeGrids");
