@@ -33,11 +33,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
         {
             Grid = grid;
             Grid.OnBlockAdded += Grid_OnBlockAdded;
+
+            SetTargetingFlags();
         }
 
         private void Grid_OnBlockAdded(IMySlimBlock obj)
         {
-
+            // Unused for now
         }
 
         public void UpdateTargeting()
