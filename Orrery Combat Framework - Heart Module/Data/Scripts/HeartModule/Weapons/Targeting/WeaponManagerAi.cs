@@ -1,28 +1,31 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using System.Collections.Generic;
+using VRage.Game.Components;
 using VRage.Game.ModAPI;
+using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Targeting
 {
-    internal class WeaponManagerAi : WeaponManager
+    [MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation)]
+    internal class WeaponManagerAi : MySessionComponentBase
     {
+        public WeaponManagerAi I;
         private Dictionary<IMyCubeGrid, GridAiTargeting> GridAITargeting = new Dictionary<IMyCubeGrid, GridAiTargeting>();
 
         public override void LoadData()
         {
-            base.LoadData();
+            I = this;
             // Additional AI initialization logic here
         }
 
         protected override void UnloadData()
         {
+            I = null;
             // Clean up AI resources here
-            base.UnloadData();
         }
 
-        public override void UpdateBeforeSimulation()
+        public override void UpdateAfterSimulation()
         {
-            base.UpdateBeforeSimulation();
             // AI update logic here
         }
 
