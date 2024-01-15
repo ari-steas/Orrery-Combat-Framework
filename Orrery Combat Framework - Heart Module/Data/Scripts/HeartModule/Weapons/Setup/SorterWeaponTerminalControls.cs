@@ -47,7 +47,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             Done = true;
             // these are all the options and they're not all required so use only what you need.
             CreateControls();
-            //CreateActions(context);
+            CreateActions(context);
             CreateProperties();
         }
 
