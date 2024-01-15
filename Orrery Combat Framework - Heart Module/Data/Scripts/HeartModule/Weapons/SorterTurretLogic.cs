@@ -297,6 +297,24 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             }
         }
 
+        public bool Terminal_Heart_PreferUniqueTargets
+        {
+            get
+            {
+                //return Settings.TargetGridsState;
+                return true;
+            }
+
+            set
+            {
+                //Settings.TargetGridsState = value;
+                //TargetGridsState.Value = value;
+                //if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                //    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+
+            }
+        }
+
         public bool Terminal_Heart_TargetGrids
         {
             get
