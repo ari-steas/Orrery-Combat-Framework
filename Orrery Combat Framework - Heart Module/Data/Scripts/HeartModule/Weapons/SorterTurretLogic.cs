@@ -13,6 +13,7 @@ using YourName.ModName.Data.Scripts.HeartModule.Weapons;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 using VRage.Game;
 using VRage.Game.ModAPI;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
@@ -31,7 +32,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         public bool IsTargetInRange { get; private set; } = false;
 
         public Vector3D AimPoint { get; private set; } = Vector3D.MaxValue; // TODO fix, should be in targeting CS
-        private GenericKeenTargeting targeting = new GenericKeenTargeting();
+        //private GenericKeenTargeting targeting = new GenericKeenTargeting();
+
+        public IMyEntity TargetEntity = null;
+        public Projectile TargetProjectile = null;
 
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
         {
@@ -53,68 +57,39 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             base.UpdateAfterSimulation();
         }
 
-        private MyEntity currentTarget = null;
-
         public void UpdateTargeting()
         {
             MuzzleMatrix = CalcMuzzleMatrix(0); // Set stored MuzzleMatrix
 
-            // Retrieve the target based on the targeting settings
-            MyEntity potentialTarget = targeting.GetTarget(
-                SorterWep?.CubeGrid,
-                Terminal_Heart_TargetGrids,
-                Terminal_Heart_TargetLargeGrids,
-                Terminal_Heart_TargetSmallGrids,
-                Terminal_Heart_TargetFriendlies,
-                Terminal_Heart_TargetNeutrals,
-                Terminal_Heart_TargetEnemies,
-                Terminal_Heart_TargetUnowned
-            );
-
-            // Check if the potential target is different from the current target
-            if (currentTarget != potentialTarget)
-            {
-                // Assign the new potential target
-                currentTarget = potentialTarget;
-
-                // Debug Info: Display the current target's name
-                string targetName = currentTarget != null ? currentTarget.DisplayName : "None";
-
-                // If the potential target is null, reset targeting state
-                if (currentTarget == null)
-                {
-                    ResetTargetingState();
-                }
-            }
-
-            // Proceed with targeting if a valid target is found
-            if (currentTarget != null)
+            if (TargetProjectile != null)
             {
                 AimPoint = TargetingHelper.InterceptionPoint(
-                    MuzzleMatrix.Translation,
-                    SorterWep.CubeGrid.LinearVelocity,
-                    currentTarget, 0) ?? Vector3D.MaxValue;
-
-                UpdateTurretSubparts(deltaTick, AimPoint); // Rotate the turret
+                        MuzzleMatrix.Translation,
+                        SorterWep.CubeGrid.LinearVelocity,
+                        TargetProjectile, 0) ?? Vector3D.MaxValue;
+                UpdateTargetState(AimPoint);
+            }
+            else if (TargetEntity != null)
+            {
+                AimPoint = TargetingHelper.InterceptionPoint(
+                        MuzzleMatrix.Translation,
+                        SorterWep.CubeGrid.LinearVelocity,
+                        TargetEntity, 0) ?? Vector3D.MaxValue;
                 UpdateTargetState(AimPoint);
             }
             else
-            {
-                // If no target is found, ensure the turret is not aligned or in range
-                IsTargetAligned = false;
-                IsTargetInRange = false;
-                AimPoint = Vector3D.MaxValue;
+                ResetTargetingState();
 
-                UpdateTurretSubparts(deltaTick, Vector3D.MaxValue);
-            }
+            UpdateTurretSubparts(deltaTick, AimPoint);
         }
 
         private void ResetTargetingState()
         {
-            currentTarget = null;
+            //currentTarget = null;
             IsTargetAligned = false;
             IsTargetInRange = false;
             AutoShoot = false; // Disable automatic shooting
+            AimPoint = Vector3D.MaxValue;
         }
 
         /// <summary>
@@ -133,6 +108,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public bool ShouldConsiderTarget(IMyCubeGrid targetGrid)
         {
+            if (!TargetGridsState || targetGrid == null)
+                return false;
+
             switch (targetGrid.GridSizeEnum) // Filter large/small grid
             {
                 case MyCubeSize.Large:
@@ -145,7 +123,50 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                     break;
             }
 
-            switch (HeartUtils.GetRelationsBetweeenGrids(SorterWep.CubeGrid, targetGrid)) // Filter target relations
+            if (!ShouldConsiderTarget(HeartUtils.GetRelationsBetweeenGrids(SorterWep.CubeGrid, targetGrid)))
+                return false;
+
+            Vector3D? intercept = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, SorterWep.CubeGrid.LinearVelocity, targetGrid, CurrentAmmo); // Check if it can even hit
+            return intercept != null; // All possible negatives have been filtered out
+        }
+
+        public bool ShouldConsiderTarget(IMyCharacter targetCharacter)
+        {
+            if (!TargetCharactersState || targetCharacter == null)
+                return false;
+
+            if (!ShouldConsiderTarget(HeartUtils.GetRelationsBetweenGridAndPlayer(SorterWep.CubeGrid, targetCharacter.ControllerInfo?.ControllingIdentityId)))
+                return false;
+
+            Vector3D? intercept = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, SorterWep.CubeGrid.LinearVelocity, targetCharacter, CurrentAmmo); // Check if it can even hit
+            return intercept != null; // All possible negatives have been filtered out
+        }
+
+        public bool ShouldConsiderTarget(Projectile targetProjectile)
+        {
+            if (!TargetProjectilesState || targetProjectile == null)
+                return false;
+
+            MyRelationsBetweenPlayerAndBlock relations = MyRelationsBetweenPlayerAndBlock.NoOwnership;
+
+            IMyEntity entity = MyAPIGateway.Entities.GetEntityById(targetProjectile.Firer);
+            if (entity is IMyCharacter)
+                relations = HeartUtils.GetRelationsBetweenGridAndPlayer(SorterWep.CubeGrid, ((IMyCharacter)entity).ControllerInfo?.ControllingIdentityId);
+            else if (entity is IMyCubeBlock)
+                relations = HeartUtils.GetRelationsBetweeenGrids(SorterWep.CubeGrid, ((IMyCubeBlock)entity).CubeGrid);
+
+            MyAPIGateway.Utilities.ShowNotification("" + relations, 1000/60);
+
+            if (!ShouldConsiderTarget(relations))
+                return false;
+
+            Vector3D? intercept = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, SorterWep.CubeGrid.LinearVelocity, targetProjectile, CurrentAmmo); // Check if it can even hit
+            return intercept != null; // All possible negatives have been filtered out
+        }
+
+        public bool ShouldConsiderTarget(MyRelationsBetweenPlayerAndBlock relations)
+        {
+            switch (relations) // Filter target relations
             {
                 case MyRelationsBetweenPlayerAndBlock.NoOwnership:
                     if (!TargetUnownedState)
@@ -166,8 +187,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                         return false;
                     break;
             }
-
-            return true; // All possible negatives have been filtered out
+            return true;
         }
 
         public override void TryShoot()
