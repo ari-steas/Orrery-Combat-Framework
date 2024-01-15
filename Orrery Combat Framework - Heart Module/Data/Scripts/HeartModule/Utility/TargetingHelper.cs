@@ -2,21 +2,49 @@
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using System;
 using VRage.Game.Entity;
+using VRage.ModAPI;
 using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Utility
 {
     public static class TargetingHelper
     {
-        public static Vector3D? InterceptionPoint(Vector3D startPos, Vector3D startVel, MyEntity target, int projectileDef)
+        /// <summary>
+        /// Calculate lead position for a projectile.
+        /// </summary>
+        /// <param name="startPos"></param>
+        /// <param name="startVel"></param>
+        /// <param name="target"></param>
+        /// <param name="projectileDef"></param>
+        /// <returns></returns>
+        public static Vector3D? InterceptionPoint(Vector3D startPos, Vector3D startVel, Projectile target, int projectileDef)
+        {
+            SerializableProjectileDefinition def = ProjectileDefinitionManager.GetDefinition(projectileDef);
+            if (def == null || target == null)
+                return null;
+            if (def.PhysicalProjectile.IsHitscan)
+                return target.Position - (target.InheritedVelocity + target.Direction * target.Velocity) / 60f; // Because this doesn't run during simulation, offset velocity
+
+            return InterceptionPoint(startPos, startVel, target.Position, target.InheritedVelocity + target.Direction * target.Velocity, def.PhysicalProjectile.Velocity);
+        }
+
+        /// <summary>
+        /// Calculate lead position for an entity.
+        /// </summary>
+        /// <param name="startPos"></param>
+        /// <param name="startVel"></param>
+        /// <param name="target"></param>
+        /// <param name="projectileDef"></param>
+        /// <returns></returns>
+        public static Vector3D? InterceptionPoint(Vector3D startPos, Vector3D startVel, IMyEntity target, int projectileDef)
         {
             SerializableProjectileDefinition def = ProjectileDefinitionManager.GetDefinition(projectileDef);
             if (def == null || target?.Physics == null)
                 return null;
             if (def.PhysicalProjectile.IsHitscan)
-                return target.Physics.CenterOfMassWorld - target.Physics.LinearVelocity / 60f; // Because this doesn't run during simulation, offset velocity
+                return target.WorldAABB.Center - target.Physics.LinearVelocity / 60f; // Because this doesn't run during simulation, offset velocity
 
-            return InterceptionPoint(startPos, startVel, target.Physics.CenterOfMassWorld, target.Physics.LinearVelocity, def.PhysicalProjectile.Velocity);
+            return InterceptionPoint(startPos, startVel, target.WorldAABB.Center, target.Physics.LinearVelocity, def.PhysicalProjectile.Velocity);
         }
 
         public static Vector3D? InterceptionPoint(Vector3D startPos, Vector3D startVel, Vector3D targetPos, Vector3D targetVel, float projectileSpeed)

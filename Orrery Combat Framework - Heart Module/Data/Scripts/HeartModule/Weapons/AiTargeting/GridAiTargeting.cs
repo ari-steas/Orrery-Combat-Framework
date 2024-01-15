@@ -65,6 +65,25 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             Projectile closestProj = GetClosestProjectile();
             if (closestProj != null)
                 DebugDraw.AddLine(Grid.PositionComp.WorldAABB.Center, closestProj.Position, Color.Blue, 0);
+
+            foreach (var weapon in Weapons)
+            {
+                if (weapon is SorterTurretLogic)
+                {
+                    SorterTurretLogic turret = weapon as SorterTurretLogic;
+                    turret.TargetProjectile = null;
+                    turret.TargetEntity = null;
+
+                    if (turret.ShouldConsiderTarget(closestProj))
+                        turret.TargetProjectile = closestProj;
+                    else if (turret.ShouldConsiderTarget(closestChar))
+                        turret.TargetEntity = closestChar;
+                    else if (turret.ShouldConsiderTarget(closestGrid))
+                        turret.TargetEntity = closestGrid;
+                    else
+                        MyAPIGateway.Utilities.ShowNotification("NoValidTarget", 1000 / 60);
+                }
+            }
         }
 
         private IMyCubeGrid GetClosestGrid()
@@ -197,30 +216,24 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
         {
             float maxRangeSq = MaxTargetingRange * MaxTargetingRange;
             Vector3D gridPosition = Grid.PositionComp.WorldAABB.Center;
+            ValidGrids.Clear();
+            ValidCharacters.Clear();
+            ValidProjectiles.Clear();
 
             if (DoesTargetGrids) // Limit valid grids to those in range
-            {
-                ValidGrids.Clear();
                 foreach (var grid in allGrids)
                     if (!distanceCheck || Vector3D.DistanceSquared(gridPosition, grid.GetPosition()) < maxRangeSq)
                         ValidGrids.Add(grid);
-            }
 
             if (DoesTargetCharacters) // Limit valid characters to those in range
-            {
-                ValidCharacters.Clear();
                 foreach (var character in allCharacters)
                     if (!distanceCheck || Vector3D.DistanceSquared(gridPosition, character.GetPosition()) < maxRangeSq)
                         ValidCharacters.Add(character);
-            }
 
             if (DoesTargetProjectiles) // Limit valid projectiles to those in range
-            {
-                ValidProjectiles.Clear();
                 foreach (var projectile in allProjectiles)
                     if (!distanceCheck || Vector3D.DistanceSquared(gridPosition, ProjectileManager.I.GetProjectile(projectile).Position) < maxRangeSq)
                         ValidProjectiles.Add(projectile);
-            }
         }
 
         public void Close()

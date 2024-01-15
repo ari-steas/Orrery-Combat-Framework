@@ -78,6 +78,17 @@ namespace Heart_Module.Data.Scripts.HeartModule
             return MapPlayerRelationsToBlock(GetRelationsBetweenPlayers(owner, targetOwner));
         }
 
+        public static MyRelationsBetweenPlayerAndBlock GetRelationsBetweenGridAndPlayer(IMyCubeGrid ownGrid, long? targetIdentity)
+        {
+            if (targetIdentity == null)
+                return MyRelationsBetweenPlayerAndBlock.Enemies;
+            if (ownGrid.BigOwners.Count == 0)
+                return MyRelationsBetweenPlayerAndBlock.NoOwnership;
+            long owner = ownGrid.BigOwners[0];
+
+            return MapPlayerRelationsToBlock(GetRelationsBetweenPlayers(owner, targetIdentity.Value));
+        }
+
         public static double Clamp(double value, double min, double max)
         {
             if (value < min)
