@@ -21,6 +21,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
         public Random Random = new Random();
         public ulong SteamId = 0;
         public List<IMyPlayer> Players = new List<IMyPlayer>();
+        public bool DegradedMode = false;
         public IMyPlayer GetPlayerFromSteamId(ulong id)
         {
             foreach (var player in Players)
