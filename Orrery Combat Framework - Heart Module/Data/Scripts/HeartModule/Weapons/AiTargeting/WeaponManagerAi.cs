@@ -10,73 +10,110 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
     [MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation)]
     internal class WeaponManagerAi : MySessionComponentBase
     {
-        public WeaponManagerAi I;
-        private Dictionary<IMyCubeGrid, GridAiTargeting> GridAITargeting = new Dictionary<IMyCubeGrid, GridAiTargeting>();
-        Dictionary<IMyCubeGrid, List<SorterWeaponLogic>> GridWeapons => WeaponManager.I.GridWeapons;
+        private Dictionary<IMyCubeGrid, GridAiTargeting> AiPreparedGrids = new Dictionary<IMyCubeGrid, GridAiTargeting>();
+        private List<IMyCubeGrid> AiActivatedGrids = new List<IMyCubeGrid>();
+        private Dictionary<IMyCubeGrid, List<SorterWeaponLogic>> GridWeapons => WeaponManager.I.GridWeapons;
 
         public override void LoadData()
         {
-            I = this;
+            // Ensure this runs only on the server to avoid unnecessary calculations on clients
             if (!MyAPIGateway.Session.IsServer)
             {
                 SetUpdateOrder(MyUpdateOrder.NoUpdate);
                 return;
             }
 
+            // Subscribe to grid addition and removal events
             HeartData.I.OnGridAdd += InitializeGridAI;
             HeartData.I.OnGridRemove += CloseGridAI;
-            // Additional AI initialization logic here
         }
 
         protected override void UnloadData()
         {
-            I = null;
             HeartData.I.OnGridAdd -= InitializeGridAI;
             HeartData.I.OnGridRemove -= CloseGridAI;
-            // Clean up AI resources here
         }
 
         public override void UpdateAfterSimulation()
         {
-            // AI update logic here
-            // TODO: Throttle how often grid targeting is updated based on... option?
+            // AI update logic here, potentially throttled for performance
+            UpdateAITargeting();
         }
 
         private void InitializeGridAI(IMyCubeGrid grid)
         {
-            // Initialize AI targeting for the grid and store in gridAITargeting
-            GridAITargeting.Add(grid, new GridAiTargeting(grid));
+            if (grid.Physics == null) return;
+
+            var aiTargeting = new GridAiTargeting(grid);
+            bool hasConveyorSorter = CheckGridForConveyorSorter(grid);
+            aiTargeting.EnableAi(hasConveyorSorter);
+
+            string status = hasConveyorSorter ? "enabled" : "disabled";
+            MyAPIGateway.Utilities.ShowNotification($"Grid AI {status} initialized for grid '{grid.DisplayName}'", 1000, "White");
+
+            AiPreparedGrids.Add(grid, aiTargeting);
+
+            if (hasConveyorSorter)
+            {
+                AiActivatedGrids.Add(grid);
+            }
+        }
+
+        private bool CheckGridForConveyorSorter(IMyCubeGrid grid)
+        {
+            bool hasConveyorSorter = HasSorterWeaponLogic(grid);
+
+            if (!hasConveyorSorter)
+            {
+                var connectedGrids = new List<IMyCubeGrid>(); // Create your own collection
+                MyAPIGateway.GridGroups.GetGroup(grid, GridLinkTypeEnum.Mechanical, connectedGrids);
+                foreach (var subGrid in connectedGrids)
+                {
+                    if (HasSorterWeaponLogic(subGrid))
+                    {
+                        hasConveyorSorter = true;
+                        break; // If found in any grid, no need to check further
+                    }
+                }
+            }
+
+            return hasConveyorSorter;
+        }
+
+        private bool HasSorterWeaponLogic(IMyCubeGrid grid)
+        {
+            List<SorterWeaponLogic> weaponsOnGrid;
+            if (GridWeapons.TryGetValue(grid, out weaponsOnGrid))
+            {
+                return weaponsOnGrid.Exists(weaponLogic => weaponLogic is SorterWeaponLogic);
+            }
+            return false;
         }
 
         private void CloseGridAI(IMyCubeGrid grid)
         {
-            GridAITargeting[grid].Close();
-            GridAITargeting.Remove(grid);
+            if (grid.Physics == null) return;
+
+            if (AiPreparedGrids.ContainsKey(grid))
+            {
+                AiPreparedGrids[grid].Close();
+                AiPreparedGrids.Remove(grid);
+                AiActivatedGrids.Remove(grid);
+                MyAPIGateway.Utilities.ShowNotification($"Grid AI closed for grid '{grid.DisplayName}'", 1000, "White");
+            }
+            else
+            {
+                MyAPIGateway.Utilities.ShowNotification($"Attempted to close Grid AI on a non-tracked grid: '{grid.DisplayName}'", 1000, "Red");
+            }
         }
 
         private void UpdateAITargeting()
         {
-            // Logic for updating AI targeting for each grid
-        }
-
-        // Define the AITargeting class or struct here, with properties like Range, CurrentTarget, etc.
-
-        List<IMyCubeGrid> TargetableGrids = new List<IMyCubeGrid>();
-        private void UpdateGridTargetList()
-        {
-
-        }
-
-        List<IMyCharacter> TargetableCharacters = new List<IMyCharacter>();
-        private void UpdateCharacterTargetList()
-        {
-
-        }
-
-        List<uint> TargetableProjectiles = new List<uint>();
-        private void UpdateProjectileTargetList()
-        {
-
+            foreach (var grid in AiActivatedGrids)
+            {
+                var gridAi = AiPreparedGrids[grid];
+                gridAi.UpdateTargeting(); // Method to be implemented in GridAiTargeting class
+            }
         }
     }
 }

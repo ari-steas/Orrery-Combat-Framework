@@ -14,7 +14,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
         {
             if (grid == null)
             {
-                MyAPIGateway.Utilities.ShowNotification("No grid found", 1000 / 60, MyFontEnum.Red);
+                //MyAPIGateway.Utilities.ShowNotification("No grid found", 1000 / 60, MyFontEnum.Red);
                 return null;
             }
 
@@ -50,11 +50,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
                                 if (filteredTarget != null)
                                 {
-                                    MyAPIGateway.Utilities.ShowNotification("Target selected: " + filteredTarget.DisplayName, 1000 / 60, MyFontEnum.Blue);
+                                    //MyAPIGateway.Utilities.ShowNotification("Target selected: " + filteredTarget.DisplayName, 1000 / 60, MyFontEnum.Blue);
                                 }
                                 else
                                 {
-                                    MyAPIGateway.Utilities.ShowNotification("Target filtered out based on faction relationship", 1000 / 60, MyFontEnum.Red);
+                                    //MyAPIGateway.Utilities.ShowNotification("Target filtered out based on faction relationship", 1000 / 60, MyFontEnum.Red);
                                 }
 
                                 return filteredTarget;
@@ -64,7 +64,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                 }
             }
 
-            MyAPIGateway.Utilities.ShowNotification("No valid target found", 1000 / 60, MyFontEnum.Red);
+            //MyAPIGateway.Utilities.ShowNotification("No valid target found", 1000 / 60, MyFontEnum.Red);
             return null;
         }
 
@@ -101,7 +101,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                 }
 
                 // Display the faction relationship and reputation as a debug message
-                MyAPIGateway.Utilities.ShowNotification($"Faction Relation: {relation}, Reputation: {reputation}", 1000 / 60, MyFontEnum.White);
+                //MyAPIGateway.Utilities.ShowNotification($"Faction Relation: {relation}, Reputation: {reputation}", 1000 / 60, MyFontEnum.White);
 
                 if ((isFriendly || isFactionShare) && targetFriendlies) // Consider same faction and faction share as friendly
                 {

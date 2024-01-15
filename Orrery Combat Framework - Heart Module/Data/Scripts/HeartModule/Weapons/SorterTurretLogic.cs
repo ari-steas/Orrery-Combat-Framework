@@ -72,11 +72,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             // Debug Info: Display whether a potential target is found
             if (potentialTarget != null)
             {
-                MyAPIGateway.Utilities.ShowNotification("Potential Target Found", 1000 / 60, VRage.Game.MyFontEnum.Green);
+                //MyAPIGateway.Utilities.ShowNotification("Potential Target Found", 1000 / 60, VRage.Game.MyFontEnum.Green);
             }
             else
             {
-                MyAPIGateway.Utilities.ShowNotification("No Potential Target", 1000 / 60, VRage.Game.MyFontEnum.Red);
+                //MyAPIGateway.Utilities.ShowNotification("No Potential Target", 1000 / 60, VRage.Game.MyFontEnum.Red);
             }
 
             // Check if the potential target is different from the current target
@@ -87,7 +87,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
                 // Debug Info: Display the current target's name
                 string targetName = currentTarget != null ? currentTarget.DisplayName : "None";
-                MyAPIGateway.Utilities.ShowNotification($"Current Target: {targetName}", 2000, VRage.Game.MyFontEnum.Blue);
+                //MyAPIGateway.Utilities.ShowNotification($"Current Target: {targetName}", 2000, VRage.Game.MyFontEnum.Blue);
 
                 // If the potential target is null, reset targeting state
                 if (currentTarget == null)
