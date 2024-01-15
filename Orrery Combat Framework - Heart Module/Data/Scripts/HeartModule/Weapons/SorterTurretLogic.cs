@@ -104,6 +104,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                     currentTarget, 0) ?? Vector3D.MaxValue;
 
                 UpdateTurretSubparts(deltaTick, AimPoint); // Rotate the turret
+                UpdateTargetState(AimPoint);
             }
             else
             {
@@ -129,7 +130,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         /// </summary>
         /// <param name="target"></param>
         /// <param name="aimPoint"></param>
-        private void UpdateTargetState(MyEntity target, Vector3D aimPoint)
+        private void UpdateTargetState(Vector3D aimPoint)
         {
             double angle = Vector3D.Angle(MuzzleMatrix.Forward, (aimPoint - MuzzleMatrix.Translation).Normalized());
             IsTargetAligned = angle < Definition.Targeting.AimTolerance;

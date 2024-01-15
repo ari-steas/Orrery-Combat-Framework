@@ -42,6 +42,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public Dictionary<string, IMyModelDummy> MuzzleDummies { get; set; } = new Dictionary<string, IMyModelDummy>();
         public SubpartManager SubpartManager = new SubpartManager();
         public MatrixD MuzzleMatrix { get; internal set; } = MatrixD.Identity;
+        public bool HasLoS = false;
         public readonly uint Id;
 
         public SorterWeaponLogic(IMyConveyorSorter sorterWeapon, SerializableWeaponDefinition definition, uint id)
@@ -134,6 +135,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         {
             MuzzleMatrix = CalcMuzzleMatrix(0); // Set stored MuzzleMatrix
             Magazines.UpdateReload();
+            HasLoS = HasLineOfSight();
 
             if (!SorterWep.IsWorking) // Don't try shoot if the turret is disabled
                 return;
@@ -166,7 +168,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (lastShoot < 60)
                 lastShoot += Definition.Loading.RateOfFire;
 
-            if ((ShootState.Value || AutoShoot) && Magazines.IsLoaded && lastShoot >= 60 && HasLineOfSight())
+            if ((ShootState.Value || AutoShoot) && Magazines.IsLoaded && lastShoot >= 60 && HasLoS)
             {
                 int barrelIndex = 0;
                 for (int i = nextBarrel; i < Definition.Loading.BarrelsPerShot + nextBarrel; i++)

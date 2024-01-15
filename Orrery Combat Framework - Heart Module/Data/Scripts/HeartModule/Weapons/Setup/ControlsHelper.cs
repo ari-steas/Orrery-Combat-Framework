@@ -25,9 +25,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup
                                                        // optional, they both default to true.
             Func<IMyTerminalBlock, bool> visibleFunc;
             if (typeof(T) == typeof(SorterTurretLogic))
-                visibleFunc = TurretVisibleCondition;
+                visibleFunc = HasTurretLogic;
             else
-                visibleFunc = CustomVisibleCondition;
+                visibleFunc = HasWeaponLogic;
 
             ShootToggle.Visible = visibleFunc;
             //c.Enabled = CustomVisibleCondition;
@@ -43,7 +43,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup
             return ShootToggle;
         }
 
-        public static IMyTerminalControlSlider CreateSlider(string id, string displayName, string toolTip, float min, float max, Func<IMyTerminalBlock, float> getter, Action<IMyTerminalBlock, float> setter, Action<IMyTerminalBlock, StringBuilder> writer)
+        public static IMyTerminalControlSlider CreateSlider<T>(string id, string displayName, string toolTip, float min, float max, Func<IMyTerminalBlock, float> getter, Action<IMyTerminalBlock, float> setter, Action<IMyTerminalBlock, StringBuilder> writer)
         {
             var slider = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlSlider, IMyConveyorSorter>(IdPrefix + id);
             slider.Title = MyStringId.GetOrCompute(displayName);
@@ -52,7 +52,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup
             slider.Getter = getter; // Replace with your property
             slider.Setter = setter; // Replace with your property
             slider.Writer = writer; // Replace with your property
-            slider.Visible = CustomVisibleCondition;
+
+            Func<IMyTerminalBlock, bool> visibleFunc;
+            if (typeof(T) == typeof(SorterTurretLogic))
+                visibleFunc = HasTurretLogic;
+            else
+                visibleFunc = HasWeaponLogic;
+
+            slider.Visible = visibleFunc;
             slider.Enabled = (b) => true; // or your custom condition
             slider.SupportsMultipleBlocks = true;
 
@@ -60,16 +67,36 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup
             return slider;
         }
 
-        static bool CustomVisibleCondition(IMyTerminalBlock b)
+        static bool HasWeaponLogic(IMyTerminalBlock b)
         {
             // only visible for the blocks having this gamelogic comp
             return b?.GameLogic?.GetAs<SorterWeaponLogic>() != null;
         }
 
-        static bool TurretVisibleCondition(IMyTerminalBlock b)
+        static bool HasTurretLogic(IMyTerminalBlock b)
         {
             // only visible for the blocks having this gamelogic comp
             return b?.GameLogic?.GetAs<SorterTurretLogic>() != null;
+        }
+
+        public static IMyTerminalAction CreateAction<T>(string id, string displayName, Action<IMyTerminalBlock> action, Action<IMyTerminalBlock, StringBuilder> writer, string icon) where T : SorterWeaponLogic
+        {
+            var cycleControlForwardAction = MyAPIGateway.TerminalControls.CreateAction<IMyConveyorSorter>(IdPrefix + id);
+            cycleControlForwardAction.Name = new StringBuilder(displayName);
+            cycleControlForwardAction.Action = action;
+            cycleControlForwardAction.Writer = writer;
+            cycleControlForwardAction.Icon = icon;
+
+            Func<IMyTerminalBlock, bool> visibleFunc;
+            if (typeof(T) == typeof(SorterTurretLogic))
+                visibleFunc = HasTurretLogic;
+            else
+                visibleFunc = HasWeaponLogic;
+
+            cycleControlForwardAction.Enabled = visibleFunc;
+            MyAPIGateway.TerminalControls.AddAction<IMyConveyorSorter>(cycleControlForwardAction);
+
+            return cycleControlForwardAction;
         }
     }
 }
