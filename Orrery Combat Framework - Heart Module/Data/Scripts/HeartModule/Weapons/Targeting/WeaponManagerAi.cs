@@ -1,13 +1,12 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Weapons;
-using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
+﻿using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using System.Collections.Generic;
 using VRage.Game.ModAPI;
 
-namespace Heart_Module.Data.Scripts.HeartModule.Weapons
+namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Targeting
 {
     internal class WeaponManagerAi : WeaponManager
     {
-        private Dictionary<IMyCubeGrid, AITargeting> gridAITargeting = new Dictionary<IMyCubeGrid, AITargeting>();
+        private Dictionary<IMyCubeGrid, GridAiTargeting> GridAITargeting = new Dictionary<IMyCubeGrid, GridAiTargeting>();
 
         public override void LoadData()
         {
