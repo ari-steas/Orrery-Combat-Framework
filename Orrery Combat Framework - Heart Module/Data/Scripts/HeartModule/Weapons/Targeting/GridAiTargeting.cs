@@ -10,10 +10,26 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Targeting
 {
     internal class GridAiTargeting
     {
-        IMyCubeGrid grid;
-        List<SorterWeaponLogic> Weapons => WeaponManager.I.GridWeapons[grid];
+        IMyCubeGrid Grid;
+        List<SorterWeaponLogic> Weapons => WeaponManager.I.GridWeapons[Grid];
+
+        public GridAiTargeting(IMyCubeGrid grid)
+        {
+            Grid = grid;
+            Grid.OnBlockAdded += Grid_OnBlockAdded;
+        }
+
+        private void Grid_OnBlockAdded(IMySlimBlock obj)
+        {
+            
+        }
 
         public void Update()
+        {
+
+        }
+
+        public void Close()
         {
 
         }
