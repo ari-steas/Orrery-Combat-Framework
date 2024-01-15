@@ -48,27 +48,27 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             if (grid.Physics != null)
             {
                 GridAITargeting.Add(grid, new GridAiTargeting(grid));
-                //debug shownotification
                 MyAPIGateway.Utilities.ShowNotification("Grid AI Initialized on " + grid, 1000, "White");
             }
         }
 
         private void CloseGridAI(IMyCubeGrid grid)
         {
-            // Check if the GridAITargeting dictionary contains the grid before trying to access it
-            if (GridAITargeting.ContainsKey(grid))
+            if (grid.Physics != null)
             {
-                GridAITargeting[grid].Close();
-                GridAITargeting.Remove(grid);
-                MyAPIGateway.Utilities.ShowNotification("Grid AI closed on " + grid, 1000, "White");
-            }
-            else
-            {
-                // Handle the case where the grid is not in the dictionary, if necessary
-                MyAPIGateway.Utilities.ShowNotification("Attempted to close Grid AI on a non-tracked grid: " + grid, 1000, "Red");
+                // Check if the GridAITargeting dictionary contains the grid before trying to access it
+                if (GridAITargeting.ContainsKey(grid))
+                {
+                    GridAITargeting[grid].Close();
+                    GridAITargeting.Remove(grid);
+                    MyAPIGateway.Utilities.ShowNotification("Grid AI closed on " + grid, 1000, "White");
+                }
+                else
+                {
+                    MyAPIGateway.Utilities.ShowNotification("Attempted to close Grid AI on a non-tracked grid: " + grid, 1000, "Red");
+                }
             }
         }
-
 
         private void UpdateAITargeting()
         {
@@ -81,8 +81,5 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                 }
             }
         }
-
-        // The GridAiTargeting class should handle the AI logic for each grid
-        // Including targeting range and target selection logic
     }
 }
