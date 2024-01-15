@@ -1,4 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
+using Sandbox.Game;
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System.Collections.Generic;
@@ -112,25 +114,17 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             }
         }
 
-
         private bool ShouldConsiderTarget(MyCubeGrid targetGrid)
         {
             // Example filters
             bool isLargeGrid = targetGrid.GridSizeEnum == VRage.Game.MyCubeSize.Large;
-            bool isEnemy = GetRelationsToGrid(targetGrid) == MyRelationsBetweenPlayerAndBlock.Enemies;
+            bool isEnemy = HeartUtils.GetRelationsBetweeenGrids(Grid, targetGrid) == MyRelationsBetweenPlayerAndBlock.Enemies;
 
             // Replace these with your actual settings/toggles
             bool targetLargeGrids = true; // Replace with your setting for targeting large grids
             bool targetEnemies = false;    // Replace with your setting for targeting enemies
 
             return (isLargeGrid && targetLargeGrids) && (!isEnemy || targetEnemies);
-        }
-
-        private MyRelationsBetweenPlayerAndBlock GetRelationsToGrid(MyCubeGrid grid)
-        {
-            // Implement your logic to determine the relationship to the grid
-            // This could be friend, enemy, neutral, etc.
-            return MyRelationsBetweenPlayerAndBlock.Neutral; // Placeholder return
         }
 
         public void UpdateAvailableTargets(List<IMyCubeGrid> allGrids, List<IMyCharacter> allCharacters, List<uint> allProjectiles)
