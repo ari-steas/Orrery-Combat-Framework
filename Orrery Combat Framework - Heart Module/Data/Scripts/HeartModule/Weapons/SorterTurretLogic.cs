@@ -4,9 +4,11 @@ using Sandbox.ModAPI;
 using System;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI.Network;
+using VRage.ModAPI;
 using VRage.ObjectBuilders;
 using VRage.Sync;
 using VRageMath;
+using YourName.ModName.Data.Scripts.HeartModule.Weapons;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
@@ -14,8 +16,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
     //[MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeaponTurret")]
     public partial class SorterTurretLogic : SorterWeaponLogic
     {
-        public MySync<float, SyncDirection.FromServer> Azimuth;
-        public MySync<float, SyncDirection.FromServer> Elevation;
+        internal float Azimuth;
+        internal float Elevation;
 
         /// <summary>
         /// Delta for engine ticks; 60tps
@@ -32,25 +34,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             base.Init(objectBuilder);
 
-            Azimuth.ValueChanged += OnAzimuthChanged;
-            Elevation.ValueChanged += OnElevationChanged;
-            Azimuth.Value = (float)Math.PI; // defaults
-            Elevation.Value = 0;
-        }
-
-
-        private void OnAzimuthChanged(MySync<float, SyncDirection.FromServer> obj)
-        {
-            // Handle the change in azimuth
-            //Azimuth = obj.Value;
-            // Additional logic to apply azimuth changes, if needed
-        }
-
-        private void OnElevationChanged(MySync<float, SyncDirection.FromServer> obj)
-        {
-            // Handle the change in elevation
-            //Elevation = obj.Value;
-            // Additional logic to apply elevation changes, if needed
+            Azimuth = (float)Math.PI; // defaults
+            Elevation = 0;
         }
 
         public SorterTurretLogic(IMyConveyorSorter sorterWeapon, SerializableWeaponDefinition definition, uint id) : base(sorterWeapon, definition, id) { }
@@ -119,6 +104,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                     currentTarget, 0) ?? Vector3D.MaxValue;
 
                 UpdateTurretSubparts(deltaTick, AimPoint); // Rotate the turret
+                UpdateTargetState(AimPoint);
             }
             else
             {
@@ -144,7 +130,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         /// </summary>
         /// <param name="target"></param>
         /// <param name="aimPoint"></param>
-        private void UpdateTargetState(MyEntity target, Vector3D aimPoint)
+        private void UpdateTargetState(Vector3D aimPoint)
         {
             double angle = Vector3D.Angle(MuzzleMatrix.Forward, (aimPoint - MuzzleMatrix.Translation).Normalized());
             IsTargetAligned = angle < Definition.Targeting.AimTolerance;
@@ -220,9 +206,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             desiredAzimuth = LimitRotationSpeed(Azimuth, desiredAzimuth, Definition.Hardpoint.AzimuthRate * delta);
 
             if (!Definition.Hardpoint.CanRotateFull)
-                Azimuth.Value = (float)Clamp(desiredAzimuth, Definition.Hardpoint.MinAzimuth, Definition.Hardpoint.MaxAzimuth); // Basic angle clamp
+                Azimuth = (float)Clamp(desiredAzimuth, Definition.Hardpoint.MinAzimuth, Definition.Hardpoint.MaxAzimuth); // Basic angle clamp
             else
-                Azimuth.Value = (float)NormalizeAngle(desiredAzimuth); // Adjust rotation to (-180, 180), but don't have any limits
+                Azimuth = (float)NormalizeAngle(desiredAzimuth); // Adjust rotation to (-180, 180), but don't have any limits
 
             //MyAPIGateway.Utilities.ShowNotification("AZ: " + Math.Round(MathHelper.ToDegrees(Azimuth)), 1000/60);
             return Matrix.CreateFromYawPitchRoll(Azimuth, 0, 0);
@@ -240,9 +226,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             desiredElevation = LimitRotationSpeed(Elevation, desiredElevation, Definition.Hardpoint.ElevationRate * delta);
             if (!Definition.Hardpoint.CanElevateFull)
-                Elevation.Value = (float)-Clamp(-desiredElevation, Definition.Hardpoint.MinElevation, Definition.Hardpoint.MaxElevation);
+                Elevation = (float)-Clamp(-desiredElevation, Definition.Hardpoint.MinElevation, Definition.Hardpoint.MaxElevation);
             else
-                Elevation.Value = (float)NormalizeAngle(desiredElevation);
+                Elevation = (float)NormalizeAngle(desiredElevation);
             return Matrix.CreateFromYawPitchRoll(0, Elevation, 0);
         }
 
@@ -280,5 +266,253 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 return (angleRads % Math.PI) + Math.PI;
             return angleRads;
         }
+
+        #region Terminal Controls
+
+        // In SorterWeaponLogic class, you should implement IncreaseAIRange and DecreaseAIRange methods
+        public void IncreaseAIRange()
+        {
+            // Increase AI Range within limits
+            Terminal_Heart_Range_Slider = Math.Min(Terminal_Heart_Range_Slider + 100, 1000);
+        }
+
+        public void DecreaseAIRange()
+        {
+            // Decrease AI Range within limits
+            Terminal_Heart_Range_Slider = Math.Max(Terminal_Heart_Range_Slider - 100, 0);
+        }
+
+        internal override bool LoadSettings()
+        {
+            if (SorterWep.Storage == null)
+                return false;
+
+            string rawData;
+            if (!SorterWep.Storage.TryGetValue(HeartSettingsGUID, out rawData))
+                return false;
+
+            bool baseRet = base.LoadSettings();
+
+            try
+            {
+                var loadedSettings = MyAPIGateway.Utilities.SerializeFromBinary<Heart_Settings>(Convert.FromBase64String(rawData));
+                if (loadedSettings != null)
+                {
+                    // Set the AI Range from loaded settings
+                    Settings.AiRange = loadedSettings.AiRange;
+                    AiRange.Value = Settings.AiRange;
+
+                    // Set the TargetGrids state from loaded settings
+                    Settings.TargetGridsState = loadedSettings.TargetGridsState;
+                    TargetGridsState.Value = Settings.TargetGridsState;
+
+                    Settings.TargetProjectilesState = loadedSettings.TargetProjectilesState;
+                    TargetProjectilesState.Value = Settings.TargetProjectilesState;
+
+                    Settings.TargetCharactersState = loadedSettings.TargetCharactersState;
+                    TargetCharactersState.Value = Settings.TargetCharactersState;
+
+                    Settings.TargetLargeGridsState = loadedSettings.TargetLargeGridsState;
+                    TargetLargeGridsState.Value = Settings.TargetLargeGridsState;
+
+                    Settings.TargetSmallGridsState = loadedSettings.TargetSmallGridsState;
+                    TargetSmallGridsState.Value = Settings.TargetSmallGridsState;
+
+                    Settings.TargetFriendliesState = loadedSettings.TargetFriendliesState;
+                    TargetFriendliesState.Value = Settings.TargetFriendliesState;
+
+                    Settings.TargetNeutralsState = loadedSettings.TargetNeutralsState;
+                    TargetNeutralsState.Value = Settings.TargetNeutralsState;
+
+                    Settings.TargetEnemiesState = loadedSettings.TargetEnemiesState;
+                    TargetEnemiesState.Value = Settings.TargetEnemiesState;
+
+                    Settings.TargetUnownedState = loadedSettings.TargetUnownedState;
+                    TargetUnownedState.Value = Settings.TargetUnownedState;
+
+                    return baseRet;
+                }
+            }
+            catch
+            {
+
+            }
+
+            return false;
+        }
+
+        public MySync<float, SyncDirection.BothWays> AiRange;
+        public MySync<bool, SyncDirection.BothWays> TargetGridsState;
+        public MySync<bool, SyncDirection.BothWays> TargetProjectilesState;
+        public MySync<bool, SyncDirection.BothWays> TargetCharactersState;
+        public MySync<bool, SyncDirection.BothWays> TargetLargeGridsState;
+        public MySync<bool, SyncDirection.BothWays> TargetSmallGridsState;
+        public MySync<bool, SyncDirection.BothWays> TargetFriendliesState;
+        public MySync<bool, SyncDirection.BothWays> TargetNeutralsState;
+        public MySync<bool, SyncDirection.BothWays> TargetEnemiesState;
+        public MySync<bool, SyncDirection.BothWays> TargetUnownedState;
+
+        public float Terminal_Heart_Range_Slider
+        {
+            get
+            {
+                return Settings.AiRange;
+            }
+
+            set
+            {
+                Settings.AiRange = value;
+                AiRange.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+            }
+        }
+
+        public bool Terminal_Heart_TargetGrids
+        {
+            get
+            {
+                return Settings.TargetGridsState;
+            }
+
+            set
+            {
+                Settings.TargetGridsState = value;
+                TargetGridsState.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+
+            }
+        }
+
+        public bool Terminal_Heart_TargetProjectiles
+        {
+            get
+            {
+                return Settings.TargetProjectilesState;
+            }
+
+            set
+            {
+                Settings.TargetProjectilesState = value;
+                TargetProjectilesState.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+            }
+        }
+
+        public bool Terminal_Heart_TargetCharacters
+        {
+            get
+            {
+                return Settings.TargetCharactersState;
+            }
+
+            set
+            {
+                Settings.TargetCharactersState = value;
+                TargetCharactersState.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+
+            }
+        }
+
+        public bool Terminal_Heart_TargetLargeGrids
+        {
+            get
+            {
+                return Settings.TargetLargeGridsState;
+            }
+
+            set
+            {
+                Settings.TargetLargeGridsState = value;
+                TargetLargeGridsState.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+            }
+        }
+
+        public bool Terminal_Heart_TargetSmallGrids
+        {
+            get
+            {
+                return Settings.TargetSmallGridsState;
+            }
+
+            set
+            {
+                Settings.TargetSmallGridsState = value;
+                TargetSmallGridsState.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+            }
+        }
+
+        public bool Terminal_Heart_TargetFriendlies
+        {
+            get
+            {
+                return Settings.TargetFriendliesState;
+            }
+
+            set
+            {
+                Settings.TargetFriendliesState = value;
+                TargetFriendliesState.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+            }
+        }
+
+        public bool Terminal_Heart_TargetNeutrals
+        {
+            get
+            {
+                return Settings.TargetNeutralsState;
+            }
+
+            set
+            {
+                Settings.TargetNeutralsState = value;
+                TargetNeutralsState.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+            }
+        }
+
+        public bool Terminal_Heart_TargetEnemies
+        {
+            get
+            {
+                return Settings.TargetEnemiesState;
+            }
+
+            set
+            {
+                Settings.TargetEnemiesState = value;
+                TargetEnemiesState.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+            }
+        }
+
+        public bool Terminal_Heart_TargetUnowned
+        {
+            get
+            {
+                return Settings.TargetUnownedState;
+            }
+
+            set
+            {
+                Settings.TargetUnownedState = value;
+                TargetUnownedState.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+            }
+        }
+        #endregion
     }
 }

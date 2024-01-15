@@ -81,7 +81,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
             {
                 SorterTurretLogic turret = weapon as SorterTurretLogic;
                 if (turret.AimPoint != Vector3D.MaxValue)
-                    targetStatus = (turret.IsTargetAligned ? "" : "ALIGN") + " " + (turret.IsTargetInRange ? "" : "RANGE");
+                    targetStatus = (turret.IsTargetAligned ? "" : "ALIGN") + (turret.IsTargetInRange ? "" : " RANGE") + (turret.HasLoS ? "" : " LOS");
                 else
                     targetStatus = "NO TARGET";
             }
