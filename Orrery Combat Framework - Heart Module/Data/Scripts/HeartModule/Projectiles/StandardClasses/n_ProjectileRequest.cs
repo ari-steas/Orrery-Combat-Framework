@@ -23,7 +23,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
                 Projectile p = ProjectileManager.I.GetProjectile(projectileId);
                 if (p != null)
                 {
-                    IMyPlayer player = HeartData.I.GetPlayerFromSteamId(SenderSteamId);
+                    IMyPlayer player = HeartUtils.GetPlayerFromSteamId(SenderSteamId);
                     if (player != null)
                         ProjectileManager.I.QueueSync(p, player, 0);
                 }

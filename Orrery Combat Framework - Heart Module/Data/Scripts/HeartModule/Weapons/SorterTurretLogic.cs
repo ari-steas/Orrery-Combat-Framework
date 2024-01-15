@@ -11,6 +11,8 @@ using VRage.Sync;
 using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
+using VRage.Game;
+using VRage.Game.ModAPI;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
@@ -69,16 +71,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 Terminal_Heart_TargetUnowned
             );
 
-            // Debug Info: Display whether a potential target is found
-            if (potentialTarget != null)
-            {
-                //MyAPIGateway.Utilities.ShowNotification("Potential Target Found", 1000 / 60, VRage.Game.MyFontEnum.Green);
-            }
-            else
-            {
-                //MyAPIGateway.Utilities.ShowNotification("No Potential Target", 1000 / 60, VRage.Game.MyFontEnum.Red);
-            }
-
             // Check if the potential target is different from the current target
             if (currentTarget != potentialTarget)
             {
@@ -87,7 +79,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
                 // Debug Info: Display the current target's name
                 string targetName = currentTarget != null ? currentTarget.DisplayName : "None";
-                //MyAPIGateway.Utilities.ShowNotification($"Current Target: {targetName}", 2000, VRage.Game.MyFontEnum.Blue);
 
                 // If the potential target is null, reset targeting state
                 if (currentTarget == null)
@@ -138,6 +129,45 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
             double range = Vector3D.Distance(MuzzleMatrix.Translation, aimPoint);
             IsTargetInRange = range < Definition.Targeting.MaxTargetingRange && range > Definition.Targeting.MinTargetingRange;
+        }
+
+        public bool ShouldConsiderTarget(IMyCubeGrid targetGrid)
+        {
+            switch (targetGrid.GridSizeEnum) // Filter large/small grid
+            {
+                case MyCubeSize.Large:
+                    if (!TargetLargeGridsState)
+                        return false;
+                    break;
+                case MyCubeSize.Small:
+                    if (!TargetSmallGridsState)
+                        return false;
+                    break;
+            }
+
+            switch (HeartUtils.GetRelationsBetweeenGrids(SorterWep.CubeGrid, targetGrid)) // Filter target relations
+            {
+                case MyRelationsBetweenPlayerAndBlock.NoOwnership:
+                    if (!TargetUnownedState)
+                        return false;
+                    break;
+                case MyRelationsBetweenPlayerAndBlock.Owner:
+                case MyRelationsBetweenPlayerAndBlock.Friends:
+                case MyRelationsBetweenPlayerAndBlock.FactionShare:
+                    if (!TargetFriendliesState)
+                        return false;
+                    break;
+                case MyRelationsBetweenPlayerAndBlock.Enemies:
+                    if (!TargetEnemiesState)
+                        return false;
+                    break;
+                case MyRelationsBetweenPlayerAndBlock.Neutral:
+                    if (!TargetNeutralsState)
+                        return false;
+                    break;
+            }
+
+            return true; // All possible negatives have been filtered out
         }
 
         public override void TryShoot()
@@ -204,12 +234,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         private Matrix GetAzimuthMatrix(double desiredAzimuth, float delta)
         {
-            desiredAzimuth = LimitRotationSpeed(Azimuth, desiredAzimuth, Definition.Hardpoint.AzimuthRate * delta);
+            desiredAzimuth = HeartUtils.LimitRotationSpeed(Azimuth, desiredAzimuth, Definition.Hardpoint.AzimuthRate * delta);
 
             if (!Definition.Hardpoint.CanRotateFull)
-                Azimuth = (float)Clamp(desiredAzimuth, Definition.Hardpoint.MinAzimuth, Definition.Hardpoint.MaxAzimuth); // Basic angle clamp
+                Azimuth = (float)HeartUtils.Clamp(desiredAzimuth, Definition.Hardpoint.MinAzimuth, Definition.Hardpoint.MaxAzimuth); // Basic angle clamp
             else
-                Azimuth = (float)NormalizeAngle(desiredAzimuth); // Adjust rotation to (-180, 180), but don't have any limits
+                Azimuth = (float)HeartUtils.NormalizeAngle(desiredAzimuth); // Adjust rotation to (-180, 180), but don't have any limits
 
             //MyAPIGateway.Utilities.ShowNotification("AZ: " + Math.Round(MathHelper.ToDegrees(Azimuth)), 1000/60);
             return Matrix.CreateFromYawPitchRoll(Azimuth, 0, 0);
@@ -225,47 +255,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         private Matrix GetElevationMatrix(double desiredElevation, float delta)
         {
-            desiredElevation = LimitRotationSpeed(Elevation, desiredElevation, Definition.Hardpoint.ElevationRate * delta);
+            desiredElevation = HeartUtils.LimitRotationSpeed(Elevation, desiredElevation, Definition.Hardpoint.ElevationRate * delta);
             if (!Definition.Hardpoint.CanElevateFull)
-                Elevation = (float)-Clamp(-desiredElevation, Definition.Hardpoint.MinElevation, Definition.Hardpoint.MaxElevation);
+                Elevation = (float)-HeartUtils.Clamp(-desiredElevation, Definition.Hardpoint.MinElevation, Definition.Hardpoint.MaxElevation);
             else
-                Elevation = (float)NormalizeAngle(desiredElevation);
+                Elevation = (float)HeartUtils.NormalizeAngle(desiredElevation);
             return Matrix.CreateFromYawPitchRoll(0, Elevation, 0);
-        }
-
-        private static double Clamp(double value, double min, double max)
-        {
-            if (value < min)
-                return min;
-            if (value > max)
-                return max;
-            return value;
-        }
-
-        private static double ClampAbs(double value, double absMax) => Clamp(value, -absMax, absMax);
-
-        public static double LimitRotationSpeed(double currentAngle, double targetAngle, double maxRotationSpeed)
-        {
-            // https://yal.cc/angular-rotations-explained/
-            // It should NOT HAVE BEEN THAT HARD
-            // I (aristeas) AM REALLY STUPID
-
-            var diff = NormalizeAngle(targetAngle - currentAngle);
-
-            // clamp rotations by speed:
-            if (diff < -maxRotationSpeed) return currentAngle - maxRotationSpeed;
-            if (diff > maxRotationSpeed) return currentAngle + maxRotationSpeed;
-            // if difference within speed, rotation's done:
-            return targetAngle;
-        }
-
-        private static double NormalizeAngle(double angleRads)
-        {
-            if (angleRads > Math.PI)
-                return (angleRads % Math.PI) - Math.PI;
-            if (angleRads < -Math.PI)
-                return (angleRads % Math.PI) + Math.PI;
-            return angleRads;
         }
 
         #region Terminal Controls

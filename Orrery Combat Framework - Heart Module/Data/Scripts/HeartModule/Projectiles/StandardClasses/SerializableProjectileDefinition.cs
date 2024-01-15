@@ -62,7 +62,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     {
         [ProtoMember(1)] public float Velocity;
         [ProtoMember(2)] public float Acceleration;
-        [ProtoMember(3)] public float Health; // TODO
+        [ProtoMember(3)] public float Health; // TODO // -1 for un-targetable
         /// <summary>
         /// Max range of projectile, relative to first firing. For hitscans, max hitscan length.
         /// </summary>

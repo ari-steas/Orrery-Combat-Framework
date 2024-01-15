@@ -148,5 +148,23 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public Projectile GetProjectile(uint id) => ActiveProjectiles.GetValueOrDefault(id, null);
         public bool IsIdAvailable(uint id) => !ActiveProjectiles.ContainsKey(id);
+
+        /// <summary>
+        /// Populates a list with all projectiles in a sphere.
+        /// </summary>
+        /// <param name="sphere"></param>
+        /// <param name="projectiles"></param>
+        /// <param name="onlyDamageable"></param>
+        public void GetProjectilesInSphere(BoundingSphereD sphere, ref List<uint> projectiles, bool onlyDamageable = false)
+        {
+            projectiles.Clear();
+            double rangeSq = sphere.Radius * sphere.Radius;
+            Vector3D pos = sphere.Center;
+
+            foreach (var projectile in ActiveProjectiles.Values)
+                if (!onlyDamageable || projectile.Definition.PhysicalProjectile.Health != -1)
+                    if (Vector3D.DistanceSquared(pos, projectile.Position) < rangeSq)
+                        projectiles.Add(projectile.Id);
+        }
     }
 }

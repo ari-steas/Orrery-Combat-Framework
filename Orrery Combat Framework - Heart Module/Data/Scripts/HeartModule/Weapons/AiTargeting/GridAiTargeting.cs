@@ -1,10 +1,13 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
+using Sandbox.Game;
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System.Collections.Generic;
 using VRage.Game;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
+using VRage.ModAPI;
 using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
@@ -47,6 +50,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             if (!Enabled) return;
 
             SetTargetingFlags();
+            ScanForTargets();
+
+            MyAPIGateway.Utilities.ShowNotification("Grids: " + ValidGrids.Count, 1000/60);
         }
 
         /// <summary>
@@ -90,59 +96,38 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             if (!Enabled)
                 return;
 
-            BoundingSphereD sphere = new BoundingSphereD(Grid.PositionComp.WorldAABB.Center, 1000.0);
+            BoundingSphereD sphere = new BoundingSphereD(Grid.PositionComp.WorldAABB.Center, MaxTargetingRange);
 
             List<MyEntity> entities = new List<MyEntity>();
             MyGamePruningStructure.GetAllTopMostEntitiesInSphere(ref sphere, entities);
 
-            foreach (MyEntity entity in entities)
+            List<IMyCubeGrid> allGrids = new List<IMyCubeGrid>();
+            List<IMyCharacter> allCharacters = new List<IMyCharacter>();
+
+            foreach (var entity in entities)
             {
-                MyCubeGrid targetGrid = entity as MyCubeGrid;
-                if (targetGrid != null && entity.EntityId != Grid.EntityId && entity.Physics != null)
-                {
-                    // Apply your custom filters here
-                    if (ShouldConsiderTarget(targetGrid))
-                    {
-                        double distance = Vector3D.Distance(Grid.PositionComp.WorldAABB.Center, targetGrid.PositionComp.WorldAABB.Center);
-                        MyAPIGateway.Utilities.ShowNotification($"{Grid.DisplayName} is {distance:F0} meters from {targetGrid.DisplayName}", 1000 / 60, "White");
-
-                        // Additional logic to handle the valid target
-                    }
-                }
+                if (entity is IMyCubeGrid)
+                    allGrids.Add(entity as IMyCubeGrid);
+                else if (entity is IMyCharacter)
+                    allCharacters.Add(entity as IMyCharacter);
             }
+
+            List<uint> allProjectiles = new List<uint>();
+            ProjectileManager.I.GetProjectilesInSphere(sphere, ref allProjectiles, true);
+
+            UpdateAvailableTargets(allGrids, allCharacters, allProjectiles, false);
         }
 
-
-        private bool ShouldConsiderTarget(MyCubeGrid targetGrid)
-        {
-            // Example filters
-            bool isLargeGrid = targetGrid.GridSizeEnum == VRage.Game.MyCubeSize.Large;
-            bool isEnemy = GetRelationsToGrid(targetGrid) == MyRelationsBetweenPlayerAndBlock.Enemies;
-
-            // Replace these with your actual settings/toggles
-            bool targetLargeGrids = true; // Replace with your setting for targeting large grids
-            bool targetEnemies = false;    // Replace with your setting for targeting enemies
-
-            return (isLargeGrid && targetLargeGrids) && (!isEnemy || targetEnemies);
-        }
-
-        private MyRelationsBetweenPlayerAndBlock GetRelationsToGrid(MyCubeGrid grid)
-        {
-            // Implement your logic to determine the relationship to the grid
-            // This could be friend, enemy, neutral, etc.
-            return MyRelationsBetweenPlayerAndBlock.Neutral; // Placeholder return
-        }
-
-        public void UpdateAvailableTargets(List<IMyCubeGrid> allGrids, List<IMyCharacter> allCharacters, List<uint> allProjectiles)
+        public void UpdateAvailableTargets(List<IMyCubeGrid> allGrids, List<IMyCharacter> allCharacters, List<uint> allProjectiles, bool distanceCheck = true)
         {
             float maxRangeSq = MaxTargetingRange * MaxTargetingRange;
-            Vector3D gridPosition = Grid.GetPosition();
+            Vector3D gridPosition = Grid.PositionComp.WorldAABB.Center;
 
             if (DoesTargetGrids) // Limit valid grids to those in range
             {
                 ValidGrids.Clear();
                 foreach (var grid in allGrids)
-                    if (Vector3D.DistanceSquared(gridPosition, grid.GetPosition()) < maxRangeSq)
+                    if (!distanceCheck || Vector3D.DistanceSquared(gridPosition, grid.GetPosition()) < maxRangeSq)
                         ValidGrids.Add(grid);
             }
 
@@ -150,7 +135,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             {
                 ValidCharacters.Clear();
                 foreach (var character in allCharacters)
-                    if (Vector3D.DistanceSquared(gridPosition, character.GetPosition()) < maxRangeSq)
+                    if (!distanceCheck || Vector3D.DistanceSquared(gridPosition, character.GetPosition()) < maxRangeSq)
                         ValidCharacters.Add(character);
             }
 
@@ -158,7 +143,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             {
                 ValidProjectiles.Clear();
                 foreach (var projectile in allProjectiles)
-                    if (Vector3D.DistanceSquared(gridPosition, ProjectileManager.I.GetProjectile(projectile).Position) < maxRangeSq)
+                    if (!distanceCheck || Vector3D.DistanceSquared(gridPosition, ProjectileManager.I.GetProjectile(projectile).Position) < maxRangeSq)
                         ValidProjectiles.Add(projectile);
             }
         }
