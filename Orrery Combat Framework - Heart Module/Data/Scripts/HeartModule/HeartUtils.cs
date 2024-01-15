@@ -46,7 +46,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
         public static IMyPlayer GetPlayerFromSteamId(ulong id)
         {
-            foreach (var player in HeartData.I.Players)
+            foreach (var player in HeartData.I?.Players)
                 if (player.SteamUserId == id)
                     return player;
             return null;
