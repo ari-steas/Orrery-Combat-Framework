@@ -70,7 +70,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
                     MyAPIGateway.Multiplayer.Players.GetPlayers(HeartData.I.Players);
                 }
 
-                if (MyAPIGateway.Physics.SimulationRatio < 0.5) // Set degraded mode
+                if (MyAPIGateway.Physics.SimulationRatio < 0.25 && !HeartData.I.IsPaused) // Set degraded mode
                 {
                     if (!HeartData.I.DegradedMode)
                     {

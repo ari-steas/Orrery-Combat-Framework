@@ -52,9 +52,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
             SetTargetingFlags();
             ScanForTargets();
-            MyAPIGateway.Utilities.ShowNotification("Grids: " + ValidGrids.Count, 1000/60);
-            MyAPIGateway.Utilities.ShowNotification("Characters: " + ValidCharacters.Count, 1000/60);
-            MyAPIGateway.Utilities.ShowNotification("Projectiles: " + ValidProjectiles.Count, 1000/60);
+            //MyAPIGateway.Utilities.ShowNotification("Grids: " + ValidGrids.Count, 1000/60);
+            //MyAPIGateway.Utilities.ShowNotification("Characters: " + ValidCharacters.Count, 1000/60);
+            //MyAPIGateway.Utilities.ShowNotification("Projectiles: " + ValidProjectiles.Count, 1000/60);
 
             IMyCubeGrid closestGrid = GetClosestGrid();
             if (closestGrid != null)
@@ -62,7 +62,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             IMyCharacter closestChar = GetClosestCharacter();
             if (closestChar != null)
                 DebugDraw.AddLine(Grid.PositionComp.WorldAABB.Center, closestChar.PositionComp.WorldAABB.Center, Color.Orange, 0);
-            Projectile closestProj = GetClosestProjectile();
+            Projectile closestProj = GetProjectile(false);
             if (closestProj != null)
                 DebugDraw.AddLine(Grid.PositionComp.WorldAABB.Center, closestProj.Position, Color.Blue, 0);
 
@@ -125,7 +125,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             return closest;
         }
 
-        private Projectile GetClosestProjectile()
+        private Projectile GetProjectile(bool findClosest = true)
         {
             if (ValidProjectiles.Count == 0) return null;
             Vector3D ownPos = Grid.PositionComp.WorldAABB.Center;
@@ -137,7 +137,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             {
                 Projectile p = ProjectileManager.I.GetProjectile(projectile);
                 double distSq2 = Vector3D.DistanceSquared(ownPos, p.Position);
-                if (distSq2 < distSq)
+                if (findClosest ? distSq2 < distSq : distSq2 > distSq)
                 {
                     closest = p;
                     distSq = distSq2;
@@ -201,7 +201,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                 if (entity == Grid)
                     continue;
                 if (entity is IMyCubeGrid)
-                    allGrids.Add(entity as IMyCubeGrid);
+                {
+                    //IMyCubeGrid topmost = (IMyCubeGrid)((IMyCubeGrid)entity).GetTopMostParent(); // Ignore subgrids, and instead target parents.
+                    //if (!allGrids.Contains(topmost)) // Note - GetTopMostParent() consistently picks the first subgrid to spawn.
+                    //    allGrids.Add(topmost);
+                    allGrids.Add((IMyCubeGrid) entity);
+                }
                 else if (entity is IMyCharacter)
                     allCharacters.Add(entity as IMyCharacter);
             }

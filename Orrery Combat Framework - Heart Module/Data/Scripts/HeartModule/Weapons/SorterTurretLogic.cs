@@ -61,35 +61,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             MuzzleMatrix = CalcMuzzleMatrix(0); // Set stored MuzzleMatrix
 
-            // Retrieve the target based on the targeting settings
-            //MyEntity potentialTarget = targeting.GetTarget(
-            //    SorterWep?.CubeGrid,
-            //    Terminal_Heart_TargetGrids,
-            //    Terminal_Heart_TargetLargeGrids,
-            //    Terminal_Heart_TargetSmallGrids,
-            //    Terminal_Heart_TargetFriendlies,
-            //    Terminal_Heart_TargetNeutrals,
-            //    Terminal_Heart_TargetEnemies,
-            //    Terminal_Heart_TargetUnowned
-            //);
-
-            // Check if the potential target is different from the current target
-            //if (currentTarget != potentialTarget)
-            //{
-            //    // Assign the new potential target
-            //    currentTarget = potentialTarget;
-            //
-            //    // Debug Info: Display the current target's name
-            //    string targetName = currentTarget != null ? currentTarget.DisplayName : "None";
-            //
-            //    // If the potential target is null, reset targeting state
-            //    if (currentTarget == null)
-            //    {
-            //        ResetTargetingState();
-            //    }
-            //}
-
-            MyAPIGateway.Utilities.ShowNotification("HasTarget " + (TargetEntity != null), 1000/60);
             if (TargetProjectile != null)
             {
                 AimPoint = TargetingHelper.InterceptionPoint(
@@ -110,27 +81,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 ResetTargetingState();
 
             UpdateTurretSubparts(deltaTick, AimPoint);
-
-            // Proceed with targeting if a valid target is found
-            //if (currentTarget != null)
-            //{
-            //    AimPoint = TargetingHelper.InterceptionPoint(
-            //        MuzzleMatrix.Translation,
-            //        SorterWep.CubeGrid.LinearVelocity,
-            //        currentTarget, 0) ?? Vector3D.MaxValue;
-            //
-            //    UpdateTurretSubparts(deltaTick, AimPoint); // Rotate the turret
-            //    UpdateTargetState(AimPoint);
-            //}
-            //else
-            //{
-            //    // If no target is found, ensure the turret is not aligned or in range
-            //    IsTargetAligned = false;
-            //    IsTargetInRange = false;
-            //    AimPoint = Vector3D.MaxValue;
-            //
-            //    UpdateTurretSubparts(deltaTick, Vector3D.MaxValue);
-            //}
         }
 
         private void ResetTargetingState()
@@ -194,7 +144,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public bool ShouldConsiderTarget(Projectile targetProjectile)
         {
-            if (!TargetCharactersState || targetProjectile == null)
+            if (!TargetProjectilesState || targetProjectile == null)
                 return false;
 
             MyRelationsBetweenPlayerAndBlock relations = MyRelationsBetweenPlayerAndBlock.NoOwnership;
@@ -204,6 +154,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 relations = HeartUtils.GetRelationsBetweenGridAndPlayer(SorterWep.CubeGrid, ((IMyCharacter)entity).ControllerInfo?.ControllingIdentityId);
             else if (entity is IMyCubeBlock)
                 relations = HeartUtils.GetRelationsBetweeenGrids(SorterWep.CubeGrid, ((IMyCubeBlock)entity).CubeGrid);
+
+            MyAPIGateway.Utilities.ShowNotification("" + relations, 1000/60);
 
             if (!ShouldConsiderTarget(relations))
                 return false;
