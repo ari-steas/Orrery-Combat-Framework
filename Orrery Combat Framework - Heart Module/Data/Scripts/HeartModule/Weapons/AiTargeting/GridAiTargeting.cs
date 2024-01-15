@@ -24,7 +24,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             
         }
 
-        public void Update()
+        public void UpdateTargeting()
+        {
+
+        }
+
+        public void UpdateAvailableTargets(List<IMyCubeGrid> allGrids, List<IMyCharacter> allCharacters, List<uint> allProjectiles)
         {
 
         }
