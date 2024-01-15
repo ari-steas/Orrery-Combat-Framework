@@ -16,7 +16,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
         CriticalHandle handle;
         int remainingDegradedModeTicks = 600;
 
-        public override void BeforeStart()
+        public override void LoadData()
         {
             HeartData.I = new HeartData();
             HeartData.I.Log.Log($"Start loading core...");
