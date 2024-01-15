@@ -55,10 +55,20 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
         private void CloseGridAI(IMyCubeGrid grid)
         {
-            GridAITargeting[grid].Close();
-            GridAITargeting.Remove(grid);
-            MyAPIGateway.Utilities.ShowNotification("Grid AI closed on " + grid, 1000, "White");
+            // Check if the GridAITargeting dictionary contains the grid before trying to access it
+            if (GridAITargeting.ContainsKey(grid))
+            {
+                GridAITargeting[grid].Close();
+                GridAITargeting.Remove(grid);
+                MyAPIGateway.Utilities.ShowNotification("Grid AI closed on " + grid, 1000, "White");
+            }
+            else
+            {
+                // Handle the case where the grid is not in the dictionary, if necessary
+                MyAPIGateway.Utilities.ShowNotification("Attempted to close Grid AI on a non-tracked grid: " + grid, 1000, "Red");
+            }
         }
+
 
         private void UpdateAITargeting()
         {
