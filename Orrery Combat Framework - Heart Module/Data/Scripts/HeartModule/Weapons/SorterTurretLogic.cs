@@ -57,139 +57,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             base.UpdateAfterSimulation();
         }
 
-        public void UpdateTargeting()
-        {
-            MuzzleMatrix = CalcMuzzleMatrix(0); // Set stored MuzzleMatrix
-
-            if (TargetProjectile != null)
-            {
-                AimPoint = TargetingHelper.InterceptionPoint(
-                        MuzzleMatrix.Translation,
-                        SorterWep.CubeGrid.LinearVelocity,
-                        TargetProjectile, 0) ?? Vector3D.MaxValue;
-                UpdateTargetState(AimPoint);
-            }
-            else if (TargetEntity != null)
-            {
-                AimPoint = TargetingHelper.InterceptionPoint(
-                        MuzzleMatrix.Translation,
-                        SorterWep.CubeGrid.LinearVelocity,
-                        TargetEntity, 0) ?? Vector3D.MaxValue;
-                UpdateTargetState(AimPoint);
-            }
-            else
-                ResetTargetingState();
-
-            UpdateTurretSubparts(deltaTick, AimPoint);
-        }
-
-        private void ResetTargetingState()
-        {
-            //currentTarget = null;
-            IsTargetAligned = false;
-            IsTargetInRange = false;
-            AutoShoot = false; // Disable automatic shooting
-            AimPoint = Vector3D.MaxValue;
-        }
-
-        /// <summary>
-        /// Sets state of target alignment and target range
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="aimPoint"></param>
-        private void UpdateTargetState(Vector3D aimPoint)
-        {
-            double angle = Vector3D.Angle(MuzzleMatrix.Forward, (aimPoint - MuzzleMatrix.Translation).Normalized());
-            IsTargetAligned = angle < Definition.Targeting.AimTolerance;
-
-            double range = Vector3D.Distance(MuzzleMatrix.Translation, aimPoint);
-            IsTargetInRange = range < Definition.Targeting.MaxTargetingRange && range > Definition.Targeting.MinTargetingRange;
-        }
-
-        public bool ShouldConsiderTarget(IMyCubeGrid targetGrid)
-        {
-            if (!TargetGridsState || targetGrid == null)
-                return false;
-
-            switch (targetGrid.GridSizeEnum) // Filter large/small grid
-            {
-                case MyCubeSize.Large:
-                    if (!TargetLargeGridsState)
-                        return false;
-                    break;
-                case MyCubeSize.Small:
-                    if (!TargetSmallGridsState)
-                        return false;
-                    break;
-            }
-
-            if (!ShouldConsiderTarget(HeartUtils.GetRelationsBetweeenGrids(SorterWep.CubeGrid, targetGrid)))
-                return false;
-
-            Vector3D? intercept = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, SorterWep.CubeGrid.LinearVelocity, targetGrid, CurrentAmmo); // Check if it can even hit
-            return intercept != null; // All possible negatives have been filtered out
-        }
-
-        public bool ShouldConsiderTarget(IMyCharacter targetCharacter)
-        {
-            if (!TargetCharactersState || targetCharacter == null)
-                return false;
-
-            if (!ShouldConsiderTarget(HeartUtils.GetRelationsBetweenGridAndPlayer(SorterWep.CubeGrid, targetCharacter.ControllerInfo?.ControllingIdentityId)))
-                return false;
-
-            Vector3D? intercept = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, SorterWep.CubeGrid.LinearVelocity, targetCharacter, CurrentAmmo); // Check if it can even hit
-            return intercept != null; // All possible negatives have been filtered out
-        }
-
-        public bool ShouldConsiderTarget(Projectile targetProjectile)
-        {
-            if (!TargetProjectilesState || targetProjectile == null)
-                return false;
-
-            MyRelationsBetweenPlayerAndBlock relations = MyRelationsBetweenPlayerAndBlock.NoOwnership;
-
-            IMyEntity entity = MyAPIGateway.Entities.GetEntityById(targetProjectile.Firer);
-            if (entity is IMyCharacter)
-                relations = HeartUtils.GetRelationsBetweenGridAndPlayer(SorterWep.CubeGrid, ((IMyCharacter)entity).ControllerInfo?.ControllingIdentityId);
-            else if (entity is IMyCubeBlock)
-                relations = HeartUtils.GetRelationsBetweeenGrids(SorterWep.CubeGrid, ((IMyCubeBlock)entity).CubeGrid);
-
-            MyAPIGateway.Utilities.ShowNotification("" + relations, 1000/60);
-
-            if (!ShouldConsiderTarget(relations))
-                return false;
-
-            Vector3D? intercept = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, SorterWep.CubeGrid.LinearVelocity, targetProjectile, CurrentAmmo); // Check if it can even hit
-            return intercept != null; // All possible negatives have been filtered out
-        }
-
-        public bool ShouldConsiderTarget(MyRelationsBetweenPlayerAndBlock relations)
-        {
-            switch (relations) // Filter target relations
-            {
-                case MyRelationsBetweenPlayerAndBlock.NoOwnership:
-                    if (!TargetUnownedState)
-                        return false;
-                    break;
-                case MyRelationsBetweenPlayerAndBlock.Owner:
-                case MyRelationsBetweenPlayerAndBlock.Friends:
-                case MyRelationsBetweenPlayerAndBlock.FactionShare:
-                    if (!TargetFriendliesState)
-                        return false;
-                    break;
-                case MyRelationsBetweenPlayerAndBlock.Enemies:
-                    if (!TargetEnemiesState)
-                        return false;
-                    break;
-                case MyRelationsBetweenPlayerAndBlock.Neutral:
-                    if (!TargetNeutralsState)
-                        return false;
-                    break;
-            }
-            return true;
-        }
-
         public override void TryShoot()
         {
             AutoShoot = Definition.Targeting.CanAutoShoot && IsTargetAligned && IsTargetInRange;
@@ -246,7 +113,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         private Matrix GetAzimuthMatrix(Vector3D targetDirection, float delta)
         {
-            double desiredAzimuth = Math.Atan2(targetDirection.X, targetDirection.Z); // The problem is that rotation jumps from 0 to Pi. This is difficult to limit.
+            double desiredAzimuth = Math.Atan2(targetDirection.X, targetDirection.Z);
             if (desiredAzimuth == double.NaN)
                 desiredAzimuth = Math.PI;
             return GetAzimuthMatrix(desiredAzimuth, delta);
@@ -281,6 +148,52 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             else
                 Elevation = (float)HeartUtils.NormalizeAngle(desiredElevation);
             return Matrix.CreateFromYawPitchRoll(0, Elevation, 0);
+        }
+
+        /// <summary>
+        /// Returns the angle needed to reach a target.
+        /// </summary>
+        /// <param name="targetPosition"></param>
+        /// <returns></returns>
+        private Vector2D GetAngleToTarget(Vector3D targetPosition)
+        {
+            Vector3D vecToTarget = targetPosition - MuzzleMatrix.Translation;
+
+            vecToTarget = Vector3D.Rotate(vecToTarget.Normalized(), MatrixD.Invert(SorterWep.WorldMatrix));
+
+            double desiredAzimuth = Math.Atan2(vecToTarget.X, vecToTarget.Z);
+            if (desiredAzimuth == double.NaN)
+                desiredAzimuth = Math.PI;
+
+            double desiredElevation = Math.Asin(-vecToTarget.Y);
+            if (desiredElevation == double.NaN)
+                desiredElevation = Math.PI;
+
+            return new Vector2D(desiredAzimuth, desiredElevation);
+        }
+
+        /// <summary>
+        /// Determines if a target position is within the turret's aiming bounds.
+        /// </summary>
+        /// <param name="targetPosition"></param>
+        /// <returns></returns>
+        private bool CanAimAtTarget(Vector3D targetPosition)
+        {
+            Vector2D neededAngle = GetAngleToTarget(targetPosition);
+            neededAngle.X = HeartUtils.NormalizeAngle(neededAngle.X - Math.PI);
+            neededAngle.Y = HeartUtils.NormalizeAngle(-neededAngle.Y, Math.PI/2);
+
+            bool canAimAzimuth = Definition.Hardpoint.CanRotateFull;
+
+            if (!canAimAzimuth && !(neededAngle.X < Definition.Hardpoint.MaxAzimuth && neededAngle.X > Definition.Hardpoint.MinAzimuth))
+                return false; // Check azimuth constrainst
+
+            bool canAimElevation = Definition.Hardpoint.CanElevateFull;
+
+            if (!canAimElevation && !(neededAngle.Y < Definition.Hardpoint.MaxElevation && neededAngle.Y > Definition.Hardpoint.MinElevation))
+                return false; // Check elevation constraints
+
+            return true;
         }
 
         #region Terminal Controls
