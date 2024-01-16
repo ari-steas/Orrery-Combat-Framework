@@ -1,5 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Definitions;
 using Sandbox.ModAPI;
+using VanillaPlusFramework.TemplateClasses;
 //using VanillaPlusFramework.TemplateClasses;
 using VRage.Game;
 using VRage.Utils;

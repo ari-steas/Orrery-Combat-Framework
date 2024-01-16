@@ -8,6 +8,7 @@ using VRage.Game;
 using VRage.Utils;
 using VRageMath;
 using Heart_Module.Data.Scripts.HeartModule.Definitions;
+using VanillaPlusFramework.TemplateClasses;
 
 namespace Heart_Module.Data.Scripts.HeartModule.FX
 {
