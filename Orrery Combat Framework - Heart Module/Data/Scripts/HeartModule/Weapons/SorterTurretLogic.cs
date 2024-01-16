@@ -92,7 +92,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             Vector3D vecToTarget = aimpoint - MuzzleMatrix.Translation;
             //DebugDraw.AddLine(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * vecToTarget.Length(), Color.Blue, 0); // Muzzle line
 
-            vecToTarget = Vector3D.Rotate(vecToTarget.Normalized(), MatrixD.Invert(SorterWep.WorldMatrix)); // Inverted because subparts are wonky. Pre-rotated.
+            vecToTarget = Vector3D.Rotate(vecToTarget.Normalized(), -MatrixD.Invert(SorterWep.WorldMatrix)); // Inverted because subparts are wonky. Pre-rotated. //Inverted again for compat with wc's bass ackwards model stitching
 
             DesiredAzimuth = GetNewAzimuthAngle(vecToTarget);
             DesiredElevation = GetNewElevationAngle(vecToTarget);
