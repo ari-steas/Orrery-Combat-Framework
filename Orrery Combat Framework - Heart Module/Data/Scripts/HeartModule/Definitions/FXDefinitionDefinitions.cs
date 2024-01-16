@@ -45,7 +45,7 @@ using static VRageRender.MyBillboard;
  ******************************************************************************************************************************************************/
 
 
-namespace Heart_Module.Data.Scripts.HeartModule.Definitions
+namespace VanillaPlusFramework.TemplateClasses
 {
     [ProtoInclude(1002, typeof(VPFVisualEffectsDefinition))]
     public partial class VPFDefinition
