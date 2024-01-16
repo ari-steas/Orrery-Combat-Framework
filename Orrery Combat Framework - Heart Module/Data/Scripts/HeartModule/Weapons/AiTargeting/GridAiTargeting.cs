@@ -1,16 +1,9 @@
-using Heart_Module.Data.Scripts.HeartModule.Debug;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
-using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
-using Sandbox.Game;
 using Sandbox.Game.Entities;
-using Sandbox.Game.Entities.Character;
 using Sandbox.ModAPI;
 using System.Collections.Generic;
-using VRage.Game;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
-using VRage.ModAPI;
-using VRage.Utils;
 using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
@@ -20,13 +13,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
     {
         IMyCubeGrid Grid;
         List<SorterWeaponLogic> Weapons => WeaponManager.I.GridWeapons[Grid];
-        List<IMyCubeGrid> ValidGrids = new List<IMyCubeGrid>();
-        List<IMyCharacter> ValidCharacters = new List<IMyCharacter>();
-        List<uint> ValidProjectiles = new List<uint>();
+        Vector3D gridPosition => Grid.PositionComp.WorldAABB.Center;
 
-        Dictionary<IMyCubeGrid, int> TargetedGrids = new Dictionary<IMyCubeGrid, int>(); 
-        Dictionary<IMyCharacter, int> TargetedCharacters = new Dictionary<IMyCharacter, int>(); 
-        Dictionary<uint, int> TargetedProjectiles = new Dictionary<uint, int>(); 
+        SortedList<IMyCubeGrid, int> TargetedGrids = new SortedList<IMyCubeGrid, int>();
+        SortedList<IMyCharacter, int> TargetedCharacters = new SortedList<IMyCharacter, int>();
+        SortedList<uint, int> TargetedProjectiles = new SortedList<uint, int>(); 
 
         /// <summary>
         /// The main focused target 
@@ -43,6 +34,19 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
         {
             Grid = grid;
             Grid.OnBlockAdded += Grid_OnBlockAdded;
+
+            GridComparer = Comparer<IMyCubeGrid>.Create((x, y) =>
+            {
+                return (int)(Vector3D.DistanceSquared(gridPosition, x.GetPosition()) - Vector3D.DistanceSquared(gridPosition, y.GetPosition()));
+            });
+            CharacterComparer = Comparer<IMyCharacter>.Create((x, y) =>
+            {
+                return (int)(Vector3D.DistanceSquared(gridPosition, x.GetPosition()) - Vector3D.DistanceSquared(gridPosition, y.GetPosition()));
+            });
+            ProjectileComparer = Comparer<uint>.Create((x, y) =>
+            {
+                return (int)(Vector3D.DistanceSquared(gridPosition, ProjectileManager.I.GetProjectile(x).Position) - Vector3D.DistanceSquared(gridPosition, ProjectileManager.I.GetProjectile(y).Position));
+            });
 
             SetTargetingFlags();
         }
@@ -62,16 +66,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             //MyAPIGateway.Utilities.ShowNotification("Characters: " + ValidCharacters.Count, 1000/60);
             //MyAPIGateway.Utilities.ShowNotification("Projectiles: " + ValidProjectiles.Count, 1000/60);
 
-            IMyCubeGrid closestGrid = GetClosestGrid();
-            if (closestGrid != null)
-                DebugDraw.AddLine(Grid.PositionComp.WorldAABB.Center, closestGrid.PositionComp.WorldAABB.Center, Color.Pink, 0);
-            IMyCharacter closestChar = GetClosestCharacter();
-            if (closestChar != null)
-                DebugDraw.AddLine(Grid.PositionComp.WorldAABB.Center, closestChar.PositionComp.WorldAABB.Center, Color.Orange, 0);
-            Projectile closestProj = GetClosestProjectile();
-            if (closestProj != null)
-                DebugDraw.AddLine(Grid.PositionComp.WorldAABB.Center, closestProj.Position, Color.Blue, 0);
-
             foreach (var weapon in Weapons) // In desperate need of a refactoring
             {
                 if (!(weapon is SorterTurretLogic))
@@ -87,12 +81,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                     if (turret.PreferUniqueTargets) // Try to balance targeting
                     {
                         List<Projectile> targetable = new List<Projectile>();
-                        ValidProjectiles.ForEach(p =>
+                        foreach (var target in TargetedProjectiles)
                         {
-                            Projectile proj = ProjectileManager.I.GetProjectile(p);
+                            Projectile proj = ProjectileManager.I.GetProjectile(target.Key);
                             if (turret.ShouldConsiderTarget(proj))
                                 targetable.Add(proj);
-                        });
+                        }
 
                         if (targetable.Count == 0) // If zero targetable, go to next weapon
                             continue;
@@ -115,7 +109,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                     }
                     else
                     {
-                        foreach (var projectile in ValidProjectiles) // Tell turrets to focus on the closest valid target
+                        foreach (var projectile in TargetedProjectiles.Keys) // Tell turrets to focus on the closest valid target
                         {
                             if (turret.ShouldConsiderTarget(ProjectileManager.I.GetProjectile(projectile)))
                             {
@@ -134,11 +128,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                     if (turret.PreferUniqueTargets) // Try to balance targeting
                     {
                         List<IMyCharacter> targetable = new List<IMyCharacter>();
-                        ValidCharacters.ForEach(p =>
+                        foreach (var target in TargetedCharacters.Keys)
                         {
-                            if (turret.ShouldConsiderTarget(p))
-                                targetable.Add(p);
-                        });
+                            if (turret.ShouldConsiderTarget(target))
+                                targetable.Add(target);
+                        }
 
                         if (targetable.Count == 0) // If zero targetable, go to next weapon
                             continue;
@@ -161,7 +155,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                     }
                     else
                     {
-                        foreach (var character in ValidCharacters)
+                        foreach (var character in TargetedCharacters.Keys)
                         {
                             if (turret.ShouldConsiderTarget(character))
                             {
@@ -180,11 +174,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                     if (turret.PreferUniqueTargets) // Try to balance targeting
                     {
                         List<IMyCubeGrid> targetable = new List<IMyCubeGrid>();
-                        ValidGrids.ForEach(p =>
+                        foreach (var target in TargetedGrids.Keys)
                         {
-                            if (turret.ShouldConsiderTarget(p))
-                                targetable.Add(p);
-                        });
+                            if (turret.ShouldConsiderTarget(target))
+                                targetable.Add(target);
+                        };
 
                         if (targetable.Count == 0) // If zero targetable, go to next weapon
                             continue;
@@ -202,12 +196,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
                         turret.TargetEntity = minTargeted;
                         turretHasTarget = true;
-                        MyAPIGateway.Utilities.ShowNotification(TargetedGrids[minTargeted] + "", 1000/60);
                         TargetedGrids[minTargeted]++; // Keep track of the number of turrets shooting a target
                     }
                     else
                     {
-                        foreach (var grid in ValidGrids)
+                        foreach (var grid in TargetedGrids.Keys)
                         {
                             if (turret.ShouldConsiderTarget(grid))
                             {
@@ -222,26 +215,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                     }
                 }
             }
-        }
-
-        private IMyCubeGrid GetClosestGrid()
-        {
-            if (ValidGrids.Count == 0) return null;
-            
-            return ValidGrids[0];
-        }
-        private IMyCharacter GetClosestCharacter()
-        {
-            if (ValidCharacters.Count == 0) return null;
-
-            return ValidCharacters[0];
-        }
-
-        private Projectile GetClosestProjectile()
-        {
-            if (ValidProjectiles.Count == 0) return null;
-
-            return ProjectileManager.I.GetProjectile(ValidProjectiles[0]);
         }
 
         /// <summary>
@@ -317,69 +290,40 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
         public void UpdateAvailableTargets(List<IMyCubeGrid> allGrids, List<IMyCharacter> allCharacters, List<uint> allProjectiles, bool distanceCheck = true)
         {
             float maxRangeSq = MaxTargetingRange * MaxTargetingRange;
-            Vector3D gridPosition = Grid.PositionComp.WorldAABB.Center;
-            ValidGrids.Clear();
-            ValidCharacters.Clear();
-            ValidProjectiles.Clear();
-
-            TargetedGrids.Clear();
-            TargetedCharacters.Clear();
-            TargetedProjectiles.Clear();
+            
+            Dictionary<IMyCubeGrid, int> gridBuffer = new Dictionary<IMyCubeGrid, int>();
+            Dictionary<IMyCharacter, int> charBuffer = new Dictionary<IMyCharacter, int>();
+            Dictionary<uint, int> projBuffer = new Dictionary<uint, int>();
 
             if (DoesTargetGrids) // Limit valid grids to those in range
-            {
                 foreach (var grid in allGrids)
-                {
                     if (!distanceCheck || Vector3D.DistanceSquared(gridPosition, grid.GetPosition()) < maxRangeSq)
-                    {
-                        ValidGrids.Add(grid);
-                        TargetedGrids.Add(grid, 0);
-                    }
-                }
-            }
+                        gridBuffer.Add(grid, 0);
 
             if (DoesTargetCharacters) // Limit valid characters to those in range
-            {
                 foreach (var character in allCharacters)
-                {
                     if (!distanceCheck || Vector3D.DistanceSquared(gridPosition, character.GetPosition()) < maxRangeSq)
-                    {
-                        ValidCharacters.Add(character);
-                        TargetedCharacters.Add(character, 0);
-                    }
-                }
-            }
+                        charBuffer.Add(character, 0);
 
             if (DoesTargetProjectiles) // Limit valid projectiles to those in range
-            {
                 foreach (var projectile in allProjectiles)
-                {
                     if (!distanceCheck || Vector3D.DistanceSquared(gridPosition, ProjectileManager.I.GetProjectile(projectile).Position) < maxRangeSq)
-                    {
-                        ValidProjectiles.Add(projectile);
-                        TargetedProjectiles.Add(projectile, 0);
-                    }
-                }
-            }
+                        projBuffer.Add(projectile, 0);
 
-            ValidGrids.Sort((x, y) => {
-                return (int)(Vector3D.DistanceSquared(gridPosition, x.GetPosition()) - Vector3D.DistanceSquared(gridPosition, y.GetPosition()));
-            });
-
-            ValidCharacters.Sort((x, y) => {
-                return (int)(Vector3D.DistanceSquared(gridPosition, x.GetPosition()) - Vector3D.DistanceSquared(gridPosition, y.GetPosition()));
-            });
-
-            ValidProjectiles.Sort((x, y) => {
-                return (int)(Vector3D.DistanceSquared(gridPosition, ProjectileManager.I.GetProjectile(x).Position) - Vector3D.DistanceSquared(gridPosition, ProjectileManager.I.GetProjectile(y).Position));
-            });
+            TargetedGrids = new SortedList<IMyCubeGrid, int>(gridBuffer, GridComparer);
+            TargetedCharacters = new SortedList<IMyCharacter, int>(charBuffer, CharacterComparer);
+            TargetedProjectiles = new SortedList<uint, int>(projBuffer, ProjectileComparer);
         }
 
         public void Close()
         {
-            ValidGrids.Clear();
-            ValidCharacters.Clear();
-            ValidProjectiles.Clear();
+            TargetedGrids.Clear();
+            TargetedCharacters.Clear();
+            TargetedProjectiles.Clear();
         }
+
+        private Comparer<IMyCubeGrid> GridComparer;
+        private Comparer<IMyCharacter> CharacterComparer;
+        private Comparer<uint> ProjectileComparer;
     }
 }

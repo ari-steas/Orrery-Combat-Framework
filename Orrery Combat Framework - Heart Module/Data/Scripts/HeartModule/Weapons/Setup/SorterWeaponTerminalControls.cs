@@ -165,6 +165,15 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             }
             {
                 ControlsHelper.CreateToggle<SorterTurretLogic>(
+                    "HeartTargetUnique",
+                    "Prefer Unique Targets",
+                    "TargetUniqueDesc",
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_PreferUniqueTargets,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_PreferUniqueTargets = v
+                    );
+            }
+            {
+                ControlsHelper.CreateToggle<SorterTurretLogic>(
                     "HeartTargetGrids",
                     "Target Grids",
                     "TargetGridsDesc",
@@ -330,6 +339,25 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                             sb.Append($"{logic.Terminal_Heart_Range_Slider} Range");
                     },
                     @"Textures\GUI\Icons\Actions\Decrease.dds"
+                    );
+            }
+            {
+                ControlsHelper.CreateAction<SorterTurretLogic>(
+                    "ToggleUniqueTargets",
+                    "Toggle Prefer Unique",
+                    (b) =>
+                    {
+                        var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
+                        if (logic != null)
+                            logic.Terminal_Heart_PreferUniqueTargets = !logic.Terminal_Heart_PreferUniqueTargets; // Toggling the value
+                    },
+                    (b, sb) =>
+                    {
+                        var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
+                        if (logic != null)
+                            sb.Append(logic.Terminal_Heart_PreferUniqueTargets ? "Grid ON" : "Grid OFF");
+                    },
+                    @"Textures\GUI\Icons\Actions\Toggle.dds"
                     );
             }
             {

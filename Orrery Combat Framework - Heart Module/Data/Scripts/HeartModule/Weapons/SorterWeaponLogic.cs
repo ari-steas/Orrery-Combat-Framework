@@ -58,43 +58,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
         {
             NeedsUpdate = MyEntityUpdateEnum.BEFORE_NEXT_FRAME;
-
-            ShootState.ValueChanged += OnShootStateChanged;
-            ControlTypeState.ValueChanged += OnControlTypeStateChanged;
         }
 
         #region Event Handlers
 
-        private void OnShootStateChanged(MySync<bool, SyncDirection.BothWays> obj)
-        {
-            // Accessing the boolean value using .Value property
-            bool newValue = obj.Value;
-            MyAPIGateway.Utilities.ShowNotification($"Shoot State changed to: {newValue}", 2000, "White");
-        }
-
-        private void OnAmmoLoadedStateChanged(MySync<long, SyncDirection.BothWays> obj)
-        {
-            // Accessing the ammo type value using .Value property
-            long newAmmoType = obj.Value;
-
-            // Implement logic based on the new ammo type
-            // For example, changing the characteristics of the shots fired, 
-            // or reloading a different type of ammunition, etc.
-
-            MyAPIGateway.Utilities.ShowNotification($"Ammo Type changed to: {newAmmoType}", 2000, "White");
-        }
-
-        private void OnControlTypeStateChanged(MySync<long, SyncDirection.BothWays> obj)
-        {
-            // Accessing the ammo type value using .Value property
-            long newControlType = obj.Value;
-
-            // Implement logic based on the new ammo type
-            // For example, changing the characteristics of the shots fired, 
-            // or reloading a different type of ammunition, etc.
-
-            MyAPIGateway.Utilities.ShowNotification($"Control Type changed to: {newControlType}", 2000, "White");
-        }
 
         #endregion
 
@@ -118,8 +85,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 ((IMyEntity)SubpartManager.RecursiveGetSubpart(SorterWep, Definition.Assignments.MuzzleSubpart))?.Model?.GetDummies(MuzzleDummies);
             else
                 SorterWep.Model.GetDummies(MuzzleDummies); // From base model if muzzle subpart is not set
-
-            MyAPIGateway.Utilities.ShowNotification($"Model Dummies: {MuzzleDummies.Count}", 2000, "White");
 
             SorterWep.SlimBlock.BlockGeneralDamageModifier = Definition.Assignments.DurabilityModifier;
             SorterWep.ResourceSink.SetRequiredInputByType(MyResourceDistributorComponent.ElectricityId, Definition.Hardpoint.IdlePower);
@@ -341,6 +306,11 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         internal virtual bool LoadSettings()
         {
+            // Defaults
+            Terminal_Heart_Shoot = true;
+            Terminal_Heart_AmmoComboBox = 0;
+            Terminal_ControlType_ComboBox = 0;
+
             if (SorterWep.Storage == null)
                 return false;
 
@@ -381,7 +351,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             try
             {
                 SaveSettings();
-                MyAPIGateway.Utilities.ShowNotification("AAAHH I'M SERIALIZING AAAHHHHH", 2000, "Red");
+                //MyAPIGateway.Utilities.ShowNotification("AAAHH I'M SERIALIZING AAAHHHHH", 2000, "Red");
             }
             catch (Exception e)
             {
@@ -400,22 +370,5 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             return center.Rotate(Axis, radius * HeartData.I.Random.NextDouble());
         }
-
-        public override void Close()
-        {
-            base.Close();
-
-            // Unsubscribe from the event when the component is closed
-            if (ShootState != null)
-                ShootState.ValueChanged -= OnShootStateChanged;
-
-            if (AmmoLoadedState != null)
-                AmmoLoadedState.ValueChanged -= OnAmmoLoadedStateChanged;
-
-            if (ControlTypeState != null)
-                ControlTypeState.ValueChanged -= OnControlTypeStateChanged;
-            // Add any additional cleanup logic here if necessary
-        }
-
     }
 }

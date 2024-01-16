@@ -14,14 +14,15 @@ using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 using VRage.Game;
 using VRage.Game.ModAPI;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using System.Security.Policy;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
     //[MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeaponTurret")]
     public partial class SorterTurretLogic : SorterWeaponLogic
     {
-        internal float Azimuth;
-        internal float Elevation;
+        internal float Azimuth = (float)Math.PI;
+        internal float Elevation = 0;
 
         /// <summary>
         /// Delta for engine ticks; 60tps
@@ -32,18 +33,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         public bool IsTargetInRange { get; private set; } = false;
 
         public Vector3D AimPoint { get; private set; } = Vector3D.MaxValue; // TODO fix, should be in targeting CS
-        //private GenericKeenTargeting targeting = new GenericKeenTargeting();
 
         public IMyEntity TargetEntity = null;
         public Projectile TargetProjectile = null;
 
-        public override void Init(MyObjectBuilder_EntityBase objectBuilder)
-        {
-            base.Init(objectBuilder);
-
-            Azimuth = (float)Math.PI; // defaults
-            Elevation = 0;
-        }
 
         public SorterTurretLogic(IMyConveyorSorter sorterWeapon, SerializableWeaponDefinition definition, uint id) : base(sorterWeapon, definition, id) { }
 
@@ -107,9 +100,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             SubpartManager.LocalRotateSubpartAbs(azimuth, GetAzimuthMatrix(vecToTarget, delta));
             SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(vecToTarget, delta));
         }
-
-        //float Azimuth = (float) Math.PI;
-        //float Elevation = 0;
 
         private Matrix GetAzimuthMatrix(Vector3D targetDirection, float delta)
         {
@@ -179,6 +169,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         /// <returns></returns>
         private bool CanAimAtTarget(Vector3D targetPosition)
         {
+            if (Vector3D.DistanceSquared(MuzzleMatrix.Translation, targetPosition) > AiRange * AiRange) // Range check
+                return false;
+
             Vector2D neededAngle = GetAngleToTarget(targetPosition);
             neededAngle.X = HeartUtils.NormalizeAngle(neededAngle.X - Math.PI);
             neededAngle.Y = HeartUtils.NormalizeAngle(-neededAngle.Y, Math.PI/2);
@@ -213,6 +206,19 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         internal override bool LoadSettings()
         {
+            // Defaults
+            Terminal_Heart_Range_Slider = Definition.Targeting.MaxTargetingRange;
+            Terminal_Heart_TargetGrids = true;
+            Terminal_Heart_TargetProjectiles = true;
+            Terminal_Heart_TargetCharacters = true;
+            Terminal_Heart_TargetLargeGrids = true;
+            Terminal_Heart_TargetSmallGrids = true;
+            Terminal_Heart_TargetEnemies = true;
+            Terminal_Heart_TargetNeutrals = true;
+            Terminal_Heart_TargetFriendlies = false;
+            Terminal_Heart_TargetUnowned = false;
+            Terminal_Heart_PreferUniqueTargets = false;
+
             if (SorterWep.Storage == null)
                 return false;
 
@@ -302,17 +308,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             get
             {
-                //return Settings.TargetGridsState;
-                return true;
+                return Settings.PreferUniqueTargetState;
             }
 
             set
             {
-                //Settings.TargetGridsState = value;
+                Settings.PreferUniqueTargetState = value;
                 PreferUniqueTargets.Value = value;
-                //if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
-                //    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
-
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
             }
         }
 
@@ -362,7 +366,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 TargetCharactersState.Value = value;
                 if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
                     NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
-
             }
         }
 
