@@ -113,7 +113,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             foreach (var weapon in ActiveWeapons.Values) // I cannot be asked to tease apart how to seperate updating on weapons
                 (weapon as SorterTurretLogic)?.UpdateTurretSubparts(deltaTick);
 
-            if (update100Ct >= 100)
+            if (update100Ct >= 1)
             {
                 Update100();
                 update100Ct = 0;
