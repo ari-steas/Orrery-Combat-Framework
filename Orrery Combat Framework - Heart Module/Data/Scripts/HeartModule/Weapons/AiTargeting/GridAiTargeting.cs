@@ -196,7 +196,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
                         turret.TargetEntity = minTargeted;
                         turretHasTarget = true;
-                        MyAPIGateway.Utilities.ShowNotification(TargetedGrids[minTargeted] + "", 1000/60);
                         TargetedGrids[minTargeted]++; // Keep track of the number of turrets shooting a target
                     }
                     else

@@ -113,7 +113,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             else if (entity is IMyCubeBlock)
                 relations = HeartUtils.GetRelationsBetweeenGrids(SorterWep.CubeGrid, ((IMyCubeBlock)entity).CubeGrid);
 
-            MyAPIGateway.Utilities.ShowNotification("" + relations, 1000 / 60);
+            //MyAPIGateway.Utilities.ShowNotification("" + relations, 1000 / 60);
 
             if (!ShouldConsiderTarget(relations))
                 return false;

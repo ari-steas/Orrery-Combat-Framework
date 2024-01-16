@@ -206,6 +206,19 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         internal override bool LoadSettings()
         {
+            // Defaults
+            Terminal_Heart_Range_Slider = Definition.Targeting.MaxTargetingRange;
+            Terminal_Heart_TargetGrids = true;
+            Terminal_Heart_TargetProjectiles = true;
+            Terminal_Heart_TargetCharacters = true;
+            Terminal_Heart_TargetLargeGrids = true;
+            Terminal_Heart_TargetSmallGrids = true;
+            Terminal_Heart_TargetEnemies = true;
+            Terminal_Heart_TargetNeutrals = true;
+            Terminal_Heart_TargetFriendlies = false;
+            Terminal_Heart_TargetUnowned = false;
+            Terminal_Heart_PreferUniqueTargets = false;
+
             if (SorterWep.Storage == null)
                 return false;
 

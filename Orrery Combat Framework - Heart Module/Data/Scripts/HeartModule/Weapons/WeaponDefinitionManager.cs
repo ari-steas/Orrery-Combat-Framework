@@ -78,7 +78,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 RetargetTime = -1,
                 AimTolerance = 0.0175f,
                 IFF = Targeting.IFF_Enum.TargetEnemies,
-                TargetTypes = Targeting.TargetType_Enum.TargetGrids | Targeting.TargetType_Enum.TargetProjectiles | Targeting.TargetType_Enum.TargetCharacters
+                TargetTypes = Targeting.TargetType_Enum.TargetGrids | Targeting.TargetType_Enum.TargetProjectiles | Targeting.TargetType_Enum.TargetCharacters,
             },
             Assignments = new Assignments()
             {
