@@ -103,7 +103,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 MaxElevation = (float)Math.PI,
                 MinElevation = -0.1745f,
                 HomeAzimuth = 0,
-                HomeElevation = (float)Math.PI / 4,
+                HomeElevation = 0,
                 IdlePower = 10,
                 ShotInaccuracy = 0.0025f,
                 LineOfSightCheck = true,
