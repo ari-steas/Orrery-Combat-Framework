@@ -120,7 +120,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             }
         }
 
-        public void Update100()
+        public void Update100() // NOTE - this isn't syncing right. Try again with a different method
         {
             if (!MyAPIGateway.Session.IsServer)
                 return;
