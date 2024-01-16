@@ -107,6 +107,22 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         public override void UpdateBeforeSimulation()
         {
             if (HeartData.I.IsSuspended) return;
+
+            if (!MyAPIGateway.Session.IsServer)
+                return;
+
+            List<n_TurretFacing> facings = new List<n_TurretFacing>(); // TODO: Limit the max number of syncs by network load
+            foreach (var weapon in ActiveWeapons.Values)
+            {
+                if (!(weapon is SorterTurretLogic))
+                    continue;
+
+                SorterTurretLogic turret = weapon as SorterTurretLogic;
+                if (turret.HasFacingChanged)
+                    facings.Add(new n_TurretFacing(turret));
+            }
+
+            HeartData.I.Net.SendToEveryone(new n_TurretFacingArray(facings));
         }
 
         public SorterWeaponLogic GetWeapon(uint id) => ActiveWeapons.GetValueOrDefault(id, null);

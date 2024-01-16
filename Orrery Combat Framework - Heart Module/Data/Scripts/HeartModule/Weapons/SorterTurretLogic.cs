@@ -23,6 +23,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
     {
         internal float Azimuth = (float)Math.PI;
         internal float Elevation = 0;
+        internal bool HasFacingChanged = false;
 
         /// <summary>
         /// Delta for engine ticks; 60tps
@@ -44,8 +45,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             if (!SorterWep.IsWorking) // Don't turn if the turret is disabled
                 return;
-
-            UpdateTargeting();
+            if (MyAPIGateway.Session.IsServer)
+                UpdateTargeting();
 
             base.UpdateAfterSimulation();
         }
@@ -82,7 +83,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             if (!Definition.Hardpoint.ControlRotation)
                 return;
-
+            HasFacingChanged = false;
             MyEntitySubpart azimuth = SubpartManager.GetSubpart((MyEntity)SorterWep, Definition.Assignments.AzimuthSubpart);
             MyEntitySubpart elevation = SubpartManager.GetSubpart(azimuth, Definition.Assignments.ElevationSubpart);
 
@@ -112,12 +113,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         private Matrix GetAzimuthMatrix(double desiredAzimuth, float delta)
         {
             desiredAzimuth = HeartUtils.LimitRotationSpeed(Azimuth, desiredAzimuth, Definition.Hardpoint.AzimuthRate * delta);
-
+            float oldAzi = Azimuth;
             if (!Definition.Hardpoint.CanRotateFull)
                 Azimuth = (float)HeartUtils.Clamp(desiredAzimuth, Definition.Hardpoint.MinAzimuth, Definition.Hardpoint.MaxAzimuth); // Basic angle clamp
             else
                 Azimuth = (float)HeartUtils.NormalizeAngle(desiredAzimuth); // Adjust rotation to (-180, 180), but don't have any limits
-
+            HasFacingChanged |= oldAzi != Azimuth;
             //MyAPIGateway.Utilities.ShowNotification("AZ: " + Math.Round(MathHelper.ToDegrees(Azimuth)), 1000/60);
             return Matrix.CreateFromYawPitchRoll(Azimuth, 0, 0);
         }
@@ -133,11 +134,25 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         private Matrix GetElevationMatrix(double desiredElevation, float delta)
         {
             desiredElevation = HeartUtils.LimitRotationSpeed(Elevation, desiredElevation, Definition.Hardpoint.ElevationRate * delta);
+            float oldEle = Elevation;
             if (!Definition.Hardpoint.CanElevateFull)
                 Elevation = (float)-HeartUtils.Clamp(-desiredElevation, Definition.Hardpoint.MinElevation, Definition.Hardpoint.MaxElevation);
             else
                 Elevation = (float)HeartUtils.NormalizeAngle(desiredElevation);
+            HasFacingChanged |= oldEle != Elevation;
             return Matrix.CreateFromYawPitchRoll(0, Elevation, 0);
+        }
+
+        public void SetFacing(float azimuth, float elevation)
+        {
+            Azimuth = azimuth;
+            Elevation = elevation;
+
+            MyEntitySubpart azimuthS = SubpartManager.GetSubpart((MyEntity)SorterWep, Definition.Assignments.AzimuthSubpart);
+            MyEntitySubpart elevationS = SubpartManager.GetSubpart(azimuthS, Definition.Assignments.ElevationSubpart);
+
+            SubpartManager.LocalRotateSubpartAbs(azimuthS, Matrix.CreateFromYawPitchRoll(Azimuth, 0, 0));
+            SubpartManager.LocalRotateSubpartAbs(elevationS, Matrix.CreateFromYawPitchRoll(0, Elevation, 0));
         }
 
         /// <summary>
@@ -236,6 +251,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                     // Set the AI Range from loaded settings
                     Settings.AiRange = loadedSettings.AiRange;
                     AiRange.Value = Settings.AiRange;
+
+                    Settings.PreferUniqueTargetState = loadedSettings.PreferUniqueTargetState;
+                    PreferUniqueTargets.Value = Settings.PreferUniqueTargetState;
 
                     // Set the TargetGrids state from loaded settings
                     Settings.TargetGridsState = loadedSettings.TargetGridsState;
