@@ -4,6 +4,7 @@ using Sandbox.Game.Localization;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces.Terminal;
 using System;
+using System.Runtime.CompilerServices;
 using System.Text;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
@@ -161,6 +162,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_Range_Slider,
                     (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_Range_Slider = v,
                     (b, sb) => sb.Append($"Current value: {Math.Round(b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_Range_Slider)}")
+                    )
+                    .SetLimits(
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Definition.Targeting.MinTargetingRange,
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Definition.Targeting.MaxTargetingRange
                     );
             }
             {
@@ -268,7 +273,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         {
                             // Toggle the "Shoot" option and ensure sync
                             logic.Terminal_Heart_Shoot = !logic.Terminal_Heart_Shoot; // Toggling the value
-                            MyAPIGateway.Utilities.ShowNotification($"Shoot toggled to: {(logic.Terminal_Heart_Shoot ? "ON" : "OFF")}", 2000, "White");
                         }
                     },
                     (b, sb) =>
@@ -371,7 +375,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         {
                             // Toggle the "Target Grids" option and ensure sync
                             logic.Terminal_Heart_TargetGrids = !logic.Terminal_Heart_TargetGrids; // Toggling the value
-                            MyAPIGateway.Utilities.ShowNotification($"Target Grids toggled to: {(logic.Terminal_Heart_TargetGrids ? "ON" : "OFF")}", 2000, "White");
                         }
                     },
                     (b, sb) =>
@@ -396,7 +399,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         {
                             // Toggle the "Target Large Grids" option and ensure sync
                             logic.Terminal_Heart_TargetLargeGrids = !logic.Terminal_Heart_TargetLargeGrids; // Toggling the value
-                            MyAPIGateway.Utilities.ShowNotification($"Target Large Grids toggled to: {(logic.Terminal_Heart_TargetLargeGrids ? "ON" : "OFF")}", 2000, "White");
                         }
                     },
                     (b, sb) =>
@@ -421,7 +423,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         {
                             // Toggle the "Target Small Grids" option and ensure sync
                             logic.Terminal_Heart_TargetSmallGrids = !logic.Terminal_Heart_TargetSmallGrids; // Toggling the value
-                            MyAPIGateway.Utilities.ShowNotification($"Target Small Grids toggled to: {(logic.Terminal_Heart_TargetSmallGrids ? "ON" : "OFF")}", 2000, "White");
                         }
                     },
                     (b, sb) =>
@@ -446,7 +447,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         {
                             // Toggle the targeting of projectiles and ensure sync
                             logic.Terminal_Heart_TargetProjectiles = !logic.Terminal_Heart_TargetProjectiles; // Toggling the value
-                            MyAPIGateway.Utilities.ShowNotification($"Target Projectiles toggled to: {(logic.Terminal_Heart_TargetProjectiles ? "ON" : "OFF")}", 2000, "White");
                         }
                     },
                     (b, sb) =>
@@ -471,7 +471,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         {
                             // Toggle the "Target Characters" option and ensure sync
                             logic.Terminal_Heart_TargetCharacters = !logic.Terminal_Heart_TargetCharacters; // Toggling the value
-                            MyAPIGateway.Utilities.ShowNotification($"Target Characters toggled to: {(logic.Terminal_Heart_TargetCharacters ? "ON" : "OFF")}", 2000, "White");
                         }
                     },
                     (b, sb) =>
@@ -496,7 +495,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         {
                             // Toggle the "Target Friendlies" option and ensure sync
                             logic.Terminal_Heart_TargetFriendlies = !logic.Terminal_Heart_TargetFriendlies; // Toggling the value
-                            MyAPIGateway.Utilities.ShowNotification($"Target Friendlies toggled to: {(logic.Terminal_Heart_TargetFriendlies ? "ON" : "OFF")}", 2000, "White");
                         }
                     },
                     (b, sb) =>
@@ -521,7 +519,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         {
                             // Toggle the "Target Neutrals" option and ensure sync
                             logic.Terminal_Heart_TargetNeutrals = !logic.Terminal_Heart_TargetNeutrals; // Toggling the value
-                            MyAPIGateway.Utilities.ShowNotification($"Target Neutrals toggled to: {(logic.Terminal_Heart_TargetNeutrals ? "ON" : "OFF")}", 2000, "White");
                         }
                     },
                     (b, sb) =>
@@ -546,7 +543,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         {
                             // Toggle the "Target Enemies" option and ensure sync
                             logic.Terminal_Heart_TargetEnemies = !logic.Terminal_Heart_TargetEnemies; // Toggling the value
-                            MyAPIGateway.Utilities.ShowNotification($"Target Enemies toggled to: {(logic.Terminal_Heart_TargetEnemies ? "ON" : "OFF")}", 2000, "White");
                         }
                     },
                     (b, sb) =>
@@ -571,7 +567,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         {
                             // Toggle the "Target Unowned" option and ensure sync
                             logic.Terminal_Heart_TargetUnowned = !logic.Terminal_Heart_TargetUnowned; // Toggling the value
-                            MyAPIGateway.Utilities.ShowNotification($"Target Unowned toggled to: {(logic.Terminal_Heart_TargetUnowned ? "ON" : "OFF")}", 2000, "White");
                         }
                     },
                     (b, sb) =>
