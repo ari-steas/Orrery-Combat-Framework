@@ -15,6 +15,7 @@ using VRage.Game;
 using VRage.Game.ModAPI;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using System.Security.Policy;
+using VRage.Utils;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
@@ -96,6 +97,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
             DesiredAzimuth = GetNewAzimuthAngle(vecToTarget);
             DesiredElevation = GetNewElevationAngle(vecToTarget);
+            MyLog.Default.WriteLineToConsole(Math.Round(MathHelper.ToDegrees(DesiredAzimuth)) + "");
         }
 
         public void UpdateTurretSubparts(float delta)

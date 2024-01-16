@@ -1,9 +1,11 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.ModAPI;
+using System;
 using System.Collections.Generic;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
+using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
@@ -111,9 +113,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             update100Ct++;
 
             foreach (var weapon in ActiveWeapons.Values) // I cannot be asked to tease apart how to seperate updating on weapons
+            {
                 (weapon as SorterTurretLogic)?.UpdateTurretSubparts(deltaTick);
+                MyAPIGateway.Utilities.ShowNotification("" + Math.Round(MathHelper.ToDegrees((weapon as SorterTurretLogic)?.DesiredAzimuth ?? 0)), 1000/60);
+            }
 
-            if (update100Ct >= 1)
+            if (update100Ct >= 10)
             {
                 Update100();
                 update100Ct = 0;
