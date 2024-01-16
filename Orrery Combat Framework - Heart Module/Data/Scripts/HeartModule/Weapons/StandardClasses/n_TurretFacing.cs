@@ -9,16 +9,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
     public class n_TurretFacing : PacketBase
     {
         // TODO: Add support for turrets
-        [ProtoMember(1)] uint TurretId;
+        [ProtoMember(1)] long TurretId;
         [ProtoMember(2)] float Azimuth;
         [ProtoMember(3)] float Elevation;
 
         public n_TurretFacing() { }
         public n_TurretFacing(SorterTurretLogic turret)
         {
-            TurretId = turret.Id;
-            Azimuth = turret.Azimuth;
-            Elevation = turret.Elevation;
+            TurretId = turret.SorterWep.EntityId;
+            Azimuth = (float) turret.DesiredAzimuth;
+            Elevation = (float) turret.DesiredElevation;
         }
 
         public override void Received(ulong SenderSteamId)

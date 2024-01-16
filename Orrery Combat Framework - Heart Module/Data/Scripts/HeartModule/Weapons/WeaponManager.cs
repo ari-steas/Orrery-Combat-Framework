@@ -104,28 +104,47 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             HeartData.I.OnGridRemove -= OnGridRemove;
         }
 
+        int update100Ct = 0;
         public override void UpdateBeforeSimulation()
         {
             if (HeartData.I.IsSuspended) return;
+            update100Ct++;
 
+            foreach (var weapon in ActiveWeapons.Values) // I cannot be asked to tease apart how to seperate updating on weapons
+                (weapon as SorterTurretLogic)?.UpdateTurretSubparts(deltaTick);
+
+            if (update100Ct >= 100)
+            {
+                Update100();
+                update100Ct = 0;
+            }
+        }
+
+        public void Update100()
+        {
             if (!MyAPIGateway.Session.IsServer)
                 return;
 
-            List<n_TurretFacing> facings = new List<n_TurretFacing>(); // TODO: Limit the max number of syncs by network load
+            List<n_TurretFacing> facings = new List<n_TurretFacing>(); // TODO: Limit the max number of syncs by network load, and also by player distance
             foreach (var weapon in ActiveWeapons.Values)
             {
                 if (!(weapon is SorterTurretLogic))
                     continue;
 
                 SorterTurretLogic turret = weapon as SorterTurretLogic;
-                if (turret.HasFacingChanged)
-                    facings.Add(new n_TurretFacing(turret));
+                facings.Add(new n_TurretFacing(turret));
             }
 
             HeartData.I.Net.SendToEveryone(new n_TurretFacingArray(facings));
         }
 
         public SorterWeaponLogic GetWeapon(uint id) => ActiveWeapons.GetValueOrDefault(id, null);
+        /// <summary>
+        /// By EntityId
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public SorterWeaponLogic GetWeapon(long id) => (MyAPIGateway.Entities.GetEntityById(id) as IMyCubeBlock)?.GameLogic as SorterWeaponLogic;
         public bool IsIdAvailable(uint id) => !ActiveWeapons.ContainsKey(id);
     }
 }

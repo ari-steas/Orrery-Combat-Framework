@@ -38,7 +38,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             else
                 ResetTargetingState();
 
-            UpdateTurretSubparts(deltaTick, AimPoint);
+            UpdateAzimuthElevation(AimPoint);
         }
 
         private void ResetTargetingState()

@@ -23,7 +23,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
     {
         internal float Azimuth = (float)Math.PI;
         internal float Elevation = 0;
-        internal bool HasFacingChanged = false;
+        internal double DesiredAzimuth = Math.PI;
+        internal double DesiredElevation = 0;
 
         /// <summary>
         /// Delta for engine ticks; 60tps
@@ -79,18 +80,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             return MatrixD.Identity;
         }
 
-        public void UpdateTurretSubparts(float delta, Vector3D aimpoint)
+        public void UpdateAzimuthElevation(Vector3D aimpoint)
         {
-            if (!Definition.Hardpoint.ControlRotation)
-                return;
-            HasFacingChanged = false;
-            MyEntitySubpart azimuth = SubpartManager.GetSubpart((MyEntity)SorterWep, Definition.Assignments.AzimuthSubpart);
-            MyEntitySubpart elevation = SubpartManager.GetSubpart(azimuth, Definition.Assignments.ElevationSubpart);
-
             if (aimpoint == Vector3D.MaxValue)
             {
-                SubpartManager.LocalRotateSubpartAbs(azimuth, GetAzimuthMatrix(Math.PI - Definition.Hardpoint.HomeAzimuth, deltaTick));
-                SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(-Definition.Hardpoint.HomeElevation, deltaTick));
+                DesiredAzimuth = Math.PI - Definition.Hardpoint.HomeAzimuth;
+                DesiredElevation = -Definition.Hardpoint.HomeElevation;
                 return; // Exit if interception point does not exist
             }
 
@@ -98,16 +93,32 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             //DebugDraw.AddLine(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * vecToTarget.Length(), Color.Blue, 0); // Muzzle line
 
             vecToTarget = Vector3D.Rotate(vecToTarget.Normalized(), MatrixD.Invert(SorterWep.WorldMatrix)); // Inverted because subparts are wonky. Pre-rotated.
-            SubpartManager.LocalRotateSubpartAbs(azimuth, GetAzimuthMatrix(vecToTarget, delta));
-            SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(vecToTarget, delta));
+
+            DesiredAzimuth = GetNewAzimuthAngle(vecToTarget);
+            DesiredElevation = GetNewElevationAngle(vecToTarget);
         }
 
-        private Matrix GetAzimuthMatrix(Vector3D targetDirection, float delta)
+        public void UpdateTurretSubparts(float delta)
+        {
+            if (!Definition.Hardpoint.ControlRotation)
+                return;
+
+            if (Azimuth == DesiredAzimuth || Elevation == DesiredElevation) // Don't move if you're already there
+                return;
+
+            MyEntitySubpart azimuth = SubpartManager.GetSubpart((MyEntity)SorterWep, Definition.Assignments.AzimuthSubpart);
+            MyEntitySubpart elevation = SubpartManager.GetSubpart(azimuth, Definition.Assignments.ElevationSubpart);
+            
+            SubpartManager.LocalRotateSubpartAbs(azimuth, GetAzimuthMatrix(DesiredAzimuth, delta));
+            SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(DesiredElevation, delta));
+        }
+
+        private double GetNewAzimuthAngle(Vector3D targetDirection)
         {
             double desiredAzimuth = Math.Atan2(targetDirection.X, targetDirection.Z);
             if (desiredAzimuth == double.NaN)
                 desiredAzimuth = Math.PI;
-            return GetAzimuthMatrix(desiredAzimuth, delta);
+            return desiredAzimuth;
         }
 
         private Matrix GetAzimuthMatrix(double desiredAzimuth, float delta)
@@ -118,17 +129,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 Azimuth = (float)HeartUtils.Clamp(desiredAzimuth, Definition.Hardpoint.MinAzimuth, Definition.Hardpoint.MaxAzimuth); // Basic angle clamp
             else
                 Azimuth = (float)HeartUtils.NormalizeAngle(desiredAzimuth); // Adjust rotation to (-180, 180), but don't have any limits
-            HasFacingChanged |= oldAzi != Azimuth;
             //MyAPIGateway.Utilities.ShowNotification("AZ: " + Math.Round(MathHelper.ToDegrees(Azimuth)), 1000/60);
             return Matrix.CreateFromYawPitchRoll(Azimuth, 0, 0);
         }
 
-        private MatrixD GetElevationMatrix(Vector3D targetDirection, float delta)
+        private double GetNewElevationAngle(Vector3D targetDirection)
         {
             double desiredElevation = Math.Asin(-targetDirection.Y);
             if (desiredElevation == double.NaN)
                 desiredElevation = Math.PI;
-            return GetElevationMatrix(desiredElevation, delta);
+            return desiredElevation;
         }
 
         private Matrix GetElevationMatrix(double desiredElevation, float delta)
@@ -139,20 +149,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 Elevation = (float)-HeartUtils.Clamp(-desiredElevation, Definition.Hardpoint.MinElevation, Definition.Hardpoint.MaxElevation);
             else
                 Elevation = (float)HeartUtils.NormalizeAngle(desiredElevation);
-            HasFacingChanged |= oldEle != Elevation;
             return Matrix.CreateFromYawPitchRoll(0, Elevation, 0);
         }
 
         public void SetFacing(float azimuth, float elevation)
         {
-            Azimuth = azimuth;
-            Elevation = elevation;
-
-            MyEntitySubpart azimuthS = SubpartManager.GetSubpart((MyEntity)SorterWep, Definition.Assignments.AzimuthSubpart);
-            MyEntitySubpart elevationS = SubpartManager.GetSubpart(azimuthS, Definition.Assignments.ElevationSubpart);
-
-            SubpartManager.LocalRotateSubpartAbs(azimuthS, Matrix.CreateFromYawPitchRoll(Azimuth, 0, 0));
-            SubpartManager.LocalRotateSubpartAbs(elevationS, Matrix.CreateFromYawPitchRoll(0, Elevation, 0));
+            DesiredAzimuth = azimuth;
+            DesiredElevation = elevation;
         }
 
         /// <summary>
