@@ -10,7 +10,7 @@ using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
-    [MySessionComponentDescriptor(MyUpdateOrder.BeforeSimulation)]
+    [MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation)]
     public class WeaponManager : MySessionComponentBase
     {
         public static WeaponManager I;
@@ -107,7 +107,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         }
 
         int update50Ct = 0;
-        public override void UpdateBeforeSimulation()
+        public override void UpdateAfterSimulation()
         {
             if (HeartData.I.IsSuspended) return;
             update50Ct++;
@@ -117,7 +117,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 (weapon as SorterTurretLogic)?.UpdateTurretSubparts(deltaTick);
             }
 
-            if (update50Ct >= 10)
+            if (update50Ct >= 50)
             {
                 Update50();
                 update50Ct = 0;
