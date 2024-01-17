@@ -4,6 +4,7 @@ using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
@@ -20,7 +21,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
         SortedList<IMyCubeGrid, int> TargetedGrids = new SortedList<IMyCubeGrid, int>();
         SortedList<IMyCharacter, int> TargetedCharacters = new SortedList<IMyCharacter, int>();
-        SortedList<uint, int> TargetedProjectiles = new SortedList<uint, int>(); 
+
+        // Priority target list that gets checked first 
+        SortedList<MyEntity, int> PriorityTargets = new SortedList<MyEntity, int>();
+        SortedList<uint, int> TargetedProjectiles = new SortedList<uint, int>();
+
+        private GenericKeenTargeting keenTargeting = new GenericKeenTargeting();
 
         /// <summary>
         /// The main focused target 
@@ -67,11 +73,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
                 SetTargetingFlags();
                 ScanForTargets();
+
+
                 //MyAPIGateway.Utilities.ShowNotification("Grids: " + ValidGrids.Count, 1000/60);
                 //MyAPIGateway.Utilities.ShowNotification("Characters: " + ValidCharacters.Count, 1000/60);
                 //MyAPIGateway.Utilities.ShowNotification("Projectiles: " + ValidProjectiles.Count, 1000/60);
 
-                foreach (var weapon in Weapons) // In desperate need of a refactoring
+
+                foreach (var weapon in Weapons)
                 {
                     if (!(weapon is SorterTurretLogic))
                         continue;
@@ -80,6 +89,42 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                     turret.TargetProjectile = null;
                     turret.TargetEntity = null;
                     bool turretHasTarget = false;
+
+                    // First, check for manually locked target using GenericKeenTargeting
+                    if (keenTargeting != null)
+                    {
+                        MyEntity manuallyLockedTarget = keenTargeting.GetTarget(Grid, DoesTargetGrids, DoesTargetGrids, DoesTargetGrids, DoesTargetGrids, DoesTargetGrids, DoesTargetGrids, DoesTargetGrids);
+
+                        // Check if manually locked target is within range or null
+                        bool isManuallyLockedTargetInRange = manuallyLockedTarget == null || Vector3D.DistanceSquared(manuallyLockedTarget.PositionComp.WorldAABB.Center, Grid.PositionComp.WorldAABB.Center) <= MaxTargetingRange * MaxTargetingRange;
+
+                        // Set the manually locked target as the primary target regardless of range
+                        if (manuallyLockedTarget != null && isManuallyLockedTargetInRange)
+                        {
+                            turret.TargetEntity = manuallyLockedTarget;
+                            turretHasTarget = true;
+                        }
+                    }
+
+                    // Check priority targets first if no manually locked target
+                    if (!turretHasTarget && PriorityTargets.Count > 0)
+                    {
+                        // Assign first priority target 
+                        MyEntity priorityTarget = PriorityTargets.First().Key;
+                        if (turret.ShouldConsiderTarget((IMyCubeGrid)priorityTarget))
+                        {
+                            if (priorityTarget is IMyCharacter)
+                                turret.TargetEntity = (IMyCharacter)priorityTarget;
+                            else if (priorityTarget is IMyCubeGrid)
+                                turret.TargetEntity = (IMyCubeGrid)priorityTarget;
+
+                            turretHasTarget = true;
+
+                            PriorityTargets[priorityTarget]++;
+                        }
+                    }
+
+                    // Rest of targeting logic...
 
                     if (turret.TargetProjectilesState)
                     {
@@ -244,7 +289,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             {
                 if (weapon is SorterTurretLogic) // Only set targeting flags with turrets
                 {
-                    var turret = (SorterTurretLogic) weapon;
+                    var turret = (SorterTurretLogic)weapon;
                     DoesTargetGrids |= turret.Settings.TargetGridsState;
                     DoesTargetCharacters |= turret.Settings.TargetCharactersState;
                     DoesTargetProjectiles |= turret.Settings.TargetProjectilesState;
@@ -285,7 +330,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                     //IMyCubeGrid topmost = (IMyCubeGrid)((IMyCubeGrid)entity).GetTopMostParent(); // Ignore subgrids, and instead target parents.
                     //if (!allGrids.Contains(topmost)) // Note - GetTopMostParent() consistently picks the first subgrid to spawn.
                     //    allGrids.Add(topmost);
-                    allGrids.Add((IMyCubeGrid) entity);
+                    allGrids.Add((IMyCubeGrid)entity);
                 }
                 else if (entity is IMyCharacter)
                     allCharacters.Add(entity as IMyCharacter);
@@ -300,7 +345,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
         public void UpdateAvailableTargets(List<IMyCubeGrid> allGrids, List<IMyCharacter> allCharacters, List<uint> allProjectiles, bool distanceCheck = true)
         {
             float maxRangeSq = MaxTargetingRange * MaxTargetingRange;
-            
+
             Dictionary<IMyCubeGrid, int> gridBuffer = new Dictionary<IMyCubeGrid, int>();
             Dictionary<IMyCharacter, int> charBuffer = new Dictionary<IMyCharacter, int>();
             Dictionary<uint, int> projBuffer = new Dictionary<uint, int>();
