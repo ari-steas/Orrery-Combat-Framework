@@ -1,9 +1,11 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.ModAPI;
+using System;
 using System.Collections.Generic;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
+using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
@@ -104,23 +106,25 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             HeartData.I.OnGridRemove -= OnGridRemove;
         }
 
-        int update100Ct = 0;
+        int update50Ct = 0;
         public override void UpdateBeforeSimulation()
         {
             if (HeartData.I.IsSuspended) return;
-            update100Ct++;
+            update50Ct++;
 
             foreach (var weapon in ActiveWeapons.Values) // I cannot be asked to tease apart how to seperate updating on weapons
-                (weapon as SorterTurretLogic)?.UpdateTurretSubparts(deltaTick);
-
-            if (update100Ct >= 1)
             {
-                Update100();
-                update100Ct = 0;
+                (weapon as SorterTurretLogic)?.UpdateTurretSubparts(deltaTick);
+            }
+
+            if (update50Ct >= 50)
+            {
+                Update50();
+                update50Ct = 0;
             }
         }
 
-        public void Update100() // NOTE - this isn't syncing right. Try again with a different method
+        public void Update50() // NOTE - this isn't syncing right. Try again with a different method
         {
             if (!MyAPIGateway.Session.IsServer)
                 return;
