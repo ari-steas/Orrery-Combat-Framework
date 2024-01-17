@@ -22,9 +22,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
     //[MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeaponTurret")]
     public partial class SorterTurretLogic : SorterWeaponLogic
     {
-        internal float Azimuth = (float)Math.PI;
+        internal float Azimuth = 0;
         internal float Elevation = 0;
-        internal double DesiredAzimuth = Math.PI;
+        internal double DesiredAzimuth = 0;
         internal double DesiredElevation = 0;
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         private Matrix GetAzimuthMatrix(double desiredAzimuth, float delta)
         {
             desiredAzimuth = HeartUtils.LimitRotationSpeed(Azimuth, desiredAzimuth, Definition.Hardpoint.AzimuthRate * delta);
-            float oldAzi = Azimuth;
+            
             if (!Definition.Hardpoint.CanRotateFull)
                 Azimuth = (float)HeartUtils.Clamp(desiredAzimuth, Definition.Hardpoint.MinAzimuth, Definition.Hardpoint.MaxAzimuth); // Basic angle clamp
             else
@@ -146,9 +146,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         private Matrix GetElevationMatrix(double desiredElevation, float delta)
         {
             desiredElevation = HeartUtils.LimitRotationSpeed(Elevation, desiredElevation, Definition.Hardpoint.ElevationRate * delta);
-            float oldEle = Elevation;
+            
             if (!Definition.Hardpoint.CanElevateFull)
-                Elevation = (float)-HeartUtils.Clamp(-desiredElevation, Definition.Hardpoint.MinElevation, Definition.Hardpoint.MaxElevation);
+                Elevation = (float)HeartUtils.Clamp(desiredElevation, Definition.Hardpoint.MinElevation, Definition.Hardpoint.MaxElevation);
             else
                 Elevation = (float)HeartUtils.NormalizeAngle(desiredElevation);
             return Matrix.CreateFromYawPitchRoll(0, Elevation, 0);
@@ -194,7 +194,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
             Vector2D neededAngle = GetAngleToTarget(targetPosition);
             neededAngle.X = HeartUtils.NormalizeAngle(neededAngle.X - Math.PI);
-            neededAngle.Y = HeartUtils.NormalizeAngle(-neededAngle.Y, Math.PI/2);
+            neededAngle.Y = -HeartUtils.NormalizeAngle(neededAngle.Y, Math.PI/2);
 
             bool canAimAzimuth = Definition.Hardpoint.CanRotateFull;
 
@@ -202,7 +202,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 return false; // Check azimuth constrainst
 
             bool canAimElevation = Definition.Hardpoint.CanElevateFull;
-
+            
             if (!canAimElevation && !(neededAngle.Y < Definition.Hardpoint.MaxElevation && neededAngle.Y > Definition.Hardpoint.MinElevation))
                 return false; // Check elevation constraints
 
