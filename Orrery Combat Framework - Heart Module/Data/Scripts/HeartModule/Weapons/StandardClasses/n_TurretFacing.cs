@@ -11,9 +11,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
     public class n_TurretFacing : PacketBase
     {
         // TODO: Add support for turrets
-        [ProtoMember(1)] long TurretId;
-        [ProtoMember(2)] float Azimuth;
-        [ProtoMember(3)] float Elevation;
+        [ProtoMember(21)] long TurretId;
+        [ProtoMember(22)] float Azimuth;
+        [ProtoMember(23)] float Elevation;
 
         public n_TurretFacing() { }
         public n_TurretFacing(SorterTurretLogic turret)

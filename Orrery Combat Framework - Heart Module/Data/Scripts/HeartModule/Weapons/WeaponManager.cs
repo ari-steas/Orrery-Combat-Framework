@@ -117,7 +117,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 (weapon as SorterTurretLogic)?.UpdateTurretSubparts(deltaTick);
             }
 
-            if (update50Ct >= 50)
+            if (update50Ct >= 10)
             {
                 Update50();
                 update50Ct = 0;

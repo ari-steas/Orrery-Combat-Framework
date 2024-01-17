@@ -97,7 +97,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
             DesiredAzimuth = GetNewAzimuthAngle(vecToTarget);
             DesiredElevation = GetNewElevationAngle(vecToTarget);
-            MyLog.Default.WriteLineToConsole(Math.Round(MathHelper.ToDegrees(DesiredAzimuth)) + "");
         }
 
         public void UpdateTurretSubparts(float delta)
@@ -224,27 +223,41 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             Terminal_Heart_Range_Slider = Math.Max(Terminal_Heart_Range_Slider - 100, 0);
         }
 
+        internal override void LoadDefaultSettings()
+        {
+            base.LoadDefaultSettings();
+
+            // Defaults
+            if (MyAPIGateway.Session.IsServer) // Defaults get set whenever a client joins, which is bad.
+            {
+                Terminal_Heart_Range_Slider = Definition.Targeting.MaxTargetingRange;
+                Terminal_Heart_TargetGrids = true;
+                Terminal_Heart_TargetProjectiles = true;
+                Terminal_Heart_TargetCharacters = true;
+                Terminal_Heart_TargetLargeGrids = true;
+                Terminal_Heart_TargetSmallGrids = true;
+                Terminal_Heart_TargetEnemies = true;
+                Terminal_Heart_TargetNeutrals = true;
+                Terminal_Heart_TargetFriendlies = false;
+                Terminal_Heart_TargetUnowned = false;
+                Terminal_Heart_PreferUniqueTargets = false;
+            }
+        }
+
         internal override bool LoadSettings()
         {
-            // Defaults
-            Terminal_Heart_Range_Slider = Definition.Targeting.MaxTargetingRange;
-            Terminal_Heart_TargetGrids = true;
-            Terminal_Heart_TargetProjectiles = true;
-            Terminal_Heart_TargetCharacters = true;
-            Terminal_Heart_TargetLargeGrids = true;
-            Terminal_Heart_TargetSmallGrids = true;
-            Terminal_Heart_TargetEnemies = true;
-            Terminal_Heart_TargetNeutrals = true;
-            Terminal_Heart_TargetFriendlies = false;
-            Terminal_Heart_TargetUnowned = false;
-            Terminal_Heart_PreferUniqueTargets = false;
-
             if (SorterWep.Storage == null)
+            {
+                LoadDefaultSettings();
                 return false;
+            }
 
             string rawData;
             if (!SorterWep.Storage.TryGetValue(HeartSettingsGUID, out rawData))
+            {
+                LoadDefaultSettings();
                 return false;
+            }
 
             bool baseRet = base.LoadSettings();
 
