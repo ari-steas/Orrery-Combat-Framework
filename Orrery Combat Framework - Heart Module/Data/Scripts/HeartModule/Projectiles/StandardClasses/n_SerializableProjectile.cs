@@ -33,7 +33,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
             if (MyAPIGateway.Session.IsServer)
                 return;
 
-            ProjectileManager.I.UpdateProjectile(this);
+            ProjectileManager.I.UpdateProjectileSync(this);
         }
     }
 }

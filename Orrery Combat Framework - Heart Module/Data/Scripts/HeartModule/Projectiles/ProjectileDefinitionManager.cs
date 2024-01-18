@@ -12,7 +12,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             Ungrouped = new Ungrouped()
             {
                 ReloadPowerUsage = 0,
-                Recoil = 1000,
+                Recoil = 0,
                 Impulse = 0,
             },
             Damage = new Damage()
