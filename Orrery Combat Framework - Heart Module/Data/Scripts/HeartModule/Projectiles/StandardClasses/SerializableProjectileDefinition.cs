@@ -110,10 +110,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     [ProtoContract]
     public struct Guidance
     {
-        [ProtoMember(1)] public float TriggerTime; // TODO
+        [ProtoMember(1)] public float TriggerTime;
         [ProtoMember(2)] public float ActiveDuration; // Ignore if -1 or greater than next
         [ProtoMember(3)] public bool UseAimPrediction; // TODO
-        [ProtoMember(4)] public float TurnRate; // TODO
+        [ProtoMember(4)] public float TurnRate;
         [ProtoMember(5)] public float TurnRateSpeedRatio; // Percentage of speed lost by a maximum angle turn // TODO
         [ProtoMember(6)] public int IFF; // 1 is TargetSelf, 2 is TargetEnemies, 4 is TargetFriendlies // TODO
         [ProtoMember(7)] public bool DoRaycast; // TODO

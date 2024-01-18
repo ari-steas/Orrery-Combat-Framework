@@ -61,7 +61,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     TriggerTime = 0,
                     ActiveDuration = -1,
                     UseAimPrediction = false,
-                    TurnRate = 0.0001f,
+                    TurnRate = 3.14f,
                     TurnRateSpeedRatio = 0,
                     IFF = 2,
                     DoRaycast = false,

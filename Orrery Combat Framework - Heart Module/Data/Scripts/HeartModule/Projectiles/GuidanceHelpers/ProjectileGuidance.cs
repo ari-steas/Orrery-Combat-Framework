@@ -1,4 +1,5 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+﻿using Heart_Module.Data.Scripts.HeartModule.Definitions;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
@@ -56,19 +57,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
             RunGuidance(delta); // Avoid a tick of delay
         }
 
-        internal void StepDirecion(Vector3D targetDir, float maxAngle, float rateSpeedRatio, float delta)
+        internal void StepDirecion(Vector3D targetDir, float turnRate, float rateSpeedRatio, float delta)
         {
-            double currentAngle = Vector3D.Angle(projectile.Direction, targetDir);
-            double ratio = HeartUtils.LimitRotationSpeed(currentAngle, 0, maxAngle)/currentAngle; // TODO fix math
+            double AngleDifference = Vector3D.Angle(projectile.Direction, targetDir);
 
-            Vector3D newDirection = Vector3D.Lerp(projectile.Direction, targetDir, ratio * delta).Normalized();
+            Vector3 RotAxis = Vector3.Cross(projectile.Direction, targetDir);
+            RotAxis.Normalize();
 
-            projectile.Direction = newDirection;
-
-            if (rateSpeedRatio != 0)
-            {
-                projectile.Velocity *= (float)(ratio * rateSpeedRatio);
-            }
+            Matrix RotationMatrix = Matrix.CreateFromAxisAngle(RotAxis, (float) HeartUtils.ClampAbs(AngleDifference, turnRate * delta));
+            projectile.Direction = Vector3.Transform(projectile.Direction, RotationMatrix).Normalized();
         }
     }
 }
