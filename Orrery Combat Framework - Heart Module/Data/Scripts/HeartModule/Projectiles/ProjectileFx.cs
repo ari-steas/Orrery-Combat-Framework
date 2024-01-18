@@ -99,7 +99,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             ProjectileSound.SetVelocity(Direction * Velocity);
         }
 
-        private void DrawImpactParticle(Vector3D ImpactPosition, Vector3D ImpactNormal)
+        private void DrawImpactParticle(Vector3D ImpactPosition, Vector3D ImpactNormal) // TODO: Does not work in multiplayer
         {
             if (!IsVisible || Definition.Visual.ImpactParticle == "" || HeartData.I.DegradedMode)
                 return;

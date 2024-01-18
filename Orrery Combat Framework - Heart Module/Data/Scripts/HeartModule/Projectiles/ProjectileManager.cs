@@ -1,10 +1,12 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using VRage.Game.Components;
 using VRageMath;
+using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 {
@@ -90,13 +92,19 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 projectile.DrawUpdate(); // Draw delta is always 1/60 because Keen:tm:
         }
 
-        public void UpdateProjectile(n_SerializableProjectile projectile)
+        public void UpdateProjectileSync(n_SerializableProjectile projectile)
         {
             if (MyAPIGateway.Session.IsServer)
                 return;
 
             if (IsIdAvailable(projectile.Id) && projectile.IsActive && projectile.DefinitionId.HasValue)
+            {
+                if (projectile.Firer != null)
+                {
+                    WeaponManager.I.GetWeapon(projectile.Firer.Value)?.MuzzleFlash(true);
+                }
                 AddProjectile(new Projectile(projectile));
+            }
             else
             {
                 Projectile p = GetProjectile(projectile.Id);

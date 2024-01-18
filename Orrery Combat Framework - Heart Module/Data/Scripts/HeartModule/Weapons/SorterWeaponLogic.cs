@@ -136,12 +136,12 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             if ((ShootState.Value || AutoShoot) && Magazines.IsLoaded && lastShoot >= 60 && HasLoS)
             {
-                int barrelIndex = 0;
                 for (int i = nextBarrel; i < Definition.Loading.BarrelsPerShot + nextBarrel; i++)
                 {
-                    barrelIndex = i % Definition.Assignments.Muzzles.Length;
+                    nextBarrel++;
+                    nextBarrel %= Definition.Assignments.Muzzles.Length;
 
-                    MatrixD muzzleMatrix = CalcMuzzleMatrix(barrelIndex);
+                    MatrixD muzzleMatrix = CalcMuzzleMatrix(nextBarrel);
                     Vector3D muzzlePos = muzzleMatrix.Translation;
 
                     for (int j = 0; j < Definition.Loading.ProjectilesPerBarrel; j++)
@@ -151,27 +151,35 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     }
                     lastShoot -= 60f;
 
-                    if (Definition.Visuals.HasShootParticle && !HeartData.I.DegradedMode)
-                    {
-                        MatrixD localMuzzleMatrix = CalcMuzzleMatrix(barrelIndex, true);
-
-                        MyParticleEffect hitEffect;
-                        if (MyParticlesManager.TryCreateParticleEffect(Definition.Visuals.ShootParticle, ref localMuzzleMatrix, ref muzzlePos, SorterWep.Render.GetRenderObjectID(), out hitEffect))
-                        {
-                            //MyAPIGateway.Utilities.ShowNotification("Spawned particle at " + hitEffect.WorldMatrix.Translation);
-                            //hitEffect.Velocity = SorterWep.CubeGrid.LinearVelocity;
-
-                            if (hitEffect.Loop)
-                                hitEffect.Stop();
-                        }
-                    }
+                    MuzzleFlash();
                 }
-                nextBarrel = barrelIndex + 1;
+                nextBarrel++;
                 Magazines.UseShot();
             }
         }
 
+        public void MuzzleFlash(bool increment = false) // GROSS AND UGLY AND STUPID
+        {
+            if (Definition.Visuals.HasShootParticle && !HeartData.I.DegradedMode)
+            {
+                MatrixD localMuzzleMatrix = CalcMuzzleMatrix(nextBarrel, true);
+                MatrixD muzzleMatrix = CalcMuzzleMatrix(nextBarrel);
+                Vector3D muzzlePos = muzzleMatrix.Translation;
 
+                MyParticleEffect hitEffect;
+                if (MyParticlesManager.TryCreateParticleEffect(Definition.Visuals.ShootParticle, ref localMuzzleMatrix, ref muzzlePos, SorterWep.Render.GetRenderObjectID(), out hitEffect))
+                {
+                    //MyAPIGateway.Utilities.ShowNotification("Spawned particle at " + hitEffect.WorldMatrix.Translation);
+                    //hitEffect.Velocity = SorterWep.CubeGrid.LinearVelocity;
+
+                    if (hitEffect.Loop)
+                        hitEffect.Stop();
+                }
+
+                nextBarrel++;
+                nextBarrel %= Definition.Assignments.Muzzles.Length;
+            }
+        }
 
         public virtual MatrixD CalcMuzzleMatrix(int id, bool local = false)
         {
@@ -312,7 +320,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (!MyAPIGateway.Session.IsServer)
                 return;
 
-            Terminal_Heart_Shoot = true;
+            Terminal_Heart_Shoot = false;
             Terminal_Heart_AmmoComboBox = 0;
             Terminal_ControlType_ComboBox = 0;
         }
