@@ -18,15 +18,32 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
         public n_TurretFacing() { }
         public n_TurretFacing(SorterTurretLogic turret)
         {
-            TurretId = turret.SorterWep.EntityId;
-            Azimuth = (float) turret.DesiredAzimuth;
-            Elevation = (float) turret.DesiredElevation;
+            if (turret != null && turret.SorterWep != null)
+            {
+                TurretId = turret.SorterWep.EntityId;
+                Azimuth = (float)turret.DesiredAzimuth;
+                Elevation = (float)turret.DesiredElevation;
+            }
+            else
+            {
+                // Handle the case where turret or its properties are null.
+                // You can throw an exception or log an error here.
+                TurretId = 0;
+                Azimuth = 0f;
+                Elevation = 0f;
+            }
         }
 
         public override void Received(ulong SenderSteamId)
         {
             if (!MyAPIGateway.Session.IsServer)
-                (WeaponManager.I.GetWeapon(TurretId) as SorterTurretLogic)?.SetFacing(Azimuth, Elevation);
+            {
+                SorterTurretLogic turretLogic = WeaponManager.I.GetWeapon(TurretId) as SorterTurretLogic;
+                if (turretLogic != null)
+                {
+                    turretLogic.SetFacing(Azimuth, Elevation);
+                }
+            }
         }
     }
 
