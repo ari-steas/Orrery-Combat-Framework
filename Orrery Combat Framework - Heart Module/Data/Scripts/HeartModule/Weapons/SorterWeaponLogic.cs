@@ -136,14 +136,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             if ((ShootState.Value || AutoShoot) && Magazines.IsLoaded && lastShoot >= 60 && HasLoS)
             {
-                // Check for steel plates in the inventory
-                var inventory = SorterWep.GetInventory();
-                var steelPlate = new MyDefinitionId(typeof(MyObjectBuilder_Component), "SteelPlate");
-                if (!inventory.ContainItems(1, steelPlate))
-                {
-                    return; // Exit the method if there are no steel plates
-                }
-
                 for (int i = nextBarrel; i < Definition.Loading.BarrelsPerShot + nextBarrel; i++)
                 {
                     nextBarrel++;
@@ -153,14 +145,11 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     Vector3D muzzlePos = muzzleMatrix.Translation;
 
                     for (int j = 0; j < Definition.Loading.ProjectilesPerBarrel; j++)
-                    {
+                    { 
                         SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ProjectileDefinitionManager.GetDefinition(CurrentAmmo).Ungrouped.Recoil, muzzleMatrix.Translation);
                         ProjectileManager.I.AddProjectile(CurrentAmmo, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
                     }
                     lastShoot -= 60f;
-
-                    // Remove a steel plate from the inventory after firing
-                    inventory.RemoveItemsOfType(1, steelPlate);
 
                     MuzzleFlash();
                 }
@@ -168,7 +157,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 Magazines.UseShot();
             }
         }
-
 
         public void MuzzleFlash(bool increment = false) // GROSS AND UGLY AND STUPID
         {
