@@ -1,4 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+using System.Collections.Generic;
 using VRage.Utils;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
@@ -53,7 +54,20 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 ImpactSound = "WepSmallWarheadExpl",
                 SoundChance = 0.1f,
             },
-            Guidance = new Guidance[0],
+            Guidance = new Guidance[]
+            {
+                new Guidance()
+                {
+                    TriggerTime = 0,
+                    ActiveDuration = -1,
+                    UseAimPrediction = false,
+                    TurnRate = 0.0001f,
+                    TurnRateSpeedRatio = 0,
+                    IFF = 2,
+                    DoRaycast = false,
+                    CastCone = 0,
+                }
+            },
             LiveMethods = new LiveMethods()
             {
                 DoOnShoot = false,
