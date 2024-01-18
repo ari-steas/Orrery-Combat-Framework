@@ -87,7 +87,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             float deltaDrawTick = (float)clockTick.ElapsedTicks / TimeSpan.TicksPerSecond; // deltaDrawTick is the current offset between tick and draw, to account for variance between FPS and tickrate
 
             foreach (var projectile in ActiveProjectiles.Values)
-                projectile.DrawUpdate(deltaDrawTick, 1 / 60f); // Draw delta is always 1/60 because Keen:tm:
+                projectile.DrawUpdate(); // Draw delta is always 1/60 because Keen:tm:
         }
 
         public void UpdateProjectile(n_SerializableProjectile projectile)

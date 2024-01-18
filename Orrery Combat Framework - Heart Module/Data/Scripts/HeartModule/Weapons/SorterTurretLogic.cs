@@ -16,6 +16,8 @@ using VRage.Game.ModAPI;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using System.Security.Policy;
 using VRage.Utils;
+using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using System.Diagnostics;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
@@ -97,22 +99,30 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
             DesiredAzimuth = GetNewAzimuthAngle(vecToTarget);
             DesiredElevation = GetNewElevationAngle(vecToTarget);
-            MyLog.Default.WriteLineToConsole(Math.Round(MathHelper.ToDegrees(DesiredAzimuth)) + "");
         }
 
         public void UpdateTurretSubparts(float delta)
         {
             if (!Definition.Hardpoint.ControlRotation)
                 return;
-
-            if (Azimuth == DesiredAzimuth || Elevation == DesiredElevation) // Don't move if you're already there
+            if (Azimuth == DesiredAzimuth && Elevation == DesiredElevation) // Don't move if you're already there
                 return;
 
-            MyEntitySubpart azimuth = SubpartManager.GetSubpart((MyEntity)SorterWep, Definition.Assignments.AzimuthSubpart);
+            MyEntitySubpart azimuth = SubpartManager.GetSubpart(SorterWep, Definition.Assignments.AzimuthSubpart);
+            if (azimuth == null)
+            {
+                SoftHandle.RaiseException($"Azimuth subpart null on \"{SorterWep?.CustomName}\"");
+                return;
+            }
             MyEntitySubpart elevation = SubpartManager.GetSubpart(azimuth, Definition.Assignments.ElevationSubpart);
-            
-            SubpartManager.LocalRotateSubpartAbs(azimuth, GetAzimuthMatrix(DesiredAzimuth, delta));
-            SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(DesiredElevation, delta));
+            if (elevation == null)
+            {
+                SoftHandle.RaiseException($"Elevation subpart null on \"{SorterWep?.CustomName}\"");
+                return;
+            }
+
+            SubpartManager.LocalRotateSubpartAbs(azimuth, GetAzimuthMatrix(delta));
+            SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(delta));
         }
 
         private double GetNewAzimuthAngle(Vector3D targetDirection)
@@ -123,15 +133,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             return desiredAzimuth;
         }
 
-        private Matrix GetAzimuthMatrix(double desiredAzimuth, float delta)
+        private Matrix GetAzimuthMatrix(float delta)
         {
-            desiredAzimuth = HeartUtils.LimitRotationSpeed(Azimuth, desiredAzimuth, Definition.Hardpoint.AzimuthRate * delta);
+            var _limitedAzimuth = HeartUtils.LimitRotationSpeed(Azimuth, DesiredAzimuth, Definition.Hardpoint.AzimuthRate * delta);
             
             if (!Definition.Hardpoint.CanRotateFull)
-                Azimuth = (float)HeartUtils.Clamp(desiredAzimuth, Definition.Hardpoint.MinAzimuth, Definition.Hardpoint.MaxAzimuth); // Basic angle clamp
+                Azimuth = (float)HeartUtils.Clamp(_limitedAzimuth, Definition.Hardpoint.MinAzimuth, Definition.Hardpoint.MaxAzimuth); // Basic angle clamp
             else
-                Azimuth = (float)HeartUtils.NormalizeAngle(desiredAzimuth); // Adjust rotation to (-180, 180), but don't have any limits
-            //MyAPIGateway.Utilities.ShowNotification("AZ: " + Math.Round(MathHelper.ToDegrees(Azimuth)), 1000/60);
+                Azimuth = (float)HeartUtils.NormalizeAngle(_limitedAzimuth); // Adjust rotation to (-180, 180), but don't have any limits
             return Matrix.CreateFromYawPitchRoll(Azimuth, 0, 0);
         }
 
@@ -143,14 +152,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             return desiredElevation;
         }
 
-        private Matrix GetElevationMatrix(double desiredElevation, float delta)
+        private Matrix GetElevationMatrix(float delta)
         {
-            desiredElevation = HeartUtils.LimitRotationSpeed(Elevation, desiredElevation, Definition.Hardpoint.ElevationRate * delta);
+            var _limitedElevation = HeartUtils.LimitRotationSpeed(Elevation, DesiredElevation, Definition.Hardpoint.ElevationRate * delta);
             
             if (!Definition.Hardpoint.CanElevateFull)
-                Elevation = (float)HeartUtils.Clamp(desiredElevation, Definition.Hardpoint.MinElevation, Definition.Hardpoint.MaxElevation);
+                Elevation = (float)HeartUtils.Clamp(_limitedElevation, Definition.Hardpoint.MinElevation, Definition.Hardpoint.MaxElevation);
             else
-                Elevation = (float)HeartUtils.NormalizeAngle(desiredElevation);
+                Elevation = (float)HeartUtils.NormalizeAngle(_limitedElevation);
             return Matrix.CreateFromYawPitchRoll(0, Elevation, 0);
         }
 
@@ -224,27 +233,41 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             Terminal_Heart_Range_Slider = Math.Max(Terminal_Heart_Range_Slider - 100, 0);
         }
 
+        internal override void LoadDefaultSettings()
+        {
+            base.LoadDefaultSettings();
+
+            // Defaults
+            if (MyAPIGateway.Session.IsServer) // Defaults get set whenever a client joins, which is bad.
+            {
+                Terminal_Heart_Range_Slider = Definition.Targeting.MaxTargetingRange;
+                Terminal_Heart_TargetGrids = true;
+                Terminal_Heart_TargetProjectiles = true;
+                Terminal_Heart_TargetCharacters = true;
+                Terminal_Heart_TargetLargeGrids = true;
+                Terminal_Heart_TargetSmallGrids = true;
+                Terminal_Heart_TargetEnemies = true;
+                Terminal_Heart_TargetNeutrals = true;
+                Terminal_Heart_TargetFriendlies = false;
+                Terminal_Heart_TargetUnowned = false;
+                Terminal_Heart_PreferUniqueTargets = false;
+            }
+        }
+
         internal override bool LoadSettings()
         {
-            // Defaults
-            Terminal_Heart_Range_Slider = Definition.Targeting.MaxTargetingRange;
-            Terminal_Heart_TargetGrids = true;
-            Terminal_Heart_TargetProjectiles = true;
-            Terminal_Heart_TargetCharacters = true;
-            Terminal_Heart_TargetLargeGrids = true;
-            Terminal_Heart_TargetSmallGrids = true;
-            Terminal_Heart_TargetEnemies = true;
-            Terminal_Heart_TargetNeutrals = true;
-            Terminal_Heart_TargetFriendlies = false;
-            Terminal_Heart_TargetUnowned = false;
-            Terminal_Heart_PreferUniqueTargets = false;
-
             if (SorterWep.Storage == null)
+            {
+                LoadDefaultSettings();
                 return false;
+            }
 
             string rawData;
             if (!SorterWep.Storage.TryGetValue(HeartSettingsGUID, out rawData))
+            {
+                LoadDefaultSettings();
                 return false;
+            }
 
             bool baseRet = base.LoadSettings();
 

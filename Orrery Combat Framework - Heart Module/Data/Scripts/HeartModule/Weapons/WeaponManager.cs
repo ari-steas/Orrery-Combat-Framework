@@ -10,7 +10,7 @@ using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
-    [MySessionComponentDescriptor(MyUpdateOrder.BeforeSimulation)]
+    [MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation)]
     public class WeaponManager : MySessionComponentBase
     {
         public static WeaponManager I;
@@ -106,25 +106,25 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             HeartData.I.OnGridRemove -= OnGridRemove;
         }
 
-        int update50Ct = 0;
-        public override void UpdateBeforeSimulation()
+        int update25Ct = 0;
+        public override void UpdateAfterSimulation()
         {
             if (HeartData.I.IsSuspended) return;
-            update50Ct++;
+            update25Ct++;
 
             foreach (var weapon in ActiveWeapons.Values) // I cannot be asked to tease apart how to seperate updating on weapons
             {
                 (weapon as SorterTurretLogic)?.UpdateTurretSubparts(deltaTick);
             }
 
-            if (update50Ct >= 50)
+            if (update25Ct >= 25)
             {
-                Update50();
-                update50Ct = 0;
+                Update25();
+                update25Ct = 0;
             }
         }
 
-        public void Update50() // NOTE - this isn't syncing right. Try again with a different method
+        public void Update25()
         {
             if (!MyAPIGateway.Session.IsServer)
                 return;

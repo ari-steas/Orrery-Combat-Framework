@@ -307,19 +307,31 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             //MyAPIGateway.Utilities.ShowNotification(SettingsBlockRange.ToString(), 1000, "Red");
         }
 
-        internal virtual bool LoadSettings()
+        internal virtual void LoadDefaultSettings()
         {
-            // Defaults
+            if (!MyAPIGateway.Session.IsServer)
+                return;
+
             Terminal_Heart_Shoot = true;
             Terminal_Heart_AmmoComboBox = 0;
             Terminal_ControlType_ComboBox = 0;
+        }
 
+        internal virtual bool LoadSettings()
+        {
             if (SorterWep.Storage == null)
+            {
+                LoadDefaultSettings();
                 return false;
+            }
+                
 
             string rawData;
             if (!SorterWep.Storage.TryGetValue(HeartSettingsGUID, out rawData))
+            {
+                LoadDefaultSettings();
                 return false;
+            }
 
             try
             {
