@@ -55,7 +55,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
         }
 
-        public void DrawUpdate(float deltaTick, float deltaDraw)
+        public void DrawUpdate()
         {
             if (!IsVisible || HeartData.I.DegradedMode)
                 return;
@@ -90,8 +90,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 ProjectileSound.SetPosition(Position);
             }
         }
-
-
 
         private void UpdateAudio()
         {
