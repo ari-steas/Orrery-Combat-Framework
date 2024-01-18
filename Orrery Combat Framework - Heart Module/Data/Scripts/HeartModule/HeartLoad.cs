@@ -72,16 +72,19 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
                 if (MyAPIGateway.Physics.SimulationRatio < 0.7 && !HeartData.I.IsPaused) // Set degraded mode
                 {
-                    if (!HeartData.I.DegradedMode && remainingDegradedModeTicks >= 300)
+                    if (!HeartData.I.DegradedMode)
                     {
-                        HeartData.I.DegradedMode = true;
-                        if (MyAPIGateway.Session.IsServer)
-                            MyAPIGateway.Utilities.SendMessage("[OCF] Entering degraded mode!");
-                        MyAPIGateway.Utilities.ShowMessage("[OCF]", "Entering client degraded mode!");
-                        remainingDegradedModeTicks = 600;
+                        if (remainingDegradedModeTicks >= 300) // Wait 300 ticks before engaging degraded mode
+                        {
+                            HeartData.I.DegradedMode = true;
+                            if (MyAPIGateway.Session.IsServer)
+                                MyAPIGateway.Utilities.SendMessage("[OCF] Entering degraded mode!");
+                            MyAPIGateway.Utilities.ShowMessage("[OCF]", "Entering client degraded mode!");
+                            remainingDegradedModeTicks = 600;
+                        }
+                        else
+                            remainingDegradedModeTicks++;
                     }
-                    else
-                        remainingDegradedModeTicks++;
                 }
                 else if (MyAPIGateway.Physics.SimulationRatio > 0.87)
                 {
