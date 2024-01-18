@@ -70,17 +70,18 @@ namespace Heart_Module.Data.Scripts.HeartModule
                     MyAPIGateway.Multiplayer.Players.GetPlayers(HeartData.I.Players);
                 }
 
-                if (MyAPIGateway.Physics.SimulationRatio < 0.25 && !HeartData.I.IsPaused) // Set degraded mode
+                if (MyAPIGateway.Physics.SimulationRatio < 0.7 && !HeartData.I.IsPaused) // Set degraded mode
                 {
-                    if (!HeartData.I.DegradedMode)
+                    remainingDegradedModeTicks++;
+
+                    if (!HeartData.I.DegradedMode && remainingDegradedModeTicks >= 600)
                     {
                         HeartData.I.DegradedMode = true;
                         if (MyAPIGateway.Session.IsServer)
                             MyAPIGateway.Utilities.SendMessage("[OCF] Entering degraded mode!");
                         MyAPIGateway.Utilities.ShowMessage("[OCF]", "Entering client degraded mode!");
+                        remainingDegradedModeTicks = 600;
                     }
-                    
-                    remainingDegradedModeTicks = 600;
                 }
                 else if (MyAPIGateway.Physics.SimulationRatio > 0.87)
                 {
