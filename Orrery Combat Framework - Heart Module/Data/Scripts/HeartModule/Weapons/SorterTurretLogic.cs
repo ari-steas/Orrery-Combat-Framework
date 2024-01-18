@@ -16,6 +16,8 @@ using VRage.Game.ModAPI;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using System.Security.Policy;
 using VRage.Utils;
+using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using System.Diagnostics;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
@@ -103,13 +105,22 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             if (!Definition.Hardpoint.ControlRotation)
                 return;
-
-            if (Azimuth == DesiredAzimuth || Elevation == DesiredElevation) // Don't move if you're already there
+            if (Azimuth == DesiredAzimuth && Elevation == DesiredElevation) // Don't move if you're already there
                 return;
 
             MyEntitySubpart azimuth = SubpartManager.GetSubpart(SorterWep, Definition.Assignments.AzimuthSubpart);
+            if (azimuth == null)
+            {
+                SoftHandle.RaiseException($"Azimuth subpart null on \"{SorterWep?.CustomName}\"");
+                return;
+            }
             MyEntitySubpart elevation = SubpartManager.GetSubpart(azimuth, Definition.Assignments.ElevationSubpart);
-            
+            if (elevation == null)
+            {
+                SoftHandle.RaiseException($"Elevation subpart null on \"{SorterWep?.CustomName}\"");
+                return;
+            }
+
             SubpartManager.LocalRotateSubpartAbs(azimuth, GetAzimuthMatrix(delta));
             SubpartManager.LocalRotateSubpartAbs(elevation, GetElevationMatrix(delta));
         }
@@ -130,7 +141,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 Azimuth = (float)HeartUtils.Clamp(_limitedAzimuth, Definition.Hardpoint.MinAzimuth, Definition.Hardpoint.MaxAzimuth); // Basic angle clamp
             else
                 Azimuth = (float)HeartUtils.NormalizeAngle(_limitedAzimuth); // Adjust rotation to (-180, 180), but don't have any limits
-            
             return Matrix.CreateFromYawPitchRoll(Azimuth, 0, 0);
         }
 
@@ -155,13 +165,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public void SetFacing(float azimuth, float elevation)
         {
-            if (MyAPIGateway.Session.IsServer)
-                return;
-
             DesiredAzimuth = azimuth;
             DesiredElevation = elevation;
-
-            MyAPIGateway.Utilities.ShowNotification("AZ: " + Math.Round(MathHelper.ToDegrees(DesiredAzimuth)) + " | " + Math.Round(MathHelper.ToDegrees(Azimuth)), 833);
         }
 
         /// <summary>

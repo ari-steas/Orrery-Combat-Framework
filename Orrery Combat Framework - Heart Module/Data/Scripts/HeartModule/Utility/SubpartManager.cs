@@ -12,6 +12,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
 
         public MyEntitySubpart GetSubpart(IMyEntity entity, string name)
         {
+            if (entity == null) return null;
+
             // Add entity if missing
             if (!CachedSubparts.ContainsKey(entity))
                 CachedSubparts.Add(entity, new Dictionary<string, MyEntitySubpart>());
@@ -53,6 +55,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
         /// <returns></returns>
         public MyEntitySubpart RecursiveGetSubpart(IMyEntity entity, string name)
         {
+            if (entity == null) return null;
+
             MyEntitySubpart desiredSubpart = GetSubpart(entity, name);
             if (desiredSubpart == null)
                 foreach (var subpart in ((MyEntity)entity).Subparts.Values)
@@ -62,6 +66,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
 
         public string[] GetAllSubparts(IMyEntity entity)
         {
+            if (entity == null) return new string[0];
             return ((MyEntity)entity).Subparts.Keys.ToArray();
         }
 
