@@ -10,8 +10,17 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
     [MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation)]
     internal class WeaponManagerAi : MySessionComponentBase
     {
+        public static WeaponManagerAi I;
+
         private Dictionary<IMyCubeGrid, GridAiTargeting> GridTargetingMap = new Dictionary<IMyCubeGrid, GridAiTargeting>();
         private Dictionary<IMyCubeGrid, List<SorterWeaponLogic>> GridWeapons => WeaponManager.I.GridWeapons;
+
+        public GridAiTargeting GetTargeting(IMyCubeGrid grid)
+        {
+            if (GridTargetingMap.ContainsKey(grid))
+                return GridTargetingMap[grid];
+            return null;
+        }
 
         public override void LoadData()
         {
@@ -25,12 +34,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             // Subscribe to grid addition and removal events
             HeartData.I.OnGridAdd += InitializeGridAI;
             HeartData.I.OnGridRemove += CloseGridAI;
+            I = this;
         }
 
         protected override void UnloadData()
         {
             HeartData.I.OnGridAdd -= InitializeGridAI;
             HeartData.I.OnGridRemove -= CloseGridAI;
+            I = null;
         }
 
         public override void UpdateAfterSimulation()

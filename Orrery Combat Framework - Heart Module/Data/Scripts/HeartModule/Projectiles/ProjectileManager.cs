@@ -115,17 +115,17 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
         }
 
-        public void AddProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, IMyConveyorSorter sorterWep)
+        public Projectile AddProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, IMyConveyorSorter sorterWep)
         {
             if (ProjectileDefinitionManager.GetDefinition(projectileDefinitionId)?.PhysicalProjectile.IsHitscan ?? false)
-                AddHitscanProjectile(projectileDefinitionId, position, direction, sorterWep);
+                return AddHitscanProjectile(projectileDefinitionId, position, direction, sorterWep);
             else
-                AddProjectile(new Projectile(projectileDefinitionId, position, direction, sorterWep));
+                return AddProjectile(new Projectile(projectileDefinitionId, position, direction, sorterWep));
         }
 
-        private void AddProjectile(Projectile projectile)
+        private Projectile AddProjectile(Projectile projectile)
         {
-            if (projectile == null || projectile.DefinitionId == -1) return; // Ensure that invalid projectiles don't get added
+            if (projectile == null || projectile.DefinitionId == -1) return null; // Ensure that invalid projectiles don't get added
 
             projectile.Position -= projectile.InheritedVelocity / 60f; // Because this doesn't run during simulation
 
@@ -138,10 +138,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 QueueSync(projectile, 0);
             if (!MyAPIGateway.Utilities.IsDedicated)
                 projectile.InitEffects();
+            return projectile;
         }
 
         Dictionary<long, uint> HitscanList = new Dictionary<long, uint>();
-        private void AddHitscanProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, IMyConveyorSorter sorterWep)
+        private Projectile AddHitscanProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, IMyConveyorSorter sorterWep)
         {
             if (!HitscanList.ContainsKey(sorterWep.EntityId))
             {
@@ -150,8 +151,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 p.OnClose += (projectile) => HitscanList.Remove(sorterWep.EntityId);
                 HitscanList.Add(sorterWep.EntityId, p.Id);
             }
-
-            GetProjectile(HitscanList[sorterWep.EntityId])?.UpdateHitscan(position, direction);
+            Projectile outProjectile = GetProjectile(HitscanList[sorterWep.EntityId]);
+            outProjectile?.UpdateHitscan(position, direction);
+            return outProjectile;
         }
 
         public Projectile GetProjectile(uint id) => ActiveProjectiles.GetValueOrDefault(id, null);

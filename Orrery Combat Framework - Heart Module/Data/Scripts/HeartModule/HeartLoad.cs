@@ -74,7 +74,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
                 {
                     if (!HeartData.I.DegradedMode)
                     {
-                        if (remainingDegradedModeTicks >= 300) // Wait 300 ticks before engaging degraded mode
+                        if (remainingDegradedModeTicks >= 60) // Wait 300 ticks before engaging degraded mode
                         {
                             HeartData.I.DegradedMode = true;
                             if (MyAPIGateway.Session.IsServer)
@@ -94,8 +94,9 @@ namespace Heart_Module.Data.Scripts.HeartModule
                         if (MyAPIGateway.Session.IsServer)
                             MyAPIGateway.Utilities.SendMessage("[OCF] Exiting degraded mode.");
                         MyAPIGateway.Utilities.ShowMessage("[OCF]", "Exiting client degraded mode.");
+                        remainingDegradedModeTicks = 0;
                     }
-                    else
+                    else if (remainingDegradedModeTicks > 0)
                         remainingDegradedModeTicks--;
                 }
             }
