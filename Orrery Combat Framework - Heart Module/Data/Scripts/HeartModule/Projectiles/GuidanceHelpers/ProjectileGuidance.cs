@@ -1,18 +1,15 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Definitions;
-using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
-using Sandbox.ModAPI;
-using System;
+﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+using Heart_Module.Data.Scripts.HeartModule.Utility;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VRage.Scripting;
+using VRage.ModAPI;
 using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
 {
     public class ProjectileGuidance
     {
+        IMyEntity targetEntity;
+
         Projectile projectile;
         SerializableProjectileDefinition Definition;
         LinkedList<Guidance> stages;
@@ -23,6 +20,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
             this.projectile = projectile;
             Definition = projectile.Definition;
             stages = new LinkedList<Guidance>(Definition.Guidance);
+        }
+
+        public void SetTarget(IMyEntity target)
+        {
+            targetEntity = target;
         }
 
         public void RunGuidance(float delta)
@@ -46,7 +48,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
                 return;
             }
 
-            StepDirecion(-projectile.Position, currentStage.TurnRate, currentStage.TurnRateSpeedRatio, delta);
+            if (targetEntity != null) // If target is null, just 
+            {
+                Vector3D leadPos = targetEntity.PositionComp.WorldAABB.Center;
+
+                if (currentStage.UseAimPrediction)
+                    leadPos = TargetingHelper.InterceptionPoint(projectile.Position, projectile.InheritedVelocity, targetEntity.PositionComp.WorldAABB.Center, targetEntity.Physics.LinearVelocity, projectile.Velocity) ?? leadPos;
+
+                StepDirecion((leadPos - projectile.Position).Normalized(), currentStage.TurnRate, currentStage.TurnRateSpeedRatio, delta);
+            }
 
             time += delta;
         }

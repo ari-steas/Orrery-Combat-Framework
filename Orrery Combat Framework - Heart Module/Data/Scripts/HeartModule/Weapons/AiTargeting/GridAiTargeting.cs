@@ -31,7 +31,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
         /// <summary>
         /// The main focused target 
         /// </summary>
-        IMyCubeGrid PrimaryGridTarget;
+        public IMyCubeGrid PrimaryGridTarget { get; private set; }
 
         public bool Enabled = false;
         float MaxTargetingRange = 1000;
@@ -94,6 +94,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                     if (keenTargeting != null)
                     {
                         MyEntity manuallyLockedTarget = keenTargeting.GetTarget(Grid, DoesTargetGrids, DoesTargetGrids, DoesTargetGrids, DoesTargetGrids, DoesTargetGrids, DoesTargetGrids, DoesTargetGrids);
+                        if (manuallyLockedTarget is IMyCubeGrid)
+                            PrimaryGridTarget = (IMyCubeGrid)manuallyLockedTarget;
+                        else
+                            PrimaryGridTarget = null;
 
                         // Check if manually locked target is within range or null
                         bool isManuallyLockedTargetInRange = manuallyLockedTarget == null || Vector3D.DistanceSquared(manuallyLockedTarget.PositionComp.WorldAABB.Center, Grid.PositionComp.WorldAABB.Center) <= MaxTargetingRange * MaxTargetingRange;
