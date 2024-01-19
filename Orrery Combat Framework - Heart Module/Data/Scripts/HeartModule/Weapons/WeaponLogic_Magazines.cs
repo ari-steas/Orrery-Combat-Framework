@@ -1,13 +1,19 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
+using System;
+using VRage.Game;
+using VRage.Game.ModAPI;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
     public class WeaponLogic_Magazines
     {
         Loading Definition;
-        public WeaponLogic_Magazines(Loading definition, bool startLoaded = false)
+        private readonly Func<IMyInventory> GetInventoryFunc;
+
+        public WeaponLogic_Magazines(Loading definition, Func<IMyInventory> getInventoryFunc, bool startLoaded = false)
         {
             Definition = definition;
+            GetInventoryFunc = getInventoryFunc;
             RemainingReloads = Definition.MaxReloads;
             NextReloadTime = Definition.ReloadTime;
             if (startLoaded)
@@ -55,6 +61,14 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (ShotsInMag <= 0)
             {
                 MagazinesLoaded--;
+
+                // Check and remove a steel plate from the inventory
+                var inventory = GetInventoryFunc();
+                var steelPlate = new MyDefinitionId(typeof(MyObjectBuilder_Component), "SteelPlate");
+                if (inventory.ContainItems(1, steelPlate))
+                {
+                    inventory.RemoveItemsOfType(1, steelPlate);
+                }
             }
         }
     }

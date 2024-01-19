@@ -51,9 +51,16 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             sorterWeapon.GameLogic = this;
             Init(sorterWeapon.GetObjectBuilder());
             this.Definition = definition;
-            Magazines = new WeaponLogic_Magazines(definition.Loading);
+
+            // Provide a function to get the inventory
+            Func<IMyInventory> getInventoryFunc = () => sorterWeapon.GetInventory();
+
+            // Pass the function as an argument to WeaponLogic_Magazines
+            Magazines = new WeaponLogic_Magazines(definition.Loading, getInventoryFunc);
+
             Id = id;
         }
+
 
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
         {
