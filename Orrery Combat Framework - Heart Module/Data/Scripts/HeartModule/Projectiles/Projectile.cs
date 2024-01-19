@@ -23,7 +23,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         public Vector3D InheritedVelocity;
         #endregion
 
-        public ProjectileGuidance guidance;
+        public ProjectileGuidance Guidance;
         public bool IsHitscan { get; private set; } = false;
         public long Firer = -1;
         public Vector3D Position = Vector3D.Zero;
@@ -67,7 +67,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 Definition.PhysicalProjectile.MaxLifetime = 1 / 60f;
 
             if (Definition.Guidance.Length > 0)
-                guidance = new ProjectileGuidance(this);
+                Guidance = new ProjectileGuidance(this);
 
             UpdateFromSerializable(projectile);
         }
@@ -111,7 +111,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             RemainingImpacts = Definition.Damage.MaxImpacts;
 
             if (Definition.Guidance.Length > 0)
-                guidance = new ProjectileGuidance(this);
+                Guidance = new ProjectileGuidance(this);
         }
 
         public void TickUpdate(float delta)
@@ -122,7 +122,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             Age += delta;
             if (!IsHitscan)
             {
-                guidance?.RunGuidance(delta);
+                Guidance?.RunGuidance(delta);
 
                 CheckHits(delta);
                 Velocity += Definition.PhysicalProjectile.Acceleration * delta;

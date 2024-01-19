@@ -1,6 +1,8 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
+using Heart_Module.Data.Scripts.HeartModule.Weapons;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.Game.EntityComponents;
 using Sandbox.ModAPI;
@@ -154,7 +156,14 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     for (int j = 0; j < Definition.Loading.ProjectilesPerBarrel; j++)
                     { 
                         SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ProjectileDefinitionManager.GetDefinition(CurrentAmmo).Ungrouped.Recoil, muzzleMatrix.Translation);
-                        ProjectileManager.I.AddProjectile(CurrentAmmo, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
+                        Projectile newProjectile = ProjectileManager.I.AddProjectile(CurrentAmmo, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
+                        if (newProjectile.Guidance != null)
+                        {
+                            if (this is SorterTurretLogic)
+                                newProjectile.Guidance.SetTarget(((SorterTurretLogic)this).TargetEntity);
+                            else
+                                newProjectile.Guidance.SetTarget(WeaponManagerAi.I.GetTargeting(SorterWep.CubeGrid)?.PrimaryGridTarget);
+                        }
                     }
                     lastShoot -= 60f;
 
