@@ -1,7 +1,13 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+﻿using BulletXNA.BulletCollision;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
+using Sandbox.Engine.Physics;
+using Sandbox.Engine.Voxels;
+using Sandbox.ModAPI;
 using System.Collections.Generic;
+using VRage.Game.ModAPI;
 using VRage.ModAPI;
+using VRage.Utils;
 using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
@@ -48,6 +54,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
                 return;
             }
 
+            if (currentStage.DoRaycast)
+                CheckRaycast(currentStage);
+
             if (targetEntity != null) // If target is null, just 
             {
                 Vector3D leadPos = targetEntity.PositionComp.WorldAABB.Center;
@@ -55,7 +64,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
                 if (currentStage.UseAimPrediction)
                     leadPos = TargetingHelper.InterceptionPoint(projectile.Position, projectile.InheritedVelocity, targetEntity.PositionComp.WorldAABB.Center, targetEntity.Physics.LinearVelocity, projectile.Velocity) ?? leadPos;
 
-                StepDirecion((leadPos - projectile.Position).Normalized(), currentStage.TurnRate, currentStage.TurnRateSpeedRatio, delta);
+                StepDirecion((leadPos - projectile.Position).Normalized(), currentStage.TurnRate, delta);
             }
 
             time += delta;
@@ -67,7 +76,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
             RunGuidance(delta); // Avoid a tick of delay
         }
 
-        internal void StepDirecion(Vector3D targetDir, float turnRate, float rateSpeedRatio, float delta)
+        internal void StepDirecion(Vector3D targetDir, float turnRate, float delta)
         {
             double AngleDifference = Vector3D.Angle(projectile.Direction, targetDir);
 
@@ -76,6 +85,37 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
 
             Matrix RotationMatrix = Matrix.CreateFromAxisAngle(RotAxis, (float) HeartUtils.ClampAbs(AngleDifference, turnRate * delta));
             projectile.Direction = Vector3.Transform(projectile.Direction, RotationMatrix).Normalized();
+        }
+
+        internal void CheckRaycast(Guidance currentstage)
+        {
+            if (targetEntity == null)
+            {
+                PreformRaycast(currentstage);
+                return;
+            }
+            double angle = Vector3D.Angle(projectile.Direction, targetEntity.WorldAABB.Center);
+
+            if (angle > currentstage.CastCone)
+                PreformRaycast(currentstage);
+        }
+
+        internal void PreformRaycast(Guidance currentstage)
+        {
+            MatrixD frustrumMatrix = MatrixD.CreatePerspectiveFieldOfView(currentstage.CastCone, 1, 50, currentstage.CastDistance);
+            frustrumMatrix = MatrixD.Invert(MatrixD.CreateWorld(projectile.Position, projectile.Direction, Vector3D.CalculatePerpendicularVector(projectile.Direction))) * frustrumMatrix;
+            BoundingFrustumD frustrum = new BoundingFrustumD(frustrumMatrix);
+            BoundingSphereD sphere = new BoundingSphereD(projectile.Position, currentstage.CastDistance);
+
+            foreach (var entity in MyAPIGateway.Entities.GetTopMostEntitiesInSphere(ref sphere))
+            {
+                if (frustrum.Intersects(entity.WorldAABB))
+                {
+                    //MyAPIGateway.Utilities.ShowNotification("Hit " + entity.DisplayName, 1000 / 60);
+                    targetEntity = entity;
+                    break;
+                }
+            }
         }
     }
 }
