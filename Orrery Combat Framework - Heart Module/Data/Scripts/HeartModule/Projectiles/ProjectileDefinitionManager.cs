@@ -64,8 +64,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     TurnRate = 3.14f,
                     IFF = 2,
                     DoRaycast = true,
-                    CastCone = 1,
-                    CastDistance = 4000,
+                    CastCone = 0.5f,
+                    CastDistance = 1000,
                 }
             },
             LiveMethods = new LiveMethods()

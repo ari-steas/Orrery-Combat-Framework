@@ -7,6 +7,7 @@ using Sandbox.ModAPI;
 using System.Collections.Generic;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
+using VRage.Utils;
 using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
@@ -89,26 +90,28 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
         internal void CheckRaycast(Guidance currentstage)
         {
             if (targetEntity == null)
+            {
                 PreformRaycast(currentstage);
-            double angle = Vector3D.Angle(projectile.Direction, targetEntity.PositionComp.WorldAABB.Center);
+                return;
+            }
+            double angle = Vector3D.Angle(projectile.Direction, targetEntity.WorldAABB.Center);
 
-            if (angle < currentstage.CastCone)
+            if (angle > currentstage.CastCone)
                 PreformRaycast(currentstage);
         }
 
         internal void PreformRaycast(Guidance currentstage)
         {
-
-            MatrixD frustrumMatrix = MatrixD.CreatePerspectiveFieldOfView(currentstage.CastCone, 1, 1, currentstage.CastDistance);
-            frustrumMatrix *= MatrixD.CreateWorld(projectile.Position, projectile.Direction, Vector3D.CalculatePerpendicularVector(projectile.Direction));
+            MatrixD frustrumMatrix = MatrixD.CreatePerspectiveFieldOfView(currentstage.CastCone, 1, 50, currentstage.CastDistance);
+            frustrumMatrix = MatrixD.Invert(MatrixD.CreateWorld(projectile.Position, projectile.Direction, Vector3D.CalculatePerpendicularVector(projectile.Direction))) * frustrumMatrix;
             BoundingFrustumD frustrum = new BoundingFrustumD(frustrumMatrix);
-            MyAPIGateway.Utilities.ShowNotification(frustrum.Matrix.Translation + "", 1000/60);
             BoundingSphereD sphere = new BoundingSphereD(projectile.Position, currentstage.CastDistance);
 
             foreach (var entity in MyAPIGateway.Entities.GetTopMostEntitiesInSphere(ref sphere))
             {
-                if (entity.WorldAABB != null && frustrum.Intersects(entity.WorldAABB))
+                if (frustrum.Intersects(entity.WorldAABB))
                 {
+                    //MyAPIGateway.Utilities.ShowNotification("Hit " + entity.DisplayName, 1000 / 60);
                     targetEntity = entity;
                     break;
                 }
