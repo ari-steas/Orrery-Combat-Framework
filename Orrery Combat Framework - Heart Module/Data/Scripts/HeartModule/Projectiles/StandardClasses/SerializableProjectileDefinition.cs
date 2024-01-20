@@ -115,8 +115,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         [ProtoMember(3)] public bool UseAimPrediction;
         [ProtoMember(4)] public float TurnRate;
         [ProtoMember(6)] public int IFF; // 1 is TargetSelf, 2 is TargetEnemies, 4 is TargetFriendlies // TODO
-        [ProtoMember(7)] public bool DoRaycast; // TODO
-        [ProtoMember(8)] public float CastCone; // TODO
+        [ProtoMember(7)] public bool DoRaycast;
+        [ProtoMember(8)] public float CastCone;
         [ProtoMember(9)] public float CastDistance;
     }
 
