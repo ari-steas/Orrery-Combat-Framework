@@ -15,7 +15,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         MyEntity ProjectileEntity = new MyEntity();
         MyParticleEffect ProjectileEffect;
         uint RenderId = 0;
-        List<LineFade> TrailFade = new List<LineFade>(); // Maybe try a Stack var?
         MatrixD ProjectileMatrix = MatrixD.Identity;
         MyEntity3DSoundEmitter ProjectileSound;
         public bool IsVisible = true;

@@ -62,10 +62,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     ActiveDuration = -1,
                     UseAimPrediction = false,
                     TurnRate = 3.14f,
-                    TurnRateSpeedRatio = 0,
                     IFF = 2,
-                    DoRaycast = false,
-                    CastCone = 0,
+                    DoRaycast = true,
+                    CastCone = 1,
+                    CastDistance = 4000,
                 }
             },
             LiveMethods = new LiveMethods()
