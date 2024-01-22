@@ -14,7 +14,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
     internal class HeartLoad : MySessionComponentBase
     {
         CriticalHandle handle;
-        int remainingDegradedModeTicks = 600;
+        int remainingDegradedModeTicks = 300;
 
         public override void LoadData()
         {

@@ -11,9 +11,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface
     internal abstract class GridBasedIndicator_Base : MySessionComponentBase
     {
         internal IMyCubeGrid controlledGrid;
+        public bool Visible = true;
 
         public override void UpdateAfterSimulation()
         {
+            if (MyAPIGateway.Utilities.IsDedicated)
+                Visible = false;
+            else
+                Visible = MyAPIGateway.Gui.GetCurrentScreen == MyTerminalPageEnum.None;
+
             IMyEntity controlledEntity = MyAPIGateway.Session.Player?.Controller?.ControlledEntity?.Entity?.GetTopMostParent(); // Get the currently controlled grid.
             if (!(controlledEntity is IMyCubeGrid))
             {

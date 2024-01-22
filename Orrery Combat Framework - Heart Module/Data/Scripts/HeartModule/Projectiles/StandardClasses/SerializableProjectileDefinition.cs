@@ -118,6 +118,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         [ProtoMember(7)] public bool DoRaycast;
         [ProtoMember(8)] public float CastCone;
         [ProtoMember(9)] public float CastDistance;
+        [ProtoMember(10)] public float Velocity;
     }
 
     [ProtoContract]
