@@ -39,8 +39,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 //Model = "Models\\Weapons\\Projectile_Missile.mwm",
                 TrailTexture = MyStringId.GetOrCompute("WeaponLaser"),
                 TrailFadeTime = 0f,
-                TrailLength = 4,
-                TrailWidth = 0.25f,
+                TrailLength = 8,
+                TrailWidth = 0.5f,
                 TrailColor = new VRageMath.Vector4(61, 24, 24, 200),
                 //AttachedParticle = "Smoke_Missile",
                 ImpactParticle = "MaterialHit_Metal",
@@ -56,27 +56,29 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             },
             Guidance = new Guidance[]
             {
-                //new Guidance()
-                //{
-                //    TriggerTime = 0,
-                //    ActiveDuration = -1,
-                //    UseAimPrediction = false,
-                //    TurnRate = 0f,
-                //    IFF = 2,
-                //    DoRaycast = false,
-                //    CastCone = 0.5f,
-                //    CastDistance = 1000,
-                //},
                 new Guidance()
                 {
-                    TriggerTime = 0f,
+                    TriggerTime = 0,
                     ActiveDuration = -1,
+                    UseAimPrediction = false,
+                    TurnRate = -1.5f,
+                    IFF = 2,
+                    DoRaycast = false,
+                    CastCone = 0.5f,
+                    CastDistance = 1000,
+                    Velocity = 50f,
+                },
+                new Guidance()
+                {
+                    TriggerTime = 1f,
+                    ActiveDuration = -1f,
                     UseAimPrediction = false,
                     TurnRate = 3.14f,
                     IFF = 2,
                     DoRaycast = false,
                     CastCone = 0.5f,
                     CastDistance = 1000,
+                    Velocity = -1f,
                 }
             },
             LiveMethods = new LiveMethods()

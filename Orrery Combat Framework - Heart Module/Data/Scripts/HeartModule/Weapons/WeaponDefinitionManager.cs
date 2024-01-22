@@ -47,7 +47,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             {
                 RateOfFire = 15,
                 BarrelsPerShot = 1,
-                ProjectilesPerBarrel = 10,
+                ProjectilesPerBarrel = 1,
                 ReloadTime = 0,
                 DelayUntilFire = 0,
 

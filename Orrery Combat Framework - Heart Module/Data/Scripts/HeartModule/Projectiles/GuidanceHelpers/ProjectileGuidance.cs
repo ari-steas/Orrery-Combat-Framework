@@ -1,4 +1,5 @@
 ﻿using BulletXNA.BulletCollision;
+using Heart_Module.Data.Scripts.HeartModule.Debug;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Sandbox.Engine.Physics;
@@ -26,22 +27,28 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
             this.projectile = projectile;
             Definition = projectile.Definition;
             stages = new LinkedList<Guidance>(Definition.Guidance);
+
+            // Set projectile velocity
+            if ((stages.First?.Value.Velocity ?? -1) != -1)
+                projectile.Velocity = stages.First.Value.Velocity;
+            else
+                projectile.Velocity = projectile.Definition.PhysicalProjectile.Velocity;
         }
 
         public void SetTarget(IMyEntity target)
         {
             targetEntity = target;
-            MyAPIGateway.Utilities.ShowNotification("SET TARGET " + (target == null), 1000/60);
         }
 
         public void RunGuidance(float delta)
         {
-            if (stages.Count == 0)
+            time += delta;
+            if (stages.Count == 0 || stages.First.Value.TriggerTime > time) // Don't run logic if no stage is active
                 return;
 
             Guidance currentStage = stages.First.Value;
 
-            if (currentStage.ActiveDuration == -1)
+            if (currentStage.ActiveDuration == -1) // Keep guiding until next stage
             {
                 if ((stages.First.Next?.Value.TriggerTime ?? float.MaxValue) <= time) // Move to next stage
                 {
@@ -49,7 +56,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
                     return;
                 }
             }
-            else if (currentStage.TriggerTime + currentStage.ActiveDuration > time)
+            else if (currentStage.TriggerTime + currentStage.ActiveDuration < time) // Go to next stage if projectile has ran out of time
             {
                 NextStage(delta);
                 return;
@@ -58,22 +65,26 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
             if (currentStage.DoRaycast)
                 CheckRaycast(currentStage);
 
-            if (targetEntity != null) // If target is null, just move forward lol lmao
+            if (targetEntity != null && !targetEntity.Closed) // If target is null, just move forward lol lmao
             {
                 Vector3D leadPos = targetEntity.PositionComp.WorldAABB.Center;
 
                 if (currentStage.UseAimPrediction)
                     leadPos = TargetingHelper.InterceptionPoint(projectile.Position, projectile.InheritedVelocity, targetEntity.PositionComp.WorldAABB.Center, targetEntity.Physics.LinearVelocity, projectile.Velocity) ?? leadPos;
-
+                DebugDraw.AddPoint(leadPos, Color.Wheat, 0);
                 StepDirecion((leadPos - projectile.Position).Normalized(), currentStage.TurnRate, delta);
             }
-
-            time += delta;
         }
 
         internal void NextStage(float delta)
         {
             stages.RemoveFirst();
+
+            if ((stages.First?.Value.Velocity ?? -1) != -1)
+                projectile.Velocity = stages.First.Value.Velocity;
+            else
+                projectile.Velocity = projectile.Definition.PhysicalProjectile.Velocity;
+
             RunGuidance(delta); // Avoid a tick of delay
         }
 
