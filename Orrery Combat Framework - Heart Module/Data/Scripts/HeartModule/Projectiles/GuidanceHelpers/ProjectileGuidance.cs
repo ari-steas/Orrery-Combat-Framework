@@ -31,6 +31,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
         public void SetTarget(IMyEntity target)
         {
             targetEntity = target;
+            MyAPIGateway.Utilities.ShowNotification("SET TARGET " + (target == null), 1000/60);
         }
 
         public void RunGuidance(float delta)
@@ -57,7 +58,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
             if (currentStage.DoRaycast)
                 CheckRaycast(currentStage);
 
-            if (targetEntity != null) // If target is null, just 
+            if (targetEntity != null) // If target is null, just move forward lol lmao
             {
                 Vector3D leadPos = targetEntity.PositionComp.WorldAABB.Center;
 
@@ -100,6 +101,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
                 PreformRaycast(currentstage);
         }
 
+        /// <summary>
+        /// Scans for valid targets within the missile's cone
+        /// </summary>
+        /// <param name="currentstage"></param>
         internal void PreformRaycast(Guidance currentstage)
         {
             MatrixD frustrumMatrix = MatrixD.CreatePerspectiveFieldOfView(currentstage.CastCone, 1, 50, currentstage.CastDistance);

@@ -30,7 +30,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 Velocity = 800,
                 Acceleration = 0,
                 Health = 1,
-                MaxTrajectory = 1000,
+                MaxTrajectory = 4000,
                 MaxLifetime = -1,
                 IsHitscan = false,
             },
@@ -56,14 +56,25 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             },
             Guidance = new Guidance[]
             {
+                //new Guidance()
+                //{
+                //    TriggerTime = 0,
+                //    ActiveDuration = -1,
+                //    UseAimPrediction = false,
+                //    TurnRate = 0f,
+                //    IFF = 2,
+                //    DoRaycast = false,
+                //    CastCone = 0.5f,
+                //    CastDistance = 1000,
+                //},
                 new Guidance()
                 {
-                    TriggerTime = 0,
+                    TriggerTime = 0f,
                     ActiveDuration = -1,
                     UseAimPrediction = false,
                     TurnRate = 3.14f,
                     IFF = 2,
-                    DoRaycast = true,
+                    DoRaycast = false,
                     CastCone = 0.5f,
                     CastDistance = 1000,
                 }
