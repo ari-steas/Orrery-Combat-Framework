@@ -52,7 +52,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
             DebugDraw.AddLine(subpart.PositionComp.GetPosition(), subpart.PositionComp.GetPosition() + subpart.PositionComp.WorldMatrixRef.Forward, Color.Aqua, 0);
 
             MatrixD muzzleMatrix = turret.MuzzleMatrix;
-            muzzleMatrix.Translation += turret.MuzzleMatrix.Forward * offset;
+            muzzleMatrix.Translation = turret.SorterWep.GetPosition() + turret.MuzzleMatrix.Forward * offset;
             MatrixD parentMatrix = subpart.Parent.PositionComp.WorldMatrixRef;
             
             Matrix m = muzzleMatrix * MatrixD.Invert(parentMatrix);
