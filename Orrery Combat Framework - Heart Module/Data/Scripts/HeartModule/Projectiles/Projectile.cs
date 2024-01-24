@@ -13,7 +13,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
     {
         #region Definition Values
         public uint Id { get; private set; }
-        public readonly SerializableProjectileDefinition Definition;
+        public readonly ProjectileDefinitionBase Definition;
         public readonly int DefinitionId;
         Dictionary<string, object> Overrides = new Dictionary<string, object>();
         public Vector3D InheritedVelocity;

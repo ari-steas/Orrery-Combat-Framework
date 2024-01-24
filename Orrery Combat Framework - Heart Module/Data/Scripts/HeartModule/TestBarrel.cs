@@ -42,14 +42,13 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
         public override void UpdateAfterSimulation()
         {
-            if (turret == null)
+            if (turret?.SorterWep == null || turret.SorterWep.MarkedForClose || turret.SorterWep.CubeGrid != block.CubeGrid)
             {
                 TryGetNewTurret();
                 return;
             }
 
             MyEntitySubpart subpart = SubpartManager.GetSubpart(Entity, "barrel");
-            DebugDraw.AddLine(subpart.PositionComp.GetPosition(), subpart.PositionComp.GetPosition() + subpart.PositionComp.WorldMatrixRef.Forward, Color.Aqua, 0);
 
             MatrixD muzzleMatrix = turret.MuzzleMatrix;
             muzzleMatrix.Translation = turret.SorterWep.GetPosition() + turret.MuzzleMatrix.Forward * offset;
@@ -58,9 +57,11 @@ namespace Heart_Module.Data.Scripts.HeartModule
             Matrix m = muzzleMatrix * MatrixD.Invert(parentMatrix);
             subpart.PositionComp.SetLocalMatrix(ref m);
         }
-
+        
         private void TryGetNewTurret()
         {
+            SubpartManager.GetSubpart(Entity, "barrel").PositionComp.SetLocalMatrix(ref Matrix.Identity);
+
             if (WeaponManager.I.GridWeapons[block.CubeGrid].Count == 0)
                 return;
             foreach (var wep in WeaponManager.I.GridWeapons[block.CubeGrid])

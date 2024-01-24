@@ -71,7 +71,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         private void AddWeapon(IMyConveyorSorter sorter)
         {
-            SerializableWeaponDefinition def = WeaponDefinitionManager.GetDefinition(sorter.BlockDefinition.SubtypeName);
+            WeaponDefinitionBase def = WeaponDefinitionManager.GetDefinition(sorter.BlockDefinition.SubtypeName);
             SorterWeaponLogic logic;
 
             while (!IsIdAvailable(NextId))

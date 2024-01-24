@@ -17,9 +17,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
     //[MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeaponTurret")]
     public partial class SorterTurretLogic : SorterWeaponLogic
     {
-        internal float Azimuth = (float) Math.PI; // lol and lmao
+        internal float Azimuth = 0; // lol and lmao
         internal float Elevation = 0;
-        internal double DesiredAzimuth = Math.PI;
+        internal double DesiredAzimuth = 0;
         internal double DesiredElevation = 0;
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         public Projectile TargetProjectile = null;
 
 
-        public SorterTurretLogic(IMyConveyorSorter sorterWeapon, SerializableWeaponDefinition definition, uint id) : base(sorterWeapon, definition, id) { }
+        public SorterTurretLogic(IMyConveyorSorter sorterWeapon, WeaponDefinitionBase definition, uint id) : base(sorterWeapon, definition, id) { }
 
         public override void UpdateAfterSimulation()
         {
@@ -79,7 +79,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             if (aimpoint == Vector3D.MaxValue)
             {
-                DesiredAzimuth = Math.PI - Definition.Hardpoint.HomeAzimuth;
+                DesiredAzimuth = Definition.Hardpoint.HomeAzimuth;
                 DesiredElevation = -Definition.Hardpoint.HomeElevation;
                 return; // Exit if interception point does not exist
             }

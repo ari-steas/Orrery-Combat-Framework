@@ -12,9 +12,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     /// Standard serializable projectile definition.
     /// </summary>
     [ProtoContract]
-    public class SerializableProjectileDefinition
+    public class ProjectileDefinitionBase
     {
-        public SerializableProjectileDefinition() { }
+        public ProjectileDefinitionBase() { }
 
         [ProtoMember(1)] public string Name;
         [ProtoMember(2)] public Ungrouped Ungrouped;

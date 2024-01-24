@@ -7,9 +7,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
     /// Standard serializable weapon definition.
     /// </summary>
     [ProtoContract]
-    public class SerializableWeaponDefinition
+    public class WeaponDefinitionBase
     {
-        public SerializableWeaponDefinition() { }
+        public WeaponDefinitionBase() { }
 
         [ProtoMember(2)] public Targeting Targeting;
         [ProtoMember(3)] public Assignments Assignments;

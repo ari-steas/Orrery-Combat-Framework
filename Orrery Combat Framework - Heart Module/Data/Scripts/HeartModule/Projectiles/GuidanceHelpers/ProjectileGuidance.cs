@@ -13,7 +13,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
         IMyEntity targetEntity;
 
         Projectile projectile;
-        SerializableProjectileDefinition Definition;
+        ProjectileDefinitionBase Definition;
         LinkedList<Guidance> stages;
         float time = 0;
 

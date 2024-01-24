@@ -6,7 +6,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
     internal class ProjectileDefinitionManager
     {
         // TODO replace with actual logic
-        private static SerializableProjectileDefinition DefaultDefinition = new SerializableProjectileDefinition()
+        private static ProjectileDefinitionBase DefaultDefinition = new ProjectileDefinitionBase()
         {
             Name = "TestProjectile",
             Ungrouped = new Ungrouped()
@@ -88,7 +88,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
         };
 
-        public static SerializableProjectileDefinition GetDefinition(int id)
+        public static ProjectileDefinitionBase GetDefinition(int id)
         {
             return DefaultDefinition;
         }

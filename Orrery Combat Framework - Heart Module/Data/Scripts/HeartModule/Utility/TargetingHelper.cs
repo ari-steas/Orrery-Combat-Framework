@@ -18,7 +18,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
         /// <returns></returns>
         public static Vector3D? InterceptionPoint(Vector3D startPos, Vector3D startVel, Projectile target, int projectileDef)
         {
-            SerializableProjectileDefinition def = ProjectileDefinitionManager.GetDefinition(projectileDef);
+            ProjectileDefinitionBase def = ProjectileDefinitionManager.GetDefinition(projectileDef);
             if (def == null || target == null)
                 return null;
             if (def.PhysicalProjectile.IsHitscan)
@@ -37,7 +37,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
         /// <returns></returns>
         public static Vector3D? InterceptionPoint(Vector3D startPos, Vector3D startVel, IMyEntity target, int projectileDef)
         {
-            SerializableProjectileDefinition def = ProjectileDefinitionManager.GetDefinition(projectileDef);
+            ProjectileDefinitionBase def = ProjectileDefinitionManager.GetDefinition(projectileDef);
             if (def == null || target?.Physics == null)
                 return null;
             if (def.PhysicalProjectile.IsHitscan)

@@ -7,7 +7,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
     internal class WeaponDefinitionManager
     {
-        private static SerializableWeaponDefinition DefaultDefinition = new SerializableWeaponDefinition()
+        private static WeaponDefinitionBase DefaultDefinition = new WeaponDefinitionBase()
         {
             Targeting = new Targeting()
             {
@@ -68,7 +68,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             },
         };
 
-        private static SerializableWeaponDefinition TurretDefinition = new SerializableWeaponDefinition()
+        private static WeaponDefinitionBase TurretDefinition = new WeaponDefinitionBase()
         {
             Targeting = new Targeting()
             {
@@ -135,13 +135,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         };
 
         // this is after the definitions because FUCKING STATICS ARE THE WORK OF THE DEVIL
-        private static Dictionary<string, SerializableWeaponDefinition> Definitions = new Dictionary<string, SerializableWeaponDefinition>()
+        private static Dictionary<string, WeaponDefinitionBase> Definitions = new Dictionary<string, WeaponDefinitionBase>()
         {
             ["TestWeapon"] = DefaultDefinition,
             ["TestWeaponTurret"] = TurretDefinition,
         };
 
-        public static SerializableWeaponDefinition GetDefinition(string subTypeId)
+        public static WeaponDefinitionBase GetDefinition(string subTypeId)
         {
             MyLog.Default.WriteLine(subTypeId + " | " + HasDefinition(subTypeId) + " | " + (Definitions[subTypeId] == null));
             if (HasDefinition(subTypeId))
