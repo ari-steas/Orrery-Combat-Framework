@@ -1,15 +1,10 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Sandbox.ModAPI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VRage.Game.ModAPI;
 using VRage.Game;
-using VRageMath;
+using VRage.Game.ModAPI;
 using VRage.ModAPI;
+using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {

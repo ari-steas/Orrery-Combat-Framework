@@ -1,7 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using System;
-using VRage.Game.Entity;
 using VRage.ModAPI;
 using VRageMath;
 

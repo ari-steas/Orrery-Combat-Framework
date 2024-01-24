@@ -4,7 +4,6 @@ using RichHudFramework.Client;
 using Sandbox.ModAPI;
 using System;
 using VRage.Game.Components;
-using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
 

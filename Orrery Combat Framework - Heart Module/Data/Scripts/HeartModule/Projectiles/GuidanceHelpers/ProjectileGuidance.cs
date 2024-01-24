@@ -1,14 +1,9 @@
-﻿using BulletXNA.BulletCollision;
-using Heart_Module.Data.Scripts.HeartModule.Debug;
+﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
-using Sandbox.Engine.Physics;
-using Sandbox.Engine.Voxels;
 using Sandbox.ModAPI;
 using System.Collections.Generic;
-using VRage.Game.ModAPI;
 using VRage.ModAPI;
-using VRage.Utils;
 using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
@@ -95,7 +90,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
             Vector3 RotAxis = Vector3.Cross(projectile.Direction, targetDir);
             RotAxis.Normalize();
 
-            Matrix RotationMatrix = Matrix.CreateFromAxisAngle(RotAxis, (float) HeartUtils.ClampAbs(AngleDifference, turnRate * delta));
+            Matrix RotationMatrix = Matrix.CreateFromAxisAngle(RotAxis, (float)HeartUtils.ClampAbs(AngleDifference, turnRate * delta));
             projectile.Direction = Vector3.Transform(projectile.Direction, RotationMatrix).Normalized();
         }
 

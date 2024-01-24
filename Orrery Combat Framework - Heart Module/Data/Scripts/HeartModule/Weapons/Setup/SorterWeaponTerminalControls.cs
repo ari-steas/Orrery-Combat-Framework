@@ -1,11 +1,8 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.Setup;
-using Sandbox.Game.Localization;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces.Terminal;
 using System;
-using System.Runtime.CompilerServices;
-using System.Text;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
 using VRage.Utils;

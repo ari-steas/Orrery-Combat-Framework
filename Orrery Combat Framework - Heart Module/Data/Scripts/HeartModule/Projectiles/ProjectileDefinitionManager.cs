@@ -1,5 +1,4 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
-using System.Collections.Generic;
 using VRage.Utils;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
@@ -56,30 +55,30 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             },
             Guidance = new Guidance[]
             {
-                new Guidance()
-                {
-                    TriggerTime = 0,
-                    ActiveDuration = -1,
-                    UseAimPrediction = false,
-                    TurnRate = -1.5f,
-                    IFF = 2,
-                    DoRaycast = false,
-                    CastCone = 0.5f,
-                    CastDistance = 1000,
-                    Velocity = 50f,
-                },
-                new Guidance()
-                {
-                    TriggerTime = 1f,
-                    ActiveDuration = -1f,
-                    UseAimPrediction = false,
-                    TurnRate = 3.14f,
-                    IFF = 2,
-                    DoRaycast = false,
-                    CastCone = 0.5f,
-                    CastDistance = 1000,
-                    Velocity = -1f,
-                }
+                //new Guidance()
+                //{
+                //    TriggerTime = 0,
+                //    ActiveDuration = -1,
+                //    UseAimPrediction = false,
+                //    TurnRate = -1.5f,
+                //    IFF = 2,
+                //    DoRaycast = false,
+                //    CastCone = 0.5f,
+                //    CastDistance = 1000,
+                //    Velocity = 50f,
+                //},
+                //new Guidance()
+                //{
+                //    TriggerTime = 1f,
+                //    ActiveDuration = -1f,
+                //    UseAimPrediction = false,
+                //    TurnRate = 3.14f,
+                //    IFF = 2,
+                //    DoRaycast = false,
+                //    CastCone = 0.5f,
+                //    CastDistance = 1000,
+                //    Velocity = -1f,
+                //}
             },
             LiveMethods = new LiveMethods()
             {

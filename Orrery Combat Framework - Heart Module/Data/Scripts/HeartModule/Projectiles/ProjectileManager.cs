@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using VRage.Game.Components;
 using VRageMath;
-using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 {

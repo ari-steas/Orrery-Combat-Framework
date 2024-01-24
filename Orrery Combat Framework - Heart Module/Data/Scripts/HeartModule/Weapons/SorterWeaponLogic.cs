@@ -154,7 +154,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     Vector3D muzzlePos = muzzleMatrix.Translation;
 
                     for (int j = 0; j < Definition.Loading.ProjectilesPerBarrel; j++)
-                    { 
+                    {
                         SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ProjectileDefinitionManager.GetDefinition(CurrentAmmo).Ungrouped.Recoil, muzzleMatrix.Translation);
                         Projectile newProjectile = ProjectileManager.I.AddProjectile(CurrentAmmo, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
                         if (newProjectile.Guidance != null)
@@ -348,7 +348,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 LoadDefaultSettings();
                 return false;
             }
-                
+
 
             string rawData;
             if (!SorterWep.Storage.TryGetValue(HeartSettingsGUID, out rawData))

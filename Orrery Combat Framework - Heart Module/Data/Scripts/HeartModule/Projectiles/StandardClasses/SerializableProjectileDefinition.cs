@@ -36,7 +36,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         /// <summary>
         /// Recoil of projectile, in Newtons
         /// </summary>
-        [ProtoMember(2)] public int Recoil; // TODO
+        [ProtoMember(2)] public int Recoil;
         /// <summary>
         /// Impulse of projectile, in Newtons
         /// </summary>
