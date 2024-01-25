@@ -21,6 +21,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions
                 return;
 
             MyAPIGateway.Utilities.RegisterMessageHandler(DefinitionMessageId, RecieveDefinitions);
+            MyAPIGateway.Utilities.SendModMessage(DefinitionMessageId, true); // Notify client mods that this is ready
         }
 
         private void RecieveDefinitions(object o)
