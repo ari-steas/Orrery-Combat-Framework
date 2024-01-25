@@ -46,17 +46,25 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public SubpartManager SubpartManager = new SubpartManager();
         public MatrixD MuzzleMatrix { get; internal set; } = MatrixD.Identity;
         public bool HasLoS = false;
-        public readonly uint Id;
+        public readonly uint Id = uint.MaxValue;
         public int CurrentAmmo { get; private set; } = 0;
 
         public SorterWeaponLogic(IMyConveyorSorter sorterWeapon, WeaponDefinitionBase definition, uint id)
         {
+            if (definition == null)
+                return;
+
             sorterWeapon.GameLogic = this;
             Init(sorterWeapon.GetObjectBuilder());
             this.Definition = definition;
 
             // Provide a function to get the inventory
             Func<IMyInventory> getInventoryFunc = () => sorterWeapon.GetInventory();
+
+            if (definition.Ammos.Length > 0) // Handling for if ammo is nonexistent
+                CurrentAmmo = ProjectileDefinitionManager.GetId(definition.Ammos[0]);
+            else
+                SoftHandle.RaiseException($"No ammos set for weapon! Subtype: {sorterWeapon.BlockDefinition.SubtypeId}", typeof(SorterWeaponLogic));
 
             // Pass the function as an argument to WeaponLogic_Magazines
             Magazines = new WeaponLogic_Magazines(definition.Loading, getInventoryFunc);
@@ -77,9 +85,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public override void UpdateOnceBeforeFrame()
         {
-            HideSorterControls.DoOnce();
-            SorterWeaponTerminalControls.DoOnce(ModContext);
-
             SorterWep = (IMyConveyorSorter)Entity;
 
             if (SorterWep.CubeGrid?.Physics == null)
@@ -109,6 +114,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public override void UpdateAfterSimulation()
         {
+            if (MarkedForClose || Id == uint.MaxValue)
+                return;
+
             MuzzleMatrix = CalcMuzzleMatrix(0); // Set stored MuzzleMatrix
             Magazines.UpdateReload();
             HasLoS = HasLineOfSight();
