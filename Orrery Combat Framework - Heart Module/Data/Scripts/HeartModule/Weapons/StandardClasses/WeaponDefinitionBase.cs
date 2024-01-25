@@ -1,4 +1,5 @@
-﻿using ProtoBuf;
+﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+using ProtoBuf;
 using System;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
@@ -100,6 +101,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
     [ProtoContract]
     public struct Loading
     {
+        [ProtoMember(10)] public string[] Ammos;
+
         [ProtoMember(1)] public int RateOfFire; // Shots per second
         [ProtoMember(2)] public int BarrelsPerShot;
         [ProtoMember(3)] public int ProjectilesPerBarrel;

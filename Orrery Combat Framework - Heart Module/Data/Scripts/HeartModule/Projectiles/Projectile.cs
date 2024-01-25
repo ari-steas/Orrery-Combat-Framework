@@ -105,15 +105,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 Definition.PhysicalProjectile.MaxLifetime = 1 / 60f;
 
             RemainingImpacts = Definition.Damage.MaxImpacts;
-
-            if (Definition.Guidance.Length > 0)
-                Guidance = new ProjectileGuidance(this);
         }
 
         public void TickUpdate(float delta)
         {
             if ((Definition.PhysicalProjectile.MaxTrajectory != -1 && Definition.PhysicalProjectile.MaxTrajectory < DistanceTravelled) || (Definition.PhysicalProjectile.MaxLifetime != -1 && Definition.PhysicalProjectile.MaxLifetime < Age))
                 QueueDispose();
+
+            if (Guidance == null && Definition.Guidance.Length > 0)
+                Guidance = new ProjectileGuidance(this);
 
             Age += delta;
             if (!IsHitscan)

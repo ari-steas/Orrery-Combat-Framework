@@ -16,13 +16,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     {
         public ProjectileDefinitionBase() { }
 
-        [ProtoMember(1)] public string Name;
+        [ProtoMember(1)] public string Name = "";
         [ProtoMember(2)] public Ungrouped Ungrouped;
         [ProtoMember(3)] public Damage Damage;
         [ProtoMember(4)] public PhysicalProjectile PhysicalProjectile;
         [ProtoMember(5)] public Visual Visual;
         [ProtoMember(6)] public Audio Audio;
-        [ProtoMember(7)] public Guidance[] Guidance;
+        [ProtoMember(7)] public Guidance[] Guidance = new Guidance[0];
         [ProtoMember(8)] public LiveMethods LiveMethods = new LiveMethods();
     }
 

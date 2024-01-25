@@ -9,7 +9,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 {
     partial class HeartDefinitions
     {
-        WeaponDefinitionBase ExampleWeapon => new WeaponDefinitionBase()
+        WeaponDefinitionBase ExampleTurretWeapon => new WeaponDefinitionBase()
         {
             Targeting = new Targeting()
             {

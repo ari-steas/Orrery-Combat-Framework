@@ -1,5 +1,7 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Definitions.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
@@ -36,7 +38,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions
                 DefinitionContainer definitionContainer = MyAPIGateway.Utilities.SerializeFromBinary<DefinitionContainer>(message);
                 if (definitionContainer == null)
                     return;
-    
+
+                foreach (var wepDef in definitionContainer.WeaponDefs)
+                    WeaponDefinitionManager.RegisterDefinition(wepDef);
+                foreach (var projDef in definitionContainer.AmmoDefs)
+                    ProjectileDefinitionManager.RegisterDefinition(projDef);
+
                 MyAPIGateway.Utilities.ShowMessage("[OCF]", $"Loaded {definitionContainer.WeaponDefs.Length + definitionContainer.AmmoDefs.Length} definitions.");
             }
             catch (Exception e)

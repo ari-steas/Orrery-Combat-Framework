@@ -1,4 +1,5 @@
-﻿using ProtoBuf;
+﻿using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.ProjectileBases;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -104,6 +105,8 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Wea
     [ProtoContract]
     public struct Loading
     {
+        [ProtoMember(10)] public string[] Ammos;
+
         [ProtoMember(1)] public int RateOfFire; // Shots per second
         [ProtoMember(2)] public int BarrelsPerShot;
         [ProtoMember(3)] public int ProjectilesPerBarrel;

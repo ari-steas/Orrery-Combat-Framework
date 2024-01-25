@@ -1,4 +1,5 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Sandbox.ModAPI;
 using System;
@@ -116,10 +117,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public Projectile AddProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, IMyConveyorSorter sorterWep)
         {
-            if (ProjectileDefinitionManager.GetDefinition(projectileDefinitionId)?.PhysicalProjectile.IsHitscan ?? false)
-                return AddHitscanProjectile(projectileDefinitionId, position, direction, sorterWep);
-            else
-                return AddProjectile(new Projectile(projectileDefinitionId, position, direction, sorterWep));
+            try
+            {
+                if (ProjectileDefinitionManager.GetDefinition(projectileDefinitionId)?.PhysicalProjectile.IsHitscan ?? false)
+                    return AddHitscanProjectile(projectileDefinitionId, position, direction, sorterWep);
+                else
+                    return AddProjectile(new Projectile(projectileDefinitionId, position, direction, sorterWep));
+            }
+            catch (Exception ex)
+            {
+                SoftHandle.RaiseException($"Invalid ammo definition {projectileDefinitionId} (of {ProjectileDefinitionManager.DefinitionCount()})", typeof(ProjectileManager));
+                return null;
+            }
         }
 
         private Projectile AddProjectile(Projectile projectile)

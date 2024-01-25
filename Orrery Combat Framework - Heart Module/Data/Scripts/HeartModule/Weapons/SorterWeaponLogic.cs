@@ -1,4 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule;
+using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
@@ -157,6 +158,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     {
                         SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ProjectileDefinitionManager.GetDefinition(CurrentAmmo).Ungrouped.Recoil, muzzleMatrix.Translation);
                         Projectile newProjectile = ProjectileManager.I.AddProjectile(CurrentAmmo, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
+                        
+                        if (newProjectile == null) // Emergency fail
+                            return;
+
                         if (newProjectile.Guidance != null)
                         {
                             if (this is SorterTurretLogic)

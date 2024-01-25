@@ -1,5 +1,7 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using RichHudFramework.Client;
 using Sandbox.ModAPI;
 using System;
@@ -37,6 +39,10 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
                 MyAPIGateway.Entities.OnEntityAdd += OnEntityAdd;
                 MyAPIGateway.Entities.OnEntityRemove += OnEntityRemove;
+
+                WeaponDefinitionManager.I = new WeaponDefinitionManager();
+                ProjectileDefinitionManager.I = new ProjectileDefinitionManager();
+                HeartData.I.Log.Log($"Initialized DefinitionManagers");
 
                 HeartData.I.IsSuspended = false;
                 HeartData.I.Log.Log($"Finished loading core.");
@@ -114,9 +120,14 @@ namespace Heart_Module.Data.Scripts.HeartModule
         {
             handle.UnloadData();
             HeartData.I.Net.UnloadData();
+            HeartData.I.Log.Log($"Unloaded HeartNetwork");
 
             MyAPIGateway.Entities.OnEntityAdd -= OnEntityAdd;
             MyAPIGateway.Entities.OnEntityRemove -= OnEntityRemove;
+
+            WeaponDefinitionManager.I = null;
+            ProjectileDefinitionManager.I = null;
+            HeartData.I.Log.Log($"Closed DefinitionManagers");
 
             HeartData.I.Log.Log($"Closing core, log finishes here.");
             HeartData.I.Log.Close();

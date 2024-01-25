@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using VRage.Game.Components;
 using VRage.Utils;
-using VRageRender.ExternalApp;
 
 namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 {

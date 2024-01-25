@@ -1,4 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
+using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System.Collections.Generic;
 using VRage.Game.Components;
@@ -15,6 +16,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         internal Dictionary<uint, SorterWeaponLogic> ActiveWeapons = new Dictionary<uint, SorterWeaponLogic>();
         private uint NextId = 0;
         public Dictionary<IMyCubeGrid, List<SorterWeaponLogic>> GridWeapons = new Dictionary<IMyCubeGrid, List<SorterWeaponLogic>>(); // EntityId based because IMyCubeGrid keys break garbage collection
+        public bool DidFirstInit = false;
 
         /// <summary>
         /// Delta for engine ticks; 60tps
@@ -41,7 +43,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                     blocks.Add(b);
                 return false;
             });
-            GridWeapons.Add(grid, new List<SorterWeaponLogic>());
+            if (!GridWeapons.ContainsKey(grid))
+                GridWeapons.Add(grid, new List<SorterWeaponLogic>());
             foreach (var block in blocks)
                 OnBlockAdd(block);
             grid.OnBlockAdded += OnBlockAdd;
@@ -107,6 +110,17 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         public override void UpdateAfterSimulation()
         {
             if (HeartData.I.IsSuspended) return;
+            if (!DidFirstInit) // Definitions can load after blocks do :)
+            {
+                MyAPIGateway.Entities.GetEntities(null, ent =>
+                {
+                    if (ent is IMyCubeGrid)
+                        OnGridAdd(ent as IMyCubeGrid);
+                    return false;
+                });
+                DidFirstInit = true;
+            }
+
             update25Ct++;
 
             foreach (var weapon in ActiveWeapons.Values) // I cannot be asked to tease apart how to seperate updating on weapons
