@@ -8,6 +8,8 @@ using System;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
+using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
+using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding;
 
 namespace Heart_Module.Data.Scripts.HeartModule
 {
@@ -37,9 +39,6 @@ namespace Heart_Module.Data.Scripts.HeartModule
                 else
                     HeartData.I.Log.Log($"Skipped loading RichHudClient");
 
-                MyAPIGateway.Entities.OnEntityAdd += OnEntityAdd;
-                MyAPIGateway.Entities.OnEntityRemove += OnEntityRemove;
-
                 WeaponDefinitionManager.I = new WeaponDefinitionManager();
                 ProjectileDefinitionManager.I = new ProjectileDefinitionManager();
                 HeartData.I.Log.Log($"Initialized DefinitionManagers");
@@ -63,6 +62,22 @@ namespace Heart_Module.Data.Scripts.HeartModule
                 if (HeartData.I.IsSuspended)
                     return;
                 HeartData.I.IsPaused = false;
+
+                if (!HeartData.I.DidFirstInit) // Definitions can load after blocks do :)
+                {
+                    MyAPIGateway.Entities.OnEntityAdd += OnEntityAdd;
+                    MyAPIGateway.Entities.OnEntityRemove += OnEntityRemove;
+
+                    MyAPIGateway.Entities.GetEntities(null, ent =>
+                    {
+                        OnEntityAdd(ent);
+                        return false;
+                    });
+                    HeartData.I.DidFirstInit = true;
+
+                    HideSorterControls.DoOnce();
+                    SorterWeaponTerminalControls.DoOnce(ModContext);
+                }
 
                 if (!MyAPIGateway.Utilities.IsDedicated && HeartData.I.SteamId == 0)
                     HeartData.I.SteamId = MyAPIGateway.Session?.Player?.SteamUserId ?? 0;
