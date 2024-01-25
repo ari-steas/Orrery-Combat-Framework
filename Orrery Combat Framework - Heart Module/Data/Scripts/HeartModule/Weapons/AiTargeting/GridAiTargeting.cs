@@ -1,11 +1,9 @@
 using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Sandbox.Game.Entities;
-using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRageMath;
@@ -74,6 +72,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                 SetTargetingFlags();
                 ScanForTargets();
 
+                MyEntity manualTarget = null;
+                if (keenTargeting != null)
+                {
+                    manualTarget = keenTargeting.GetTarget(Grid);
+                    if (manualTarget is IMyCubeGrid)
+                        PrimaryGridTarget = (IMyCubeGrid)manualTarget;
+                    else
+                        PrimaryGridTarget = null;
+                }
 
                 //MyAPIGateway.Utilities.ShowNotification("Grids: " + ValidGrids.Count, 1000/60);
                 //MyAPIGateway.Utilities.ShowNotification("Characters: " + ValidCharacters.Count, 1000/60);
@@ -93,19 +100,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                     // First, check for manually locked target using GenericKeenTargeting
                     if (keenTargeting != null)
                     {
-                        MyEntity manuallyLockedTarget = keenTargeting.GetTarget(Grid, DoesTargetGrids, DoesTargetGrids, DoesTargetGrids, DoesTargetGrids, DoesTargetGrids, DoesTargetGrids, DoesTargetGrids);
-                        if (manuallyLockedTarget is IMyCubeGrid)
-                            PrimaryGridTarget = (IMyCubeGrid)manuallyLockedTarget;
-                        else
-                            PrimaryGridTarget = null;
-
                         // Check if manually locked target is within range or null
-                        bool isManuallyLockedTargetInRange = manuallyLockedTarget == null || Vector3D.DistanceSquared(manuallyLockedTarget.PositionComp.WorldAABB.Center, Grid.PositionComp.WorldAABB.Center) <= MaxTargetingRange * MaxTargetingRange;
+                        bool isManuallyLockedTargetInRange = manualTarget == null || Vector3D.DistanceSquared(manualTarget.PositionComp.WorldAABB.Center, Grid.PositionComp.WorldAABB.Center) <= MaxTargetingRange * MaxTargetingRange;
 
                         // Set the manually locked target as the primary target regardless of range
-                        if (manuallyLockedTarget != null && isManuallyLockedTargetInRange)
+                        if (manualTarget != null && isManuallyLockedTargetInRange)
                         {
-                            turret.TargetEntity = manuallyLockedTarget;
+                            turret.TargetEntity = manualTarget;
                             turretHasTarget = true;
                         }
                     }

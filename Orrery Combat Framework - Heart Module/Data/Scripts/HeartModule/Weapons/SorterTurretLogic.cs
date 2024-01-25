@@ -1,30 +1,23 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Utility;
+﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
-using Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting;
 using Sandbox.ModAPI;
 using System;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI.Network;
 using VRage.ModAPI;
-using VRage.ObjectBuilders;
 using VRage.Sync;
 using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
-using VRage.Game;
-using VRage.Game.ModAPI;
-using Heart_Module.Data.Scripts.HeartModule.Projectiles;
-using System.Security.Policy;
-using VRage.Utils;
-using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
-using System.Diagnostics;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
     //[MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeaponTurret")]
     public partial class SorterTurretLogic : SorterWeaponLogic
     {
-        internal float Azimuth = 0;
+        internal float Azimuth = 0; // lol and lmao
         internal float Elevation = 0;
         internal double DesiredAzimuth = 0;
         internal double DesiredElevation = 0;
@@ -43,7 +36,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         public Projectile TargetProjectile = null;
 
 
-        public SorterTurretLogic(IMyConveyorSorter sorterWeapon, SerializableWeaponDefinition definition, uint id) : base(sorterWeapon, definition, id) { }
+        public SorterTurretLogic(IMyConveyorSorter sorterWeapon, WeaponDefinitionBase definition, uint id) : base(sorterWeapon, definition, id) { }
 
         public override void UpdateAfterSimulation()
         {
@@ -51,7 +44,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 return;
             if (MyAPIGateway.Session.IsServer)
                 UpdateTargeting();
-
             base.UpdateAfterSimulation();
         }
 
@@ -87,7 +79,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             if (aimpoint == Vector3D.MaxValue)
             {
-                DesiredAzimuth = Math.PI - Definition.Hardpoint.HomeAzimuth;
+                DesiredAzimuth = Definition.Hardpoint.HomeAzimuth;
                 DesiredElevation = -Definition.Hardpoint.HomeElevation;
                 return; // Exit if interception point does not exist
             }
@@ -136,7 +128,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         private Matrix GetAzimuthMatrix(float delta)
         {
             var _limitedAzimuth = HeartUtils.LimitRotationSpeed(Azimuth, DesiredAzimuth, Definition.Hardpoint.AzimuthRate * delta);
-            
+
             if (!Definition.Hardpoint.CanRotateFull)
                 Azimuth = (float)HeartUtils.Clamp(_limitedAzimuth, Definition.Hardpoint.MinAzimuth, Definition.Hardpoint.MaxAzimuth); // Basic angle clamp
             else
@@ -155,7 +147,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         private Matrix GetElevationMatrix(float delta)
         {
             var _limitedElevation = HeartUtils.LimitRotationSpeed(Elevation, DesiredElevation, Definition.Hardpoint.ElevationRate * delta);
-            
+
             if (!Definition.Hardpoint.CanElevateFull)
                 Elevation = (float)HeartUtils.Clamp(_limitedElevation, Definition.Hardpoint.MinElevation, Definition.Hardpoint.MaxElevation);
             else
@@ -203,7 +195,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
             Vector2D neededAngle = GetAngleToTarget(targetPosition);
             neededAngle.X = HeartUtils.NormalizeAngle(neededAngle.X - Math.PI);
-            neededAngle.Y = -HeartUtils.NormalizeAngle(neededAngle.Y, Math.PI/2);
+            neededAngle.Y = -HeartUtils.NormalizeAngle(neededAngle.Y, Math.PI / 2);
 
             bool canAimAzimuth = Definition.Hardpoint.CanRotateFull;
 
@@ -211,7 +203,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 return false; // Check azimuth constrainst
 
             bool canAimElevation = Definition.Hardpoint.CanElevateFull;
-            
+
             if (!canAimElevation && !(neededAngle.Y < Definition.Hardpoint.MaxElevation && neededAngle.Y > Definition.Hardpoint.MinElevation))
                 return false; // Check elevation constraints
 

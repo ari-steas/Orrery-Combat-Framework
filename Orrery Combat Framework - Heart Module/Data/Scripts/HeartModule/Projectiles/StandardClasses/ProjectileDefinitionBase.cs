@@ -12,18 +12,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     /// Standard serializable projectile definition.
     /// </summary>
     [ProtoContract]
-    public class SerializableProjectileDefinition
+    public class ProjectileDefinitionBase
     {
-        public SerializableProjectileDefinition() { }
+        public ProjectileDefinitionBase() { }
 
-        [ProtoMember(1)] public string Name;
+        [ProtoMember(1)] public string Name = "";
         [ProtoMember(2)] public Ungrouped Ungrouped;
         [ProtoMember(3)] public Damage Damage;
         [ProtoMember(4)] public PhysicalProjectile PhysicalProjectile;
         [ProtoMember(5)] public Visual Visual;
-        [ProtoMember(5)] public Audio Audio;
-        [ProtoMember(6)] public Guidance[] Guidance;
-        [ProtoMember(7)] public LiveMethods LiveMethods = new LiveMethods();
+        [ProtoMember(6)] public Audio Audio;
+        [ProtoMember(7)] public Guidance[] Guidance = new Guidance[0];
+        [ProtoMember(8)] public LiveMethods LiveMethods = new LiveMethods();
     }
 
     [ProtoContract]
@@ -36,7 +36,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         /// <summary>
         /// Recoil of projectile, in Newtons
         /// </summary>
-        [ProtoMember(2)] public int Recoil; // TODO
+        [ProtoMember(2)] public int Recoil;
         /// <summary>
         /// Impulse of projectile, in Newtons
         /// </summary>
@@ -112,12 +112,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     {
         [ProtoMember(1)] public float TriggerTime;
         [ProtoMember(2)] public float ActiveDuration; // Ignore if -1 or greater than next
-        [ProtoMember(3)] public bool UseAimPrediction; // TODO
+        [ProtoMember(3)] public bool UseAimPrediction;
         [ProtoMember(4)] public float TurnRate;
-        [ProtoMember(5)] public float TurnRateSpeedRatio; // Percentage of speed lost by a maximum angle turn // TODO
         [ProtoMember(6)] public int IFF; // 1 is TargetSelf, 2 is TargetEnemies, 4 is TargetFriendlies // TODO
-        [ProtoMember(7)] public bool DoRaycast; // TODO
-        [ProtoMember(8)] public float CastCone; // TODO
+        [ProtoMember(7)] public bool DoRaycast;
+        [ProtoMember(8)] public float CastCone;
+        [ProtoMember(9)] public float CastDistance;
+        [ProtoMember(10)] public float Velocity;
     }
 
     [ProtoContract]

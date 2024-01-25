@@ -81,10 +81,5 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
             matrix.Translation = subpart.PositionComp.LocalMatrixRef.Translation;
             subpart.PositionComp.SetLocalMatrix(ref matrix);
         }
-        public void RotateSubpartAbs(MyEntitySubpart subpart, MatrixD matrix)
-        {
-            matrix.Translation = subpart.PositionComp.WorldMatrixRef.Translation;
-            subpart.PositionComp.SetWorldMatrix(ref matrix);
-        }
     }
 }

@@ -9,6 +9,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 {
     public class GenericKeenTargeting
     {
+        public MyEntity GetTarget(IMyCubeGrid grid)
+        {
+            return GetTarget(grid, true, true, true, true, true, true, true);
+        }
+
         public MyEntity GetTarget(IMyCubeGrid grid, bool targetGrids, bool targetLargeGrids, bool targetSmallGrids,
                                   bool targetFriendlies, bool targetNeutrals, bool targetEnemies, bool targetUnowned)
         {

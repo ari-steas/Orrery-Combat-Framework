@@ -1,13 +1,9 @@
 ﻿using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using VRage.Game;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
-using VRage.Game;
-using Sandbox.Game.Entities;
 
 namespace Heart_Module.Data.Scripts.HeartModule
 {

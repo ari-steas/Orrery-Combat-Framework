@@ -1,15 +1,20 @@
-﻿using ProtoBuf;
+﻿using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.ProjectileBases;
+using ProtoBuf;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
+namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.WeaponBases
 {
     /// <summary>
-    /// Standard serializable weapon definition.
+    /// Standard serializable weapon definition. Add onto definition base using the partial modifier.
     /// </summary>
     [ProtoContract]
-    public class SerializableWeaponDefinition
+    public partial class WeaponDefinitionBase
     {
-        public SerializableWeaponDefinition() { }
+        public WeaponDefinitionBase() { }
 
         [ProtoMember(2)] public Targeting Targeting;
         [ProtoMember(3)] public Assignments Assignments;
@@ -100,6 +105,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
     [ProtoContract]
     public struct Loading
     {
+        [ProtoMember(10)] public string[] Ammos;
+
         [ProtoMember(1)] public int RateOfFire; // Shots per second
         [ProtoMember(2)] public int BarrelsPerShot;
         [ProtoMember(3)] public int ProjectilesPerBarrel;
