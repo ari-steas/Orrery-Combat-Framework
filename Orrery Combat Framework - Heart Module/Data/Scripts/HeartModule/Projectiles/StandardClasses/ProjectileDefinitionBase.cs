@@ -21,9 +21,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         [ProtoMember(3)] public Damage Damage;
         [ProtoMember(4)] public PhysicalProjectile PhysicalProjectile;
         [ProtoMember(5)] public Visual Visual;
-        [ProtoMember(5)] public Audio Audio;
-        [ProtoMember(6)] public Guidance[] Guidance;
-        [ProtoMember(7)] public LiveMethods LiveMethods = new LiveMethods();
+        [ProtoMember(6)] public Audio Audio;
+        [ProtoMember(7)] public Guidance[] Guidance;
+        [ProtoMember(8)] public LiveMethods LiveMethods = new LiveMethods();
     }
 
     [ProtoContract]

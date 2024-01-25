@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VRage.Utils;
 
-namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo
+namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 {
     partial class HeartDefinitions
     {

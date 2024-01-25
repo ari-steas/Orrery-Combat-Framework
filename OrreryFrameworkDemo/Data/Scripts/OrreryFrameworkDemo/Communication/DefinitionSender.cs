@@ -41,5 +41,10 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 MyLog.Default.WriteLineAndConsole($"OrreryDefinition [{ModContext.ModName}]: Sent definitions & returning to sleep.");
             }
         }
+
+        protected override void UnloadData()
+        {
+            MyAPIGateway.Utilities.UnregisterMessageHandler(DefinitionMessageId, InputHandler);
+        }
     }
 }

@@ -4,8 +4,8 @@
     {
         internal HeartDefinitions()
         {
-            LoadWeaponDefinitions();
-            LoadAmmoDefinitions();
+            LoadWeaponDefinitions(ExampleWeapon);
+            LoadAmmoDefinitions(ExampleProjectile);
         }
     }
 }

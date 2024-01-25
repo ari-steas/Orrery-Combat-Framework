@@ -9,7 +9,7 @@ using VRage.ModAPI;
 
 namespace Heart_Module.Data.Scripts.HeartModule
 {
-    [MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation, priority: int.MinValue)]
+    [MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation, priority: int.MaxValue)]
     internal class HeartLoad : MySessionComponentBase
     {
         CriticalHandle handle;
