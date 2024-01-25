@@ -2,10 +2,7 @@
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces.Terminal;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using VRage.Utils;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 

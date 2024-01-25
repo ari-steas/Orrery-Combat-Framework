@@ -1,4 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule;
+using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
@@ -24,7 +25,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
     public partial class SorterWeaponLogic : MyGameLogicComponent
     {
         internal IMyConveyorSorter SorterWep;
-        internal SerializableWeaponDefinition Definition;
+        internal WeaponDefinitionBase Definition;
         public readonly Guid HeartSettingsGUID = new Guid("06edc546-3e42-41f3-bc72-1d640035fbf2");
         public const int HeartSettingsUpdateCount = 60 * 1 / 10;
         int SyncCountdown;
@@ -48,7 +49,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public readonly uint Id;
         public int CurrentAmmo { get; private set; } = 0;
 
-        public SorterWeaponLogic(IMyConveyorSorter sorterWeapon, SerializableWeaponDefinition definition, uint id)
+        public SorterWeaponLogic(IMyConveyorSorter sorterWeapon, WeaponDefinitionBase definition, uint id)
         {
             sorterWeapon.GameLogic = this;
             Init(sorterWeapon.GetObjectBuilder());
@@ -154,9 +155,13 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     Vector3D muzzlePos = muzzleMatrix.Translation;
 
                     for (int j = 0; j < Definition.Loading.ProjectilesPerBarrel; j++)
-                    { 
+                    {
                         SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ProjectileDefinitionManager.GetDefinition(CurrentAmmo).Ungrouped.Recoil, muzzleMatrix.Translation);
                         Projectile newProjectile = ProjectileManager.I.AddProjectile(CurrentAmmo, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
+                        
+                        if (newProjectile == null) // Emergency fail
+                            return;
+
                         if (newProjectile.Guidance != null)
                         {
                             if (this is SorterTurretLogic)
@@ -348,7 +353,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 LoadDefaultSettings();
                 return false;
             }
-                
+
 
             string rawData;
             if (!SorterWep.Storage.TryGetValue(HeartSettingsGUID, out rawData))

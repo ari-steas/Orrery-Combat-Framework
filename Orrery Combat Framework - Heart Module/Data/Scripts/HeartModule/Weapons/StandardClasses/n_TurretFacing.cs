@@ -1,9 +1,7 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Network;
 using ProtoBuf;
 using Sandbox.ModAPI;
-using System;
 using System.Collections.Generic;
-using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
 {

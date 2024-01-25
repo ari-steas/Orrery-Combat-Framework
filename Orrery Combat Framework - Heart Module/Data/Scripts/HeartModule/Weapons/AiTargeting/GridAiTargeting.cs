@@ -1,11 +1,9 @@
 using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Sandbox.Game.Entities;
-using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRageMath;
@@ -79,7 +77,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                 {
                     manualTarget = keenTargeting.GetTarget(Grid);
                     if (manualTarget is IMyCubeGrid)
-                        PrimaryGridTarget = (IMyCubeGrid) manualTarget;
+                        PrimaryGridTarget = (IMyCubeGrid)manualTarget;
                     else
                         PrimaryGridTarget = null;
                 }

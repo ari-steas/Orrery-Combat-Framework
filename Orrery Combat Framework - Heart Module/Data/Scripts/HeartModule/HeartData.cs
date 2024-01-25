@@ -3,8 +3,6 @@ using Heart_Module.Data.Scripts.HeartModule.Network;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
-using VRage.Game.Entity;
-using VRage.Game;
 using VRage.Game.ModAPI;
 
 namespace Heart_Module.Data.Scripts.HeartModule

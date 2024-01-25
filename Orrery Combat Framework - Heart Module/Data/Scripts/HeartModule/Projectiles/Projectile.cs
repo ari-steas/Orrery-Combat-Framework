@@ -1,14 +1,10 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
-using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
-using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
-using VRage.Game.Entity;
 using VRage.Game.ModAPI;
-using VRage.ModAPI;
 using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
@@ -17,7 +13,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
     {
         #region Definition Values
         public uint Id { get; private set; }
-        public readonly SerializableProjectileDefinition Definition;
+        public readonly ProjectileDefinitionBase Definition;
         public readonly int DefinitionId;
         Dictionary<string, object> Overrides = new Dictionary<string, object>();
         public Vector3D InheritedVelocity;
@@ -109,15 +105,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 Definition.PhysicalProjectile.MaxLifetime = 1 / 60f;
 
             RemainingImpacts = Definition.Damage.MaxImpacts;
-
-            if (Definition.Guidance.Length > 0)
-                Guidance = new ProjectileGuidance(this);
         }
 
         public void TickUpdate(float delta)
         {
             if ((Definition.PhysicalProjectile.MaxTrajectory != -1 && Definition.PhysicalProjectile.MaxTrajectory < DistanceTravelled) || (Definition.PhysicalProjectile.MaxLifetime != -1 && Definition.PhysicalProjectile.MaxLifetime < Age))
                 QueueDispose();
+
+            if (Guidance == null && Definition.Guidance.Length > 0)
+                Guidance = new ProjectileGuidance(this);
 
             Age += delta;
             if (!IsHitscan)
