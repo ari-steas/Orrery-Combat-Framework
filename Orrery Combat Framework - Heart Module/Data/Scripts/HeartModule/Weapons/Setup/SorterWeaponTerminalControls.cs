@@ -1,8 +1,11 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Weapons;
+﻿using Heart_Module.Data.Scripts.HeartModule;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.Setup;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces.Terminal;
 using System;
+using System.Collections.Generic;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
 using VRage.Utils;
@@ -33,7 +36,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
     public static class SorterWeaponTerminalControls
     {
         const string IdPrefix = "ModularHeartMod_"; // highly recommended to tag your properties/actions like this to avoid colliding with other mods'
-
         static bool Done = false;
 
         // just to clarify, don't store your states/values here, those should be per block and not static.
@@ -47,6 +49,28 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             CreateControls();
             CreateActions(context);
             CreateProperties();
+
+            MyAPIGateway.TerminalControls.CustomControlGetter += CustomControlGetter;
+        }
+
+        private static void CustomControlGetter(IMyTerminalBlock block, List<IMyTerminalControl> controls)
+        {
+            SorterWeaponLogic logic = block?.GameLogic?.GetAs<SorterWeaponLogic>();
+            if (logic == null)
+                return;
+
+            foreach (var control in controls)
+            {
+                if (control.Id == (IdPrefix + "HeartAmmoComboBox")) // Set ammos based on availability
+                {
+                    ((IMyTerminalControlCombobox) control).ComboBoxContent = (list) =>
+                    {
+                        for (int i = 0; i < logic.Definition.Loading.Ammos.Length; i++)
+                            list.Add(new MyTerminalControlComboBoxItem() { Key = ProjectileDefinitionManager.GetId(logic.Definition.Loading.Ammos[i]), Value = MyStringId.GetOrCompute(logic.Definition.Loading.Ammos[i]) });
+                    };
+                    break;
+                }
+            }
         }
 
         static bool CustomVisibleCondition(IMyTerminalBlock b)
@@ -104,25 +128,25 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                    (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Shoot = v
                    );
             }
-            {
-                var ControlComboBox = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlCombobox, IMyConveyorSorter>(IdPrefix + "HeartControlComboBox");
-                ControlComboBox.Title = MyStringId.GetOrCompute("Control Type");
-                ControlComboBox.Tooltip = MyStringId.GetOrCompute("HeartControlComboBoxDesc");
-                ControlComboBox.SupportsMultipleBlocks = true;
-                ControlComboBox.Visible = CustomVisibleCondition;
-
-                // Link the combobox to the Terminal_Heart_ControlComboBox property
-                ControlComboBox.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_ControlType_ComboBox;
-                ControlComboBox.Setter = (b, key) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_ControlType_ComboBox = key;
-                ControlComboBox.ComboBoxContent = (list) =>
-                {
-                    list.Add(new MyTerminalControlComboBoxItem() { Key = 0, Value = MyStringId.GetOrCompute("Value A") });
-                    list.Add(new MyTerminalControlComboBoxItem() { Key = 1, Value = MyStringId.GetOrCompute("Value B") });
-                    list.Add(new MyTerminalControlComboBoxItem() { Key = 2, Value = MyStringId.GetOrCompute("Value C") });
-                };
-
-                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(ControlComboBox);
-            }
+            //{
+            //    var ControlComboBox = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlCombobox, IMyConveyorSorter>(IdPrefix + "HeartControlComboBox");
+            //    ControlComboBox.Title = MyStringId.GetOrCompute("Control Type");
+            //    ControlComboBox.Tooltip = MyStringId.GetOrCompute("HeartControlComboBoxDesc");
+            //    ControlComboBox.SupportsMultipleBlocks = true;
+            //    ControlComboBox.Visible = CustomVisibleCondition;
+            //
+            //    // Link the combobox to the Terminal_Heart_ControlComboBox property
+            //    ControlComboBox.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_ControlType_ComboBox;
+            //    ControlComboBox.Setter = (b, key) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_ControlType_ComboBox = key;
+            //    ControlComboBox.ComboBoxContent = (list) =>
+            //    {
+            //        list.Add(new MyTerminalControlComboBoxItem() { Key = 0, Value = MyStringId.GetOrCompute("Value A") });
+            //        list.Add(new MyTerminalControlComboBoxItem() { Key = 1, Value = MyStringId.GetOrCompute("Value B") });
+            //        list.Add(new MyTerminalControlComboBoxItem() { Key = 2, Value = MyStringId.GetOrCompute("Value C") });
+            //    };
+            //
+            //    MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(ControlComboBox);
+            //}
             {
                 var AmmoComboBox = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlCombobox, IMyConveyorSorter>(IdPrefix + "HeartAmmoComboBox");
                 AmmoComboBox.Title = MyStringId.GetOrCompute("Ammo Type");
@@ -131,14 +155,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 AmmoComboBox.Visible = CustomVisibleCondition;
 
                 // Link the combobox to the Terminal_Heart_AmmoComboBox property
-                AmmoComboBox.Getter = (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_AmmoComboBox;
+                AmmoComboBox.Getter = (b) => (long)b?.GameLogic?.GetAs<SorterWeaponLogic>().CurrentAmmoId;
                 AmmoComboBox.Setter = (b, key) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_AmmoComboBox = key;
-                AmmoComboBox.ComboBoxContent = (list) =>
-                {
-                    list.Add(new MyTerminalControlComboBoxItem() { Key = 0, Value = MyStringId.GetOrCompute("Value A") });
-                    list.Add(new MyTerminalControlComboBoxItem() { Key = 1, Value = MyStringId.GetOrCompute("Value B") });
-                    list.Add(new MyTerminalControlComboBoxItem() { Key = 2, Value = MyStringId.GetOrCompute("Value C") });
-                };
+                //AmmoComboBox.ComboBoxContent = HeartData.I.AmmoComboBoxSetter; // Set combo box based on what's open
 
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(AmmoComboBox);
             }
