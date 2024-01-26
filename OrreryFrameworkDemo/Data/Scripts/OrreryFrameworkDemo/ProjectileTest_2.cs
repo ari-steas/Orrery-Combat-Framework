@@ -5,9 +5,9 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 {
     partial class HeartDefinitions
     {
-        ProjectileDefinitionBase ExampleProjectile => new ProjectileDefinitionBase()
+        ProjectileDefinitionBase ExampleProjectile2 => new ProjectileDefinitionBase()
         {
-            Name = "TestProjectile",
+            Name = "TestProjectile2",
             Ungrouped = new Ungrouped()
             {
                 ReloadPowerUsage = 0,
@@ -39,7 +39,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 TrailFadeTime = 0f,
                 TrailLength = 8,
                 TrailWidth = 0.5f,
-                TrailColor = new VRageMath.Vector4(61, 24, 24, 200),
+                TrailColor = new VRageMath.Vector4(0, 0, 100, 200),
                 //AttachedParticle = "Smoke_Missile",
                 ImpactParticle = "MaterialHit_Metal",
                 VisibleChance = 1f,
