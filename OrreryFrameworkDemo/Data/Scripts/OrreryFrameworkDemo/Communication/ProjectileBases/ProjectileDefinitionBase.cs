@@ -19,14 +19,15 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
     {
         public ProjectileDefinitionBase() { }
 
-        [ProtoMember(1, IsRequired = true)] public string Name;
-        [ProtoMember(2, IsRequired = true)] public Ungrouped Ungrouped;
-        [ProtoMember(3, IsRequired = true)] public Damage Damage;
-        [ProtoMember(4, IsRequired = true)] public PhysicalProjectile PhysicalProjectile;
-        [ProtoMember(5, IsRequired = true)] public Visual Visual;
-        [ProtoMember(6, IsRequired = true)] public Audio Audio;
-        [ProtoMember(7, IsRequired = true)] public Guidance[] Guidance;
-        [ProtoMember(8, IsRequired = true)] public LiveMethods LiveMethods = new LiveMethods();
+        [ProtoMember(99)] public int InternalId = 0; // TODO: Deterministic weapon IDs to avoid syncing )))
+        [ProtoMember(1)] public string Name;
+        [ProtoMember(2)] public Ungrouped Ungrouped;
+        [ProtoMember(3)] public Damage Damage;
+        [ProtoMember(4)] public PhysicalProjectile PhysicalProjectile;
+        [ProtoMember(5)] public Visual Visual;
+        [ProtoMember(6)] public Audio Audio;
+        [ProtoMember(7)] public Guidance[] Guidance;
+        [ProtoMember(8)] public LiveMethods LiveMethods = new LiveMethods();
     }
 
     [ProtoContract]

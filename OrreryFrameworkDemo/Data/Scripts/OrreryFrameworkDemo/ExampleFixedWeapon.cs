@@ -1,61 +1,57 @@
 ﻿using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.WeaponBases;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 {
     partial class HeartDefinitions
     {
-        WeaponDefinitionBase ExampleTurretWeapon => new WeaponDefinitionBase()
+        WeaponDefinitionBase ExampleFixedWeapon => new WeaponDefinitionBase()
         {
             Targeting = new Targeting()
             {
-                MaxTargetingRange = 1000,
                 MinTargetingRange = 0,
+                MaxTargetingRange = 1000,
                 CanAutoShoot = true,
                 RetargetTime = -1,
                 AimTolerance = 0.0175f,
-                IFF = Targeting.IFF_Enum.TargetEnemies,
-                TargetTypes = Targeting.TargetType_Enum.TargetGrids | Targeting.TargetType_Enum.TargetProjectiles | Targeting.TargetType_Enum.TargetCharacters,
             },
             Assignments = new Assignments()
             {
-                BlockSubtype = "TestWeaponTurret",
-                MuzzleSubpart = "TestEv",
-                ElevationSubpart = "TestEv",
-                AzimuthSubpart = "TestAz",
+                BlockSubtype = "TestWeapon",
+                MuzzleSubpart = "",
+                ElevationSubpart = "",
+                AzimuthSubpart = "",
                 DurabilityModifier = 1,
                 InventoryIconName = "",
                 Muzzles = new string[]
                 {
                     "muzzle01",
-                    "muzzle02",
                 },
             },
             Hardpoint = new Hardpoint()
             {
-                AzimuthRate = 0.5f,
-                ElevationRate = 0.5f,
+                AzimuthRate = 0.01f,
+                ElevationRate = 0.01f,
                 MaxAzimuth = (float)Math.PI,
                 MinAzimuth = (float)-Math.PI,
-                MaxElevation = (float)Math.PI,
-                MinElevation = -0.1745f,
-                HomeAzimuth = 0,
-                HomeElevation = 0,
-                IdlePower = 10,
-                ShotInaccuracy = 0.0025f,
+                MaxElevation = (float)Math.PI / 4,
+                MinElevation = (float)-Math.PI / 4,
+                IdlePower = 0,
+                ShotInaccuracy = 0.0175f,
                 LineOfSightCheck = true,
                 ControlRotation = true,
             },
             Loading = new Loading()
             {
-                RateOfFire = 10,
+                Ammos = new string[]
+                {
+                    ExampleProjectile2.Name,
+                },
+
+                RateOfFire = 15,
                 BarrelsPerShot = 1,
-                ProjectilesPerBarrel = 1,
-                ReloadTime = 2,
+                ProjectilesPerBarrel = 10,
+                ReloadTime = 0,
                 DelayUntilFire = 0,
 
                 MaxReloads = -1,
