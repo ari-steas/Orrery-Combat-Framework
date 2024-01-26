@@ -55,6 +55,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public override MatrixD CalcMuzzleMatrix(int id, bool local = false)
         {
+            if (Definition.Assignments.Muzzles.Length == 0 || !MuzzleDummies.ContainsKey(Definition.Assignments.Muzzles[id]))
+                return SorterWep.WorldMatrix;
+
             try
             {
                 MyEntitySubpart azSubpart = SubpartManager.GetSubpart((MyEntity)SorterWep, Definition.Assignments.AzimuthSubpart);
