@@ -19,6 +19,7 @@ using VRage.ObjectBuilders;
 using VRage.Sync;
 using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding;
+using static VRage.Game.MyObjectBuilder_BehaviorTreeDecoratorNode;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
@@ -53,6 +54,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         /// The current ammo index.
         /// </summary>
         public int CurrentAmmoIdx { get; private set; } = 0;
+        public int CurrentAmmoId => ProjectileDefinitionManager.GetId(Definition.Loading.Ammos[CurrentAmmoIdx]);
 
         public SorterWeaponLogic(IMyConveyorSorter sorterWeapon, WeaponDefinitionBase definition, uint id)
         {
@@ -70,6 +72,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             Magazines = new WeaponLogic_Magazines(definition.Loading, getInventoryFunc);
 
             Id = id;
+            
         }
 
 
@@ -165,8 +168,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 HasLoS &&                                   // Has line of sight
                 CurrentAmmoIdx < Definition.Loading.Ammos.Length)   // Ammo index is valid
             {
-                int currentAmmoId = ProjectileDefinitionManager.GetId(Definition.Loading.Ammos[CurrentAmmoIdx]); // Get actual ammo ID
-                if (currentAmmoId == -1)
+                if (CurrentAmmoId == -1)
                 {
                     SoftHandle.RaiseSyncException($"Invalid ammo type on weapon! Subtype: {SorterWep.BlockDefinition.SubtypeId} | AmmoId: {Definition.Loading.Ammos[CurrentAmmoIdx]}");
                     return;
@@ -182,8 +184,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
                     for (int j = 0; j < Definition.Loading.ProjectilesPerBarrel; j++)
                     {
-                        SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ProjectileDefinitionManager.GetDefinition(currentAmmoId).Ungrouped.Recoil, muzzleMatrix.Translation);
-                        Projectile newProjectile = ProjectileManager.I.AddProjectile(currentAmmoId, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
+                        SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ProjectileDefinitionManager.GetDefinition(CurrentAmmoId).Ungrouped.Recoil, muzzleMatrix.Translation);
+                        Projectile newProjectile = ProjectileManager.I.AddProjectile(CurrentAmmoId, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
                         
                         if (newProjectile == null) // Emergency fail
                             return;
@@ -244,6 +246,15 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             // and combinedMatrix.Forward is the forward direction in world coordinates.
         }
 
+        // TODO: Add error handling!
+        public void SetAmmo(int AmmoId)
+        {
+            CurrentAmmoIdx = Array.IndexOf(Definition.Loading.Ammos, ProjectileDefinitionManager.GetDefinition(AmmoId).Name);
+            Settings.AmmoLoadedState = AmmoId;
+
+            Magazines.EmptyMagazines();
+        }
+
         #region Terminal controls
 
         public bool Terminal_Heart_Shoot
@@ -273,6 +284,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             set
             {
+                SetAmmo((int)value);
+
                 Settings.AmmoLoadedState = value;
                 if (AmmoLoadedState != null)
                 {
@@ -285,20 +298,15 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public void CycleAmmoType(bool forward)
         {
-            // Assuming you have a predefined list of ammo types
-            long[] ammoTypes = { 0, 1, 2 }; // Replace with actual ammo type keys
-            int currentIndex = Array.IndexOf(ammoTypes, Terminal_Heart_AmmoComboBox);
-
             if (forward)
-            {
-                currentIndex = (currentIndex + 1) % ammoTypes.Length;
-            }
+                CurrentAmmoIdx = (CurrentAmmoIdx + 1) % Definition.Loading.Ammos.Length;
             else
-            {
-                currentIndex = (currentIndex - 1 + ammoTypes.Length) % ammoTypes.Length;
-            }
+                CurrentAmmoIdx = (CurrentAmmoIdx - 1 + Definition.Loading.Ammos.Length) % Definition.Loading.Ammos.Length;
 
-            Terminal_Heart_AmmoComboBox = ammoTypes[currentIndex];
+            Settings.AmmoLoadedState = CurrentAmmoId;
+            Magazines.EmptyMagazines();
+
+            Terminal_Heart_AmmoComboBox = CurrentAmmoId;
         }
 
         public long Terminal_ControlType_ComboBox
@@ -401,6 +409,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
                     Settings.AmmoLoadedState = loadedSettings.AmmoLoadedState;
                     AmmoLoadedState.Value = Settings.AmmoLoadedState;
+                    CurrentAmmoIdx = Array.IndexOf(Definition.Loading.Ammos, ProjectileDefinitionManager.GetDefinition((int) Settings.AmmoLoadedState).Name);
 
                     Settings.ControlTypeState = loadedSettings.ControlTypeState;
                     ControlTypeState.Value = Settings.ControlTypeState;

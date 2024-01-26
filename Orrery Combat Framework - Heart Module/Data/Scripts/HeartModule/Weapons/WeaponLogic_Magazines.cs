@@ -71,5 +71,12 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 }
             }
         }
+
+        public void EmptyMagazines()
+        {
+            ShotsInMag = 0;
+            MagazinesLoaded = 0;
+            NextReloadTime = Definition.ReloadTime;
+        }
     }
 }

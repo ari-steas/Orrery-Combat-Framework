@@ -63,7 +63,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
                     return;
                 HeartData.I.IsPaused = false;
 
-                if (!HeartData.I.DidFirstInit) // Definitions can load after blocks do :)
+                if (!HeartData.I.IsLoaded) // Definitions can load after blocks do :)
                 {
                     MyAPIGateway.Entities.OnEntityAdd += OnEntityAdd;
                     MyAPIGateway.Entities.OnEntityRemove += OnEntityRemove;
@@ -73,7 +73,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
                         OnEntityAdd(ent);
                         return false;
                     });
-                    HeartData.I.DidFirstInit = true;
+                    HeartData.I.IsLoaded = true;
 
                     HideSorterControls.DoOnce();
                     SorterWeaponTerminalControls.DoOnce(ModContext);
