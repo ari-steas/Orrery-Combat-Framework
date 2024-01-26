@@ -15,10 +15,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface
 
         public override void UpdateAfterSimulation()
         {
-            if (MyAPIGateway.Utilities.IsDedicated)
+            if (MyAPIGateway.Utilities.IsDedicated || !HeartData.I.IsLoaded)
                 Visible = false;
             else
                 Visible = MyAPIGateway.Gui.GetCurrentScreen == MyTerminalPageEnum.None;
+
+            if (!Visible)
+                return;
 
             IMyEntity controlledEntity = MyAPIGateway.Session.Player?.Controller?.ControlledEntity?.Entity?.GetTopMostParent(); // Get the currently controlled grid.
             if (!(controlledEntity is IMyCubeGrid))

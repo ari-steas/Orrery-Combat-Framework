@@ -11,11 +11,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
     {
         public static WeaponDefinitionManager I;
 
-        private Dictionary<string, WeaponDefinitionBase> Definitions = new Dictionary<string, WeaponDefinitionBase>()
-        {
-            //["TestWeapon"] = DefaultDefinition,
-            //["TestWeaponTurret"] = TurretDefinition,
-        };
+        private Dictionary<string, WeaponDefinitionBase> Definitions = new Dictionary<string, WeaponDefinitionBase>();
 
         public static WeaponDefinitionBase GetDefinition(string subTypeId)
         {
