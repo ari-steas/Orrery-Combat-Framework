@@ -38,6 +38,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             }
             else
                 I.Definitions.Add(definition.Assignments.BlockSubtype, definition);
+
+            HeartData.I.OrreryBlockCategory.AddBlock(definition.Assignments.BlockSubtype);
             HeartData.I.Log.Log($"Registered weapon definition {definition.Assignments.BlockSubtype}.");
         }
 

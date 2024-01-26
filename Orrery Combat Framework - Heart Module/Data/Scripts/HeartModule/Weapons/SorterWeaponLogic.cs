@@ -6,6 +6,7 @@ using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
+using Sandbox.Definitions;
 using Sandbox.Game.EntityComponents;
 using Sandbox.ModAPI;
 using System;
@@ -73,7 +74,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             Magazines = new WeaponLogic_Magazines(definition.Loading, getInventoryFunc);
 
             Id = id;
-            
         }
 
 
