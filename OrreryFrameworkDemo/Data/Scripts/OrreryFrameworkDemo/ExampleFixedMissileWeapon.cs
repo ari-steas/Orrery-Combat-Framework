@@ -5,7 +5,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 {
     partial class HeartDefinitions
     {
-        WeaponDefinitionBase ExampleFixedWeapon => new WeaponDefinitionBase()
+        WeaponDefinitionBase ExampleFixedMissileWeapon => new WeaponDefinitionBase()
         {
             Targeting = new Targeting()
             {
@@ -17,7 +17,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             Assignments = new Assignments()
             {
-                BlockSubtype = "SC_AR_Nimrod",
+                BlockSubtype = "OCF_ExampleMissileLauncher",
                 MuzzleSubpart = "",
                 ElevationSubpart = "",
                 AzimuthSubpart = "",
@@ -45,12 +45,12 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             {
                 Ammos = new string[]
                 {
-                    ExampleAmmoProjectile.Name,
+                    ExampleAmmoMissile.Name,
                 },
 
-                RateOfFire = 15,
+                RateOfFire = 20,
                 BarrelsPerShot = 1,
-                ProjectilesPerBarrel = 10,
+                ProjectilesPerBarrel = 1,
                 ReloadTime = 0,
                 DelayUntilFire = 0,
 

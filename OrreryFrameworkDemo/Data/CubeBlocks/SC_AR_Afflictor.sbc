@@ -9,11 +9,7 @@
 			<DisplayName>Afflictor Burst Cannon</DisplayName>
 			<Icon>Textures\GUI\Icons\Cubes\SC_AR_Afflictor.dds</Icon>
 			<Description>
-				Short Range Turret: [3km]
-				Magazine Capacity: [4]
-				Rate of Fire: [250]
-				Reload Speed: [4 seconds]
-				Ammunition: [900m/s,] [Kinetic]
+				Le Shotgun
 			</Description>
 			<CubeSize>Large</CubeSize>
 			<BlockTopology>TriangleMesh</BlockTopology>

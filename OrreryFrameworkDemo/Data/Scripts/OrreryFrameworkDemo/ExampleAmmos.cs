@@ -108,7 +108,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             PhysicalProjectile = new PhysicalProjectile()
             {
                 Velocity = 800,
-                Acceleration = 0,
+                Acceleration = 1,
                 Health = 1,
                 MaxTrajectory = 4000,
                 MaxLifetime = -1,
@@ -136,30 +136,30 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             Guidance = new Guidance[]
             {
-                //new Guidance()
-                //{
-                //    TriggerTime = 0,
-                //    ActiveDuration = -1,
-                //    UseAimPrediction = false,
-                //    TurnRate = -1.5f,
-                //    IFF = 2,
-                //    DoRaycast = false,
-                //    CastCone = 0.5f,
-                //    CastDistance = 1000,
-                //    Velocity = 50f,
-                //},
-                //new Guidance()
-                //{
-                //    TriggerTime = 1f,
-                //    ActiveDuration = -1f,
-                //    UseAimPrediction = false,
-                //    TurnRate = 3.14f,
-                //    IFF = 2,
-                //    DoRaycast = false,
-                //    CastCone = 0.5f,
-                //    CastDistance = 1000,
-                //    Velocity = -1f,
-                //}
+                new Guidance()
+                {
+                    TriggerTime = 0,
+                    ActiveDuration = -1,
+                    UseAimPrediction = false,
+                    TurnRate = -1.5f,
+                    IFF = 2,
+                    DoRaycast = false,
+                    CastCone = 0.5f,
+                    CastDistance = 1000,
+                    Velocity = 50f,
+                },
+                new Guidance()
+                {
+                    TriggerTime = 1f,
+                    ActiveDuration = -1f,
+                    UseAimPrediction = false,
+                    TurnRate = 3.14f,
+                    IFF = 2,
+                    DoRaycast = false,
+                    CastCone = 0.5f,
+                    CastDistance = 1000,
+                    Velocity = -1f,
+                }
             },
             LiveMethods = new LiveMethods()
             {
@@ -194,7 +194,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 Health = 1,
                 MaxTrajectory = 4000,
                 MaxLifetime = -1,
-                IsHitscan = false,
+                IsHitscan = true,
             },
             Visual = new Visual()
             {

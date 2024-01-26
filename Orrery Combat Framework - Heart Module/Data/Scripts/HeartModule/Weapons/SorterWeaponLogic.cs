@@ -70,8 +70,23 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             // Provide a function to get the inventory
             Func<IMyInventory> getInventoryFunc = () => sorterWeapon.GetInventory();
 
-            // Pass the function as an argument to WeaponLogic_Magazines
             Magazines = new WeaponLogic_Magazines(definition.Loading, getInventoryFunc);
+
+            // Load the initial ammo type here based on the Terminal_Heart_AmmoComboBox
+            long initialAmmoType = Terminal_Heart_AmmoComboBox;
+            int initialAmmoId = ProjectileDefinitionManager.GetId(Definition.Loading.Ammos[CurrentAmmoIdx]);
+
+            // Check if the initial ammo type is valid
+            if (initialAmmoId != -1)
+            {
+                CurrentAmmoIdx = initialAmmoId;
+            }
+            else
+            {
+                // Handle the case where the initial ammo type is invalid or not found
+                // Set a default ammo type (e.g., the first one in the list)
+                CurrentAmmoIdx = 0;
+            }
 
             Id = id;
         }
@@ -169,6 +184,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 HasLoS &&                                   // Has line of sight
                 CurrentAmmoIdx < Definition.Loading.Ammos.Length)   // Ammo index is valid
             {
+                //MyLog.Default.WriteLine($"CurrentAmmoIdx: {CurrentAmmoIdx}, Ammo Count: {Definition.Loading.Ammos.Length}"); // Debug statement
+
                 if (CurrentAmmoId == -1)
                 {
                     SoftHandle.RaiseSyncException($"Invalid ammo type on weapon! Subtype: {SorterWep.BlockDefinition.SubtypeId} | AmmoId: {Definition.Loading.Ammos[CurrentAmmoIdx]}");
@@ -187,7 +204,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     {
                         SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ProjectileDefinitionManager.GetDefinition(CurrentAmmoId).Ungrouped.Recoil, muzzleMatrix.Translation);
                         Projectile newProjectile = ProjectileManager.I.AddProjectile(CurrentAmmoId, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
-                        
+
                         if (newProjectile == null) // Emergency fail
                             return;
 

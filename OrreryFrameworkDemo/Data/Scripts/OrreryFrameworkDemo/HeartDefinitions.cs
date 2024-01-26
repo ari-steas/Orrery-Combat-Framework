@@ -4,8 +4,8 @@
     {
         internal HeartDefinitions()
         {
-            LoadWeaponDefinitions(ExampleTurretWeapon, ExampleFixedWeapon);
-            LoadAmmoDefinitions(ExampleProjectile, ExampleProjectile2);
+            LoadWeaponDefinitions(ExampleTurretWeapon, ExampleFixedProjWeapon, ExampleFixedBeamWeapon, ExampleFixedMissileWeapon);         //todo tell the user that they forgot to add stuff here when they get an error
+            LoadAmmoDefinitions(ExampleAmmoProjectile, ExampleAmmoMissile, ExampleAmmoBeam);
         }
     }
 }
