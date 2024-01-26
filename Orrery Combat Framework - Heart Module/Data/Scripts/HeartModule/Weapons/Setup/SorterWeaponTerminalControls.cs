@@ -164,7 +164,15 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 AmmoComboBox.Visible = CustomVisibleCondition;
 
                 // Link the combobox to the Terminal_Heart_AmmoComboBox property
-                AmmoComboBox.Getter = (b) => (long)b?.GameLogic?.GetAs<SorterWeaponLogic>().CurrentAmmoId;
+                AmmoComboBox.Getter = (b) =>
+                {
+                    var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+                    if (logic != null && logic.CurrentAmmoIdx >= 0 && logic.CurrentAmmoIdx < logic.Definition.Loading.Ammos.Length)
+                    {
+                        return (long)ProjectileDefinitionManager.GetId(logic.Definition.Loading.Ammos[logic.CurrentAmmoIdx]);
+                    }
+                    return -1; // Return a default value (e.g., -1) when the index is out of bounds
+                };
                 AmmoComboBox.Setter = (b, key) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_AmmoComboBox = key;
                 //AmmoComboBox.ComboBoxContent = HeartData.I.AmmoComboBoxSetter; // Set combo box based on what's open
 
