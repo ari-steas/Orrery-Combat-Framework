@@ -15,7 +15,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
 
         public GuiBlockCategoryHelper(string Name, string Id)
         {
-            MyAPIGateway.Utilities.ShowMessage("", "try1");
             category = new MyGuiBlockCategoryDefinition
             {
                 Id = new MyDefinitionId(typeof(MyObjectBuilder_GuiBlockCategoryDefinition), Id),
@@ -28,8 +27,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
 
         public void AddBlock(string subtypeId)
         {
-            MyAPIGateway.Utilities.ShowMessage("", "try2");
-
             if (!category.ItemIds.Contains(subtypeId))
                 category.ItemIds.Add(subtypeId);
             //foreach (var _cat in MyDefinitionManager.Static.GetCategories().Values)
