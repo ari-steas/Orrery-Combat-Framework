@@ -5,7 +5,7 @@
         internal HeartDefinitions()
         {
             LoadWeaponDefinitions(ExampleTurretWeapon, ExampleFixedWeapon);
-            LoadAmmoDefinitions(ExampleProjectile);
+            LoadAmmoDefinitions(ExampleProjectile, ExampleProjectile2);
         }
     }
 }

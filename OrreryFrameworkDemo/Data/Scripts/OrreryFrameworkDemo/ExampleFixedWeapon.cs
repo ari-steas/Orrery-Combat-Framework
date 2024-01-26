@@ -1,9 +1,5 @@
 ﻿using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.WeaponBases;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 {
@@ -49,7 +45,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             {
                 Ammos = new string[]
                 {
-                    ExampleProjectile.Name,
+                    ExampleProjectile2.Name,
                 },
 
                 RateOfFire = 15,
