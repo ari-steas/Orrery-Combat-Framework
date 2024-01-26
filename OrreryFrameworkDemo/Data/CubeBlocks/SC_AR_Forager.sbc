@@ -8,14 +8,7 @@
       </Id>
       <DisplayName>Forager Coilgun</DisplayName>
       <Description>
-        Long Ranged Fixed: [15km]
-        Magazine Capacity: [1]
-        Reload Speed: [15 seconds]
-        Ammunition:  [Energy]
-        High Power Hunter: [8000m/s]
-        Damages the target.
-        Low Power Hunter: [2500m/s]
-        Shieldpen BONK, no damage.
+        Le Railgun
       </Description>
       <Icon>Textures\GUI\Icons\Cubes\SC_Forager_remodel.dds</Icon>
       <CubeSize>Large</CubeSize>
