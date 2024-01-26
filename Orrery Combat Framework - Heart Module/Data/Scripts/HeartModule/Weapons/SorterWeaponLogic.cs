@@ -233,6 +233,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public virtual MatrixD CalcMuzzleMatrix(int id, bool local = false)
         {
+            if (Definition.Assignments.Muzzles.Length == 0 || !MuzzleDummies.ContainsKey(Definition.Assignments.Muzzles[id]))
+                return SorterWep.WorldMatrix;
+
             MatrixD dummyMatrix = MuzzleDummies[Definition.Assignments.Muzzles[id]].Matrix; // Dummy's local matrix
             if (local)
                 return dummyMatrix;
