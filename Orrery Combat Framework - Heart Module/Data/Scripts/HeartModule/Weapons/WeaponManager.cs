@@ -5,6 +5,7 @@ using Sandbox.ModAPI;
 using System.Collections.Generic;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
+using VRage.ModAPI;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
@@ -118,6 +119,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             if (HeartData.I.IsSuspended) return;
 
+            if (!MyAPIGateway.Utilities.IsDedicated)
+                HandleMouseShoot();
+
             update25Ct++;
 
             foreach (var weapon in ActiveWeapons.Values) // I cannot be asked to tease apart how to seperate updating on weapons
@@ -130,6 +134,20 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 Update25();
                 update25Ct = 0;
             }
+        }
+
+        public void HandleMouseShoot()
+        {
+            IMyEntity controlledEntity = MyAPIGateway.Session.Player?.Controller?.ControlledEntity?.Entity?.GetTopMostParent(); // Get the currently controlled grid.
+            IMyCubeGrid grid = controlledEntity as IMyCubeGrid;
+            if (grid == null || !GridWeapons.ContainsKey(grid))
+                return;
+
+            bool isMousePressed = MyAPIGateway.Input.IsMousePressed(VRage.Input.MyMouseButtonsEnum.Left);
+
+            foreach (var weapon in GridWeapons[grid])
+                if (weapon.Terminal_Heart_MouseShoot && weapon.Terminal_Heart_Shoot != isMousePressed)
+                    weapon.Terminal_Heart_Shoot = isMousePressed;
         }
 
         public void Update25()

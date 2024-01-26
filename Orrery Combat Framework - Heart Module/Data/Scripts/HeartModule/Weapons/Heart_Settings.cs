@@ -46,5 +46,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
 
         [ProtoMember(14)]
         public bool PreferUniqueTargetState;
+
+        [ProtoMember(15)]
+        public bool MouseShootState;
     }
 }

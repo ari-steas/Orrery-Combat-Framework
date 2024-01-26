@@ -128,6 +128,15 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                    (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Shoot = v
                    );
             }
+            {
+                ControlsHelper.CreateToggle<SorterWeaponLogic>(
+                   "HeartWeaponMouseShoot",
+                   "Toogle Mouse Shoot",
+                   "TargetGridsDesc",
+                   (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_MouseShoot,
+                   (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_MouseShoot = v
+                   );
+            }
             //{
             //    var ControlComboBox = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlCombobox, IMyConveyorSorter>(IdPrefix + "HeartControlComboBox");
             //    ControlComboBox.Title = MyStringId.GetOrCompute("Control Type");
@@ -297,6 +306,30 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         if (logic != null)
                         {
                             sb.Append(logic.Terminal_Heart_Shoot ? "Shoot ON" : "Shoot OFF");
+                        }
+                    },
+                    @"Textures\GUI\Icons\Actions\Toggle.dds"
+                    );
+            }
+            {
+                ControlsHelper.CreateAction<SorterWeaponLogic>(
+                    "ToggleMouseShoot",
+                    "Toggle Mouse Shoot",
+                    (b) =>
+                    {
+                        var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+                        if (logic != null)
+                        {
+                            // Toggle the "Shoot" option and ensure sync
+                            logic.Terminal_Heart_MouseShoot = !logic.Terminal_Heart_MouseShoot; // Toggling the value
+                        }
+                    },
+                    (b, sb) =>
+                    {
+                        var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
+                        if (logic != null)
+                        {
+                            sb.Append(logic.Terminal_Heart_MouseShoot ? "Mouse ON" : "Mouse OFF");
                         }
                     },
                     @"Textures\GUI\Icons\Actions\Toggle.dds"

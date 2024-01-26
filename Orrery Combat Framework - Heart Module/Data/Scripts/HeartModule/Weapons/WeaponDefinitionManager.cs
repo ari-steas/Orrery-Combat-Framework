@@ -15,7 +15,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public static WeaponDefinitionBase GetDefinition(string subTypeId)
         {
-            MyLog.Default.WriteLine(subTypeId + " | " + HasDefinition(subTypeId) + " | " + (I.Definitions[subTypeId] == null));
+            //MyLog.Default.WriteLine(subTypeId + " | " + HasDefinition(subTypeId) + " | " + (I.Definitions[subTypeId] == null));
             if (HasDefinition(subTypeId))
                 return I.Definitions[subTypeId];
             return null;
@@ -38,6 +38,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             }
             else
                 I.Definitions.Add(definition.Assignments.BlockSubtype, definition);
+
+            HeartData.I.OrreryBlockCategory.AddBlock(definition.Assignments.BlockSubtype);
             HeartData.I.Log.Log($"Registered weapon definition {definition.Assignments.BlockSubtype}.");
         }
 

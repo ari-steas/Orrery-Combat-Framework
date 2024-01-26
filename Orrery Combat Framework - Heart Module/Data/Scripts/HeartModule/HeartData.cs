@@ -1,5 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Network;
+using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
@@ -26,5 +27,6 @@ namespace Heart_Module.Data.Scripts.HeartModule
         public bool DegradedMode = false;
         public Action<IMyCubeGrid> OnGridAdd = (a) => { };
         public Action<IMyCubeGrid> OnGridRemove = (a) => { };
+        public GuiBlockCategoryHelper OrreryBlockCategory = new GuiBlockCategoryHelper("[Orrery Combat Framework]", "OrreryBlockCategory");
     }
 }
