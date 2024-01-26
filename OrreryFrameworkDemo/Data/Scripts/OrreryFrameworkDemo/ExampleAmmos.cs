@@ -10,9 +10,9 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             Name = "ExampleAmmoProjectile",
             Ungrouped = new Ungrouped()
             {
-                ReloadPowerUsage = 0,
-                Recoil = 0,
-                Impulse = 0,
+                ReloadPowerUsage = 10,
+                Recoil = 1000,
+                Impulse = 1000,
             },
             Damage = new Damage()
             {
@@ -89,7 +89,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 
         ProjectileDefinitionBase ExampleAmmoMissile => new ProjectileDefinitionBase()
         {
-            Name = "ExampleAmmoProjectile",
+            Name = "ExampleAmmoMissile",
             Ungrouped = new Ungrouped()
             {
                 ReloadPowerUsage = 0,
@@ -171,7 +171,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 
         ProjectileDefinitionBase ExampleAmmoBeam => new ProjectileDefinitionBase()
         {
-            Name = "ExampleAmmoProjectile",
+            Name = "ExampleAmmoBeam",
             Ungrouped = new Ungrouped()
             {
                 ReloadPowerUsage = 0,
