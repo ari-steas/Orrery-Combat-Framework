@@ -17,7 +17,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             Assignments = new Assignments()
             {
-                BlockSubtype = "TestWeapon",
+                BlockSubtype = "SC_AR_Nimrod",
                 MuzzleSubpart = "",
                 ElevationSubpart = "",
                 AzimuthSubpart = "",
@@ -25,7 +25,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 InventoryIconName = "",
                 Muzzles = new string[]
                 {
-                    "muzzle01",
+                    "muzzle_projectile_1",
                 },
             },
             Hardpoint = new Hardpoint()
