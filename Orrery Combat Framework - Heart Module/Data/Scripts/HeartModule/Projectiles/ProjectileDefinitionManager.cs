@@ -59,6 +59,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
             I.Definitions.Add(definition);
             I.DefinitionNamePairs.Add(definition.Name, I.Definitions.Count - 1);
+            HeartData.I.Log.Log($"Registered projectile definition {definition.Name}.");
         }
 
         public static int DefinitionCount()
