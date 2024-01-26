@@ -1,6 +1,7 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule;
 using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting;
@@ -47,7 +48,11 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public MatrixD MuzzleMatrix { get; internal set; } = MatrixD.Identity;
         public bool HasLoS = false;
         public readonly uint Id = uint.MaxValue;
-        public int CurrentAmmo { get; private set; } = 0;
+
+        /// <summary>
+        /// The current ammo index.
+        /// </summary>
+        public int CurrentAmmoIdx { get; private set; } = 0;
 
         public SorterWeaponLogic(IMyConveyorSorter sorterWeapon, WeaponDefinitionBase definition, uint id)
         {
@@ -60,11 +65,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             // Provide a function to get the inventory
             Func<IMyInventory> getInventoryFunc = () => sorterWeapon.GetInventory();
-
-            if (definition.Ammos.Length > 0) // Handling for if ammo is nonexistent
-                CurrentAmmo = ProjectileDefinitionManager.GetId(definition.Ammos[0]);
-            else
-                SoftHandle.RaiseException($"No ammos set for weapon! Subtype: {sorterWeapon.BlockDefinition.SubtypeId}", typeof(SorterWeaponLogic));
 
             // Pass the function as an argument to WeaponLogic_Magazines
             Magazines = new WeaponLogic_Magazines(definition.Loading, getInventoryFunc);
@@ -114,16 +114,23 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public override void UpdateAfterSimulation()
         {
-            if (MarkedForClose || Id == uint.MaxValue)
-                return;
+            try
+            {
+                if (MarkedForClose || Id == uint.MaxValue)
+                    return;
 
-            MuzzleMatrix = CalcMuzzleMatrix(0); // Set stored MuzzleMatrix
-            Magazines.UpdateReload();
-            HasLoS = HasLineOfSight();
+                MuzzleMatrix = CalcMuzzleMatrix(0); // Set stored MuzzleMatrix
+                Magazines.UpdateReload();
+                HasLoS = HasLineOfSight();
 
-            if (!SorterWep.IsWorking) // Don't try shoot if the turret is disabled
-                return;
-            TryShoot();
+                if (!SorterWep.IsWorking) // Don't try shoot if the turret is disabled
+                    return;
+                TryShoot();
+            }
+            catch (Exception ex)
+            {
+                SoftHandle.RaiseException(ex, typeof(SorterWeaponLogic));
+            }
         }
 
         const float GridCheckRange = 200;
@@ -152,8 +159,19 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (lastShoot < 60)
                 lastShoot += Definition.Loading.RateOfFire;
 
-            if ((ShootState.Value || AutoShoot) && Magazines.IsLoaded && lastShoot >= 60 && HasLoS)
+            if ((ShootState.Value || AutoShoot) &&          // Is allowed to shoot
+                Magazines.IsLoaded &&                       // Is mag loaded
+                lastShoot >= 60 &&                          // Fire rate is ready
+                HasLoS &&                                   // Has line of sight
+                CurrentAmmoIdx < Definition.Loading.Ammos.Length)   // Ammo index is valid
             {
+                int currentAmmoId = ProjectileDefinitionManager.GetId(Definition.Loading.Ammos[CurrentAmmoIdx]); // Get actual ammo ID
+                if (currentAmmoId == -1)
+                {
+                    SoftHandle.RaiseSyncException($"Invalid ammo type on weapon! Subtype: {SorterWep.BlockDefinition.SubtypeId} | AmmoId: {Definition.Loading.Ammos[CurrentAmmoIdx]}");
+                    return;
+                }
+
                 for (int i = nextBarrel; i < Definition.Loading.BarrelsPerShot + nextBarrel; i++)
                 {
                     nextBarrel++;
@@ -164,8 +182,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
                     for (int j = 0; j < Definition.Loading.ProjectilesPerBarrel; j++)
                     {
-                        SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ProjectileDefinitionManager.GetDefinition(CurrentAmmo).Ungrouped.Recoil, muzzleMatrix.Translation);
-                        Projectile newProjectile = ProjectileManager.I.AddProjectile(CurrentAmmo, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
+                        SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ProjectileDefinitionManager.GetDefinition(currentAmmoId).Ungrouped.Recoil, muzzleMatrix.Translation);
+                        Projectile newProjectile = ProjectileManager.I.AddProjectile(currentAmmoId, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
                         
                         if (newProjectile == null) // Emergency fail
                             return;

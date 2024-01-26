@@ -52,6 +52,11 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             Loading = new Loading()
             {
+                Ammos = new string[]
+                {
+                    ExampleProjectile.Name,
+                },
+
                 RateOfFire = 10,
                 BarrelsPerShot = 1,
                 ProjectilesPerBarrel = 1,

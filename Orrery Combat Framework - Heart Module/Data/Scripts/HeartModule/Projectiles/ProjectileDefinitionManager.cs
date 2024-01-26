@@ -1,4 +1,5 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Sandbox.ModAPI;
 using System.Collections.Generic;
 using VRage.Utils;
@@ -17,6 +18,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 return I.Definitions[id];
             else
                 return null;
+        }
+
+        public static ProjectileDefinitionBase GetDefinition(string name)
+        {
+            return GetDefinition(GetId(name));
         }
 
         public static int GetId(string definitionName)
@@ -45,6 +51,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public static void RegisterDefinition(ProjectileDefinitionBase definition)
         {
+            if (I.DefinitionNamePairs.ContainsKey(definition.Name))
+            {
+                HeartData.I.Log.Log($"Duplicate ammo definition {definition.Name}! Skipping...");
+                return;
+            }
+
             I.Definitions.Add(definition);
             I.DefinitionNamePairs.Add(definition.Name, I.Definitions.Count - 1);
         }

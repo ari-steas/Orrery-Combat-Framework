@@ -79,7 +79,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (!ShouldConsiderTarget(HeartUtils.GetRelationsBetweeenGrids(SorterWep.CubeGrid, targetGrid)))
                 return false;
 
-            Vector3D? intercept = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, SorterWep.CubeGrid.LinearVelocity, targetGrid, CurrentAmmo); // Check if it can even hit
+            Vector3D? intercept = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, SorterWep.CubeGrid.LinearVelocity, targetGrid, CurrentAmmoIdx); // Check if it can even hit
             return intercept != null && CanAimAtTarget(intercept.Value); // All possible negatives have been filtered out
         }
 
@@ -91,7 +91,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (!ShouldConsiderTarget(HeartUtils.GetRelationsBetweenGridAndPlayer(SorterWep.CubeGrid, targetCharacter.ControllerInfo?.ControllingIdentityId)))
                 return false;
 
-            Vector3D? intercept = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, SorterWep.CubeGrid.LinearVelocity, targetCharacter, CurrentAmmo); // Check if it can even hit
+            Vector3D? intercept = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, SorterWep.CubeGrid.LinearVelocity, targetCharacter, CurrentAmmoIdx); // Check if it can even hit
             return intercept != null && CanAimAtTarget(intercept.Value); // All possible negatives have been filtered out
         }
 
@@ -113,7 +113,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (!ShouldConsiderTarget(relations))
                 return false;
 
-            Vector3D? intercept = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, SorterWep.CubeGrid.LinearVelocity, targetProjectile, CurrentAmmo); // Check if it can even hit
+            Vector3D? intercept = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, SorterWep.CubeGrid.LinearVelocity, targetProjectile, CurrentAmmoIdx); // Check if it can even hit
             return intercept != null && CanAimAtTarget(intercept.Value); // All possible negatives have been filtered out
         }
 
