@@ -15,7 +15,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public static WeaponDefinitionBase GetDefinition(string subTypeId)
         {
-            MyLog.Default.WriteLine(subTypeId + " | " + HasDefinition(subTypeId) + " | " + (I.Definitions[subTypeId] == null));
+            //MyLog.Default.WriteLine(subTypeId + " | " + HasDefinition(subTypeId) + " | " + (I.Definitions[subTypeId] == null));
             if (HasDefinition(subTypeId))
                 return I.Definitions[subTypeId];
             return null;

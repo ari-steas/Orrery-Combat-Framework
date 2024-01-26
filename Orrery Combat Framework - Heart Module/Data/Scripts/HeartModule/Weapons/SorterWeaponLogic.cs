@@ -17,6 +17,7 @@ using VRage.Game.ModAPI.Network;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
 using VRage.Sync;
+using VRage.Utils;
 using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding;
 using static VRage.Game.MyObjectBuilder_BehaviorTreeDecoratorNode;
@@ -246,10 +247,13 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             // and combinedMatrix.Forward is the forward direction in world coordinates.
         }
 
-        // TODO: Add error handling!
         public void SetAmmo(int AmmoId)
         {
-            CurrentAmmoIdx = Array.IndexOf(Definition.Loading.Ammos, ProjectileDefinitionManager.GetDefinition(AmmoId).Name);
+            int i = Array.IndexOf(Definition.Loading.Ammos, ProjectileDefinitionManager.GetDefinition(AmmoId)?.Name);
+            if (i == -1)
+                return;
+
+            CurrentAmmoIdx = i;
             Settings.AmmoLoadedState = AmmoId;
 
             Magazines.EmptyMagazines();
@@ -257,11 +261,23 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         #region Terminal controls
 
+        public bool Terminal_Heart_MouseShoot
+        {
+            get
+            {
+                return Settings.MouseShootState;
+            }
+
+            set
+            {
+                Settings.MouseShootState = value;
+            }
+        }
+
         public bool Terminal_Heart_Shoot
         {
             get
             {
-
                 return Settings.ShootState;
             }
 
