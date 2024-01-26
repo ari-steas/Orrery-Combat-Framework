@@ -42,7 +42,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
         public override void UpdateAfterSimulation()
         {
-            if (!HeartData.I.DidFirstInit)
+            if (!HeartData.I.IsLoaded)
                 return;
 
             if (turret?.SorterWep == null || turret.SorterWep.MarkedForClose || turret.SorterWep.CubeGrid != block.CubeGrid)

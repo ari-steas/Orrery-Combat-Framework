@@ -13,7 +13,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
         public static HeartData I;
         public const ushort HeartNetworkId = (ushort)(65198749845 % ushort.MaxValue);
 
-        public bool DidFirstInit = false;
+        public bool IsLoaded = false;
         public bool IsSuspended = false;
         public bool IsPaused = false;
         public HeartNetwork Net = new HeartNetwork();

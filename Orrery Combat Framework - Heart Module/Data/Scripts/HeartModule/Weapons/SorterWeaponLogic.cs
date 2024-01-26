@@ -19,6 +19,7 @@ using VRage.ObjectBuilders;
 using VRage.Sync;
 using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding;
+using static VRage.Game.MyObjectBuilder_BehaviorTreeDecoratorNode;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
@@ -297,20 +298,15 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public void CycleAmmoType(bool forward)
         {
-            // Assuming you have a predefined list of ammo types
-            long[] ammoTypes = { 0, 1, 2 }; // Replace with actual ammo type keys
-            int currentIndex = Array.IndexOf(ammoTypes, Terminal_Heart_AmmoComboBox);
-
             if (forward)
-            {
-                currentIndex = (currentIndex + 1) % ammoTypes.Length;
-            }
+                CurrentAmmoIdx = (CurrentAmmoIdx + 1) % Definition.Loading.Ammos.Length;
             else
-            {
-                currentIndex = (currentIndex - 1 + ammoTypes.Length) % ammoTypes.Length;
-            }
+                CurrentAmmoIdx = (CurrentAmmoIdx - 1 + Definition.Loading.Ammos.Length) % Definition.Loading.Ammos.Length;
 
-            Terminal_Heart_AmmoComboBox = ammoTypes[currentIndex];
+            Settings.AmmoLoadedState = CurrentAmmoId;
+            Magazines.EmptyMagazines();
+
+            Terminal_Heart_AmmoComboBox = CurrentAmmoId;
         }
 
         public long Terminal_ControlType_ComboBox
@@ -413,6 +409,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
                     Settings.AmmoLoadedState = loadedSettings.AmmoLoadedState;
                     AmmoLoadedState.Value = Settings.AmmoLoadedState;
+                    CurrentAmmoIdx = Array.IndexOf(Definition.Loading.Ammos, ProjectileDefinitionManager.GetDefinition((int) Settings.AmmoLoadedState).Name);
 
                     Settings.ControlTypeState = loadedSettings.ControlTypeState;
                     ControlTypeState.Value = Settings.ControlTypeState;

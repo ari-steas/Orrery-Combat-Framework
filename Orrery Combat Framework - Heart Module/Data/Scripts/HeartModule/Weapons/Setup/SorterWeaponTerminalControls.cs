@@ -79,16 +79,16 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             return b?.GameLogic?.GetAs<SorterWeaponLogic>() != null;
         }
 
+        /// <summary>
+        /// Return the ammo name of a given projectile.
+        /// </summary>
+        /// <param name="ammoKey"></param>
+        /// <returns></returns>
         private static string GetAmmoTypeName(long ammoKey)
         {
-            // Implementation
-            switch (ammoKey)
-            {
-                case 0: return "Value A";
-                case 1: return "Value B";
-                case 2: return "Value C";
-                default: return "Unknown Ammo";
-            }
+            if (ProjectileDefinitionManager.HasDefinition((int)ammoKey))
+                return ProjectileDefinitionManager.GetDefinition((int)ammoKey).Name;
+            return "Unknown Ammo";
         }
 
         private static string GetControlTypeName(long controltypeKey)
@@ -302,15 +302,15 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     @"Textures\GUI\Icons\Actions\Toggle.dds"
                     );
             }
-            {
-                ControlsHelper.CreateAction<SorterWeaponLogic>(
-                    "HeartControlType",
-                    "Control Type",
-                    (b) => b.GameLogic.GetAs<SorterWeaponLogic>().CycleControlType(true),
-                    (b, sb) => sb.Append($"{GetControlTypeName(b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_ControlType_ComboBox)}"),
-                    @"Textures\GUI\Icons\Actions\MovingObjectToggle.dds"
-                    );
-            }
+            //{
+            //    ControlsHelper.CreateAction<SorterWeaponLogic>(
+            //        "HeartControlType",
+            //        "Control Type",
+            //        (b) => b.GameLogic.GetAs<SorterWeaponLogic>().CycleControlType(true),
+            //        (b, sb) => sb.Append($"{GetControlTypeName(b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_ControlType_ComboBox)}"),
+            //        @"Textures\GUI\Icons\Actions\MovingObjectToggle.dds"
+            //        );
+            //}
             {
                 ControlsHelper.CreateAction<SorterWeaponLogic>(
                     "HeartCycleAmmoForward",
