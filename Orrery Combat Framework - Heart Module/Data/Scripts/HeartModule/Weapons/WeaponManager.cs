@@ -1,4 +1,5 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
+﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System.Collections.Generic;
@@ -95,6 +96,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 GridWeapons.TryGetValue(sorter.CubeGrid, out values);
                 values?.Remove(logic);
             };
+
+            if (logic.Id == uint.MaxValue)
+            {
+                logic.Close();
+                CriticalHandle.ThrowCriticalException(new System.Exception($"Failed to initialize weapon! Subtype: {sorter.BlockDefinition.SubtypeId}"), typeof(WeaponManager));
+            }
         }
 
         protected override void UnloadData()
@@ -110,16 +117,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         public override void UpdateAfterSimulation()
         {
             if (HeartData.I.IsSuspended) return;
-            if (!DidFirstInit) // Definitions can load after blocks do :)
-            {
-                MyAPIGateway.Entities.GetEntities(null, ent =>
-                {
-                    if (ent is IMyCubeGrid)
-                        OnGridAdd(ent as IMyCubeGrid);
-                    return false;
-                });
-                DidFirstInit = true;
-            }
 
             update25Ct++;
 

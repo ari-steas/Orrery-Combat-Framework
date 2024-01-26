@@ -18,7 +18,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
         [ProtoMember(5)] public Loading Loading;
         [ProtoMember(6)] public Audio Audio;
         [ProtoMember(7)] public Visuals Visuals;
-        [ProtoMember(8)] public string[] Ammos; // TODO
     }
 
     [ProtoContract]

@@ -1,4 +1,6 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
+﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using System;
 using System.Collections.Generic;
 using VRage.Utils;
@@ -34,9 +36,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 return;
 
             if (I.Definitions.ContainsKey(definition.Assignments.BlockSubtype))
+            {
                 I.Definitions[definition.Assignments.BlockSubtype] = definition;
+                HeartData.I.Log.Log($"Duplicate weapon definition {definition.Assignments.BlockSubtype}! Overriding...");
+            }
             else
                 I.Definitions.Add(definition.Assignments.BlockSubtype, definition);
+            HeartData.I.Log.Log($"Registered weapon definition {definition.Assignments.BlockSubtype}.");
         }
 
         public static int DefinitionCount()
