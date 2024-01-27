@@ -95,7 +95,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             {
                 ReloadPowerUsage = 0,
                 Recoil = 0,
-                Impulse = 0,
+                Impulse = 5000,
                 ShotsPerMagazine = 10,
             },
             Damage = new Damage()
@@ -143,7 +143,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     TriggerTime = 0,
                     ActiveDuration = -1,
                     UseAimPrediction = false,
-                    TurnRate = 5f,
+                    TurnRate = -1f,
                     IFF = 2,
                     DoRaycast = false,
                     CastCone = 0.5f,
@@ -154,7 +154,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 {
                     TriggerTime = 1f,
                     ActiveDuration = -1f,
-                    UseAimPrediction = false,
+                    UseAimPrediction = true,
                     TurnRate = 3.14f,
                     IFF = 2,
                     DoRaycast = false,

@@ -105,6 +105,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 Definition.PhysicalProjectile.MaxLifetime = 1 / 60f;
 
             RemainingImpacts = Definition.Damage.MaxImpacts;
+
+            if (Definition.Guidance.Length > 0)
+                Guidance = new ProjectileGuidance(this);
         }
 
         public void TickUpdate(float delta)

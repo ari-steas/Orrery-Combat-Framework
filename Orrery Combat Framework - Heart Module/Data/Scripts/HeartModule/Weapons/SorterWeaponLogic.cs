@@ -225,9 +225,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         Projectile newProjectile = ProjectileManager.I.AddProjectile(CurrentAmmoId, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
 
                         if (!string.IsNullOrEmpty(Definition.Audio.ShootSound))
-                        {
                             MyVisualScriptLogicProvider.PlaySingleSoundAtPosition(Definition.Audio.ShootSound, muzzlePos);
-                        }
 
                         if (newProjectile == null) // Emergency fail
                             return;
