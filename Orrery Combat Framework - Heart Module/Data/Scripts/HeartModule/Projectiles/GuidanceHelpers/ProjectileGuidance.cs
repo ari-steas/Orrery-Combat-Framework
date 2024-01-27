@@ -66,7 +66,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
 
                 if (currentStage.UseAimPrediction)
                     leadPos = TargetingHelper.InterceptionPoint(projectile.Position, projectile.InheritedVelocity, targetEntity.PositionComp.WorldAABB.Center, targetEntity.Physics.LinearVelocity, projectile.Velocity) ?? leadPos;
-                DebugDraw.AddPoint(leadPos, Color.Wheat, 0);
+                //DebugDraw.AddPoint(leadPos, Color.Wheat, 0);
                 StepDirecion((leadPos - projectile.Position).Normalized(), currentStage.TurnRate, delta);
             }
         }
