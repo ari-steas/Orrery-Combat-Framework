@@ -48,11 +48,13 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     ExampleAmmoProjectile.Name,
                 },
 
-                RateOfFire = 15,
+                RateOfFire = 2,
                 BarrelsPerShot = 1,
                 ProjectilesPerBarrel = 1,
                 ReloadTime = 6,
-                DelayUntilFire = 0,
+                DelayUntilFire = 1,
+                DelayAfterBurst = 2f,
+                ShotsInBurst = 3,
 
                 MaxReloads = -1,
             },

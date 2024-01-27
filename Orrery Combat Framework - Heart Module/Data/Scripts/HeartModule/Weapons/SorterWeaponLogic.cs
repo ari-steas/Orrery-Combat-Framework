@@ -177,6 +177,14 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         float lastShoot = 0;
         internal bool AutoShoot = false;
         int nextBarrel = 0; // For alternate firing
+        private bool spinUp = false;
+        private float spinUpCounter = 0f;
+        private bool delayApplied = false;
+        int shotsInCurrentBurst = 0;
+        // Add these class-level fields
+        private int burstShotCount = 0;
+        private float burstTimer = 0f;
+
         public virtual void TryShoot()
         {
             if (lastShoot < 60)
@@ -188,7 +196,22 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 HasLoS &&                                   // Has line of sight
                 CurrentAmmoIdx < Definition.Loading.Ammos.Length)   // Ammo index is valid
             {
-                //MyLog.Default.WriteLine($"CurrentAmmoIdx: {CurrentAmmoIdx}, Ammo Count: {Definition.Loading.Ammos.Length}"); // Debug statement
+                if (!delayApplied && Definition.Loading.DelayUntilFire > 0) // Check for the initial delay only if not already applied
+                {
+                    delayApplied = true;
+                    return; // Delay without shooting this time
+                }
+
+                if (!spinUp)
+                {
+                    spinUpCounter += 1 / 60f;
+                    if (spinUpCounter >= Definition.Loading.DelayUntilFire)
+                    {
+                        spinUp = true;
+                        spinUpCounter = 0f; // Reset the spin-up counter
+                    }
+                    return; // Spin-up without shooting this time
+                }
 
                 if (CurrentAmmoId == -1)
                 {
@@ -196,42 +219,59 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     return;
                 }
 
-                for (int i = nextBarrel; i < Definition.Loading.BarrelsPerShot + nextBarrel; i++)
+                if (burstTimer <= 0)
                 {
-                    nextBarrel++;
-                    nextBarrel %= Definition.Assignments.Muzzles.Length;
+                    int shotsToFire = Math.Min(Definition.Loading.ShotsInBurst, Magazines.ShotsInMag); // Calculate how many shots to fire in this burst
 
-                    MatrixD muzzleMatrix = CalcMuzzleMatrix(nextBarrel);
-                    Vector3D muzzlePos = muzzleMatrix.Translation;
-
-                    for (int j = 0; j < Definition.Loading.ProjectilesPerBarrel; j++)
+                    for (int b = 0; b < shotsToFire; b++)
                     {
-                        SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ProjectileDefinitionManager.GetDefinition(CurrentAmmoId).Ungrouped.Recoil, muzzleMatrix.Translation);
-                        Projectile newProjectile = ProjectileManager.I.AddProjectile(CurrentAmmoId, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
-
-                        if (!string.IsNullOrEmpty(Definition.Audio.ShootSound))
+                        for (int i = nextBarrel; i < Definition.Loading.BarrelsPerShot + nextBarrel; i++)
                         {
-                            MyVisualScriptLogicProvider.PlaySingleSoundAtPosition(Definition.Audio.ShootSound, muzzlePos);
+                            nextBarrel++;
+                            nextBarrel %= Definition.Assignments.Muzzles.Length;
+
+                            MatrixD muzzleMatrix = CalcMuzzleMatrix(nextBarrel);
+                            Vector3D muzzlePos = muzzleMatrix.Translation;
+
+                            for (int j = 0; j < Definition.Loading.ProjectilesPerBarrel; j++)
+                            {
+                                SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ProjectileDefinitionManager.GetDefinition(CurrentAmmoId).Ungrouped.Recoil, muzzleMatrix.Translation);
+                                Projectile newProjectile = ProjectileManager.I.AddProjectile(CurrentAmmoId, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
+
+                                if (!string.IsNullOrEmpty(Definition.Audio.ShootSound))
+                                {
+                                    MyVisualScriptLogicProvider.PlaySingleSoundAtPosition(Definition.Audio.ShootSound, muzzlePos);
+                                }
+
+                                if (newProjectile == null) // Emergency fail
+                                    return;
+
+                                if (newProjectile.Guidance != null)
+                                {
+                                    if (this is SorterTurretLogic)
+                                        newProjectile.Guidance.SetTarget(((SorterTurretLogic)this).TargetEntity);
+                                    else
+                                        newProjectile.Guidance.SetTarget(WeaponManagerAi.I.GetTargeting(SorterWep.CubeGrid)?.PrimaryGridTarget);
+                                }
+                            }
+                            lastShoot -= 60f;
+
+                            MuzzleFlash();
                         }
-
-
-                        if (newProjectile == null) // Emergency fail
-                            return;
-
-                        if (newProjectile.Guidance != null)
-                        {
-                            if (this is SorterTurretLogic)
-                                newProjectile.Guidance.SetTarget(((SorterTurretLogic)this).TargetEntity);
-                            else
-                                newProjectile.Guidance.SetTarget(WeaponManagerAi.I.GetTargeting(SorterWep.CubeGrid)?.PrimaryGridTarget);
-                        }
+                        nextBarrel++;
+                        Magazines.UseShot(MuzzleMatrix.Translation);
                     }
-                    lastShoot -= 60f;
-
-                    MuzzleFlash();
+                    burstTimer = 1f / Definition.Loading.RateOfFire; // Adjust burstTimer to match shots per second
                 }
-                nextBarrel++;
-                Magazines.UseShot(MuzzleMatrix.Translation);
+                else
+                {
+                    burstTimer -= 1 / 60f;
+                }
+            }
+            else
+            {
+                delayApplied = false; // Reset the delay after each shot when not shooting
+                spinUp = false; // Stop spinning up
             }
         }
 

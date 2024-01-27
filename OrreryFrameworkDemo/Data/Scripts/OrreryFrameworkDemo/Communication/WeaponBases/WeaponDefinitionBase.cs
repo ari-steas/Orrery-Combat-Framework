@@ -117,6 +117,10 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Wea
         [ProtoMember(7)] public int MaxReloads;
         [ProtoMember(8)] public float DelayUntilFire; // Seconds // TODO
         [ProtoMember(9)] public Resource[] Resources; // TODO
+        [ProtoMember(11)] public float DelayAfterBurst;
+        [ProtoMember(12)] public int ShotsInBurst;
+
+
 
         [ProtoContract]
         public struct Resource // TODO
