@@ -12,6 +12,7 @@ using Sandbox.Game.EntityComponents;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
+using System.Windows.Markup;
 using VRage.Audio;
 using VRage.Game;
 using VRage.Game.Components;
@@ -143,7 +144,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     return;
 
                 MuzzleMatrix = CalcMuzzleMatrix(0); // Set stored MuzzleMatrix
-                Magazines.UpdateReload();
+                Magazines.UpdateReload(CurrentAmmoId);
                 HasLoS = HasLineOfSight();
 
                 if (!SorterWep.IsWorking) // Don't try shoot if the turret is disabled
@@ -177,7 +178,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         float lastShoot = 0;
         internal bool AutoShoot = false;
         int nextBarrel = 0; // For alternate firing
-        private bool delayApplied = false;
         float delayCounter = 0f;
         float burstTimer = 0f;
 
@@ -186,23 +186,25 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (lastShoot < 60)
                 lastShoot += Definition.Loading.RateOfFire;
 
+            // Manage fire delay. If there is an easier way to do this, TODO implement
+            if ((ShootState.Value || AutoShoot) && Magazines.IsLoaded && delayCounter > 0)
+            {
+                if (delayCounter == Definition.Loading.DelayUntilFire && !string.IsNullOrEmpty(Definition.Audio.ShootSound))
+                    MyVisualScriptLogicProvider.PlaySingleSoundAtPosition(Definition.Audio.PreShootSound, SorterWep.GetPosition());
+                delayCounter -= 1 / 60f;
+            }
+            else if (!((ShootState.Value || AutoShoot) && Magazines.IsLoaded) && delayCounter <= 0 && Definition.Loading.DelayUntilFire > 0) // Check for the initial delay only if not already applied
+            {
+                delayCounter = Definition.Loading.DelayUntilFire;
+            }
+
             if ((ShootState.Value || AutoShoot) &&          // Is allowed to shoot
                 Magazines.IsLoaded &&                       // Is mag loaded
                 lastShoot >= 60 &&                          // Fire rate is ready
+                delayCounter <= 0 &&
                 HasLoS &&                                   // Has line of sight
                 CurrentAmmoIdx < Definition.Loading.Ammos.Length)   // Ammo index is valid
             {
-                if (!delayApplied && Definition.Loading.DelayUntilFire > 0) // Check for the initial delay only if not already applied
-                {
-                    delayApplied = true;
-                    delayCounter = Definition.Loading.DelayUntilFire;
-                }
-
-                if (delayCounter > 0)
-                {
-                    delayCounter -= 1 / 60f;
-                    return; // Keep delaying without shooting
-                }
 
                 if (CurrentAmmoId == -1)
                 {
@@ -210,53 +212,40 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     return;
                 }
 
-                if (burstTimer <= 0)
+                for (int i = 0; i < Definition.Loading.BarrelsPerShot; i++)
                 {
-                    for (int i = nextBarrel; i < Definition.Loading.BarrelsPerShot + nextBarrel; i++)
-                    {
-                        nextBarrel++;
-                        nextBarrel %= Definition.Assignments.Muzzles.Length;
-
-                        MatrixD muzzleMatrix = CalcMuzzleMatrix(nextBarrel);
-                        Vector3D muzzlePos = muzzleMatrix.Translation;
-
-                        for (int j = 0; j < Definition.Loading.ProjectilesPerBarrel; j++)
-                        {
-                            SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ProjectileDefinitionManager.GetDefinition(CurrentAmmoId).Ungrouped.Recoil, muzzleMatrix.Translation);
-                            Projectile newProjectile = ProjectileManager.I.AddProjectile(CurrentAmmoId, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
-
-                            if (!string.IsNullOrEmpty(Definition.Audio.ShootSound))
-                            {
-                                MyVisualScriptLogicProvider.PlaySingleSoundAtPosition(Definition.Audio.ShootSound, muzzlePos);
-                            }
-
-                            if (newProjectile == null) // Emergency fail
-                                return;
-
-                            if (newProjectile.Guidance != null)
-                            {
-                                if (this is SorterTurretLogic)
-                                    newProjectile.Guidance.SetTarget(((SorterTurretLogic)this).TargetEntity);
-                                else
-                                    newProjectile.Guidance.SetTarget(WeaponManagerAi.I.GetTargeting(SorterWep.CubeGrid)?.PrimaryGridTarget);
-                            }
-                        }
-                        lastShoot -= 60f;
-
-                        MuzzleFlash();
-                    }
                     nextBarrel++;
-                    Magazines.UseShot(MuzzleMatrix.Translation);
-                    burstTimer = 1f / Definition.Loading.RateOfFire;
+                    nextBarrel %= Definition.Assignments.Muzzles.Length;
+
+                    MatrixD muzzleMatrix = CalcMuzzleMatrix(nextBarrel);
+                    Vector3D muzzlePos = muzzleMatrix.Translation;
+
+                    for (int j = 0; j < Definition.Loading.ProjectilesPerBarrel; j++)
+                    {
+                        SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ProjectileDefinitionManager.GetDefinition(CurrentAmmoId).Ungrouped.Recoil, muzzleMatrix.Translation);
+                        Projectile newProjectile = ProjectileManager.I.AddProjectile(CurrentAmmoId, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
+
+                        if (!string.IsNullOrEmpty(Definition.Audio.ShootSound))
+                        {
+                            MyVisualScriptLogicProvider.PlaySingleSoundAtPosition(Definition.Audio.ShootSound, muzzlePos);
+                        }
+
+                        if (newProjectile == null) // Emergency fail
+                            return;
+
+                        if (newProjectile.Guidance != null)
+                        {
+                            if (this is SorterTurretLogic)
+                                newProjectile.Guidance.SetTarget(((SorterTurretLogic)this).TargetEntity);
+                            else
+                                newProjectile.Guidance.SetTarget(WeaponManagerAi.I.GetTargeting(SorterWep.CubeGrid)?.PrimaryGridTarget);
+                        }
+                    }
+                    lastShoot -= 60f;
+
+                    MuzzleFlash();
                 }
-                else
-                {
-                    burstTimer -= 1 / 60f;
-                }
-            }
-            else
-            {
-                delayApplied = false; // Reset the delay when not shooting
+                Magazines.UseShot(MuzzleMatrix.Translation);
             }
         }
 
@@ -278,9 +267,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     if (hitEffect.Loop)
                         hitEffect.Stop();
                 }
-
-                nextBarrel++;
-                nextBarrel %= Definition.Assignments.Muzzles.Length;
             }
         }
 

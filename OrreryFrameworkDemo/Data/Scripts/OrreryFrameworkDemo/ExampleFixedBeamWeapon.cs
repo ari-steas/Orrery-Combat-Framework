@@ -25,7 +25,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 InventoryIconName = "",
                 Muzzles = new string[]
                 {
-                    "muzzle_projectile_1",
+                    "muzzle_beam_01",
                 },
             },
             Hardpoint = new Hardpoint()

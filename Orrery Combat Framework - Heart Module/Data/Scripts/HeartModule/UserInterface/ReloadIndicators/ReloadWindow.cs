@@ -1,4 +1,5 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Weapons;
+﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using RichHudFramework.UI;
 using System;
 using System.Collections.Generic;
@@ -86,7 +87,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
                     targetStatus = "NO TARGET";
             }
 
-            string ammoStatus = $"{weapon.Magazines.ShotsInMag}/10"; // Placeholder value for max ammo
+            string ammoStatus = $"{weapon.Magazines.ShotsInMag}/{ProjectileDefinitionManager.GetDefinition(weapon.CurrentAmmoId).Ungrouped.ShotsPerMagazine}"; // Placeholder value for max ammo
             if (weapon.Magazines.ShotsInMag == 0)
                 ammoStatus = $"{Math.Round(weapon.Magazines.NextReloadTime, 1)}";
 

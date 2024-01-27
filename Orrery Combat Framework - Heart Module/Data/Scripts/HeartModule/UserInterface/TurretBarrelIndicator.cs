@@ -1,4 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Weapons;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting;
 using Sandbox.ModAPI;
 using VRage.Game;
 using VRage.Game.Components;
@@ -46,6 +47,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface
                 }
                 else
                 {
+                    var targeting = WeaponManagerAi.I.GetTargeting(weapon.SorterWep.CubeGrid);
+                    if (targeting != null && targeting.PrimaryGridTarget != null)
+                        dist = Vector3D.Distance(targeting.PrimaryGridTarget.GetPosition(), weapon.MuzzleMatrix.Translation);
                     texture = FixedMaterial;
                     color = FixedColor;
                 }

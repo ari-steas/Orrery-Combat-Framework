@@ -1,4 +1,5 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
+﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.Game;
 using System;
 using VRage.Game;
@@ -33,7 +34,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public float NextReloadTime = -1; // In seconds
         public int RemainingReloads;
 
-        public void UpdateReload()
+        public void UpdateReload(int ammoId)
         {
             if (RemainingReloads == 0)
                 return;
@@ -51,7 +52,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 MagazinesLoaded++;
                 RemainingReloads--;
                 NextReloadTime = Definition.ReloadTime;
-                ShotsInMag = 10; // TODO tie into ammo
+                ShotsInMag = ProjectileDefinitionManager.GetDefinition(ammoId).Ungrouped.ShotsPerMagazine; // TODO tie into ammo
             }
         }
 

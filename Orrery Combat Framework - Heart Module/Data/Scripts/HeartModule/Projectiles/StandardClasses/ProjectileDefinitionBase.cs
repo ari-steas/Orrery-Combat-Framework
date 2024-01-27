@@ -42,6 +42,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         /// Impulse of projectile, in Newtons
         /// </summary>
         [ProtoMember(3)] public int Impulse;
+        /// <summary>
+        /// Number of shots in single reload.
+        /// </summary>
+        [ProtoMember(4)] public int ShotsPerMagazine;
     }
 
     [ProtoContract]
