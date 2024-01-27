@@ -11,8 +11,9 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             Ungrouped = new Ungrouped()
             {
                 ReloadPowerUsage = 10,
-                Recoil = 1000,
-                Impulse = 1000,
+                Recoil = 5000,
+                Impulse = 5000,
+                ShotsPerMagazine = 5,
             },
             Damage = new Damage()
             {
@@ -95,6 +96,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 ReloadPowerUsage = 0,
                 Recoil = 0,
                 Impulse = 0,
+                ShotsPerMagazine = 10,
             },
             Damage = new Damage()
             {
@@ -177,6 +179,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 ReloadPowerUsage = 0,
                 Recoil = 0,
                 Impulse = 0,
+                ShotsPerMagazine = 1,
             },
             Damage = new Damage()
             {
