@@ -178,8 +178,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         float lastShoot = 0;
         internal bool AutoShoot = false;
         int nextBarrel = 0; // For alternate firing
-        float delayCounter = 0f;
-        float burstTimer = 0f;
+        public float delayCounter = 0f;
 
         public virtual void TryShoot()
         {

@@ -1,4 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using RichHudFramework.UI;
 using System;
@@ -76,6 +77,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
             if (entry == null)
                 entry = weaponStatus.Add("AWAIT INIT", weapon.Id);
 
+            ProjectileDefinitionBase projectileDef = ProjectileDefinitionManager.GetDefinition(weapon.CurrentAmmoId);
 
             string targetStatus = "";
             if (weapon is SorterTurretLogic)
@@ -87,9 +89,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
                     targetStatus = "NO TARGET";
             }
 
-            string ammoStatus = $"{weapon.Magazines.ShotsInMag}/{ProjectileDefinitionManager.GetDefinition(weapon.CurrentAmmoId).Ungrouped.ShotsPerMagazine}"; // Placeholder value for max ammo
+            string ammoStatus = $"{weapon.Magazines.ShotsInMag}/{projectileDef?.Ungrouped.ShotsPerMagazine}"; // Placeholder value for max ammo
             if (weapon.Magazines.ShotsInMag == 0)
                 ammoStatus = $"{Math.Round(weapon.Magazines.NextReloadTime, 1)}";
+            if (weapon.Definition.Loading.DelayUntilFire > 0)
+                ammoStatus += $" (Delay {Math.Round(weapon.delayCounter, 1)}s)";
 
             entry.Element.Text = $"{weapon.Id}: [{ammoStatus}] {targetStatus}";
         }
