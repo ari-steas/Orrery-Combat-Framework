@@ -77,7 +77,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
             if (entry == null)
                 entry = weaponStatus.Add("AWAIT INIT", weapon.Id);
 
-            ProjectileDefinitionBase projectileDef = ProjectileDefinitionManager.GetDefinition(weapon.CurrentAmmoId);
+            ProjectileDefinitionBase projectileDef = ProjectileDefinitionManager.GetDefinition(weapon.Magazines.SelectedAmmo);
 
             string targetStatus = "";
             if (weapon is SorterTurretLogic)
