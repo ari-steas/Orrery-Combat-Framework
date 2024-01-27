@@ -51,7 +51,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 RateOfFire = 15,
                 BarrelsPerShot = 1,
                 ProjectilesPerBarrel = 1,
-                ReloadTime = 10,
+                ReloadTime = 6,
                 DelayUntilFire = 0,
 
                 MaxReloads = -1,
@@ -60,7 +60,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             {
                 PreShootSound = "",
                 ShootSound = "PunisherNewFire",
-                ReloadSound = "",
+                ReloadSound = "PunisherNewReload",
                 RotationSound = "",
             },
             Visuals = new Visuals()

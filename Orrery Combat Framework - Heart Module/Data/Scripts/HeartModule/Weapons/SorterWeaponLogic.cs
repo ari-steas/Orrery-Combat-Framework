@@ -72,7 +72,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             // Provide a function to get the inventory
             Func<IMyInventory> getInventoryFunc = () => sorterWeapon.GetInventory();
 
-            Magazines = new WeaponLogic_Magazines(definition.Loading, getInventoryFunc);
+            // You need to provide the missing arguments for WeaponLogic_Magazines constructor here
+            Magazines = new WeaponLogic_Magazines(definition.Loading, definition.Audio, getInventoryFunc);
 
             // Load the initial ammo type here based on the Terminal_Heart_AmmoComboBox
             long initialAmmoType = Terminal_Heart_AmmoComboBox;
@@ -92,6 +93,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             Id = id;
         }
+
 
 
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
@@ -229,7 +231,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     MuzzleFlash();
                 }
                 nextBarrel++;
-                Magazines.UseShot();
+                Magazines.UseShot(MuzzleMatrix.Translation);
             }
         }
 

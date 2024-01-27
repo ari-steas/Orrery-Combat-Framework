@@ -17,6 +17,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public WeaponLogic_Magazines(Loading definition, Audio definitionaudio, Func<IMyInventory> getInventoryFunc, bool startLoaded = false)
         {
             Definition = definition;
+            DefinitionAudio = definitionaudio;
             GetInventoryFunc = getInventoryFunc;
             RemainingReloads = Definition.MaxReloads;
             NextReloadTime = Definition.ReloadTime;
@@ -32,7 +33,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public float NextReloadTime = -1; // In seconds
         public int RemainingReloads;
 
-        public void UpdateReload(WeaponDefinitionBase weaponDefinitionBase, Vector3D muzzlePos)
+        public void UpdateReload()
         {
             if (RemainingReloads == 0)
                 return;
@@ -51,11 +52,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 RemainingReloads--;
                 NextReloadTime = Definition.ReloadTime;
                 ShotsInMag = 10; // TODO tie into ammo
-
-                if (!string.IsNullOrEmpty(DefinitionAudio.ReloadSound))
-                {
-                    MyVisualScriptLogicProvider.PlaySingleSoundAtPosition(DefinitionAudio.ReloadSound, muzzlePos);
-                }
             }
         }
 
@@ -64,7 +60,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         /// <summary>
         /// Mark a bullet as fired.
         /// </summary>
-        public void UseShot()
+        public void UseShot(Vector3D muzzlePos)
         {
             ShotsInMag--;
             if (ShotsInMag <= 0)
@@ -77,6 +73,11 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 if (inventory.ContainItems(1, steelPlate))
                 {
                     inventory.RemoveItemsOfType(1, steelPlate);
+                }
+
+                if (!string.IsNullOrEmpty(DefinitionAudio.ReloadSound))
+                {
+                    MyVisualScriptLogicProvider.PlaySingleSoundAtPosition(DefinitionAudio.ReloadSound, muzzlePos);
                 }
             }
         }

@@ -25,7 +25,16 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 InventoryIconName = "",
                 Muzzles = new string[]
                 {
-                    "muzzle_projectile_1",
+                    "Muzzle_01",
+                    "Muzzle_02",
+                    "Muzzle_03",
+                    "Muzzle_04",
+                    "Muzzle_05",
+                    "Muzzle_06",
+                    "Muzzle_07",
+                    "Muzzle_08",
+                    "Muzzle_09",
+                    "Muzzle_10",
                 },
             },
             Hardpoint = new Hardpoint()
@@ -49,9 +58,9 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 },
 
                 RateOfFire = 20,
-                BarrelsPerShot = 1,
+                BarrelsPerShot = 2,
                 ProjectilesPerBarrel = 1,
-                ReloadTime = 0,
+                ReloadTime = 6,
                 DelayUntilFire = 0,
 
                 MaxReloads = -1,
