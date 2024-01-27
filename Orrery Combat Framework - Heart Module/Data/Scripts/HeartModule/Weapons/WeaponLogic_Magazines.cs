@@ -1,16 +1,20 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
+using Sandbox.Game;
 using System;
 using VRage.Game;
 using VRage.Game.ModAPI;
+using VRageMath;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
     public class WeaponLogic_Magazines
     {
         Loading Definition;
+        Audio DefinitionAudio;
         private readonly Func<IMyInventory> GetInventoryFunc;
+        private readonly SorterWeaponLogic sorterWeaponLogic;
 
-        public WeaponLogic_Magazines(Loading definition, Func<IMyInventory> getInventoryFunc, bool startLoaded = false)
+        public WeaponLogic_Magazines(Loading definition, Audio definitionaudio, Func<IMyInventory> getInventoryFunc, bool startLoaded = false)
         {
             Definition = definition;
             GetInventoryFunc = getInventoryFunc;
@@ -28,7 +32,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public float NextReloadTime = -1; // In seconds
         public int RemainingReloads;
 
-        public void UpdateReload()
+        public void UpdateReload(WeaponDefinitionBase weaponDefinitionBase, Vector3D muzzlePos)
         {
             if (RemainingReloads == 0)
                 return;
@@ -47,6 +51,11 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 RemainingReloads--;
                 NextReloadTime = Definition.ReloadTime;
                 ShotsInMag = 10; // TODO tie into ammo
+
+                if (!string.IsNullOrEmpty(DefinitionAudio.ReloadSound))
+                {
+                    MyVisualScriptLogicProvider.PlaySingleSoundAtPosition(DefinitionAudio.ReloadSound, muzzlePos);
+                }
             }
         }
 

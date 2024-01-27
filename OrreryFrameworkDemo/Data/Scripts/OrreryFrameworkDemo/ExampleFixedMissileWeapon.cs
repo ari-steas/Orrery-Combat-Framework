@@ -59,7 +59,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             Audio = new Audio()
             {
                 PreShootSound = "",
-                ShootSound = "",
+                ShootSound = "ArcWepShipOnyxPlasmaHelios_Fire",
                 ReloadSound = "",
                 RotationSound = "",
             },
