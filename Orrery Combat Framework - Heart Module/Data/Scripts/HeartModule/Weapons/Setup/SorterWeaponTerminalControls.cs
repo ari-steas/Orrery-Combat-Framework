@@ -167,9 +167,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 AmmoComboBox.Getter = (b) =>
                 {
                     var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
-                    if (logic != null && logic.CurrentAmmoIdx >= 0 && logic.CurrentAmmoIdx < logic.Definition.Loading.Ammos.Length)
+                    if (logic != null)
                     {
-                        return (long)ProjectileDefinitionManager.GetId(logic.Definition.Loading.Ammos[logic.CurrentAmmoIdx]);
+                        return (long)logic.Magazines.SelectedAmmo;
                     }
                     return -1; // Return a default value (e.g., -1) when the index is out of bounds
                 };

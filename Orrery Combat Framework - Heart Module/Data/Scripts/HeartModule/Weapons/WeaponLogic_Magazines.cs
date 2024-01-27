@@ -13,7 +13,40 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         Loading Definition;
         Audio DefinitionAudio;
         private readonly Func<IMyInventory> GetInventoryFunc;
-        private readonly SorterWeaponLogic sorterWeaponLogic;
+
+        private int _ammoIndex = 0;
+        private int _selectedAmmo = 0;
+
+        public int SelectedAmmo
+        {
+            get
+            {
+                return _selectedAmmo;
+            }
+            set
+            {
+                int idx = Array.IndexOf(Definition.Ammos, value);
+                if (idx == -1)
+                    return;
+                _selectedAmmo = value;
+                _ammoIndex = idx;
+            }
+        }
+
+        public int AmmoIndex
+        {
+            get
+            {
+                return _ammoIndex;
+            }
+            set
+            {
+                if (Definition.Ammos.Length <= value || value < 0)
+                    return;
+                _ammoIndex = value;
+                _selectedAmmo = ProjectileDefinitionManager.GetId(Definition.Ammos[value]);
+            }
+        }
 
         public WeaponLogic_Magazines(Loading definition, Audio definitionaudio, Func<IMyInventory> getInventoryFunc, bool startLoaded = false)
         {
