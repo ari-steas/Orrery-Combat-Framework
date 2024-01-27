@@ -1,18 +1,23 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
+using Sandbox.Game;
 using System;
 using VRage.Game;
 using VRage.Game.ModAPI;
+using VRageMath;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
     public class WeaponLogic_Magazines
     {
         Loading Definition;
+        Audio DefinitionAudio;
         private readonly Func<IMyInventory> GetInventoryFunc;
+        private readonly SorterWeaponLogic sorterWeaponLogic;
 
-        public WeaponLogic_Magazines(Loading definition, Func<IMyInventory> getInventoryFunc, bool startLoaded = false)
+        public WeaponLogic_Magazines(Loading definition, Audio definitionaudio, Func<IMyInventory> getInventoryFunc, bool startLoaded = false)
         {
             Definition = definition;
+            DefinitionAudio = definitionaudio;
             GetInventoryFunc = getInventoryFunc;
             RemainingReloads = Definition.MaxReloads;
             NextReloadTime = Definition.ReloadTime;
@@ -55,7 +60,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         /// <summary>
         /// Mark a bullet as fired.
         /// </summary>
-        public void UseShot()
+        public void UseShot(Vector3D muzzlePos)
         {
             ShotsInMag--;
             if (ShotsInMag <= 0)
@@ -68,6 +73,11 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 if (inventory.ContainItems(1, steelPlate))
                 {
                     inventory.RemoveItemsOfType(1, steelPlate);
+                }
+
+                if (!string.IsNullOrEmpty(DefinitionAudio.ReloadSound))
+                {
+                    MyVisualScriptLogicProvider.PlaySingleSoundAtPosition(DefinitionAudio.ReloadSound, muzzlePos);
                 }
             }
         }

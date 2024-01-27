@@ -141,7 +141,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     TriggerTime = 0,
                     ActiveDuration = -1,
                     UseAimPrediction = false,
-                    TurnRate = -1.5f,
+                    TurnRate = 5f,
                     IFF = 2,
                     DoRaycast = false,
                     CastCone = 0.5f,

@@ -48,19 +48,19 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     ExampleAmmoProjectile.Name,
                 },
 
-                RateOfFire = 15,
+                RateOfFire = 2,
                 BarrelsPerShot = 1,
                 ProjectilesPerBarrel = 1,
-                ReloadTime = 10,
-                DelayUntilFire = 0,
+                ReloadTime = 6,
+                DelayUntilFire = 3,
 
                 MaxReloads = -1,
             },
             Audio = new Audio()
             {
                 PreShootSound = "",
-                ShootSound = "",
-                ReloadSound = "",
+                ShootSound = "PunisherNewFire",
+                ReloadSound = "PunisherNewReload",
                 RotationSound = "",
             },
             Visuals = new Visuals()
