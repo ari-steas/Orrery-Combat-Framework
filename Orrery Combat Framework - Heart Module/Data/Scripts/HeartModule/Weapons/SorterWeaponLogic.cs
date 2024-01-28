@@ -331,10 +331,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             else
                 Magazines.AmmoIndex = (Magazines.AmmoIndex - 1 + Definition.Loading.Ammos.Length) % Definition.Loading.Ammos.Length;
 
-            Settings.AmmoLoadedState = Magazines.SelectedAmmo;
+            Settings.AmmoLoadedState = Magazines.AmmoIndex;
             Magazines.EmptyMagazines();
 
-            Terminal_Heart_AmmoComboBox = Magazines.SelectedAmmo;
+            Terminal_Heart_AmmoComboBox = Magazines.AmmoIndex;
         }
 
         #endregion

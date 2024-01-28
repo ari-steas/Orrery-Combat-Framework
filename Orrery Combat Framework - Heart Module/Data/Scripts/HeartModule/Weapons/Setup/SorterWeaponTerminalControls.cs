@@ -67,7 +67,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     ((IMyTerminalControlCombobox) control).ComboBoxContent = (list) =>
                     {
                         for (int i = 0; i < logic.Definition.Loading.Ammos.Length; i++)
-                            list.Add(new MyTerminalControlComboBoxItem() { Key = ProjectileDefinitionManager.GetId(logic.Definition.Loading.Ammos[i]), Value = MyStringId.GetOrCompute(logic.Definition.Loading.Ammos[i]) });
+                            list.Add(new MyTerminalControlComboBoxItem() { Key = i, Value = MyStringId.GetOrCompute(logic.Definition.Loading.Ammos[i]) });
                     };
                     break;
                 }
@@ -170,7 +170,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
                     if (logic != null)
                     {
-                        return (long)logic.Magazines.SelectedAmmo;
+                        return (long)logic.Magazines.AmmoIndex;
                     }
                     return -1; // Return a default value (e.g., -1) when the index is out of bounds
                 };
@@ -364,7 +364,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "HeartCycleAmmoForward",
                     "Cycle Ammo",
                     (b) => b.GameLogic.GetAs<SorterWeaponLogic>().CycleAmmoType(true),
-                    (b, sb) => sb.Append($"{GetAmmoTypeName(b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_AmmoComboBox)}"),
+                    (b, sb) => sb.Append($"{GetAmmoTypeName(b.GameLogic.GetAs<SorterWeaponLogic>().Magazines.SelectedAmmo)}"),
                     @"Textures\GUI\Icons\Actions\MissileToggle.dds"
                     );
             }
