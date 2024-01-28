@@ -1,4 +1,5 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Definitions.StandardClasses;
+﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
+using Heart_Module.Data.Scripts.HeartModule.Definitions.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Sandbox.ModAPI;
@@ -91,8 +92,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
             randomOffset = Vector3D.Zero;
             if (stages.First.Value.Inaccuracy != 0)
             {
-                Vector3D.CreateFromAzimuthAndElevation(HeartData.I.Random.NextDouble() * Math.PI, HeartData.I.Random.NextDouble() * Math.PI, out randomOffset);
-                randomOffset *= stages.First.Value.Inaccuracy;
+                Vector3D.CreateFromAzimuthAndElevation(HeartData.I.Random.NextDouble() * 2 * Math.PI, HeartData.I.Random.NextDouble() * 2 * Math.PI, out randomOffset);
+                randomOffset *= stages.First.Value.Inaccuracy * HeartData.I.Random.NextDouble();
             }
 
             RunGuidance(delta); // Avoid a tick of delay
