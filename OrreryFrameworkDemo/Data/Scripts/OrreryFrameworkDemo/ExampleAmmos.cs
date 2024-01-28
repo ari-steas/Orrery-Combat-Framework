@@ -1,5 +1,4 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Definitions.StandardClasses;
-using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+﻿using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.ProjectileBases;
 using VRage.Utils;
 
 namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
@@ -162,7 +161,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     CastCone = 0.5f,
                     CastDistance = 1000,
                     Velocity = -1f,
-                    Inaccuracy = 10f,
+                    Inaccuracy = 5f,
                 }
             },
             LiveMethods = new LiveMethods()

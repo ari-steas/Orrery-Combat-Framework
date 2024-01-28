@@ -1,5 +1,4 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Definitions.StandardClasses;
-using ProtoBuf;
+﻿using ProtoBuf;
 using System;
 
 namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.WeaponBases

@@ -2,6 +2,7 @@
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Sandbox.ModAPI;
+using System;
 using System.Collections.Generic;
 using VRage.Game;
 using VRage.Game.ModAPI;
@@ -18,6 +19,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
         ProjectileDefinitionBase Definition;
         LinkedList<Guidance> stages;
         float time = 0;
+        Vector3D randomOffset = Vector3D.Zero;
 
         public ProjectileGuidance(Projectile projectile)
         {
@@ -65,9 +67,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
             if (targetEntity != null && !targetEntity.Closed) // If target is null, just move forward lol lmao
             {
                 Vector3D leadPos = targetEntity.PositionComp.WorldAABB.Center;
-
                 if (currentStage.UseAimPrediction)
                     leadPos = TargetingHelper.InterceptionPoint(projectile.Position, projectile.InheritedVelocity, targetEntity.PositionComp.WorldAABB.Center, targetEntity.Physics.LinearVelocity, projectile.Velocity) ?? leadPos;
+                leadPos += randomOffset;
+
                 //DebugDraw.AddPoint(leadPos, Color.Wheat, 0);
                 StepDirecion((leadPos - projectile.Position).Normalized(), currentStage.TurnRate, delta);
             }
@@ -81,6 +84,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
                 projectile.Velocity = stages.First.Value.Velocity;
             else
                 projectile.Velocity = projectile.Definition.PhysicalProjectile.Velocity;
+
+            if (stages.First == null)
+                return;
+
+            randomOffset = Vector3D.Zero;
+            if (stages.First.Value.Inaccuracy != 0)
+            {
+                Vector3D.CreateFromAzimuthAndElevation(HeartData.I.Random.NextDouble() * Math.PI, HeartData.I.Random.NextDouble() * Math.PI, out randomOffset);
+                randomOffset *= stages.First.Value.Inaccuracy;
+            }
 
             RunGuidance(delta); // Avoid a tick of delay
         }

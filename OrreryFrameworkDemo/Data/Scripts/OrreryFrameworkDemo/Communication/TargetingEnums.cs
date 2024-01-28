@@ -1,4 +1,4 @@
-﻿namespace Heart_Module.Data.Scripts.HeartModule.Definitions.StandardClasses
+﻿namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 {
     public enum IFF_Enum
     {

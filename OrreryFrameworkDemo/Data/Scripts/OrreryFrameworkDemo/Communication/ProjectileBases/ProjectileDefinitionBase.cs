@@ -1,5 +1,4 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Definitions.StandardClasses;
-using ProtoBuf;
+﻿using ProtoBuf;
 using Sandbox.Game.Entities;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using VRage.Game.Entity;
 using VRage.Utils;
 using VRageMath;
 
-namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
+namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.ProjectileBases
 {
     /// <summary>
     /// Standard serializable projectile definition.
