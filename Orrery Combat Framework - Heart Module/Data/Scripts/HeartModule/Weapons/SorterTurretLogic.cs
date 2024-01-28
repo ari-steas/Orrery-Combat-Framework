@@ -32,10 +32,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public Vector3D AimPoint { get; private set; } = Vector3D.MaxValue; // TODO fix, should be in targeting CS
 
-        public IMyEntity TargetEntity = null;
-        public Projectile TargetProjectile = null;
-
-
         public SorterTurretLogic(IMyConveyorSorter sorterWeapon, WeaponDefinitionBase definition, uint id) : base(sorterWeapon, definition, id) { }
 
         public override void UpdateAfterSimulation()
@@ -236,16 +232,19 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (MyAPIGateway.Session.IsServer) // Defaults get set whenever a client joins, which is bad.
             {
                 Terminal_Heart_Range_Slider = Definition.Targeting.MaxTargetingRange;
-                Terminal_Heart_TargetGrids = true;
+
+                // These default to true, and are disabled elsewhere if not allowed.
                 Terminal_Heart_TargetProjectiles = true;
                 Terminal_Heart_TargetCharacters = true;
+                Terminal_Heart_TargetGrids = true;
                 Terminal_Heart_TargetLargeGrids = true;
                 Terminal_Heart_TargetSmallGrids = true;
-                Terminal_Heart_TargetEnemies = true;
-                Terminal_Heart_TargetNeutrals = true;
-                Terminal_Heart_TargetFriendlies = false;
+
+                Terminal_Heart_TargetEnemies = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetEnemies) == IFF_Enum.TargetEnemies;
+                Terminal_Heart_TargetFriendlies = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetFriendlies) == IFF_Enum.TargetFriendlies;
+                Terminal_Heart_TargetNeutrals = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetNeutrals) == IFF_Enum.TargetNeutrals;
                 Terminal_Heart_TargetUnowned = false;
-                Terminal_Heart_PreferUniqueTargets = false;
+                Terminal_Heart_PreferUniqueTargets = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetUnique) == IFF_Enum.TargetUnique;
             }
         }
 
@@ -313,6 +312,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             {
 
             }
+
+            // In case Target(n) is turned off after a weapon is placed
+            Terminal_Heart_TargetProjectiles &= (Definition.Targeting.AllowedTargetTypes & TargetType_Enum.TargetProjectiles) == TargetType_Enum.TargetProjectiles;
+            Terminal_Heart_TargetCharacters &= (Definition.Targeting.AllowedTargetTypes & TargetType_Enum.TargetCharacters) == TargetType_Enum.TargetCharacters;
+            Terminal_Heart_TargetGrids &= (Definition.Targeting.AllowedTargetTypes & TargetType_Enum.TargetGrids) == TargetType_Enum.TargetGrids;
+            Terminal_Heart_TargetLargeGrids &= (Definition.Targeting.AllowedTargetTypes & TargetType_Enum.TargetGrids) == TargetType_Enum.TargetGrids;
+            Terminal_Heart_TargetSmallGrids &= (Definition.Targeting.AllowedTargetTypes & TargetType_Enum.TargetGrids) == TargetType_Enum.TargetGrids;
 
             return false;
         }

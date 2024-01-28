@@ -2,6 +2,7 @@
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.Setup;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces.Terminal;
 using System;
@@ -216,7 +217,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "Target Grids",
                     "TargetGridsDesc",
                     (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetGrids,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetGrids = v
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetGrids = v,
+                    // Hide controls if not allowed to target
+                    (b) => ((b.GameLogic?.GetAs<SorterTurretLogic>()?.Definition.Targeting.AllowedTargetTypes ?? 0) & TargetType_Enum.TargetGrids) == TargetType_Enum.TargetGrids
                     );
             }
             {
@@ -225,7 +228,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "Target Large Grids",
                     "TargetLargeGridsDesc",
                     (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetLargeGrids,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetLargeGrids = v
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetLargeGrids = v,
+                    (b) => ((b.GameLogic?.GetAs<SorterTurretLogic>()?.Definition.Targeting.AllowedTargetTypes ?? 0) & TargetType_Enum.TargetGrids) == TargetType_Enum.TargetGrids
                     );
             }
             {
@@ -234,7 +238,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "Target Small Grids",
                     "TargetSmallGridsDesc",
                     (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetSmallGrids,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetSmallGrids = v
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetSmallGrids = v,
+                    (b) => ((b.GameLogic?.GetAs<SorterTurretLogic>()?.Definition.Targeting.AllowedTargetTypes ?? 0) & TargetType_Enum.TargetGrids) == TargetType_Enum.TargetGrids
                     );
             }
             {
@@ -243,7 +248,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "Target Projectiles",
                     "TargetProjectilesDesc",
                     (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetProjectiles,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetProjectiles = v
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetProjectiles = v,
+                    (b) => ((b.GameLogic?.GetAs<SorterTurretLogic>()?.Definition.Targeting.AllowedTargetTypes ?? 0) & TargetType_Enum.TargetProjectiles) == TargetType_Enum.TargetProjectiles
                     );
             }
             {
@@ -252,7 +258,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "Target Characters",
                     "TargetCharactersDesc",
                     (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetCharacters,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetCharacters = v
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetCharacters = v,
+                    (b) => ((b.GameLogic?.GetAs<SorterTurretLogic>()?.Definition.Targeting.AllowedTargetTypes ?? 0) & TargetType_Enum.TargetCharacters) == TargetType_Enum.TargetCharacters
                     );
             }
             {

@@ -12,7 +12,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup
     {
         const string IdPrefix = "ModularHeartMod_"; // highly recommended to tag your properties/actions like this to avoid colliding with other mods'
 
-        public static IMyTerminalControlOnOffSwitch CreateToggle<T>(string id, string displayName, string toolTip, Func<IMyTerminalBlock, bool> getter, Action<IMyTerminalBlock, bool> setter) where T : SorterWeaponLogic
+        public static IMyTerminalControlOnOffSwitch CreateToggle<T>(string id, string displayName, string toolTip, Func<IMyTerminalBlock, bool> getter, Action<IMyTerminalBlock, bool> setter, Func<IMyTerminalBlock, bool> visible = null) where T : SorterWeaponLogic
         {
             var ShootToggle = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlOnOffSwitch, IMyConveyorSorter>(IdPrefix + id);
             ShootToggle.Title = MyStringId.GetOrCompute(displayName);
@@ -22,9 +22,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup
                                                        // optional, they both default to true.
             Func<IMyTerminalBlock, bool> visibleFunc;
             if (typeof(T) == typeof(SorterTurretLogic))
-                visibleFunc = HasTurretLogic;
+                visibleFunc = (b) => HasTurretLogic(b) && (visible?.Invoke(b) ?? true);
             else
-                visibleFunc = HasWeaponLogic;
+                visibleFunc = (b) => HasWeaponLogic(b) && (visible?.Invoke(b) ?? true);
 
             ShootToggle.Visible = visibleFunc;
             //c.Enabled = CustomVisibleCondition;
@@ -40,7 +40,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup
             return ShootToggle;
         }
 
-        public static IMyTerminalControlSlider CreateSlider<T>(string id, string displayName, string toolTip, float min, float max, Func<IMyTerminalBlock, float> getter, Action<IMyTerminalBlock, float> setter, Action<IMyTerminalBlock, StringBuilder> writer)
+        public static IMyTerminalControlSlider CreateSlider<T>(string id, string displayName, string toolTip, float min, float max, Func<IMyTerminalBlock, float> getter, Action<IMyTerminalBlock, float> setter, Action<IMyTerminalBlock, StringBuilder> writer, Func<IMyTerminalBlock, bool> visible = null)
         {
             var slider = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlSlider, IMyConveyorSorter>(IdPrefix + id);
             slider.Title = MyStringId.GetOrCompute(displayName);
@@ -52,9 +52,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup
 
             Func<IMyTerminalBlock, bool> visibleFunc;
             if (typeof(T) == typeof(SorterTurretLogic))
-                visibleFunc = HasTurretLogic;
+                visibleFunc = (b) => HasTurretLogic(b) && (visible?.Invoke(b) ?? true);
             else
-                visibleFunc = HasWeaponLogic;
+                visibleFunc = (b) => HasWeaponLogic(b) && (visible?.Invoke(b) ?? true);
 
             slider.Visible = visibleFunc;
             slider.Enabled = (b) => true; // or your custom condition

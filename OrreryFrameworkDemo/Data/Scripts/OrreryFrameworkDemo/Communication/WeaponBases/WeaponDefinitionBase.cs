@@ -39,27 +39,13 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Wea
         /// Can the turret fire by itself? Tracks regardless.
         /// </summary>
         [ProtoMember(3)] public bool CanAutoShoot;
-        [ProtoMember(4)] public IFF_Enum IFF; // TODO
-        [ProtoMember(5)] public TargetType_Enum TargetTypes; // TODO
+        [ProtoMember(4)] public IFF_Enum DefaultIFF;
+        [ProtoMember(5)] public TargetType_Enum AllowedTargetTypes;
         /// <summary>
         /// Time until the turret is forced to find a new target
         /// </summary>
         [ProtoMember(6)] public float RetargetTime; // TODO
         [ProtoMember(7)] public float AimTolerance;
-
-        public enum IFF_Enum
-        {
-            TargetSelf = 1,
-            TargetEnemies = 2,
-            TargetFriendlies = 4,
-        }
-
-        public enum TargetType_Enum
-        {
-            TargetGrids = 1,
-            TargetProjectiles = 2,
-            TargetCharacters = 4,
-        }
     }
 
     [ProtoContract]
@@ -115,7 +101,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Wea
         /// The maximum number of times the gun can reload.
         /// </summary>
         [ProtoMember(7)] public int MaxReloads;
-        [ProtoMember(8)] public float DelayUntilFire; // Seconds // TODO
+        [ProtoMember(8)] public float DelayUntilFire; // Seconds
         [ProtoMember(9)] public Resource[] Resources; // TODO
 
         [ProtoContract]
@@ -133,9 +119,9 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Wea
     [ProtoContract]
     public struct Audio
     {
-        [ProtoMember(1)] public string PreShootSound; // TODO
-        [ProtoMember(2)] public string ShootSound; // TODO
-        [ProtoMember(3)] public string ReloadSound; // TODO
+        [ProtoMember(1)] public string PreShootSound;
+        [ProtoMember(2)] public string ShootSound;
+        [ProtoMember(3)] public string ReloadSound;
         [ProtoMember(4)] public string RotationSound; // TODO
     }
 
@@ -148,5 +134,23 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Wea
 
         public bool HasShootParticle => !ShootParticle?.Equals("") ?? false;
         public bool HasReloadParticle => !ReloadParticle?.Equals("") ?? false;
+    }
+
+    public enum IFF_Enum
+    {
+        None = 0,
+        TargetSelf = 1,
+        TargetEnemies = 2,
+        TargetFriendlies = 4,
+        TargetNeutrals = 8,
+        TargetUnique = 16,
+    }
+
+    public enum TargetType_Enum
+    {
+        None = 0,
+        TargetGrids = 1,
+        TargetProjectiles = 2,
+        TargetCharacters = 4,
     }
 }

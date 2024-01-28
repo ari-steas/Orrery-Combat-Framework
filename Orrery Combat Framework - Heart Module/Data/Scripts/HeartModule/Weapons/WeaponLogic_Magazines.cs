@@ -48,7 +48,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             }
         }
 
-        public WeaponLogic_Magazines(Loading definition, Audio definitionaudio, Func<IMyInventory> getInventoryFunc, bool startLoaded = false)
+        public WeaponLogic_Magazines(Loading definition, Audio definitionaudio, Func<IMyInventory> getInventoryFunc, int ammoIdx, bool startLoaded = false)
         {
             Definition = definition;
             DefinitionAudio = definitionaudio;
@@ -60,6 +60,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 MagazinesLoaded = Definition.MagazinesToLoad;
                 ShotsInMag = 10; // TODO tie into ammo
             }
+            AmmoIndex = ammoIdx;
         }
 
         public int MagazinesLoaded = 0;

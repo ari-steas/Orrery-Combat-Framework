@@ -64,11 +64,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             Func<IMyInventory> getInventoryFunc = () => sorterWeapon.GetInventory();
 
             // You need to provide the missing arguments for WeaponLogic_Magazines constructor here
-            Magazines = new WeaponLogic_Magazines(definition.Loading, definition.Audio, getInventoryFunc)
-            {
-                // Load the initial ammo type here based on the Terminal_Heart_AmmoComboBox
-                SelectedAmmo = (int)Terminal_Heart_AmmoComboBox
-            };
+            Magazines = new WeaponLogic_Magazines(definition.Loading, definition.Audio, getInventoryFunc, (int)Terminal_Heart_AmmoComboBox);
 
             Id = id;
         }
@@ -341,43 +337,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             Terminal_Heart_AmmoComboBox = Magazines.SelectedAmmo;
         }
 
-        public long Terminal_ControlType_ComboBox
-        {
-            get
-            {
-                return Settings.ControlTypeState;
-            }
-
-            set
-            {
-                Settings.ControlTypeState = value;
-                if (ControlTypeState != null)
-                {
-                    ControlTypeState.Value = value;
-                }
-                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
-                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
-            }
-        }
-
-        public void CycleControlType(bool controltype)
-        {
-            // Assuming you have a predefined list of ammo types
-            long[] controlTypes = { 0, 1, 2 }; // Replace with actual ammo type keys
-            int currentIndex = Array.IndexOf(controlTypes, Terminal_ControlType_ComboBox);
-
-            if (controltype)
-            {
-                currentIndex = (currentIndex + 1) % controlTypes.Length;
-            }
-            else
-            {
-                currentIndex = (currentIndex - 1 + controlTypes.Length) % controlTypes.Length;
-            }
-
-            Terminal_ControlType_ComboBox = controlTypes[currentIndex];
-        }
-
         #endregion
 
         #region Saving
@@ -409,7 +368,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             Terminal_Heart_Shoot = false;
             Terminal_Heart_AmmoComboBox = 0;
-            Terminal_ControlType_ComboBox = 0;
         }
 
         internal virtual bool LoadSettings()

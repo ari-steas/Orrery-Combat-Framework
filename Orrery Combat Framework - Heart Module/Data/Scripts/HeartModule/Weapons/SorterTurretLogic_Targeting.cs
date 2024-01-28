@@ -10,6 +10,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
     partial class SorterTurretLogic
     {
+        public float TargetAge = 0;
+        public IMyEntity TargetEntity = null;
+        public Projectile TargetProjectile = null;
+
         public void UpdateTargeting()
         {
             MuzzleMatrix = CalcMuzzleMatrix(0); // Set stored MuzzleMatrix
@@ -34,6 +38,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 ResetTargetingState();
 
             UpdateAzimuthElevation(AimPoint);
+
+            TargetAge += 1 / 60f;
         }
 
         private void ResetTargetingState()
