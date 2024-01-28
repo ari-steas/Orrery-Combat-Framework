@@ -90,8 +90,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
             }
 
             string ammoStatus = $"{weapon.Magazines.ShotsInMag}/{projectileDef?.Ungrouped.ShotsPerMagazine}"; // Placeholder value for max ammo
-            if (weapon.Magazines.ShotsInMag == 0)
-                ammoStatus = $"{Math.Round(weapon.Magazines.NextReloadTime, 1)}";
+            //if (weapon.Definition.Loading.MagazinesToLoad > 1)
+            //    ammoStatus += $"/{weapon.Magazines.MagazinesLoaded}";
+            if (weapon.Magazines.NextReloadTime != weapon.Definition.Loading.ReloadTime)
+                ammoStatus += $" {Math.Round(weapon.Magazines.NextReloadTime, 1)}";
             if (weapon.Definition.Loading.DelayUntilFire > 0)
                 ammoStatus += $" (Delay {Math.Round(weapon.delayCounter, 1)}s)";
 

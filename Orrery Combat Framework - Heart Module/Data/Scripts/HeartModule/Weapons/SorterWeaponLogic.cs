@@ -118,7 +118,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     return;
 
                 MuzzleMatrix = CalcMuzzleMatrix(0); // Set stored MuzzleMatrix
-                Magazines.UpdateReload(Magazines.SelectedAmmo);
+                Magazines.UpdateReload();
                 HasLoS = HasLineOfSight();
 
                 if (!SorterWep.IsWorking) // Don't try shoot if the turret is disabled
