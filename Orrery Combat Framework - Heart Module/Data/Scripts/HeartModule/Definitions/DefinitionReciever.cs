@@ -4,12 +4,7 @@ using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Sandbox.ModAPI;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VRage.Game.Components;
-using VRage.Utils;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Definitions
 {
@@ -17,22 +12,22 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions
     public class DefinitionReciever : MySessionComponentBase
     {
         const int DefinitionMessageId = 8643;
-    
+
         public override void LoadData()
         {
             if (!MyAPIGateway.Session.IsServer)
                 return;
-    
+
             MyAPIGateway.Utilities.RegisterMessageHandler(DefinitionMessageId, RecieveDefinitions);
             MyAPIGateway.Utilities.SendModMessage(DefinitionMessageId, true); // Notify client mods that this is ready
         }
-    
+
         private void RecieveDefinitions(object o)
         {
             byte[] message = o as byte[];
             if (message == null)
                 return;
-    
+
             try
             {
                 DefinitionContainer definitionContainer = MyAPIGateway.Utilities.SerializeFromBinary<DefinitionContainer>(message);

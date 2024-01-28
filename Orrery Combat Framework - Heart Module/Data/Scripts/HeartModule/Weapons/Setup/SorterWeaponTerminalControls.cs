@@ -1,8 +1,6 @@
-﻿using Heart_Module.Data.Scripts.HeartModule;
-using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.Setup;
-using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces.Terminal;
 using System;
@@ -64,7 +62,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             {
                 if (control.Id == (IdPrefix + "HeartAmmoComboBox")) // Set ammos based on availability
                 {
-                    ((IMyTerminalControlCombobox) control).ComboBoxContent = (list) =>
+                    ((IMyTerminalControlCombobox)control).ComboBoxContent = (list) =>
                     {
                         for (int i = 0; i < logic.Definition.Loading.Ammos.Length; i++)
                             list.Add(new MyTerminalControlComboBoxItem() { Key = i, Value = MyStringId.GetOrCompute(logic.Definition.Loading.Ammos[i]) });

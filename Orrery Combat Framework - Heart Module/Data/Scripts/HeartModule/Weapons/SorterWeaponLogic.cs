@@ -1,19 +1,15 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule;
 using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
-using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
-using Sandbox.Definitions;
 using Sandbox.Game;
 using Sandbox.Game.EntityComponents;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
-using System.Windows.Markup;
-using VRage.Audio;
 using VRage.Game;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
@@ -21,10 +17,7 @@ using VRage.Game.ModAPI.Network;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
 using VRage.Sync;
-using VRage.Utils;
 using VRageMath;
-using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding;
-using static VRage.Game.MyObjectBuilder_BehaviorTreeDecoratorNode;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
@@ -399,7 +392,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
                     Settings.AmmoLoadedState = loadedSettings.AmmoLoadedState;
                     AmmoLoadedState.Value = Settings.AmmoLoadedState;
-                    Magazines.AmmoIndex = Array.IndexOf(Definition.Loading.Ammos, ProjectileDefinitionManager.GetDefinition((int) Settings.AmmoLoadedState).Name);
+                    Magazines.AmmoIndex = Array.IndexOf(Definition.Loading.Ammos, ProjectileDefinitionManager.GetDefinition((int)Settings.AmmoLoadedState).Name);
 
                     Settings.ControlTypeState = loadedSettings.ControlTypeState;
                     ControlTypeState.Value = Settings.ControlTypeState;

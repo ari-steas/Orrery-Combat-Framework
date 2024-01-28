@@ -1,9 +1,7 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
-using Heart_Module.Data.Scripts.HeartModule.Utility;
+﻿using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Sandbox.Common.ObjectBuilders;
 using Sandbox.ModAPI;
-using System;
 using VRage.Game.Components;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
@@ -56,11 +54,11 @@ namespace Heart_Module.Data.Scripts.HeartModule
             MatrixD muzzleMatrix = turret.MuzzleMatrix;
             muzzleMatrix.Translation = turret.SorterWep.GetPosition() + turret.MuzzleMatrix.Forward * offset;
             MatrixD parentMatrix = subpart.Parent.PositionComp.WorldMatrixRef;
-            
+
             Matrix m = muzzleMatrix * MatrixD.Invert(parentMatrix);
             subpart.PositionComp.SetLocalMatrix(ref m);
         }
-        
+
         private void TryGetNewTurret()
         {
             SubpartManager.GetSubpart(Entity, "barrel").PositionComp.SetLocalMatrix(ref Matrix.Identity);
@@ -71,8 +69,8 @@ namespace Heart_Module.Data.Scripts.HeartModule
             {
                 if (wep is SorterTurretLogic)
                 {
-                    turret = (SorterTurretLogic) wep;
-                    offset = ((Vector3D) (block.Position - wep.SorterWep.Position)).Max() * 2.5f;
+                    turret = (SorterTurretLogic)wep;
+                    offset = ((Vector3D)(block.Position - wep.SorterWep.Position)).Max() * 2.5f;
                     MyAPIGateway.Utilities.ShowNotification(offset.ToString());
                     break;
                 }

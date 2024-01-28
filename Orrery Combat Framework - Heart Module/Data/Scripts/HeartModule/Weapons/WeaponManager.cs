@@ -1,6 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
-using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System.Collections.Generic;
 using VRage.Game.Components;
