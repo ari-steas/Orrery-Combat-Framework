@@ -16,6 +16,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         private int _ammoIndex = 0;
         private int _selectedAmmo = 0;
+        private int shotsPerMag = 0;
 
         public int SelectedAmmo
         {
@@ -30,6 +31,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     return;
                 _selectedAmmo = value;
                 _ammoIndex = idx;
+                shotsPerMag = ProjectileDefinitionManager.GetDefinition(SelectedAmmo).Ungrouped.ShotsPerMagazine;
             }
         }
 
@@ -45,10 +47,11 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     return;
                 _ammoIndex = value;
                 _selectedAmmo = ProjectileDefinitionManager.GetId(Definition.Ammos[value]);
+                shotsPerMag = ProjectileDefinitionManager.GetDefinition(SelectedAmmo).Ungrouped.ShotsPerMagazine;
             }
         }
 
-        public WeaponLogic_Magazines(Loading definition, Audio definitionaudio, Func<IMyInventory> getInventoryFunc, bool startLoaded = false)
+        public WeaponLogic_Magazines(Loading definition, Audio definitionaudio, Func<IMyInventory> getInventoryFunc, int ammoIdx, bool startLoaded = false)
         {
             Definition = definition;
             DefinitionAudio = definitionaudio;
@@ -60,6 +63,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 MagazinesLoaded = Definition.MagazinesToLoad;
                 ShotsInMag = 10; // TODO tie into ammo
             }
+            AmmoIndex = ammoIdx;
         }
 
         public int MagazinesLoaded = 0;
@@ -67,12 +71,12 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public float NextReloadTime = -1; // In seconds
         public int RemainingReloads;
 
-        public void UpdateReload(int ammoId)
+        public void UpdateReload()
         {
             if (RemainingReloads == 0)
                 return;
 
-            if (MagazinesLoaded > Definition.MagazinesToLoad) // Don't load mags if already at capacity
+            if (MagazinesLoaded >= Definition.MagazinesToLoad) // Don't load mags if already at capacity
                 return;
 
             if (NextReloadTime == -1)
@@ -85,7 +89,15 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 MagazinesLoaded++;
                 RemainingReloads--;
                 NextReloadTime = Definition.ReloadTime;
-                ShotsInMag = ProjectileDefinitionManager.GetDefinition(ammoId).Ungrouped.ShotsPerMagazine; // TODO tie into ammo
+                ShotsInMag += shotsPerMag;
+
+                // Check and remove a steel plate from the inventory
+                var inventory = GetInventoryFunc();
+                var steelPlate = new MyDefinitionId(typeof(MyObjectBuilder_Component), "SteelPlate");
+                if (inventory.ContainItems(1, steelPlate))
+                {
+                    inventory.RemoveItemsOfType(1, steelPlate);
+                }
             }
         }
 
@@ -97,17 +109,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public void UseShot(Vector3D muzzlePos)
         {
             ShotsInMag--;
-            if (ShotsInMag <= 0)
+            if (ShotsInMag % shotsPerMag == 0)
             {
                 MagazinesLoaded--;
-
-                // Check and remove a steel plate from the inventory
-                var inventory = GetInventoryFunc();
-                var steelPlate = new MyDefinitionId(typeof(MyObjectBuilder_Component), "SteelPlate");
-                if (inventory.ContainItems(1, steelPlate))
-                {
-                    inventory.RemoveItemsOfType(1, steelPlate);
-                }
 
                 if (!string.IsNullOrEmpty(DefinitionAudio.ReloadSound))
                 {

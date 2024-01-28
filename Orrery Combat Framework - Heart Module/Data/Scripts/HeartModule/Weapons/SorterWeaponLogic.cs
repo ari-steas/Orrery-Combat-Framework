@@ -1,19 +1,15 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule;
 using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
-using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
-using Sandbox.Definitions;
 using Sandbox.Game;
 using Sandbox.Game.EntityComponents;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
-using System.Windows.Markup;
-using VRage.Audio;
 using VRage.Game;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
@@ -21,10 +17,7 @@ using VRage.Game.ModAPI.Network;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
 using VRage.Sync;
-using VRage.Utils;
 using VRageMath;
-using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding;
-using static VRage.Game.MyObjectBuilder_BehaviorTreeDecoratorNode;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
@@ -64,11 +57,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             Func<IMyInventory> getInventoryFunc = () => sorterWeapon.GetInventory();
 
             // You need to provide the missing arguments for WeaponLogic_Magazines constructor here
-            Magazines = new WeaponLogic_Magazines(definition.Loading, definition.Audio, getInventoryFunc)
-            {
-                // Load the initial ammo type here based on the Terminal_Heart_AmmoComboBox
-                SelectedAmmo = (int)Terminal_Heart_AmmoComboBox
-            };
+            Magazines = new WeaponLogic_Magazines(definition.Loading, definition.Audio, getInventoryFunc, (int)Terminal_Heart_AmmoComboBox);
 
             Id = id;
         }
@@ -122,7 +111,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     return;
 
                 MuzzleMatrix = CalcMuzzleMatrix(0); // Set stored MuzzleMatrix
-                Magazines.UpdateReload(Magazines.SelectedAmmo);
+                Magazines.UpdateReload();
                 HasLoS = HasLineOfSight();
 
                 if (!SorterWep.IsWorking) // Don't try shoot if the turret is disabled
@@ -335,47 +324,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             else
                 Magazines.AmmoIndex = (Magazines.AmmoIndex - 1 + Definition.Loading.Ammos.Length) % Definition.Loading.Ammos.Length;
 
-            Settings.AmmoLoadedState = Magazines.SelectedAmmo;
+            Settings.AmmoLoadedState = Magazines.AmmoIndex;
             Magazines.EmptyMagazines();
 
-            Terminal_Heart_AmmoComboBox = Magazines.SelectedAmmo;
-        }
-
-        public long Terminal_ControlType_ComboBox
-        {
-            get
-            {
-                return Settings.ControlTypeState;
-            }
-
-            set
-            {
-                Settings.ControlTypeState = value;
-                if (ControlTypeState != null)
-                {
-                    ControlTypeState.Value = value;
-                }
-                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
-                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
-            }
-        }
-
-        public void CycleControlType(bool controltype)
-        {
-            // Assuming you have a predefined list of ammo types
-            long[] controlTypes = { 0, 1, 2 }; // Replace with actual ammo type keys
-            int currentIndex = Array.IndexOf(controlTypes, Terminal_ControlType_ComboBox);
-
-            if (controltype)
-            {
-                currentIndex = (currentIndex + 1) % controlTypes.Length;
-            }
-            else
-            {
-                currentIndex = (currentIndex - 1 + controlTypes.Length) % controlTypes.Length;
-            }
-
-            Terminal_ControlType_ComboBox = controlTypes[currentIndex];
+            Terminal_Heart_AmmoComboBox = Magazines.AmmoIndex;
         }
 
         #endregion
@@ -409,7 +361,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             Terminal_Heart_Shoot = false;
             Terminal_Heart_AmmoComboBox = 0;
-            Terminal_ControlType_ComboBox = 0;
         }
 
         internal virtual bool LoadSettings()
@@ -441,7 +392,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
                     Settings.AmmoLoadedState = loadedSettings.AmmoLoadedState;
                     AmmoLoadedState.Value = Settings.AmmoLoadedState;
-                    Magazines.AmmoIndex = Array.IndexOf(Definition.Loading.Ammos, ProjectileDefinitionManager.GetDefinition((int) Settings.AmmoLoadedState).Name);
+                    Magazines.AmmoIndex = Array.IndexOf(Definition.Loading.Ammos, ProjectileDefinitionManager.GetDefinition((int)Settings.AmmoLoadedState).Name);
 
                     Settings.ControlTypeState = loadedSettings.ControlTypeState;
                     ControlTypeState.Value = Settings.ControlTypeState;

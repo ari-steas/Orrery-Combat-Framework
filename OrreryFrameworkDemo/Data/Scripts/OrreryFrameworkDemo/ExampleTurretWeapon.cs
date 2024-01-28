@@ -12,10 +12,10 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 MaxTargetingRange = 1000,
                 MinTargetingRange = 0,
                 CanAutoShoot = true,
-                RetargetTime = -1,
+                RetargetTime = 0,
                 AimTolerance = 0.0175f,
-                IFF = Targeting.IFF_Enum.TargetEnemies,
-                TargetTypes = Targeting.TargetType_Enum.TargetGrids | Targeting.TargetType_Enum.TargetProjectiles | Targeting.TargetType_Enum.TargetCharacters
+                DefaultIFF = IFF_Enum.TargetEnemies | IFF_Enum.TargetNeutrals,
+                AllowedTargetTypes = TargetType_Enum.TargetGrids | TargetType_Enum.TargetCharacters,
             },
             Assignments = new Assignments()
             {

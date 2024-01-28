@@ -144,7 +144,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     ActiveDuration = -1,
                     UseAimPrediction = false,
                     TurnRate = -1f,
-                    IFF = 2,
+                    IFF = IFF_Enum.TargetEnemies,
                     DoRaycast = false,
                     CastCone = 0.5f,
                     CastDistance = 1000,
@@ -156,11 +156,12 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     ActiveDuration = -1f,
                     UseAimPrediction = true,
                     TurnRate = 3.14f,
-                    IFF = 2,
+                    IFF = IFF_Enum.TargetEnemies,
                     DoRaycast = false,
                     CastCone = 0.5f,
                     CastDistance = 1000,
                     Velocity = -1f,
+                    Inaccuracy = 5f,
                 }
             },
             LiveMethods = new LiveMethods()

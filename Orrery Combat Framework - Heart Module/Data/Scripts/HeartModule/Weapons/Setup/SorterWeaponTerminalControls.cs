@@ -1,4 +1,4 @@
-﻿using Heart_Module.Data.Scripts.HeartModule;
+﻿using Heart_Module.Data.Scripts.HeartModule.Definitions.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.Setup;
@@ -63,10 +63,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             {
                 if (control.Id == (IdPrefix + "HeartAmmoComboBox")) // Set ammos based on availability
                 {
-                    ((IMyTerminalControlCombobox) control).ComboBoxContent = (list) =>
+                    ((IMyTerminalControlCombobox)control).ComboBoxContent = (list) =>
                     {
                         for (int i = 0; i < logic.Definition.Loading.Ammos.Length; i++)
-                            list.Add(new MyTerminalControlComboBoxItem() { Key = ProjectileDefinitionManager.GetId(logic.Definition.Loading.Ammos[i]), Value = MyStringId.GetOrCompute(logic.Definition.Loading.Ammos[i]) });
+                            list.Add(new MyTerminalControlComboBoxItem() { Key = i, Value = MyStringId.GetOrCompute(logic.Definition.Loading.Ammos[i]) });
                     };
                     break;
                 }
@@ -169,7 +169,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
                     if (logic != null)
                     {
-                        return (long)logic.Magazines.SelectedAmmo;
+                        return (long)logic.Magazines.AmmoIndex;
                     }
                     return -1; // Return a default value (e.g., -1) when the index is out of bounds
                 };
@@ -216,7 +216,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "Target Grids",
                     "TargetGridsDesc",
                     (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetGrids,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetGrids = v
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetGrids = v,
+                    // Hide controls if not allowed to target
+                    (b) => ((b.GameLogic?.GetAs<SorterTurretLogic>()?.Definition.Targeting.AllowedTargetTypes ?? 0) & TargetType_Enum.TargetGrids) == TargetType_Enum.TargetGrids
                     );
             }
             {
@@ -225,7 +227,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "Target Large Grids",
                     "TargetLargeGridsDesc",
                     (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetLargeGrids,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetLargeGrids = v
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetLargeGrids = v,
+                    (b) => ((b.GameLogic?.GetAs<SorterTurretLogic>()?.Definition.Targeting.AllowedTargetTypes ?? 0) & TargetType_Enum.TargetGrids) == TargetType_Enum.TargetGrids
                     );
             }
             {
@@ -234,7 +237,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "Target Small Grids",
                     "TargetSmallGridsDesc",
                     (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetSmallGrids,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetSmallGrids = v
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetSmallGrids = v,
+                    (b) => ((b.GameLogic?.GetAs<SorterTurretLogic>()?.Definition.Targeting.AllowedTargetTypes ?? 0) & TargetType_Enum.TargetGrids) == TargetType_Enum.TargetGrids
                     );
             }
             {
@@ -243,7 +247,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "Target Projectiles",
                     "TargetProjectilesDesc",
                     (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetProjectiles,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetProjectiles = v
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetProjectiles = v,
+                    (b) => ((b.GameLogic?.GetAs<SorterTurretLogic>()?.Definition.Targeting.AllowedTargetTypes ?? 0) & TargetType_Enum.TargetProjectiles) == TargetType_Enum.TargetProjectiles
                     );
             }
             {
@@ -252,7 +257,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "Target Characters",
                     "TargetCharactersDesc",
                     (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetCharacters,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetCharacters = v
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetCharacters = v,
+                    (b) => ((b.GameLogic?.GetAs<SorterTurretLogic>()?.Definition.Targeting.AllowedTargetTypes ?? 0) & TargetType_Enum.TargetCharacters) == TargetType_Enum.TargetCharacters
                     );
             }
             {
@@ -357,7 +363,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "HeartCycleAmmoForward",
                     "Cycle Ammo",
                     (b) => b.GameLogic.GetAs<SorterWeaponLogic>().CycleAmmoType(true),
-                    (b, sb) => sb.Append($"{GetAmmoTypeName(b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_AmmoComboBox)}"),
+                    (b, sb) => sb.Append($"{GetAmmoTypeName(b.GameLogic.GetAs<SorterWeaponLogic>().Magazines.SelectedAmmo)}"),
                     @"Textures\GUI\Icons\Actions\MissileToggle.dds"
                     );
             }

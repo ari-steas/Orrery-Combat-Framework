@@ -93,8 +93,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                         continue;
 
                     SorterTurretLogic turret = weapon as SorterTurretLogic;
-                    turret.TargetProjectile = null;
-                    turret.TargetEntity = null;
                     bool turretHasTarget = false;
 
                     // First, check for manually locked target using GenericKeenTargeting
@@ -106,7 +104,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                         // Set the manually locked target as the primary target regardless of range
                         if (manualTarget != null && isManuallyLockedTargetInRange)
                         {
-                            turret.TargetEntity = manualTarget;
+                            turret.SetTarget(manualTarget);
                             turretHasTarget = true;
                         }
                     }
@@ -118,16 +116,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                         MyEntity priorityTarget = PriorityTargets.First().Key;
                         if (turret.ShouldConsiderTarget((IMyCubeGrid)priorityTarget))
                         {
-                            if (priorityTarget is IMyCharacter)
-                                turret.TargetEntity = (IMyCharacter)priorityTarget;
-                            else if (priorityTarget is IMyCubeGrid)
-                                turret.TargetEntity = (IMyCubeGrid)priorityTarget;
+                            turret.SetTarget(priorityTarget);
 
                             turretHasTarget = true;
 
                             PriorityTargets[priorityTarget]++;
                         }
                     }
+
+                    if (turretHasTarget || !turret.IsTargetExpired())
+                        continue;
 
                     // Rest of targeting logic...
 
@@ -157,7 +155,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                                 }
                             });
 
-                            turret.TargetProjectile = minTargeted;
+                            turret.SetTarget(minTargeted);
                             turretHasTarget = true;
 
                             TargetedProjectiles[minTargeted.Id]++; // Keep track of the number of turrets shooting a target
@@ -168,7 +166,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                             {
                                 if (turret.ShouldConsiderTarget(ProjectileManager.I.GetProjectile(projectile)))
                                 {
-                                    turret.TargetProjectile = ProjectileManager.I.GetProjectile(projectile);
+                                    turret.SetTarget(ProjectileManager.I.GetProjectile(projectile));
                                     turretHasTarget = true;
 
                                     TargetedProjectiles[projectile]++; // Keep track of the number of turrets shooting a target
@@ -203,7 +201,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                                 }
                             });
 
-                            turret.TargetEntity = minTargeted;
+                            turret.SetTarget(minTargeted);
                             turretHasTarget = true;
 
                             TargetedCharacters[minTargeted]++; // Keep track of the number of turrets shooting a target
@@ -214,7 +212,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                             {
                                 if (turret.ShouldConsiderTarget(character))
                                 {
-                                    turret.TargetEntity = character;
+                                    turret.SetTarget(character);
                                     turretHasTarget = true;
 
                                     TargetedCharacters[character]++; // Keep track of the number of turrets shooting a target
@@ -249,7 +247,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                                 }
                             });
 
-                            turret.TargetEntity = minTargeted;
+                            turret.SetTarget(minTargeted);
                             turretHasTarget = true;
                             TargetedGrids[minTargeted]++; // Keep track of the number of turrets shooting a target
                         }
@@ -259,7 +257,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                             {
                                 if (turret.ShouldConsiderTarget(grid))
                                 {
-                                    turret.TargetEntity = grid;
+                                    turret.SetTarget(grid);
                                     turretHasTarget = true;
 
                                     TargetedGrids[grid]++; // Keep track of the number of turrets shooting a target
