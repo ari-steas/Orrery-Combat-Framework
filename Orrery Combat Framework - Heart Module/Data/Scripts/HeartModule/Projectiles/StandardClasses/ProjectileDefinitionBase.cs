@@ -1,4 +1,5 @@
-﻿using ProtoBuf;
+﻿using Heart_Module.Data.Scripts.HeartModule.Definitions.StandardClasses;
+using ProtoBuf;
 using Sandbox.Game.Entities;
 using System;
 using System.Collections.Generic;
@@ -119,11 +120,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         [ProtoMember(2)] public float ActiveDuration; // Ignore if -1 or greater than next
         [ProtoMember(3)] public bool UseAimPrediction;
         [ProtoMember(4)] public float TurnRate;
-        [ProtoMember(6)] public int IFF; // 1 is TargetSelf, 2 is TargetEnemies, 4 is TargetFriendlies // TODO
+        [ProtoMember(6)] public IFF_Enum IFF; // 1 is TargetSelf, 2 is TargetEnemies, 4 is TargetFriendlies // TODO
         [ProtoMember(7)] public bool DoRaycast;
         [ProtoMember(8)] public float CastCone;
         [ProtoMember(9)] public float CastDistance;
         [ProtoMember(10)] public float Velocity;
+        /// <summary>
+        /// Random offset from target, in meters.
+        /// </summary>
+        [ProtoMember(11)] public float Inaccuracy;
     }
 
     [ProtoContract]

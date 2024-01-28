@@ -1,10 +1,6 @@
-﻿using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.ProjectileBases;
+﻿using Heart_Module.Data.Scripts.HeartModule.Definitions.StandardClasses;
 using ProtoBuf;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.WeaponBases
 {
@@ -134,23 +130,5 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Wea
 
         public bool HasShootParticle => !ShootParticle?.Equals("") ?? false;
         public bool HasReloadParticle => !ReloadParticle?.Equals("") ?? false;
-    }
-
-    public enum IFF_Enum
-    {
-        None = 0,
-        TargetSelf = 1,
-        TargetEnemies = 2,
-        TargetFriendlies = 4,
-        TargetNeutrals = 8,
-        TargetUnique = 16,
-    }
-
-    public enum TargetType_Enum
-    {
-        None = 0,
-        TargetGrids = 1,
-        TargetProjectiles = 2,
-        TargetCharacters = 4,
     }
 }

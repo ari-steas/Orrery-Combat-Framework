@@ -11,11 +11,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
     partial class SorterTurretLogic
     {
         public float TargetAge = 0;
-        public IMyEntity TargetEntity = null;
-        public Projectile TargetProjectile = null;
+        public IMyEntity TargetEntity { get; private set; } = null;
+        public Projectile TargetProjectile { get; private set; } = null;
 
         public void UpdateTargeting()
         {
+            MyAPIGateway.Utilities.ShowNotification(TargetAge + "", 1000/60);
             MuzzleMatrix = CalcMuzzleMatrix(0); // Set stored MuzzleMatrix
 
             if (TargetProjectile != null)
@@ -40,6 +41,28 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             UpdateAzimuthElevation(AimPoint);
 
             TargetAge += 1 / 60f;
+        }
+
+        public void SetTarget(object target)
+        {
+            TargetEntity = null;
+            TargetProjectile = null;
+            TargetAge = 0;
+
+            if (target is IMyEntity)
+                TargetEntity = (IMyEntity) target;
+            else if (target is Projectile)
+                TargetProjectile = (Projectile) target;
+        }
+
+        public bool HasValidTarget()
+        {
+            return (TargetEntity != null || TargetProjectile != null) && IsTargetInRange;
+        }
+
+        public bool IsTargetExpired()
+        {
+            return Definition.Targeting.RetargetTime > 0 && TargetAge > Definition.Targeting.RetargetTime;
         }
 
         private void ResetTargetingState()
@@ -70,6 +93,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (!TargetGridsState || targetGrid == null)
                 return false;
 
+            if (IsTargetExpired() && targetGrid == TargetEntity)
+                return false;
+
             switch (targetGrid.GridSizeEnum) // Filter large/small grid
             {
                 case MyCubeSize.Large:
@@ -94,6 +120,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (!TargetCharactersState || targetCharacter == null)
                 return false;
 
+            if (IsTargetExpired() && targetCharacter == TargetEntity)
+                return false;
+
             if (!ShouldConsiderTarget(HeartUtils.GetRelationsBetweenGridAndPlayer(SorterWep.CubeGrid, targetCharacter.ControllerInfo?.ControllingIdentityId)))
                 return false;
 
@@ -104,6 +133,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         public bool ShouldConsiderTarget(Projectile targetProjectile)
         {
             if (!TargetProjectilesState || targetProjectile == null)
+                return false;
+
+            if (IsTargetExpired() && targetProjectile == TargetProjectile)
                 return false;
 
             MyRelationsBetweenPlayerAndBlock relations = MyRelationsBetweenPlayerAndBlock.NoOwnership;

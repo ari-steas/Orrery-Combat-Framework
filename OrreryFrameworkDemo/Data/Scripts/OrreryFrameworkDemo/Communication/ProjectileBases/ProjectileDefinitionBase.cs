@@ -1,32 +1,30 @@
-﻿using ProtoBuf;
+﻿using Heart_Module.Data.Scripts.HeartModule.Definitions.StandardClasses;
+using ProtoBuf;
 using Sandbox.Game.Entities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VRage.Game.Entity;
 using VRage.Utils;
 using VRageMath;
 
-namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.ProjectileBases
+namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
 {
     /// <summary>
-    /// Standard serializable projectile definition. Add onto definition base using the partial modifier.
+    /// Standard serializable projectile definition.
     /// </summary>
     [ProtoContract]
-    public partial class ProjectileDefinitionBase
+    public class ProjectileDefinitionBase
     {
         public ProjectileDefinitionBase() { }
 
         [ProtoMember(99)] public int InternalId = 0; // TODO: Deterministic weapon IDs to avoid syncing )))
-        [ProtoMember(1)] public string Name;
+        [ProtoMember(1)] public string Name = "";
         [ProtoMember(2)] public Ungrouped Ungrouped;
         [ProtoMember(3)] public Damage Damage;
         [ProtoMember(4)] public PhysicalProjectile PhysicalProjectile;
         [ProtoMember(5)] public Visual Visual;
         [ProtoMember(6)] public Audio Audio;
-        [ProtoMember(7)] public Guidance[] Guidance;
+        [ProtoMember(7)] public Guidance[] Guidance = new Guidance[0];
         [ProtoMember(8)] public LiveMethods LiveMethods = new LiveMethods();
     }
 
@@ -122,11 +120,15 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         [ProtoMember(2)] public float ActiveDuration; // Ignore if -1 or greater than next
         [ProtoMember(3)] public bool UseAimPrediction;
         [ProtoMember(4)] public float TurnRate;
-        [ProtoMember(6)] public int IFF; // 1 is TargetSelf, 2 is TargetEnemies, 4 is TargetFriendlies // TODO
+        [ProtoMember(6)] public IFF_Enum IFF; // 1 is TargetSelf, 2 is TargetEnemies, 4 is TargetFriendlies // TODO
         [ProtoMember(7)] public bool DoRaycast;
         [ProtoMember(8)] public float CastCone;
         [ProtoMember(9)] public float CastDistance;
         [ProtoMember(10)] public float Velocity;
+        /// <summary>
+        /// Random offset from target, in meters.
+        /// </summary>
+        [ProtoMember(11)] public float Inaccuracy;
     }
 
     [ProtoContract]

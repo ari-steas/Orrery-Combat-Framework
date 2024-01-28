@@ -51,7 +51,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding
                     case "addToSelectionButton":
                         {
                             // appends a custom condition after the original condition with an AND.
-                            MyAPIGateway.Utilities.ShowNotification("Removing terminal actions!!");
+                            //MyAPIGateway.Utilities.ShowNotification("Removing terminal actions!!");
                             // pick which way you want it to work:
                             //c.Enabled = TerminalChainedDelegate.Create(c.Enabled, AppendedCondition); // grays out
                             c.Visible = TerminalChainedDelegate.Create(c.Visible, AppendedCondition); // hides

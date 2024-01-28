@@ -1,7 +1,10 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+﻿using Heart_Module.Data.Scripts.HeartModule.Definitions.StandardClasses;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Sandbox.ModAPI;
 using System.Collections.Generic;
+using VRage.Game;
+using VRage.Game.ModAPI;
 using VRage.ModAPI;
 using VRageMath;
 
@@ -119,6 +122,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
 
             foreach (var entity in MyAPIGateway.Entities.GetTopMostEntitiesInSphere(ref sphere))
             {
+                if (!IsTargetAllowed(entity, currentstage))
+                    continue;
+
                 if (frustrum.Intersects(entity.WorldAABB))
                 {
                     //MyAPIGateway.Utilities.ShowNotification("Hit " + entity.DisplayName, 1000 / 60);
@@ -126,6 +132,38 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
                     break;
                 }
             }
+        }
+
+        internal bool IsTargetAllowed(IMyEntity target, Guidance currentStage)
+        {
+            if (projectile.Firer == 0) return true;
+            IMyEntity firer = MyAPIGateway.Entities.GetEntityById(projectile.Firer);
+            if (firer == null || !(firer is IMyCubeBlock))
+                return true;
+
+            MyRelationsBetweenPlayerAndBlock relations;
+
+            if (target is IMyCubeGrid)
+                relations = HeartUtils.GetRelationsBetweeenGrids(((IMyCubeBlock)firer).CubeGrid, (IMyCubeGrid)target);
+            else if (target is IMyPlayer)
+                relations = HeartUtils.GetRelationsBetweenGridAndPlayer(((IMyCubeBlock)firer).CubeGrid, ((IMyPlayer)target).IdentityId);
+            else
+                return true;
+
+            if ((relations == MyRelationsBetweenPlayerAndBlock.NoOwnership || relations == MyRelationsBetweenPlayerAndBlock.Neutral) &&
+                (currentStage.IFF & IFF_Enum.TargetNeutrals) == IFF_Enum.TargetNeutrals)
+                return true;
+            if ((relations == MyRelationsBetweenPlayerAndBlock.Owner) &&
+                (currentStage.IFF & IFF_Enum.TargetSelf) == IFF_Enum.TargetSelf)
+                return true;
+            if ((relations == MyRelationsBetweenPlayerAndBlock.Friends) &&
+                (currentStage.IFF & IFF_Enum.TargetFriendlies) == IFF_Enum.TargetFriendlies)
+                return true;
+            if ((relations == MyRelationsBetweenPlayerAndBlock.Enemies) &&
+                (currentStage.IFF & IFF_Enum.TargetEnemies) == IFF_Enum.TargetEnemies)
+                return true;
+
+            return false;
         }
     }
 }

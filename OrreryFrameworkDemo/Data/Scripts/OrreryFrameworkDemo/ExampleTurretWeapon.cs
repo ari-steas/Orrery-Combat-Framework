@@ -12,7 +12,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 MaxTargetingRange = 1000,
                 MinTargetingRange = 0,
                 CanAutoShoot = true,
-                RetargetTime = 4,
+                RetargetTime = 0,
                 AimTolerance = 0.0175f,
                 DefaultIFF = IFF_Enum.TargetEnemies | IFF_Enum.TargetNeutrals,
                 AllowedTargetTypes = TargetType_Enum.TargetGrids | TargetType_Enum.TargetCharacters,
