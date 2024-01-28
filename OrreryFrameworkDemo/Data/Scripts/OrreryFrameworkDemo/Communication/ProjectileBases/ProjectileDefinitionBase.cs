@@ -55,8 +55,9 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         [ProtoMember(2)] public float FatBlockDamageMod;
         [ProtoMember(3)] public float BaseDamage;
         [ProtoMember(4)] public float AreaDamage;
-        [ProtoMember(5)] public int MaxImpacts;
-        [ProtoMember(6)] public float AreaRadius;
+        [ProtoMember(5)] public float DamageToProjectiles;
+        [ProtoMember(6)] public int MaxImpacts;
+        [ProtoMember(7)] public float AreaRadius;
     }
 
     /// <summary>
@@ -67,7 +68,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
     {
         [ProtoMember(1)] public float Velocity;
         [ProtoMember(2)] public float Acceleration;
-        [ProtoMember(3)] public float Health; // TODO // -1 for un-targetable
+        [ProtoMember(3)] public float Health; // TODO // <=0 for un-targetable
         /// <summary>
         /// Max range of projectile, relative to first firing. For hitscans, max hitscan length.
         /// </summary>
