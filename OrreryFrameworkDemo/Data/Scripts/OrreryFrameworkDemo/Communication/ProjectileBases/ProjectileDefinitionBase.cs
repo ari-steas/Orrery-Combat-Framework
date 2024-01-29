@@ -137,7 +137,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
             if (!HeartApi.HasInited)
                 throw new Exception("HeartAPI has not inited yet!");
             HeartApi.AddOnProjectileSpawn(definitionName, OnSpawn);
-            HeartApi.LogWriteLine("Registered definition " + definitionName);
+            HeartApi.LogWriteLine("Registered LiveMethods on projectile " + definitionName);
         }
 
         public Action<uint, MyEntity> OnSpawn;

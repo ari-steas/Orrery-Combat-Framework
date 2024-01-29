@@ -110,7 +110,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (Definition.Guidance.Length > 0)
                 Guidance = new ProjectileGuidance(this);
 
-            Definition.LiveMethods.OnSpawn?.Invoke(Id, (MyEntity) MyAPIGateway.Entities.GetEntityById(firer));
+            Definition.LiveMethods.OnSpawn?.Invoke(5, null);
         }
 
         public void TickUpdate(float delta)

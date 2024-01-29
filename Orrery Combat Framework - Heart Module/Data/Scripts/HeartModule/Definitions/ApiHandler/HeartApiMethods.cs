@@ -25,6 +25,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
 
         public void AddOnSpawn(string definitionName,  Action<uint, MyEntity> onSpawn)
         {
+            if (onSpawn == null)
+                return;
+
             try
             {
                 ProjectileDefinitionManager.GetDefinition(definitionName).LiveMethods.OnSpawn += onSpawn;

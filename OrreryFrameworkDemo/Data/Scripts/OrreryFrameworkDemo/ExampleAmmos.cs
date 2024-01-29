@@ -86,13 +86,12 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             LiveMethods = new LiveMethods()
             {
-                OnSpawn = BaseOnShoot
             }
         };
 
         private void BaseOnShoot(uint ProjectileId, MyEntity Shooter)
         {
-            MyAPIGateway.Utilities.ShowNotification("EYYYY");
+            HeartApi.LogWriteLine("IT WORKED " + ProjectileId);
         }
 
         ProjectileDefinitionBase ExampleAmmoMissile => new ProjectileDefinitionBase()
@@ -173,7 +172,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             LiveMethods = new LiveMethods()
             {
-                
+                OnSpawn = BaseOnShoot
             }
         };
 
