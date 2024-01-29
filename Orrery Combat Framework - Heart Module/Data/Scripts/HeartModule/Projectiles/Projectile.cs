@@ -66,6 +66,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (Definition.Guidance.Length > 0)
                 Guidance = new ProjectileGuidance(this);
 
+            Definition.LiveMethods.OnSpawn?.Invoke(Id, (MyEntity)MyAPIGateway.Entities.GetEntityById(Firer));
             UpdateFromSerializable(projectile);
         }
 
@@ -110,7 +111,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (Definition.Guidance.Length > 0)
                 Guidance = new ProjectileGuidance(this);
 
-            Definition.LiveMethods.OnSpawn?.Invoke(5, null);
+            Definition.LiveMethods.OnSpawn?.Invoke(Id, (MyEntity) MyAPIGateway.Entities.GetEntityById(Firer));
         }
 
         public void TickUpdate(float delta)
