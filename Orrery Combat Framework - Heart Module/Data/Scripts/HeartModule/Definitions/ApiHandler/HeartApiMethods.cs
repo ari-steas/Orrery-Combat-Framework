@@ -19,6 +19,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
             ModApiMethods = new Dictionary<string, Delegate>()
             {
                 ["AddOnProjectileSpawn"] = new Action<string, Action<uint, MyEntity>>(AddOnSpawn),
+                ["LogWriteLine"] = new Action<string>(HeartData.I.Log.Log),
             };
         }
 

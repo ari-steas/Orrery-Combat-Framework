@@ -11,54 +11,44 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
     {
         const int DefinitionMessageId = 8643;
 
-        byte[] SerializedStorage = null;
+        byte[] SerializedStorage;
         DefinitionContainer storedDef = null;
-        bool AwaitingSend = true;
 
         public override void LoadData()
         {
             if (!MyAPIGateway.Session.IsServer)
                 return;
+            HeartApi.LoadData(ModContext, InitAndSendDefinitions); // Doing it this way because we don't get async stuff :(
 
-            HeartApi.LoadData();
             MyAPIGateway.Utilities.RegisterMessageHandler(DefinitionMessageId, InputHandler);
+        }
+
+        private void InitAndSendDefinitions()
+        {
+            storedDef = HeartDefinitions.GetBaseDefinitions();
+            SerializedStorage = MyAPIGateway.Utilities.SerializeToBinary(storedDef);
+            MyLog.Default.WriteLineAndConsole($"OrreryDefinition [{ModContext.ModName}]: Packaged definitions & preparing to send.");
+
+            MyAPIGateway.Utilities.SendModMessage(DefinitionMessageId, SerializedStorage);
+            foreach (var def in storedDef.AmmoDefs)
+                def.LiveMethods.RegisterMethods(def.Name);
+            MyLog.Default.WriteLineAndConsole($"OrreryDefinition [{ModContext.ModName}]: Sent definitions & returning to sleep.");
         }
 
         private void InputHandler(object o)
         {
-            if (o is bool && (bool)o)
+            if (o is bool && (bool)o && storedDef != null)
             {
-                AwaitingSend = true;
-            }
-        }
-
-        public override void UpdateBeforeSimulation()
-        {
-            if (AwaitingSend)
-            {
-                if (SerializedStorage == null)
-                {
-                    if (HeartApi.HasInited)
-                    {
-                        // Init
-                        storedDef = HeartDefinitions.GetBaseDefinitions();
-                        SerializedStorage = MyAPIGateway.Utilities.SerializeToBinary(storedDef);
-                        MyLog.Default.WriteLineAndConsole($"OrreryDefinition [{ModContext.ModName}]: Packaged definitions & preparing to send.");
-                    }
-                }
-                else
-                {
-                    MyAPIGateway.Utilities.SendModMessage(DefinitionMessageId, SerializedStorage);
-                    foreach (var def in storedDef.AmmoDefs)
-                        def.LiveMethods.RegisterMethods(def.Name);
-                    AwaitingSend = false;
-                    MyLog.Default.WriteLineAndConsole($"OrreryDefinition [{ModContext.ModName}]: Sent definitions & returning to sleep.");
-                }
+                MyAPIGateway.Utilities.SendModMessage(DefinitionMessageId, SerializedStorage);
+                foreach (var def in storedDef.AmmoDefs)
+                    def.LiveMethods.RegisterMethods(def.Name);
+                MyLog.Default.WriteLineAndConsole($"OrreryDefinition [{ModContext.ModName}]: Sent definitions & returning to sleep.");
             }
         }
 
         protected override void UnloadData()
         {
+            HeartApi.UnloadData();
             MyAPIGateway.Utilities.UnregisterMessageHandler(DefinitionMessageId, InputHandler);
         }
     }

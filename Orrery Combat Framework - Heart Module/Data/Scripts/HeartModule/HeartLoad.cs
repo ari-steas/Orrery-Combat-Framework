@@ -46,7 +46,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
                 WeaponDefinitionManager.I = new WeaponDefinitionManager();
                 ProjectileDefinitionManager.I = new ProjectileDefinitionManager();
                 HeartData.I.Log.Log($"Initialized DefinitionManagers");
-
+                
                 apiSender = new ApiSender();
                 apiSender.LoadData();
 

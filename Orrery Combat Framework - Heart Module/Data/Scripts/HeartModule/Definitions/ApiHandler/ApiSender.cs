@@ -16,7 +16,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
         {
             MyAPIGateway.Utilities.SendModMessage(HeartApiChannel, methods); // Update mods that loaded before this one
             MyAPIGateway.Utilities.RegisterMessageHandler(HeartApiChannel, RecieveApiMethods);
-            MyLog.Default.WriteLineAndConsole("Orrery Combat Framework: HeartAPISender ready.");
+            HeartData.I.Log.Log("Orrery Combat Framework: HeartAPISender ready.");
         }
 
         public void UnloadData()
@@ -36,7 +36,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
             if (data is bool && (bool) data)
             {
                 MyAPIGateway.Utilities.SendModMessage(HeartApiChannel, methods);
-                MyLog.Default.WriteLineAndConsole("Orrery Combat Framework: HeartAPISender send methods.");
+                HeartData.I.Log.Log("Orrery Combat Framework: HeartAPISender send methods.");
             }
         }
     }
