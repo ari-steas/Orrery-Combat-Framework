@@ -1,4 +1,6 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+﻿using Heart_Module.Data.Scripts.HeartModule.Definitions;
+using Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler;
+using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
@@ -17,6 +19,8 @@ namespace Heart_Module.Data.Scripts.HeartModule
     internal class HeartLoad : MySessionComponentBase
     {
         CriticalHandle handle;
+        ApiSender apiSender;
+        DefinitionReciever definitionReciever;
         int remainingDegradedModeTicks = 300;
 
         public override void LoadData()
@@ -42,6 +46,12 @@ namespace Heart_Module.Data.Scripts.HeartModule
                 WeaponDefinitionManager.I = new WeaponDefinitionManager();
                 ProjectileDefinitionManager.I = new ProjectileDefinitionManager();
                 HeartData.I.Log.Log($"Initialized DefinitionManagers");
+
+                apiSender = new ApiSender();
+                apiSender.LoadData();
+
+                definitionReciever = new DefinitionReciever();
+                definitionReciever.LoadData();
 
                 HeartData.I.IsSuspended = false;
                 HeartData.I.Log.Log($"Finished loading core.");
@@ -140,9 +150,12 @@ namespace Heart_Module.Data.Scripts.HeartModule
             MyAPIGateway.Entities.OnEntityAdd -= OnEntityAdd;
             MyAPIGateway.Entities.OnEntityRemove -= OnEntityRemove;
 
+            definitionReciever.UnloadData();
             WeaponDefinitionManager.I = null;
             ProjectileDefinitionManager.I = null;
             HeartData.I.Log.Log($"Closed DefinitionManagers");
+
+            apiSender.UnloadData();
 
             HeartData.I.Log.Log($"Closing core, log finishes here.");
             HeartData.I.Log.Close();

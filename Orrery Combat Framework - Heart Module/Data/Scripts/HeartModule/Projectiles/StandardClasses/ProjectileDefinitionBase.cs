@@ -132,7 +132,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         [ProtoMember(11)] public float Inaccuracy;
     }
 
-    public class LiveMethods
+    public class LiveMethods // TODO: Callback on recieved to RegisterMethods()
     {
         // TODO move to definition, and seperate
         public Action<uint, MyEntity> OnSpawn;

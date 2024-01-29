@@ -8,12 +8,11 @@ using VRage.Game.Components;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Definitions
 {
-    [MySessionComponentDescriptor(MyUpdateOrder.NoUpdate, Priority = int.MinValue)]
-    public class DefinitionReciever : MySessionComponentBase
+    public class DefinitionReciever
     {
         const int DefinitionMessageId = 8643; // https://xkcd.com/221/
 
-        public override void LoadData()
+        public void LoadData()
         {
             if (!MyAPIGateway.Session.IsServer)
                 return;
@@ -56,7 +55,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions
             }
         }
 
-        protected override void UnloadData()
+        public void UnloadData()
         {
             MyAPIGateway.Utilities.UnregisterMessageHandler(DefinitionMessageId, RecieveDefinitions);
         }

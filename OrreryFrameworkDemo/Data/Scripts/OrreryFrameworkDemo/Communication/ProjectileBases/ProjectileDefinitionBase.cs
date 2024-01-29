@@ -130,7 +130,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         [ProtoMember(11)] public float Inaccuracy;
     }
 
-    public class LiveMethods
+    public class LiveMethods // TODO: Callback on recieved to RegisterMethods()
     {
         public void RegisterMethods(string definitionName)
         {
