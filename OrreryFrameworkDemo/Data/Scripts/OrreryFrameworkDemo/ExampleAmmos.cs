@@ -1,4 +1,8 @@
 ﻿using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.ProjectileBases;
+using Sandbox.ModAPI;
+using System;
+using System.Collections.Generic;
+using VRage.Game.Entity;
 using VRage.Utils;
 
 namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
@@ -82,11 +86,14 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             LiveMethods = new LiveMethods()
             {
-                DoOnShoot = false,
-                DoOnImpact = false,
-                DoUpdate1 = false,
+                OnSpawn = BaseOnShoot
             }
         };
+
+        private void BaseOnShoot(uint ProjectileId, MyEntity Shooter)
+        {
+            MyAPIGateway.Utilities.ShowNotification("EYYYY");
+        }
 
         ProjectileDefinitionBase ExampleAmmoMissile => new ProjectileDefinitionBase()
         {
@@ -166,9 +173,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             LiveMethods = new LiveMethods()
             {
-                DoOnShoot = false,
-                DoOnImpact = false,
-                DoUpdate1 = false,
+                
             }
         };
 
@@ -221,37 +226,35 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 SoundChance = 0.1f,
             },
             Guidance = new Guidance[]
-    {
-        //new Guidance()
-        //{
-        //    TriggerTime = 0,
-        //    ActiveDuration = -1,
-        //    UseAimPrediction = false,
-        //    TurnRate = -1.5f,
-        //    IFF = 2,
-        //    DoRaycast = false,
-        //    CastCone = 0.5f,
-        //    CastDistance = 1000,
-        //    Velocity = 50f,
-        //},
-        //new Guidance()
-        //{
-        //    TriggerTime = 1f,
-        //    ActiveDuration = -1f,
-        //    UseAimPrediction = false,
-        //    TurnRate = 3.14f,
-        //    IFF = 2,
-        //    DoRaycast = false,
-        //    CastCone = 0.5f,
-        //    CastDistance = 1000,
-        //    Velocity = -1f,
-        //}
-    },
+            {
+                //new Guidance()
+                //{
+                //    TriggerTime = 0,
+                //    ActiveDuration = -1,
+                //    UseAimPrediction = false,
+                //    TurnRate = -1.5f,
+                //    IFF = 2,
+                //    DoRaycast = false,
+                //    CastCone = 0.5f,
+                //    CastDistance = 1000,
+                //    Velocity = 50f,
+                //},
+                //new Guidance()
+                //{
+                //    TriggerTime = 1f,
+                //    ActiveDuration = -1f,
+                //    UseAimPrediction = false,
+                //    TurnRate = 3.14f,
+                //    IFF = 2,
+                //    DoRaycast = false,
+                //    CastCone = 0.5f,
+                //    CastDistance = 1000,
+                //    Velocity = -1f,
+                //}
+            },
             LiveMethods = new LiveMethods()
             {
-                DoOnShoot = false,
-                DoOnImpact = false,
-                DoUpdate1 = false,
+
             }
         };
 

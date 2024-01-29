@@ -4,6 +4,7 @@ using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
+using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRageMath;
 
@@ -108,6 +109,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
             if (Definition.Guidance.Length > 0)
                 Guidance = new ProjectileGuidance(this);
+
+            Definition.LiveMethods.OnSpawn?.Invoke(Id, (MyEntity) MyAPIGateway.Entities.GetEntityById(firer));
         }
 
         public void TickUpdate(float delta)

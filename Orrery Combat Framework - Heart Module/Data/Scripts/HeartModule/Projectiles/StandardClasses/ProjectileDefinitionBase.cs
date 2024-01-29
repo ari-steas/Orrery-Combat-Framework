@@ -25,7 +25,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         [ProtoMember(5)] public Visual Visual;
         [ProtoMember(6)] public Audio Audio;
         [ProtoMember(7)] public Guidance[] Guidance = new Guidance[0];
-        [ProtoMember(8)] public LiveMethods LiveMethods = new LiveMethods();
+        [ProtoIgnore] public LiveMethods LiveMethods = new LiveMethods();
     }
 
     [ProtoContract]
@@ -132,23 +132,20 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         [ProtoMember(11)] public float Inaccuracy;
     }
 
-    [ProtoContract]
     public class LiveMethods
     {
-        [ProtoMember(1)] public bool DoOnShoot; // TODO
-        [ProtoMember(2)] public bool DoOnImpact; // TODO
-        [ProtoMember(3)] public bool DoUpdate1; // TODO
-
         // TODO move to definition, and seperate
-        Dictionary<string, Delegate> liveMethods = new Dictionary<string, Delegate>()
-        {
-            ["OnShoot"] = new Action<uint, MyEntity>(BaseOnShoot),
-            ["OnImpact"] = new Action<uint, MyEntity, MyEntity, bool>(BaseOnImpact),
-            ["Update1"] = new Action<uint, MyEntity>(BaseUpdate1),
-        };
-
-        private static void BaseOnShoot(uint ProjectileId, MyEntity Shooter) { }
-        private static void BaseOnImpact(uint ProjectileId, MyEntity Shooter, MyEntity ImpactEntity, bool EndOfLife) { }
-        private static void BaseUpdate1(uint ProjectileId, MyEntity Shooter) { }
+        public Action<uint, MyEntity> OnSpawn;
+        
+        //public Dictionary<string, Delegate> liveMethods = new Dictionary<string, Delegate>()
+        //{
+        //    //["OnShoot"] = new Action<uint, MyEntity>(BaseOnShoot),
+        //    //["OnImpact"] = new Action<uint, MyEntity, MyEntity, bool>(BaseOnImpact),
+        //    //["Update1"] = new Action<uint, MyEntity>(BaseUpdate1),
+        //};
+        //
+        //private static void BaseOnShoot(uint ProjectileId, MyEntity Shooter) { }
+        //private static void BaseOnImpact(uint ProjectileId, MyEntity Shooter, MyEntity ImpactEntity, bool EndOfLife) { }
+        //private static void BaseUpdate1(uint ProjectileId, MyEntity Shooter) { }
     }
 }

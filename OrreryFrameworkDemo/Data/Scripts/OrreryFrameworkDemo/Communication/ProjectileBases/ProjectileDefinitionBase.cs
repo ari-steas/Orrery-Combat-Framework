@@ -1,7 +1,6 @@
 ﻿using ProtoBuf;
 using Sandbox.Game.Entities;
 using System;
-using System.Collections.Generic;
 using VRage.Game.Entity;
 using VRage.Utils;
 using VRageMath;
@@ -16,7 +15,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
     {
         public ProjectileDefinitionBase() { }
 
-        [ProtoMember(99)] public int InternalId = 0; // TODO: Deterministic weapon IDs to avoid syncing )))
+        [ProtoMember(99)] public int InternalId = -1; // TODO: Deterministic weapon IDs to avoid syncing )))
         [ProtoMember(1)] public string Name = "";
         [ProtoMember(2)] public Ungrouped Ungrouped;
         [ProtoMember(3)] public Damage Damage;
@@ -24,7 +23,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         [ProtoMember(5)] public Visual Visual;
         [ProtoMember(6)] public Audio Audio;
         [ProtoMember(7)] public Guidance[] Guidance = new Guidance[0];
-        [ProtoMember(8)] public LiveMethods LiveMethods = new LiveMethods();
+        [ProtoIgnore] public LiveMethods LiveMethods = new LiveMethods();
     }
 
     [ProtoContract]
@@ -131,23 +130,15 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         [ProtoMember(11)] public float Inaccuracy;
     }
 
-    [ProtoContract]
     public class LiveMethods
     {
-        [ProtoMember(1)] public bool DoOnShoot; // TODO
-        [ProtoMember(2)] public bool DoOnImpact; // TODO
-        [ProtoMember(3)] public bool DoUpdate1; // TODO
-
-        // TODO move to definition, and seperate
-        Dictionary<string, Delegate> liveMethods = new Dictionary<string, Delegate>()
+        public void RegisterMethods(string definitionName)
         {
-            ["OnShoot"] = new Action<uint, MyEntity>(BaseOnShoot),
-            ["OnImpact"] = new Action<uint, MyEntity, MyEntity, bool>(BaseOnImpact),
-            ["Update1"] = new Action<uint, MyEntity>(BaseUpdate1),
-        };
+            if (!HeartApi.HasInited)
+                throw new Exception("HeartAPI has not inited yet!");
+            HeartApi.AddOnProjectileSpawn(definitionName, OnSpawn);
+        }
 
-        private static void BaseOnShoot(uint ProjectileId, MyEntity Shooter) { }
-        private static void BaseOnImpact(uint ProjectileId, MyEntity Shooter, MyEntity ImpactEntity, bool EndOfLife) { }
-        private static void BaseUpdate1(uint ProjectileId, MyEntity Shooter) { }
+        public Action<uint, MyEntity> OnSpawn;
     }
 }

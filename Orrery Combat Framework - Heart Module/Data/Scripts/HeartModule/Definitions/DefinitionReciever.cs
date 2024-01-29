@@ -11,7 +11,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions
     [MySessionComponentDescriptor(MyUpdateOrder.NoUpdate, Priority = int.MinValue)]
     public class DefinitionReciever : MySessionComponentBase
     {
-        const int DefinitionMessageId = 8643;
+        const int DefinitionMessageId = 8643; // https://xkcd.com/221/
 
         public override void LoadData()
         {
@@ -24,6 +24,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions
 
         private void RecieveDefinitions(object o)
         {
+            if (!(o is byte[]))
+                return;
+
             byte[] message = o as byte[];
             if (message == null)
                 return;
@@ -33,6 +36,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions
                 DefinitionContainer definitionContainer = MyAPIGateway.Utilities.SerializeFromBinary<DefinitionContainer>(message);
                 if (definitionContainer == null)
                     return;
+
+                if (definitionContainer.WeaponDefs == null || definitionContainer.AmmoDefs == null)
+                {
+                    SoftHandle.RaiseException($"Error in recieved definition! WeaponDefsIsNull: {definitionContainer.WeaponDefs == null} AmmoDefsIsNull: {definitionContainer.AmmoDefs == null}", typeof(DefinitionReciever));
+                    return;
+                }
 
                 foreach (var wepDef in definitionContainer.WeaponDefs)
                     WeaponDefinitionManager.RegisterDefinition(wepDef);
