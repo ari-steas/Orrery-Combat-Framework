@@ -63,10 +63,10 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             Audio = new Audio()
             {
-                PreShootSound = "",
+                PreShootSound = "ArcWepRailgunLargeCharge",
                 ShootSound = "PunisherNewFire",
                 ReloadSound = "PunisherNewReload",
-                RotationSound = "",
+                RotationSound = "WepTurretGatlingRotate",
             },
             Visuals = new Visuals()
             {
