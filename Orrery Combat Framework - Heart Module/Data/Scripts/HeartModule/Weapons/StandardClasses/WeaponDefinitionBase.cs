@@ -1,5 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Definitions.StandardClasses;
 using ProtoBuf;
+using Sandbox.Game.Entities;
 using System;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
@@ -119,6 +120,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
         [ProtoMember(2)] public string ShootSound;
         [ProtoMember(3)] public string ReloadSound;
         [ProtoMember(4)] public string RotationSound; // TODO
+
+        public MySoundPair RotationSoundPair => new MySoundPair(RotationSound);
+
     }
 
     [ProtoContract]
