@@ -38,7 +38,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions
 
                 if (definitionContainer.WeaponDefs == null || definitionContainer.AmmoDefs == null)
                 {
-                    SoftHandle.RaiseException($"Error in recieved definition! WeaponDefsIsNull: {definitionContainer.WeaponDefs == null} AmmoDefsIsNull: {definitionContainer.AmmoDefs == null}", typeof(DefinitionReciever));
+                    SoftHandle.RaiseException($"Error in recieved definition! WeaponDefsIsNull: {definitionContainer.WeaponDefs == null} AmmoDefsIsNull: {definitionContainer.AmmoDefs == null}", callingType: typeof(DefinitionReciever));
                     return;
                 }
 

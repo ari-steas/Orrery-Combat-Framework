@@ -137,6 +137,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         public Action<uint, MyEntity> OnSpawn;
         public Action<uint, Vector3D, Vector3D, MyEntity> OnImpact;
         public Action<uint> OnEndOfLife;
-        public Action<uint, Guidance?> OnGuidanceStage;
+        //public Action<uint, Guidance?> OnGuidanceStage;
     }
 }

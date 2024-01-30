@@ -66,7 +66,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 
                     // Projectile Generics
                     SetApiMethod("GetProjectileDefinitionId", ref getProjectileDefinitionId);
-                    //SetApiMethod("GetProjectileDefinition", ref getProjectileDefinition); // TODO: Cannot pass type Guidance or type ProjectileDefinitionBase!
+                    SetApiMethod("GetProjectileDefinition", ref getProjectileDefinition); // TODO: Cannot pass type Guidance or type ProjectileDefinitionBase!
 
                     // Weapon Generics
                     SetApiMethod("BlockHasWeapon", ref blockHasWeapon);
@@ -121,18 +121,24 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
         /// </summary>
         public static void AddOnEndOfLife(string projectileDefinition, Action<uint> onEndOfLife) => I?.addOnEndOfLife?.Invoke(projectileDefinition, onEndOfLife);
 
-        private Action<string, Action<uint, Guidance?>> addOnGuidanceStage;
+        //private Action<string, Action<uint, Guidance?>> addOnGuidanceStage;
         /// <summary>
         /// Adds an action triggered when a projectile's guidance stages.
         /// </summary>
-        public static void AddOnGuidanceStage(string projectileDefinition, Action<uint, Guidance?> onStage) => I?.addOnGuidanceStage?.Invoke(projectileDefinition, onStage);
+        //public static void AddOnGuidanceStage(string projectileDefinition, Action<uint, Guidance?> onStage) => I?.addOnGuidanceStage?.Invoke(projectileDefinition, onStage);
 
 
         private Func<string, int> getProjectileDefinitionId;
         public static int GetProjectileDefinitionId(string projectileName) => I?.getProjectileDefinitionId?.Invoke(projectileName) ?? -1;
 
-        private Func<int, ProjectileDefinitionBase> getProjectileDefinition;
-        public static ProjectileDefinitionBase GetProjectileDefinition(int projectileDefId) => I?.getProjectileDefinition?.Invoke(projectileDefId);
+        private Func<int, byte[]> getProjectileDefinition;
+        public static ProjectileDefinitionBase GetProjectileDefinition(int projectileDefId)
+        {
+            byte[] serialized = I?.getProjectileDefinition?.Invoke(projectileDefId);
+            if (serialized == null)
+                return null;
+            return MyAPIGateway.Utilities.SerializeFromBinary<ProjectileDefinitionBase>(serialized);
+        }
 
 
 

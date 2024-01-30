@@ -126,7 +126,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
             catch (Exception ex)
             {
-                SoftHandle.RaiseException($"Invalid ammo definition {projectileDefinitionId} (of {ProjectileDefinitionManager.DefinitionCount()})", typeof(ProjectileManager));
+                SoftHandle.RaiseException($"Invalid ammo definition ({projectileDefinitionId} of {ProjectileDefinitionManager.DefinitionCount()})", ex, typeof(ProjectileManager));
                 return null;
             }
         }
