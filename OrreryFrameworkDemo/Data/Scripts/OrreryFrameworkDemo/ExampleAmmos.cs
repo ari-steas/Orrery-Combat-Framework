@@ -167,7 +167,10 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             LiveMethods = new LiveMethods()
             {
-                OnSpawn = (ProjectileId, Firer) => HeartApi.LogWriteLine("OnSpawn " + ProjectileId + " | " + HeartApi.BlockHasWeapon(Firer)),
+                OnSpawn = (ProjectileId, Firer) => {
+                    HeartApi.LogWriteLine("OnSpawn " + ProjectileId + " | " + HeartApi.BlockHasWeapon(Firer));
+                    //HeartApi.LogWriteLine("NewId: " + HeartApi.UpdateProjectileDefinition(1, ExampleAmmoBeam));
+                    },
                 OnImpact = (ProjectileId, HitPos, HitNormal, HitEntity) => HeartApi.LogWriteLine("OnImpact " + ProjectileId),
                 OnEndOfLife = (ProjectileId) => HeartApi.LogWriteLine("EndOfLife " + ProjectileId),
             }

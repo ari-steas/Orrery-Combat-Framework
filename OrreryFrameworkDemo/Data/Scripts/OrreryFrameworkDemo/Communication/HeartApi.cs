@@ -66,7 +66,9 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 
                     // Projectile Generics
                     SetApiMethod("GetProjectileDefinitionId", ref getProjectileDefinitionId);
-                    SetApiMethod("GetProjectileDefinition", ref getProjectileDefinition); // TODO: Cannot pass type Guidance or type ProjectileDefinitionBase!
+                    SetApiMethod("GetProjectileDefinition", ref getProjectileDefinition);
+                    SetApiMethod("RegisterProjectileDefinition", ref registerProjectileDefinition);
+                    SetApiMethod("UpdateProjectileDefinition", ref updateProjectileDefinition);
 
                     // Weapon Generics
                     SetApiMethod("BlockHasWeapon", ref blockHasWeapon);
@@ -140,7 +142,11 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             return MyAPIGateway.Utilities.SerializeFromBinary<ProjectileDefinitionBase>(serialized);
         }
 
+        private Func<byte[], int> registerProjectileDefinition;
+        public static int RegisterProjectileDefinition(ProjectileDefinitionBase definition) => I?.registerProjectileDefinition?.Invoke(MyAPIGateway.Utilities.SerializeToBinary(definition)) ?? -1;
 
+        private Func<int, byte[], bool> updateProjectileDefinition;
+        public static bool UpdateProjectileDefinition(int definitionId, ProjectileDefinitionBase definition) => I?.updateProjectileDefinition?.Invoke(definitionId, MyAPIGateway.Utilities.SerializeToBinary(definition)) ?? false;
 
         private Func<MyEntity, bool> blockHasWeapon;
         public static bool BlockHasWeapon(MyEntity block) => I?.blockHasWeapon?.Invoke(block) ?? false;

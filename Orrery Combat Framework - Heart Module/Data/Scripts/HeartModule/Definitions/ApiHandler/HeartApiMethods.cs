@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using VRage.Game.Entity;
 using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
+using static VRage.Game.MyObjectBuilder_BehaviorTreeActionNode;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
 {
@@ -31,6 +32,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
                 // Projectile Generics
                 ["GetProjectileDefinitionId"] = new Func<string, int>(GetProjectileDefinitionId),
                 ["GetProjectileDefinition"] = new Func<int, byte[]>(GetProjectileDefinition), // TODO: Allow projectiles/weapons to have independent definitions
+                ["RegisterProjectileDefinition"] = new Func<byte[], int>(RegisterProjectileDefinition),
+                ["UpdateProjectileDefinition"] = new Func<int, byte[], bool>(UpdateProjectileDefinition),
 
                 // Weapon Generics
                 ["BlockHasWeapon"] = new Func<MyEntity, bool>(HasWeapon),
@@ -107,6 +110,24 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
             if (def == null)
                 return null;
             return MyAPIGateway.Utilities.SerializeToBinary(def);
+        }
+        public int RegisterProjectileDefinition(byte[] serialized)
+        {
+            if (serialized == null)
+                return -1;
+            ProjectileDefinitionBase def = MyAPIGateway.Utilities.SerializeFromBinary<ProjectileDefinitionBase>(serialized);
+            if (def == null)
+                return -1;
+            return ProjectileDefinitionManager.RegisterDefinition(def);
+        }
+        public bool UpdateProjectileDefinition(int definitionId, byte[] serialized)
+        {
+            if (serialized == null)
+                return false;
+            ProjectileDefinitionBase def = MyAPIGateway.Utilities.SerializeFromBinary<ProjectileDefinitionBase>(serialized);
+            if (def == null)
+                return false;
+            return ProjectileDefinitionManager.ReplaceDefinition(definitionId, def);
         }
         #endregion
 

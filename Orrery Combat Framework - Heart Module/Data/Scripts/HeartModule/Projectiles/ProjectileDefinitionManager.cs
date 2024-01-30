@@ -46,17 +46,26 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             return I.Definitions.Count > id;
         }
 
-        public static void RegisterDefinition(ProjectileDefinitionBase definition)
+        public static int RegisterDefinition(ProjectileDefinitionBase definition)
         {
             if (I.DefinitionNamePairs.ContainsKey(definition.Name))
             {
                 HeartData.I.Log.Log($"Duplicate ammo definition {definition.Name}! Skipping...");
-                return;
+                return -1;
             }
 
             I.Definitions.Add(definition);
             I.DefinitionNamePairs.Add(definition.Name, I.Definitions.Count - 1);
             HeartData.I.Log.Log($"Registered projectile definition {definition.Name}.");
+            return I.Definitions.Count - 2;
+        }
+
+        public static bool ReplaceDefinition(int definitionId, ProjectileDefinitionBase definition)
+        {
+            if (!HasDefinition(definitionId))
+                return false;
+            I.Definitions[definitionId] = definition;
+            return true;
         }
 
         public static int DefinitionCount()
