@@ -28,7 +28,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         public float Velocity = 0;
         public int RemainingImpacts = 0;
 
-        public Action<Projectile> OnClose = (p) => { };
+        public Action<Projectile> OnClose = (p) =>
+        {
+            p.Definition.LiveMethods.OnEndOfLife?.Invoke(p.Id);
+        };
         public long LastUpdate { get; private set; }
 
         public float DistanceTravelled { get; private set; } = 0;
@@ -195,6 +198,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     PlayImpactAudio(hitInfo.Position); // Audio is global
                 if (!MyAPIGateway.Utilities.IsDedicated)
                     DrawImpactParticle(hitInfo.Position, hitInfo.Normal); // Visuals are clientside
+
+                Definition.LiveMethods.OnImpact?.Invoke(Id, hitInfo.Position, hitInfo.Normal, (MyEntity) hitInfo.HitEntity);
 
                 RemainingImpacts -= 1;
             }
