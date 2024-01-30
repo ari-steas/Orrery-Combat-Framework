@@ -2,6 +2,7 @@
 using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
+using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System;
 using VRage.Game.Entity;
@@ -21,6 +22,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         internal float Elevation = 0;
         internal double DesiredAzimuth = 0;
         internal double DesiredElevation = 0;
+        MyEntity3DSoundEmitter TurretRotationSound;
 
         /// <summary>
         /// Delta for engine ticks; 60tps
@@ -32,7 +34,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public Vector3D AimPoint { get; private set; } = Vector3D.MaxValue; // TODO fix, should be in targeting CS
 
-        public SorterTurretLogic(IMyConveyorSorter sorterWeapon, WeaponDefinitionBase definition, uint id) : base(sorterWeapon, definition, id) { }
+        public SorterTurretLogic(IMyConveyorSorter sorterWeapon, WeaponDefinitionBase definition, uint id) : base(sorterWeapon, definition, id)
+        {
+            TurretRotationSound = new MyEntity3DSoundEmitter(null);
+        }
 
         public override void UpdateAfterSimulation()
         {
@@ -92,12 +97,28 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             DesiredElevation = GetNewElevationAngle(vecToTarget);
         }
 
+        const float tolerance = 0.1f; // Adjust this value as needed
+
         public void UpdateTurretSubparts(float delta)
         {
             if (!Definition.Hardpoint.ControlRotation)
                 return;
             if (Azimuth == DesiredAzimuth && Elevation == DesiredElevation) // Don't move if you're already there
                 return;
+
+            // Play sound if the turret is rotating
+            if (Math.Abs(Azimuth - DesiredAzimuth) > tolerance || Math.Abs(Elevation - DesiredElevation) > tolerance)      //so it doesnt keep playing on tiny adjustments
+            {
+                if (!TurretRotationSound.IsPlaying)
+                {
+                    TurretRotationSound.PlaySound(Definition.Audio.RotationSoundPair, true);
+                }
+            }
+            else if (TurretRotationSound.IsPlaying)
+            {
+                TurretRotationSound.StopSound(false);
+            }
+
 
             MyEntitySubpart azimuth = SubpartManager.GetSubpart(SorterWep, Definition.Assignments.AzimuthSubpart);
             if (azimuth == null)
