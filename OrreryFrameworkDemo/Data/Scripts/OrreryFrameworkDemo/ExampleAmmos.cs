@@ -89,11 +89,6 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             }
         };
 
-        private void BaseOnShoot(uint ProjectileId, MyEntity Shooter)
-        {
-            HeartApi.LogWriteLine("IT WORKED " + ProjectileId);
-        }
-
         ProjectileDefinitionBase ExampleAmmoMissile => new ProjectileDefinitionBase()
         {
             Name = "ExampleAmmoMissile",
@@ -172,7 +167,10 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             LiveMethods = new LiveMethods()
             {
-                OnSpawn = BaseOnShoot
+                OnSpawn = (ProjectileId, Firer) => HeartApi.LogWriteLine("OnSpawn " + ProjectileId),
+                OnImpact = (ProjectileId, HitPos, HitNormal, HitEntity) => HeartApi.LogWriteLine("OnImpact " + ProjectileId),
+                OnGuidanceStage = (ProjectileId, Stage) => HeartApi.LogWriteLine("OnStage " + ProjectileId),
+                OnEndOfLife = (ProjectileId) => HeartApi.LogWriteLine("EndOfLife " + ProjectileId),
             }
         };
 

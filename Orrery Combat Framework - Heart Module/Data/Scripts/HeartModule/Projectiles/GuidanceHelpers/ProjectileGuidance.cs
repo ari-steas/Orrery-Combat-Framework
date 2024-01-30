@@ -95,7 +95,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
                 Vector3D.CreateFromAzimuthAndElevation(HeartData.I.Random.NextDouble() * 2 * Math.PI, HeartData.I.Random.NextDouble() * 2 * Math.PI, out randomOffset);
                 randomOffset *= stages.First.Value.Inaccuracy * HeartData.I.Random.NextDouble();
             }
-
+            projectile.Definition.LiveMethods.OnGuidanceStage?.Invoke(projectile.Id, stages.First?.Value);
             RunGuidance(delta); // Avoid a tick of delay
         }
 

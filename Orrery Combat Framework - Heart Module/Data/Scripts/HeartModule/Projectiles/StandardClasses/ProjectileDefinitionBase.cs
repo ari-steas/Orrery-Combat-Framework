@@ -132,20 +132,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         [ProtoMember(11)] public float Inaccuracy;
     }
 
-    public class LiveMethods // TODO: Callback on recieved to RegisterMethods()
+    public class LiveMethods
     {
-        // TODO move to definition, and seperate
         public Action<uint, MyEntity> OnSpawn;
-        
-        //public Dictionary<string, Delegate> liveMethods = new Dictionary<string, Delegate>()
-        //{
-        //    //["OnShoot"] = new Action<uint, MyEntity>(BaseOnShoot),
-        //    //["OnImpact"] = new Action<uint, MyEntity, MyEntity, bool>(BaseOnImpact),
-        //    //["Update1"] = new Action<uint, MyEntity>(BaseUpdate1),
-        //};
-        //
-        //private static void BaseOnShoot(uint ProjectileId, MyEntity Shooter) { }
-        //private static void BaseOnImpact(uint ProjectileId, MyEntity Shooter, MyEntity ImpactEntity, bool EndOfLife) { }
-        //private static void BaseUpdate1(uint ProjectileId, MyEntity Shooter) { }
+        public Action<uint, Vector3D, Vector3D, MyEntity> OnImpact;
+        public Action<uint> OnEndOfLife;
+        public Action<uint, Guidance?> OnGuidanceStage;
     }
 }
