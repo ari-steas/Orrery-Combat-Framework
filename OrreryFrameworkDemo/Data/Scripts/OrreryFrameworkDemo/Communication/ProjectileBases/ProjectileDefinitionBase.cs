@@ -137,9 +137,15 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
             if (!HeartApi.HasInited)
                 throw new Exception("HeartAPI has not inited yet!");
             HeartApi.AddOnProjectileSpawn(definitionName, OnSpawn);
+            HeartApi.AddOnEndOfLife(definitionName, OnEndOfLife);
+            HeartApi.AddOnImpact(definitionName, OnImpact);
+            HeartApi.AddOnGuidanceStage(definitionName, OnGuidanceStage);
             HeartApi.LogWriteLine("Registered LiveMethods on projectile " + definitionName);
         }
 
         public Action<uint, MyEntity> OnSpawn;
+        public Action<uint, Vector3D, Vector3D, MyEntity> OnImpact;
+        public Action<uint> OnEndOfLife;
+        public Action<uint, Guidance?> OnGuidanceStage;
     }
 }
