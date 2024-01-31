@@ -1,4 +1,6 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+﻿using Heart_Module.Data.Scripts.HeartModule.Definitions;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+using Sandbox.ModAPI;
 using System.Collections.Generic;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
@@ -8,6 +10,25 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         public static ProjectileDefinitionManager I;
         private List<ProjectileDefinitionBase> Definitions = new List<ProjectileDefinitionBase>();
         private Dictionary<string, int> DefinitionNamePairs = new Dictionary<string, int>();
+
+        /// <summary>
+        /// Changes the ID of a projectile definition. If the ID is already occupied, swaps the two definitions. DO NOT CALL ON SERVER!
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="newId"></param>
+        public static void ReorderDefinitions(string name, int newId)
+        {
+            if (!HasDefinition(name)) return;
+            int oldId = GetId(name);
+            if (oldId == newId) return;
+            ProjectileDefinitionBase bufferDefinition = GetDefinition(name);
+            while (!HasDefinition(newId))
+                I.Definitions.Add(null);
+            I.Definitions[oldId] = GetDefinition(newId);
+            I.DefinitionNamePairs[I.Definitions[oldId].Name] = newId;
+            I.Definitions[newId] = bufferDefinition;
+            I.DefinitionNamePairs[name] = newId;
+        }
 
         public static ProjectileDefinitionBase GetDefinition(int id)
         {
@@ -46,7 +67,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             return I.Definitions.Count > id;
         }
 
-        public static int RegisterDefinition(ProjectileDefinitionBase definition)
+        public static int RegisterDefinition(ProjectileDefinitionBase definition, bool syncToClients = false)
         {
             if (I.DefinitionNamePairs.ContainsKey(definition.Name))
             {
@@ -56,15 +77,27 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
             I.Definitions.Add(definition);
             I.DefinitionNamePairs.Add(definition.Name, I.Definitions.Count - 1);
+            if (MyAPIGateway.Session.IsServer)
+                HeartData.I.Net.SendToEveryone(new n_ProjectileDefinitionIdSync(
+                    I.Definitions.Count - 1,
+                    definition.Name,
+                    syncToClients ? MyAPIGateway.Utilities.SerializeToBinary(definition) : null
+                    ));
             HeartData.I.Log.Log($"Registered projectile definition {definition.Name}.");
-            return I.Definitions.Count - 2;
+            return I.Definitions.Count - 1;
         }
 
-        public static bool ReplaceDefinition(int definitionId, ProjectileDefinitionBase definition)
+        public static bool ReplaceDefinition(int definitionId, ProjectileDefinitionBase definition, bool syncToClients = false)
         {
             if (!HasDefinition(definitionId))
                 return false;
             I.Definitions[definitionId] = definition;
+            if (MyAPIGateway.Session.IsServer && syncToClients)
+                HeartData.I.Net.SendToEveryone(new n_ProjectileDefinitionIdSync(
+                    definitionId,
+                    definition.Name,
+                    MyAPIGateway.Utilities.SerializeToBinary(definition)
+                    ));
             return true;
         }
 

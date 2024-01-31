@@ -118,7 +118,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
             ProjectileDefinitionBase def = MyAPIGateway.Utilities.SerializeFromBinary<ProjectileDefinitionBase>(serialized);
             if (def == null)
                 return -1;
-            return ProjectileDefinitionManager.RegisterDefinition(def);
+            return ProjectileDefinitionManager.RegisterDefinition(def, true);
         }
         public bool UpdateProjectileDefinition(int definitionId, byte[] serialized)
         {
@@ -127,7 +127,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
             ProjectileDefinitionBase def = MyAPIGateway.Utilities.SerializeFromBinary<ProjectileDefinitionBase>(serialized);
             if (def == null)
                 return false;
-            return ProjectileDefinitionManager.ReplaceDefinition(definitionId, def);
+            return ProjectileDefinitionManager.ReplaceDefinition(definitionId, def, true);
         }
         #endregion
 
