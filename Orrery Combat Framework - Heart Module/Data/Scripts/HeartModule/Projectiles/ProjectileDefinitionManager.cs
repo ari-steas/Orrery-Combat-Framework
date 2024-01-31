@@ -18,20 +18,24 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         /// <param name="newId"></param>
         public static void ReorderDefinitions(string name, int newId)
         {
-            if (!HasDefinition(name)) return;
-            int oldId = GetId(name);
-            if (oldId == newId) return;
-            ProjectileDefinitionBase bufferDefinition = GetDefinition(name);
-            while (!HasDefinition(newId))
-                I.Definitions.Add(null);
-            I.Definitions[oldId] = GetDefinition(newId);
-            I.DefinitionNamePairs[I.Definitions[oldId].Name] = newId;
-            I.Definitions[newId] = bufferDefinition;
-            I.DefinitionNamePairs[name] = newId;
+            //if (!HasDefinition(name)) return;
+            //int oldId = GetId(name);
+            //if (oldId == newId) return;
+            //ProjectileDefinitionBase bufferDefinition = GetDefinition(name);
+            //while (!HasDefinition(newId))
+            //    I.Definitions.Add(null);
+            //I.Definitions[oldId] = GetDefinition(newId);
+            //I.DefinitionNamePairs[I.Definitions[oldId].Name] = newId;
+            //I.Definitions[newId] = bufferDefinition;
+            //I.DefinitionNamePairs[name] = newId;
         }
 
         public static ProjectileDefinitionBase GetDefinition(int id)
         {
+            foreach (var def in I.Definitions)
+                HeartData.I.Log.Log("Def:  " + def.Name);
+            foreach (var def in I.DefinitionNamePairs)
+                HeartData.I.Log.Log("Pair: " + def.Key);
             if (HasDefinition(id))
                 return I.Definitions[id];
             else
@@ -64,7 +68,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public static bool HasDefinition(int id)
         {
-            return I.Definitions.Count > id;
+            return I.Definitions.Count > id && id > 0;
         }
 
         public static int RegisterDefinition(ProjectileDefinitionBase definition, bool syncToClients = false)

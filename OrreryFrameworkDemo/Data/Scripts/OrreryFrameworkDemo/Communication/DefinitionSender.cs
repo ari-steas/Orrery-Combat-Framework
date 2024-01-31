@@ -16,8 +16,8 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 
         public override void LoadData()
         {
-            if (!MyAPIGateway.Session.IsServer)
-                return;
+            //if (!MyAPIGateway.Session.IsServer)
+            //    return;
             HeartApi.LoadData(ModContext, InitAndSendDefinitions); // Doing it this way because we don't get async stuff :(
 
             MyAPIGateway.Utilities.RegisterMessageHandler(DefinitionMessageId, InputHandler);
