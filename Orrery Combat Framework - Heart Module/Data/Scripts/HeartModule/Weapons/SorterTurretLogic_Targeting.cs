@@ -1,6 +1,7 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Sandbox.ModAPI;
+using System;
 using VRage.Game;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
@@ -61,7 +62,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public bool IsTargetExpired()
         {
-            return Definition.Targeting.RetargetTime > 0 && TargetAge > Definition.Targeting.RetargetTime;
+            return Definition.Targeting.RetargetTime == 0 || TargetAge > Definition.Targeting.RetargetTime || (TargetEntity == null && TargetProjectile == null);
         }
 
         private void ResetTargetingState()
@@ -92,7 +93,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (!TargetGridsState || targetGrid == null)
                 return false;
 
-            if (IsTargetExpired() && targetGrid == TargetEntity)
+            if (Definition.Targeting.RetargetTime != 0 && IsTargetExpired() && targetGrid == TargetEntity)
                 return false;
 
             switch (targetGrid.GridSizeEnum) // Filter large/small grid
@@ -119,7 +120,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (!TargetCharactersState || targetCharacter == null)
                 return false;
 
-            if (IsTargetExpired() && targetCharacter == TargetEntity)
+            if (Definition.Targeting.RetargetTime != 0 && IsTargetExpired() && targetCharacter == TargetEntity)
                 return false;
 
             if (!ShouldConsiderTarget(HeartUtils.GetRelationsBetweenGridAndPlayer(SorterWep.CubeGrid, targetCharacter.ControllerInfo?.ControllingIdentityId)))
@@ -134,7 +135,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (!TargetProjectilesState || targetProjectile == null)
                 return false;
 
-            if (IsTargetExpired() && targetProjectile == TargetProjectile)
+            if (Definition.Targeting.RetargetTime != 0 && IsTargetExpired() && targetProjectile == TargetProjectile)
                 return false;
 
             MyRelationsBetweenPlayerAndBlock relations = MyRelationsBetweenPlayerAndBlock.NoOwnership;

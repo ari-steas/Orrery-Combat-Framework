@@ -1,6 +1,7 @@
 using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Sandbox.Game.Entities;
+using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -82,7 +83,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                         PrimaryGridTarget = null;
                 }
 
-                //MyAPIGateway.Utilities.ShowNotification("Grids: " + ValidGrids.Count, 1000/60);
+                //MyAPIGateway.Utilities.ShowNotification("Grids: " + TargetedGrids.Count, 1000/60);
                 //MyAPIGateway.Utilities.ShowNotification("Characters: " + ValidCharacters.Count, 1000/60);
                 //MyAPIGateway.Utilities.ShowNotification("Projectiles: " + ValidProjectiles.Count, 1000/60);
 
