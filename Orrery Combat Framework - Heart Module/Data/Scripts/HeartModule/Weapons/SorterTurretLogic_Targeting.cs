@@ -16,7 +16,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public void UpdateTargeting()
         {
-            MyAPIGateway.Utilities.ShowNotification(TargetAge + "", 1000/60);
             MuzzleMatrix = CalcMuzzleMatrix(0); // Set stored MuzzleMatrix
 
             if (TargetProjectile != null)

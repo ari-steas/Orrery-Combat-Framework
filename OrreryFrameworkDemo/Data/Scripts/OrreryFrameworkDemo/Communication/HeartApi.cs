@@ -74,14 +74,14 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     SetApiMethod("BlockHasWeapon", ref blockHasWeapon);
 
                     HasInited = true;
-                    LogWriteLine($"[{ModContext.ModName}] HeartAPI inited.");
+                    LogWriteLine($"HeartAPI inited.");
                     OnLoad?.Invoke();
                 }
             }
             catch (Exception ex)
             {
                 MyLog.Default.WriteLineAndConsole($"Orrery Combat Framework: [{ModContext.ModName}] ERR: Failed to init HeartAPI! {ex}");
-                logWriteLine?.Invoke($"[{ModContext.ModName}] ERR: Failed to init HeartAPI! {ex}");
+                logWriteLine?.Invoke($"ERR: Failed to init HeartAPI! {ex}");
             }
 
             methodMap = null;

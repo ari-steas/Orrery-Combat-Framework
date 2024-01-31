@@ -32,10 +32,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public static ProjectileDefinitionBase GetDefinition(int id)
         {
-            foreach (var def in I.Definitions)
-                HeartData.I.Log.Log("Def:  " + def.Name);
-            foreach (var def in I.DefinitionNamePairs)
-                HeartData.I.Log.Log("Pair: " + def.Key);
             if (HasDefinition(id))
                 return I.Definitions[id];
             else
@@ -68,7 +64,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public static bool HasDefinition(int id)
         {
-            return I.Definitions.Count > id && id > 0;
+            return I.Definitions.Count > id && id >= 0;
         }
 
         public static int RegisterDefinition(ProjectileDefinitionBase definition, bool syncToClients = false)
@@ -87,7 +83,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     definition.Name,
                     syncToClients ? MyAPIGateway.Utilities.SerializeToBinary(definition) : null
                     ));
-            HeartData.I.Log.Log($"Registered projectile definition {definition.Name}.");
+            HeartData.I.Log.Log($"Registered projectile definition {definition.Name} for ID {I.Definitions.Count - 1}.");
             return I.Definitions.Count - 1;
         }
 
