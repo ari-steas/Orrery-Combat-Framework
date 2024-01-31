@@ -45,7 +45,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         /// </summary>
         [ProtoMember(4)] public int ShotsPerMagazine;
         /// <summary>
-        /// Number of shots in single reload.
+        /// The item that needs to get consumed for the magazine to reload. Leave blank to not consume anything. The weapon model should probably have a conveyor port.
         /// </summary>
         [ProtoMember(5)] public string MagazineItemToConsume;
     }
