@@ -50,7 +50,9 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             {
                 Ammos = new string[]
                 {
+                    ExampleAmmoBeam.Name,
                     ExampleAmmoProjectile.Name,
+                    ExampleAmmoMissile.Name,
                 },
 
                 RateOfFire = 5,

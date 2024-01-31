@@ -87,17 +87,44 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             if (NextReloadTime <= 0)
             {
-                MagazinesLoaded++;
-                RemainingReloads--;
-                NextReloadTime = Definition.ReloadTime;
-                ShotsInMag += shotsPerMag;
-
-                // Check and remove a steel plate from the inventory
                 var inventory = GetInventoryFunc();
-                var steelPlate = new MyDefinitionId(typeof(MyObjectBuilder_Component), "SteelPlate");
-                if (inventory.ContainItems(1, steelPlate))
+                var ammoDefinition = ProjectileDefinitionManager.GetDefinition(SelectedAmmo);
+                string magazineItem = ammoDefinition.Ungrouped.MagazineItemToConsume;
+
+                // Check and remove the specified item from the inventory
+                if (!string.IsNullOrWhiteSpace(magazineItem))
                 {
-                    inventory.RemoveItemsOfType(1, steelPlate);
+                    var itemToConsume = new MyDefinitionId(typeof(MyObjectBuilder_Component), magazineItem);
+                    if (inventory.ContainItems(1, itemToConsume))
+                    {
+                        inventory.RemoveItemsOfType(1, itemToConsume);
+
+                        // Notify item consumption
+                        MyVisualScriptLogicProvider.ShowNotification($"Consumed 1 {magazineItem} for reloading.", 1000 / 60, "White");
+
+                        // Reload logic
+                        MagazinesLoaded++;
+                        RemainingReloads--;
+                        NextReloadTime = Definition.ReloadTime;
+                        ShotsInMag += shotsPerMag;
+
+                        if (!string.IsNullOrEmpty(DefinitionAudio.ReloadSound))
+                        {
+                            MyVisualScriptLogicProvider.PlaySingleSoundAtPosition(DefinitionAudio.ReloadSound, Vector3D.Zero); // Assuming Vector3D.Zero as placeholder
+                        }
+                    }
+                    else
+                    {
+                        // Notify item not available
+                        MyVisualScriptLogicProvider.ShowNotification($"Unable to reload - {magazineItem} not found in inventory.", 1000 / 60, "Red");
+                    }
+                }
+                else
+                {
+                    // Notify when MagazineItemToConsume is not specified
+                    MyVisualScriptLogicProvider.ShowNotification("MagazineItemToConsume not specified, proceeding with default reload behavior.", 1000 / 60, "Blue");
+
+                    // Default reload behavior could go here if any
                 }
             }
         }

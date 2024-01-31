@@ -18,6 +18,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 Recoil = 5000,
                 Impulse = 5000,
                 ShotsPerMagazine = 5,
+                MagazineItemToConsume = "SteelPlate",
             },
             Damage = new Damage()
             {
@@ -98,6 +99,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 Recoil = 0,
                 Impulse = 5000,
                 ShotsPerMagazine = 10,
+                MagazineItemToConsume = "",
             },
             Damage = new Damage()
             {
@@ -185,6 +187,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 Recoil = 0,
                 Impulse = 0,
                 ShotsPerMagazine = 1,
+                MagazineItemToConsume = "",
             },
             Damage = new Damage()
             {
