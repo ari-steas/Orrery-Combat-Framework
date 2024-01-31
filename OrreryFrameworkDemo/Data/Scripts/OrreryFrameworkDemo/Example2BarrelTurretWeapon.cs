@@ -52,6 +52,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 {
                     ExampleAmmoBeam.Name,
                     ExampleAmmoProjectile.Name,
+                    ExampleAmmoMissile.Name,
                 },
 
                 RateOfFire = 5,
