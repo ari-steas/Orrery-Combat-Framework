@@ -45,6 +45,10 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         /// Number of shots in single reload.
         /// </summary>
         [ProtoMember(4)] public int ShotsPerMagazine;
+        /// <summary>
+        /// Number of shots in single reload.
+        /// </summary>
+        [ProtoMember(5)] public string MagazineItemToConsume;
     }
 
     [ProtoContract]
