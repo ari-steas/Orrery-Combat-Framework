@@ -15,7 +15,6 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
     {
         public ProjectileDefinitionBase() { }
 
-        [ProtoMember(99)] public int InternalId = -1; // TODO: Deterministic weapon IDs to avoid syncing )))
         [ProtoMember(1)] public string Name = "";
         [ProtoMember(2)] public Ungrouped Ungrouped;
         [ProtoMember(3)] public Damage Damage;
@@ -143,13 +142,13 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
             HeartApi.AddOnProjectileSpawn(definitionName, OnSpawn);
             HeartApi.AddOnEndOfLife(definitionName, OnEndOfLife);
             HeartApi.AddOnImpact(definitionName, OnImpact);
-            HeartApi.AddOnGuidanceStage(definitionName, OnGuidanceStage);
+            //HeartApi.AddOnGuidanceStage(definitionName, OnGuidanceStage);
             HeartApi.LogWriteLine("Registered LiveMethods on projectile " + definitionName);
         }
 
         public Action<uint, MyEntity> OnSpawn;
         public Action<uint, Vector3D, Vector3D, MyEntity> OnImpact;
         public Action<uint> OnEndOfLife;
-        public Action<uint, Guidance?> OnGuidanceStage;
+        //public Action<uint, Guidance?> OnGuidanceStage;
     }
 }

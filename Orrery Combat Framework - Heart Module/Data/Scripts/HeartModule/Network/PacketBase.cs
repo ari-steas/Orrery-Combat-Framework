@@ -1,4 +1,5 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+﻿using Heart_Module.Data.Scripts.HeartModule.Definitions;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using ProtoBuf;
 
@@ -10,6 +11,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
     [ProtoInclude(4, typeof(n_ProjectileArray))]
     [ProtoInclude(5, typeof(n_TurretFacing))]
     [ProtoInclude(6, typeof(n_TurretFacingArray))]
+    [ProtoInclude(7, typeof(n_ProjectileDefinitionIdSync))]
     [ProtoContract(UseProtoMembersOnly = true)]
     public abstract partial class PacketBase
     {

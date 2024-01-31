@@ -17,7 +17,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     {
         public ProjectileDefinitionBase() { }
 
-        [ProtoMember(99)] public int InternalId = 0; // TODO: Deterministic weapon IDs to avoid syncing )))
         [ProtoMember(1)] public string Name = "";
         [ProtoMember(2)] public Ungrouped Ungrouped;
         [ProtoMember(3)] public Damage Damage;
@@ -137,6 +136,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         public Action<uint, MyEntity> OnSpawn;
         public Action<uint, Vector3D, Vector3D, MyEntity> OnImpact;
         public Action<uint> OnEndOfLife;
-        public Action<uint, Guidance?> OnGuidanceStage;
+        //public Action<uint, Guidance?> OnGuidanceStage;
     }
 }

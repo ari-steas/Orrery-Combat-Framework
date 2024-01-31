@@ -6,10 +6,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.ErrorHandler
 {
     public class SoftHandle
     {
-        public static void RaiseException(string message, Type callingType = null, ulong callerId = ulong.MaxValue)
+        public static void RaiseException(string message, Exception ex = null, Type callingType = null, ulong callerId = ulong.MaxValue)
         {
-            MyAPIGateway.Utilities.ShowNotification("Minor Exception: " + message);
-            Exception soft = new Exception(message);
+            if (message == null)
+                return;
+
+            if (!MyAPIGateway.Utilities.IsDedicated)
+                MyAPIGateway.Utilities.ShowNotification("Minor Exception: " + message);
+            Exception soft = new Exception(message, ex);
             HeartData.I.Log.LogException(soft, callingType ?? typeof(SoftHandle), callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "");
             if (MyAPIGateway.Session.IsServer)
                 HeartData.I.Net.SendToEveryone(new n_SerializableError(soft, false));
@@ -19,8 +23,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.ErrorHandler
         {
             if (exception == null)
                 return;
-
-            MyAPIGateway.Utilities.ShowNotification("Minor Exception: " + exception.Message);
+            if (!MyAPIGateway.Utilities.IsDedicated)
+                MyAPIGateway.Utilities.ShowNotification("Minor Exception: " + exception.Message);
             HeartData.I.Log.LogException(exception, callingType ?? typeof(SoftHandle), callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "");
         }
 
@@ -28,8 +32,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.ErrorHandler
         {
             if (exception == null)
                 return;
-
-            MyAPIGateway.Utilities.ShowNotification("Minor Exception: " + exception.ExceptionMessage);
+            if (!MyAPIGateway.Utilities.IsDedicated)
+                MyAPIGateway.Utilities.ShowNotification("Minor Exception: " + exception.ExceptionMessage);
             HeartData.I.Log.LogException(exception, callingType ?? typeof(SoftHandle), callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "");
         }
 

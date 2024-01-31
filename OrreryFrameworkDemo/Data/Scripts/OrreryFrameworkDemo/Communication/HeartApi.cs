@@ -66,20 +66,22 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 
                     // Projectile Generics
                     SetApiMethod("GetProjectileDefinitionId", ref getProjectileDefinitionId);
-                    //SetApiMethod("GetProjectileDefinition", ref getProjectileDefinition); // TODO: Cannot pass type Guidance or type ProjectileDefinitionBase!
+                    SetApiMethod("GetProjectileDefinition", ref getProjectileDefinition);
+                    SetApiMethod("RegisterProjectileDefinition", ref registerProjectileDefinition);
+                    SetApiMethod("UpdateProjectileDefinition", ref updateProjectileDefinition);
 
                     // Weapon Generics
                     SetApiMethod("BlockHasWeapon", ref blockHasWeapon);
 
                     HasInited = true;
-                    LogWriteLine($"[{ModContext.ModName}] HeartAPI inited.");
+                    LogWriteLine($"HeartAPI inited.");
                     OnLoad?.Invoke();
                 }
             }
             catch (Exception ex)
             {
                 MyLog.Default.WriteLineAndConsole($"Orrery Combat Framework: [{ModContext.ModName}] ERR: Failed to init HeartAPI! {ex}");
-                logWriteLine?.Invoke($"[{ModContext.ModName}] ERR: Failed to init HeartAPI! {ex}");
+                logWriteLine?.Invoke($"ERR: Failed to init HeartAPI! {ex}");
             }
 
             methodMap = null;
@@ -121,20 +123,30 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
         /// </summary>
         public static void AddOnEndOfLife(string projectileDefinition, Action<uint> onEndOfLife) => I?.addOnEndOfLife?.Invoke(projectileDefinition, onEndOfLife);
 
-        private Action<string, Action<uint, Guidance?>> addOnGuidanceStage;
+        //private Action<string, Action<uint, Guidance?>> addOnGuidanceStage;
         /// <summary>
         /// Adds an action triggered when a projectile's guidance stages.
         /// </summary>
-        public static void AddOnGuidanceStage(string projectileDefinition, Action<uint, Guidance?> onStage) => I?.addOnGuidanceStage?.Invoke(projectileDefinition, onStage);
+        //public static void AddOnGuidanceStage(string projectileDefinition, Action<uint, Guidance?> onStage) => I?.addOnGuidanceStage?.Invoke(projectileDefinition, onStage);
 
 
         private Func<string, int> getProjectileDefinitionId;
         public static int GetProjectileDefinitionId(string projectileName) => I?.getProjectileDefinitionId?.Invoke(projectileName) ?? -1;
 
-        private Func<int, ProjectileDefinitionBase> getProjectileDefinition;
-        public static ProjectileDefinitionBase GetProjectileDefinition(int projectileDefId) => I?.getProjectileDefinition?.Invoke(projectileDefId);
+        private Func<int, byte[]> getProjectileDefinition;
+        public static ProjectileDefinitionBase GetProjectileDefinition(int projectileDefId)
+        {
+            byte[] serialized = I?.getProjectileDefinition?.Invoke(projectileDefId);
+            if (serialized == null)
+                return null;
+            return MyAPIGateway.Utilities.SerializeFromBinary<ProjectileDefinitionBase>(serialized);
+        }
 
+        private Func<byte[], int> registerProjectileDefinition;
+        public static int RegisterProjectileDefinition(ProjectileDefinitionBase definition) => I?.registerProjectileDefinition?.Invoke(MyAPIGateway.Utilities.SerializeToBinary(definition)) ?? -1;
 
+        private Func<int, byte[], bool> updateProjectileDefinition;
+        public static bool UpdateProjectileDefinition(int definitionId, ProjectileDefinitionBase definition) => I?.updateProjectileDefinition?.Invoke(definitionId, MyAPIGateway.Utilities.SerializeToBinary(definition)) ?? false;
 
         private Func<MyEntity, bool> blockHasWeapon;
         public static bool BlockHasWeapon(MyEntity block) => I?.blockHasWeapon?.Invoke(block) ?? false;

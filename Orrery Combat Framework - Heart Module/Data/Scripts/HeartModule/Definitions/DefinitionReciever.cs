@@ -14,8 +14,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions
 
         public void LoadData()
         {
-            if (!MyAPIGateway.Session.IsServer)
-                return;
+            //if (!MyAPIGateway.Session.IsServer)
+            //    return;
 
             MyAPIGateway.Utilities.RegisterMessageHandler(DefinitionMessageId, RecieveDefinitions);
             MyAPIGateway.Utilities.SendModMessage(DefinitionMessageId, true); // Notify client mods that this is ready
@@ -38,7 +38,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions
 
                 if (definitionContainer.WeaponDefs == null || definitionContainer.AmmoDefs == null)
                 {
-                    SoftHandle.RaiseException($"Error in recieved definition! WeaponDefsIsNull: {definitionContainer.WeaponDefs == null} AmmoDefsIsNull: {definitionContainer.AmmoDefs == null}", typeof(DefinitionReciever));
+                    SoftHandle.RaiseException($"Error in recieved definition! WeaponDefsIsNull: {definitionContainer.WeaponDefs == null} AmmoDefsIsNull: {definitionContainer.AmmoDefs == null}", callingType: typeof(DefinitionReciever));
                     return;
                 }
 

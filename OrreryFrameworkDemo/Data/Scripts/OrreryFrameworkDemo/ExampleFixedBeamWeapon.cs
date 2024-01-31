@@ -48,7 +48,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     ExampleAmmoBeam.Name,
                 },
 
-                RateOfFire = 3600,
+                RateOfFire = 60,
                 BarrelsPerShot = 1,
                 ProjectilesPerBarrel = 1,
                 ReloadTime = 0,

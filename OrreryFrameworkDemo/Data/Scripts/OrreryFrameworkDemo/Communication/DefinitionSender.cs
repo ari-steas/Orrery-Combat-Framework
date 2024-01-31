@@ -16,8 +16,8 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 
         public override void LoadData()
         {
-            if (!MyAPIGateway.Session.IsServer)
-                return;
+            //if (!MyAPIGateway.Session.IsServer)
+            //    return;
             HeartApi.LoadData(ModContext, InitAndSendDefinitions); // Doing it this way because we don't get async stuff :(
 
             MyAPIGateway.Utilities.RegisterMessageHandler(DefinitionMessageId, InputHandler);
@@ -27,12 +27,12 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
         {
             storedDef = HeartDefinitions.GetBaseDefinitions();
             SerializedStorage = MyAPIGateway.Utilities.SerializeToBinary(storedDef);
-            MyLog.Default.WriteLineAndConsole($"OrreryDefinition [{ModContext.ModName}]: Packaged definitions & preparing to send.");
+            HeartApi.LogWriteLine($"Packaged definitions & preparing to send.");
 
             MyAPIGateway.Utilities.SendModMessage(DefinitionMessageId, SerializedStorage);
             foreach (var def in storedDef.AmmoDefs)
                 def.LiveMethods.RegisterMethods(def.Name);
-            MyLog.Default.WriteLineAndConsole($"OrreryDefinition [{ModContext.ModName}]: Sent definitions & returning to sleep.");
+            HeartApi.LogWriteLine($"Sent definitions & returning to sleep.");
         }
 
         private void InputHandler(object o)

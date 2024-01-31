@@ -34,7 +34,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
                 return;
             }
 
-            Log(prefix + $"Exception in {callingType.FullName}! {ex.Message}\n{ex.StackTrace}");
+            Log(prefix + $"Exception in {callingType.FullName}! {ex.Message}\n{ex.StackTrace}\n{ex.InnerException}");
         }
 
         public void LogException(n_SerializableError ex, Type callingType, string prefix = "")
