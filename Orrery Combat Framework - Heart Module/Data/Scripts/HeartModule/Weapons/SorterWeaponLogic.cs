@@ -254,12 +254,19 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public void SetAmmo(int AmmoId)
         {
-            int i = Array.IndexOf(Definition.Loading.Ammos, ProjectileDefinitionManager.GetDefinition(AmmoId)?.Name);
-            if (i == -1)
+            Magazines.SelectedAmmo = AmmoId;
+            Settings.AmmoLoadedState = Magazines.SelectedAmmo;
+
+            Magazines.EmptyMagazines();
+        }
+
+        public void SetAmmoByIdx(int AmmoIdx)
+        {
+            if (AmmoIdx < 0 || AmmoIdx >= Definition.Loading.Ammos.Length)
                 return;
 
-            Magazines.AmmoIndex = i;
-            Settings.AmmoLoadedState = AmmoId;
+            Magazines.AmmoIndex = AmmoIdx;
+            Settings.AmmoLoadedState = Magazines.SelectedAmmo;
 
             Magazines.EmptyMagazines();
         }
@@ -305,7 +312,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             set
             {
-                SetAmmo((int)value);
+                SetAmmoByIdx((int)value);
 
                 Settings.AmmoLoadedState = value;
                 if (AmmoLoadedState != null)
