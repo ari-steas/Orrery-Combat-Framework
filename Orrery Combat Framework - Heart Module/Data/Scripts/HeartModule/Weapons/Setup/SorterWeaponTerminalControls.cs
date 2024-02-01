@@ -91,18 +91,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             return "Unknown Ammo";
         }
 
-        private static string GetControlTypeName(long controltypeKey)
-        {
-            // Implementation
-            switch (controltypeKey)
-            {
-                case 0: return "Value A";
-                case 1: return "Value B";
-                case 2: return "Value C";
-                default: return "Unknown Control";
-            }
-        }
-
         static void CreateControls()
         {
             // all the control types:

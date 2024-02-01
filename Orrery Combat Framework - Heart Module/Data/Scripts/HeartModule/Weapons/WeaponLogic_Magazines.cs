@@ -117,15 +117,19 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     {
                         // Notify item not available
                         MyVisualScriptLogicProvider.ShowNotification($"Unable to reload - {magazineItem} not found in inventory.", 1000 / 60, "Red");
+                        return;
                     }
                 }
                 else
                 {
                     // Notify when MagazineItemToConsume is not specified
                     MyVisualScriptLogicProvider.ShowNotification("MagazineItemToConsume not specified, proceeding with default reload behavior.", 1000 / 60, "Blue");
-
-                    // Default reload behavior could go here if any
                 }
+
+                MagazinesLoaded++;
+                RemainingReloads--;
+                NextReloadTime = Definition.ReloadTime;
+                ShotsInMag += shotsPerMag;
             }
         }
 
