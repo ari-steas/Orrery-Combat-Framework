@@ -372,7 +372,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             }
         }
 
-        public bool Terminal_Heart_PreferUniqueTargets // TODO
+        public bool Terminal_Heart_PreferUniqueTargets
         {
             get
             {

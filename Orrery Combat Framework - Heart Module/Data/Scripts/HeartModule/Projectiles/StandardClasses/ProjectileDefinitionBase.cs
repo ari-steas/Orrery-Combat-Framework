@@ -62,6 +62,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         [ProtoMember(5)] public float DamageToProjectiles;
         [ProtoMember(6)] public int MaxImpacts;
         [ProtoMember(7)] public float AreaRadius;
+        [ProtoMember(8)] public float DamageToProjectilesRadius;
     }
 
     /// <summary>
@@ -82,6 +83,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         /// Disables velocity updates, and changes several behaviors. Call (Projectile).UpdateBeam() to recycle and lower performance impact.
         /// </summary>
         [ProtoMember(6)] public bool IsHitscan;
+        /// <summary>
+        /// The size of the projectile in meters. Used for point defense hit checking.
+        /// </summary>
+        [ProtoMember(7)] public float ProjectileSize;
     }
 
     [ProtoContract]
@@ -124,7 +129,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         [ProtoMember(2)] public float ActiveDuration; // Ignore if -1 or greater than next
         [ProtoMember(3)] public bool UseAimPrediction;
         [ProtoMember(4)] public float TurnRate;
-        [ProtoMember(6)] public IFF_Enum IFF; // 1 is TargetSelf, 2 is TargetEnemies, 4 is TargetFriendlies // TODO
+        [ProtoMember(6)] public IFF_Enum IFF; // 1 is TargetSelf, 2 is TargetEnemies, 4 is TargetFriendlies
         [ProtoMember(7)] public bool DoRaycast;
         [ProtoMember(8)] public float CastCone;
         [ProtoMember(9)] public float CastDistance;

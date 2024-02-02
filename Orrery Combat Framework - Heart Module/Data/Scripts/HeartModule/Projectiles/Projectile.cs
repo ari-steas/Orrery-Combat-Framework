@@ -38,6 +38,21 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         public float Age { get; private set; } = 0;
         public bool QueuedDispose { get; private set; } = false;
 
+        private float _health = 0;
+        public float Health
+        {
+            get
+            {
+                return _health;
+            }
+            set
+            {
+                _health = value;
+                if (_health <= 0)
+                    QueueDispose();
+            }
+        }
+
         public Projectile() { }
 
         public Projectile(n_SerializableProjectile projectile)
@@ -178,11 +193,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             foreach (var hitInfo in intersects)
             {
                 if (RemainingImpacts <= 0)
-                {
-                    if (!IsHitscan)
-                        QueueDispose();
                     break;
-                }
 
                 if (hitInfo.HitEntity.EntityId == Firer)
                     continue; // Skip firer
@@ -201,8 +212,49 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
                 Definition.LiveMethods.OnImpact?.Invoke(Id, hitInfo.Position, hitInfo.Normal, (MyEntity) hitInfo.HitEntity);
 
-                RemainingImpacts -= 1;
+                RemainingImpacts--;
             }
+
+            if (RemainingImpacts <= 0 && Definition.Damage.DamageToProjectiles > 0)
+            {
+                List<Projectile> hittableProjectiles = new List<Projectile>();
+                ProjectileManager.I.GetProjectilesInSphere(new BoundingSphereD(Position, len), ref hittableProjectiles, true);
+
+                float damageToProjectilesInAoE = 0;
+                List<Projectile> projectilesInAoE = new List<Projectile>();
+                ProjectileManager.I.GetProjectilesInSphere(new BoundingSphereD(Position, Definition.Damage.DamageToProjectilesRadius), ref projectilesInAoE, true);
+
+                RayD ray = new RayD(Position, Direction);
+
+                foreach (var projectile in hittableProjectiles)
+                {
+                    if (RemainingImpacts <= 0 && projectile == this)
+                        continue;
+
+                    Vector3D offset = Vector3D.Half * projectile.Definition.PhysicalProjectile.ProjectileSize;
+                    BoundingBoxD box = new BoundingBoxD(projectile.Position - offset, projectile.Position + offset);
+                    
+                    if (ray.Intersects(box) != null)
+                    {
+                        projectile.Health -= Definition.Damage.DamageToProjectiles;
+
+                        damageToProjectilesInAoE += Definition.Damage.DamageToProjectiles;
+
+                        RemainingImpacts--;
+                    }
+                }
+
+                if (damageToProjectilesInAoE > 0)
+                    foreach (var projectile in projectilesInAoE)
+                        if (projectile != this)
+                            projectile.Health -= damageToProjectilesInAoE;
+
+                MyAPIGateway.Utilities.ShowNotification("Damaged " + projectilesInAoE.Count);
+            }
+
+            if (RemainingImpacts <= 0)
+                if (!IsHitscan)
+                    QueueDispose();
 
             return (float)dist;
         }

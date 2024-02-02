@@ -340,13 +340,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                     allCharacters.Add(entity as IMyCharacter);
             }
 
-            List<uint> allProjectiles = new List<uint>();
+            List<Projectile> allProjectiles = new List<Projectile>();
             ProjectileManager.I.GetProjectilesInSphere(sphere, ref allProjectiles, true);
 
             UpdateAvailableTargets(allGrids, allCharacters, allProjectiles, false);
         }
 
-        public void UpdateAvailableTargets(List<IMyCubeGrid> allGrids, List<IMyCharacter> allCharacters, List<uint> allProjectiles, bool distanceCheck = true)
+        public void UpdateAvailableTargets(List<IMyCubeGrid> allGrids, List<IMyCharacter> allCharacters, List<Projectile> allProjectiles, bool distanceCheck = true)
         {
             float maxRangeSq = MaxTargetingRange * MaxTargetingRange;
 
@@ -366,8 +366,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
             if (DoesTargetProjectiles) // Limit valid projectiles to those in range
                 foreach (var projectile in allProjectiles)
-                    if (!distanceCheck || Vector3D.DistanceSquared(gridPosition, ProjectileManager.I.GetProjectile(projectile).Position) < maxRangeSq)
-                        projBuffer.Add(projectile, 0);
+                    if (!distanceCheck || Vector3D.DistanceSquared(gridPosition, projectile.Position) < maxRangeSq)
+                        projBuffer.Add(projectile.Id, 0);
 
             TargetedGrids = new SortedList<IMyCubeGrid, int>(gridBuffer, GridComparer);
             TargetedCharacters = new SortedList<IMyCharacter, int>(charBuffer, CharacterComparer);

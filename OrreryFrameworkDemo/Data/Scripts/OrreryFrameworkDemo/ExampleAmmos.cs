@@ -28,6 +28,8 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 AreaDamage = 0,
                 AreaRadius = 0,
                 MaxImpacts = 1,
+                DamageToProjectiles = 10,
+                DamageToProjectilesRadius = 10,
             },
             PhysicalProjectile = new PhysicalProjectile()
             {
@@ -112,12 +114,13 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             PhysicalProjectile = new PhysicalProjectile()
             {
-                Velocity = 800,
+                Velocity = 10,
                 Acceleration = 1,
                 Health = 1,
                 MaxTrajectory = 4000,
                 MaxLifetime = -1,
                 IsHitscan = false,
+                ProjectileSize = 1,
             },
             Visual = new Visual()
             {

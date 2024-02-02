@@ -132,7 +132,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public bool ShouldConsiderTarget(Projectile targetProjectile)
         {
-            if (!TargetProjectilesState || targetProjectile == null)
+            if (!TargetProjectilesState || targetProjectile == null || targetProjectile.Firer == SorterWep.EntityId)
                 return false;
 
             if (Definition.Targeting.RetargetTime != 0 && IsTargetExpired() && targetProjectile == TargetProjectile)
