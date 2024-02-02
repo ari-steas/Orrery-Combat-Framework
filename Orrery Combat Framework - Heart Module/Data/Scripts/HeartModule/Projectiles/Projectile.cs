@@ -1,4 +1,5 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
+using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Sandbox.ModAPI;
@@ -76,6 +77,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             Definition = ProjectileDefinitionManager.GetDefinition(projectile.DefinitionId.Value);
             Firer = projectile.Firer.GetValueOrDefault(0);
             IsHitscan = Definition.PhysicalProjectile.IsHitscan;
+            Health = Definition.PhysicalProjectile.Health;
             if (!IsHitscan)
                 Velocity = Definition.PhysicalProjectile.Velocity;
             else
@@ -125,6 +127,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 Definition.PhysicalProjectile.MaxLifetime = 1 / 60f;
 
             RemainingImpacts = Definition.Damage.MaxImpacts;
+            Health = Definition.PhysicalProjectile.Health;
 
             if (Definition.Guidance.Length > 0)
                 Guidance = new ProjectileGuidance(this);
@@ -180,43 +183,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (NextMoveStep == Vector3D.Zero)
                 return -1;
 
-            //List<MyLineSegmentOverlapResult<MyEntity>> intersects = new List<MyLineSegmentOverlapResult<MyEntity>>();
-            List<IHitInfo> intersects = new List<IHitInfo>();
-            MyAPIGateway.Physics.CastRay(Position, NextMoveStep, intersects);
-
-            //LineD ray = new LineD(Position, NextMoveStep);
-            //MyGamePruningStructure.GetTopmostEntitiesOverlappingRay(ref ray, intersects); // TODO: This is causing problems with hitting own grid
-
             double len = IsHitscan ? Definition.PhysicalProjectile.MaxTrajectory : Vector3D.Distance(Position, NextMoveStep);
             double dist = -1;
 
-            foreach (var hitInfo in intersects)
+            if (RemainingImpacts > 0 && Definition.Damage.DamageToProjectiles > 0)
             {
-                if (RemainingImpacts <= 0)
-                    break;
+                MyAPIGateway.Utilities.ShowNotification("RemI " + RemainingImpacts);
 
-                if (hitInfo.HitEntity.EntityId == Firer)
-                    continue; // Skip firer
-
-                dist = hitInfo.Fraction * len;
-
-                if (hitInfo.HitEntity is IMyCubeGrid)
-                    DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Grid, this, hitInfo.Position, hitInfo.Normal));
-                else if (hitInfo.HitEntity is IMyCharacter)
-                    DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Character, this, hitInfo.Position, hitInfo.Normal));
-
-                if (MyAPIGateway.Session.IsServer)
-                    PlayImpactAudio(hitInfo.Position); // Audio is global
-                if (!MyAPIGateway.Utilities.IsDedicated)
-                    DrawImpactParticle(hitInfo.Position, hitInfo.Normal); // Visuals are clientside
-
-                Definition.LiveMethods.OnImpact?.Invoke(Id, hitInfo.Position, hitInfo.Normal, (MyEntity) hitInfo.HitEntity);
-
-                RemainingImpacts--;
-            }
-
-            if (RemainingImpacts <= 0 && Definition.Damage.DamageToProjectiles > 0)
-            {
                 List<Projectile> hittableProjectiles = new List<Projectile>();
                 ProjectileManager.I.GetProjectilesInSphere(new BoundingSphereD(Position, len), ref hittableProjectiles, true);
 
@@ -228,17 +201,27 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
                 foreach (var projectile in hittableProjectiles)
                 {
-                    if (RemainingImpacts <= 0 && projectile == this)
+                    if (RemainingImpacts <= 0 || projectile == this)
                         continue;
 
                     Vector3D offset = Vector3D.Half * projectile.Definition.PhysicalProjectile.ProjectileSize;
                     BoundingBoxD box = new BoundingBoxD(projectile.Position - offset, projectile.Position + offset);
-                    
-                    if (ray.Intersects(box) != null)
+                    double? intersectDist = ray.Intersects(box);
+                    if (intersectDist != null)
                     {
+                        dist = intersectDist.Value;
                         projectile.Health -= Definition.Damage.DamageToProjectiles;
 
                         damageToProjectilesInAoE += Definition.Damage.DamageToProjectiles;
+
+                        Vector3D hitPos = Position + Direction * dist;
+
+                        if (MyAPIGateway.Session.IsServer)
+                            PlayImpactAudio(hitPos); // Audio is global
+                        if (!MyAPIGateway.Utilities.IsDedicated)
+                            DrawImpactParticle(hitPos, Direction); // Visuals are clientside
+
+                        Definition.LiveMethods.OnImpact?.Invoke(Id, hitPos, Direction, null);
 
                         RemainingImpacts--;
                     }
@@ -248,8 +231,41 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     foreach (var projectile in projectilesInAoE)
                         if (projectile != this)
                             projectile.Health -= damageToProjectilesInAoE;
+            }
 
-                MyAPIGateway.Utilities.ShowNotification("Damaged " + projectilesInAoE.Count);
+            if (RemainingImpacts > 0)
+            {
+                //List<MyLineSegmentOverlapResult<MyEntity>> intersects = new List<MyLineSegmentOverlapResult<MyEntity>>();
+                List<IHitInfo> intersects = new List<IHitInfo>();
+                MyAPIGateway.Physics.CastRay(Position, NextMoveStep, intersects);
+
+                //LineD ray = new LineD(Position, NextMoveStep);
+                //MyGamePruningStructure.GetTopmostEntitiesOverlappingRay(ref ray, intersects); // TODO: This is causing problems with hitting own grid
+
+                foreach (var hitInfo in intersects)
+                {
+                    if (RemainingImpacts <= 0)
+                        break;
+
+                    if (hitInfo.HitEntity.EntityId == Firer)
+                        continue; // Skip firer
+
+                    dist = hitInfo.Fraction * len;
+
+                    if (hitInfo.HitEntity is IMyCubeGrid)
+                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Grid, this, hitInfo.Position, hitInfo.Normal));
+                    else if (hitInfo.HitEntity is IMyCharacter)
+                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Character, this, hitInfo.Position, hitInfo.Normal));
+
+                    if (MyAPIGateway.Session.IsServer)
+                        PlayImpactAudio(hitInfo.Position); // Audio is global
+                    if (!MyAPIGateway.Utilities.IsDedicated)
+                        DrawImpactParticle(hitInfo.Position, hitInfo.Normal); // Visuals are clientside
+
+                    Definition.LiveMethods.OnImpact?.Invoke(Id, hitInfo.Position, hitInfo.Normal, (MyEntity)hitInfo.HitEntity);
+
+                    RemainingImpacts--;
+                }
             }
 
             if (RemainingImpacts <= 0)

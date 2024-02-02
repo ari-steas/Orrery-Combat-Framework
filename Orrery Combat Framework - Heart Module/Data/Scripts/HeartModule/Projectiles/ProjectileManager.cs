@@ -68,6 +68,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 if (ProjectilesWithHealth.Contains(projectile))
                     ProjectilesWithHealth.Remove(projectile);
                 projectile.OnClose.Invoke(projectile);
+                if (projectile.Health < 0)
+                    MyAPIGateway.Utilities.ShowNotification(projectile.Id + "");
             }
             QueuedCloseProjectiles.Clear();
 
