@@ -16,6 +16,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         public static ProjectileManager I = new ProjectileManager();
 
         private Dictionary<uint, Projectile> ActiveProjectiles = new Dictionary<uint, Projectile>();
+        private HashSet<Projectile> ProjectilesWithHealth = new HashSet<Projectile>();
         public uint NextId { get; private set; } = 0;
         private List<Projectile> QueuedCloseProjectiles = new List<Projectile>();
         /// <summary>
@@ -64,7 +65,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     projectile.CloseDrawing();
 
                 ActiveProjectiles.Remove(projectile.Id);
+                if (ProjectilesWithHealth.Contains(projectile))
+                    ProjectilesWithHealth.Remove(projectile);
                 projectile.OnClose.Invoke(projectile);
+                if (projectile.Health < 0)
+                    MyAPIGateway.Utilities.ShowNotification(projectile.Id + "");
             }
             QueuedCloseProjectiles.Clear();
 
@@ -146,6 +151,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 QueueSync(projectile, 0);
             if (!MyAPIGateway.Utilities.IsDedicated)
                 projectile.InitEffects();
+            if (projectile.Definition.PhysicalProjectile.Health > 0 && projectile.Definition.PhysicalProjectile.ProjectileSize > 0)
+                ProjectilesWithHealth.Add(projectile);
             return projectile;
         }
 
@@ -173,16 +180,20 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         /// <param name="sphere"></param>
         /// <param name="projectiles"></param>
         /// <param name="onlyDamageable"></param>
-        public void GetProjectilesInSphere(BoundingSphereD sphere, ref List<uint> projectiles, bool onlyDamageable = false)
+        public void GetProjectilesInSphere(BoundingSphereD sphere, ref List<Projectile> projectiles, bool onlyDamageable = false)
         {
             projectiles.Clear();
             double rangeSq = sphere.Radius * sphere.Radius;
             Vector3D pos = sphere.Center;
 
-            foreach (var projectile in ActiveProjectiles.Values)
-                if (!onlyDamageable || projectile.Definition.PhysicalProjectile.Health != -1)
+            if (onlyDamageable)
+                foreach (var projectil in ProjectilesWithHealth)
+                    if (Vector3D.DistanceSquared(pos, projectil.Position) < rangeSq)
+                        projectiles.Add(projectil);
+            else
+                foreach (var projectile in ActiveProjectiles.Values)
                     if (Vector3D.DistanceSquared(pos, projectile.Position) < rangeSq)
-                        projectiles.Add(projectile.Id);
+                        projectiles.Add(projectile);
         }
     }
 }

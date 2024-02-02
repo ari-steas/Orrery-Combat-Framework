@@ -15,7 +15,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 RetargetTime = 0,
                 AimTolerance = 0.0175f,
                 DefaultIFF = IFF_Enum.TargetEnemies | IFF_Enum.TargetNeutrals,
-                AllowedTargetTypes = TargetType_Enum.TargetGrids | TargetType_Enum.TargetCharacters,
+                AllowedTargetTypes = TargetType_Enum.TargetGrids | TargetType_Enum.TargetCharacters | TargetType_Enum.TargetProjectiles,
             },
             Assignments = new Assignments()
             {

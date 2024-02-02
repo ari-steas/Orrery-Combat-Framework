@@ -303,7 +303,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             }
         }
 
-        public long Terminal_Heart_AmmoComboBox
+        public int Terminal_Heart_AmmoComboBox
         {
             get
             {
@@ -312,7 +312,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             set
             {
-                SetAmmoByIdx((int)value);
+                SetAmmoByIdx(value);
 
                 Settings.AmmoLoadedState = value;
                 if (AmmoLoadedState != null)

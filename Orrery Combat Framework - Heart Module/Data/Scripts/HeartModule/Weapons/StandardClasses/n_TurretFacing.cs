@@ -8,7 +8,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
     [ProtoContract]
     public class n_TurretFacing : PacketBase
     {
-        // TODO: Add support for turrets
+        // TODO: Add support for turrets with stacked subparts
         [ProtoMember(21)] long TurretId;
         [ProtoMember(22)] float Azimuth;
         [ProtoMember(23)] float Elevation;

@@ -60,6 +60,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         [ProtoMember(5)] public float DamageToProjectiles;
         [ProtoMember(6)] public int MaxImpacts;
         [ProtoMember(7)] public float AreaRadius;
+        [ProtoMember(8)] public float DamageToProjectilesRadius;
     }
 
     /// <summary>
@@ -80,6 +81,10 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         /// Disables velocity updates, and changes several behaviors. Call (Projectile).UpdateBeam() to recycle and lower performance impact.
         /// </summary>
         [ProtoMember(6)] public bool IsHitscan;
+        /// <summary>
+        /// The size of the projectile in meters. Used for point defense hit checking.
+        /// </summary>
+        [ProtoMember(7)] public float ProjectileSize;
     }
 
     [ProtoContract]

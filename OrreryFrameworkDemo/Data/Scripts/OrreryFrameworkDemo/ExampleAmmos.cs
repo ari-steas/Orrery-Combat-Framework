@@ -28,6 +28,8 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 AreaDamage = 0,
                 AreaRadius = 0,
                 MaxImpacts = 1,
+                DamageToProjectiles = 0.2f,
+                DamageToProjectilesRadius = 0.2f,
             },
             PhysicalProjectile = new PhysicalProjectile()
             {
@@ -118,16 +120,17 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 MaxTrajectory = 4000,
                 MaxLifetime = -1,
                 IsHitscan = false,
+                ProjectileSize = 1,
             },
             Visual = new Visual()
             {
-                //Model = "Models\\Weapons\\Projectile_Missile.mwm",
-                TrailTexture = MyStringId.GetOrCompute("WeaponLaser"),
-                TrailFadeTime = 0f,
-                TrailLength = 8,
-                TrailWidth = 0.5f,
-                TrailColor = new VRageMath.Vector4(61, 24, 24, 200),
-                //AttachedParticle = "Smoke_Missile",
+                Model = "Models\\Weapons\\Projectile_Missile.mwm",
+                //TrailTexture = MyStringId.GetOrCompute("WeaponLaser"),
+                //TrailFadeTime = 0f,
+                //TrailLength = 8,
+                //TrailWidth = 0.5f,
+                //TrailColor = new VRageMath.Vector4(61, 24, 24, 200),
+                AttachedParticle = "Smoke_Missile",
                 ImpactParticle = "MaterialHit_Metal",
                 VisibleChance = 1f,
             },

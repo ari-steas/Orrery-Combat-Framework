@@ -59,12 +59,12 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             GetInventoryFunc = getInventoryFunc;
             RemainingReloads = Definition.MaxReloads;
             NextReloadTime = Definition.ReloadTime;
+            AmmoIndex = ammoIdx;
             if (startLoaded)
             {
                 MagazinesLoaded = Definition.MagazinesToLoad;
-                ShotsInMag = 10; // TODO tie into ammo
+                ShotsInMag = ProjectileDefinitionManager.GetDefinition(SelectedAmmo).Ungrouped.ShotsPerMagazine;
             }
-            AmmoIndex = ammoIdx;
         }
 
         public int MagazinesLoaded = 0;
