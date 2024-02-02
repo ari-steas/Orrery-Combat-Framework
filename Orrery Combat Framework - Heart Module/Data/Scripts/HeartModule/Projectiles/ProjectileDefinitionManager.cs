@@ -5,14 +5,18 @@ using System.Collections.Generic;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 {
+    /// <summary>
+    /// Collects and distributes all projectile definitions.
+    /// </summary>
     internal class ProjectileDefinitionManager
     {
         public static ProjectileDefinitionManager I;
-        private List<ProjectileDefinitionBase> Definitions = new List<ProjectileDefinitionBase>();
+        private List<ProjectileDefinitionBase> Definitions = new List<ProjectileDefinitionBase>(); // TODO: Store serialized versions of definitions in case of modded functionality
         private Dictionary<string, int> DefinitionNamePairs = new Dictionary<string, int>();
 
         /// <summary>
         /// Changes the ID of a projectile definition. If the ID is already occupied, swaps the two definitions. DO NOT CALL ON SERVER!
+        /// Unused.
         /// </summary>
         /// <param name="name"></param>
         /// <param name="newId"></param>
@@ -67,6 +71,24 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             return I.Definitions.Count > id && id >= 0;
         }
 
+        /// <summary>
+        /// Use this when creating a definiton live.
+        /// </summary>
+        /// <param name="definition"></param>
+        /// <returns></returns>
+        public static int RegisterModApiDefinition(ProjectileDefinitionBase definition)
+        {
+            if (HasDefinition(definition.Name))
+                throw new System.Exception("Attempted to assign ProjectileDefinition to existing ID!");
+            return RegisterDefinition(definition, true);
+        }
+
+        /// <summary>
+        /// Registers a projectile definition.
+        /// </summary>
+        /// <param name="definition"></param>
+        /// <param name="syncToClients"></param>
+        /// <returns></returns>
         public static int RegisterDefinition(ProjectileDefinitionBase definition, bool syncToClients = false)
         {
             if (I.DefinitionNamePairs.ContainsKey(definition.Name))

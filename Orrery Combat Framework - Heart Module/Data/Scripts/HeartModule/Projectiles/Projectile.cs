@@ -148,7 +148,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             {
                 Guidance?.RunGuidance(delta);
 
-                CheckHits(delta);
+                CheckHits();
                 Velocity += Definition.PhysicalProjectile.Acceleration * delta;
                 Position += (InheritedVelocity + Direction * Velocity) * delta;
                 DistanceTravelled += Velocity * delta;
@@ -169,7 +169,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
                 if (RemainingImpacts > 0)
                 {
-                    MaxBeamLength = CheckHits(delta); // Set visual beam length
+                    MaxBeamLength = CheckHits(); // Set visual beam length
                     if (MaxBeamLength == -1)
                         MaxBeamLength = Definition.PhysicalProjectile.MaxTrajectory;
                 }
@@ -178,7 +178,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 UpdateAudio();
         }
 
-        public float CheckHits(float delta)
+        public float CheckHits()
         {
             if (NextMoveStep == Vector3D.Zero)
                 return -1;

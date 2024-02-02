@@ -2,6 +2,7 @@
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,9 @@ using static VRage.Game.MyObjectBuilder_BehaviorTreeActionNode;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
 {
+    /// <summary>
+    /// Contains every HeartApi method.
+    /// </summary>
     internal class HeartApiMethods
     {
         internal readonly Dictionary<string, Delegate> ModApiMethods;
@@ -37,9 +41,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
 
                 // Weapon Generics
                 ["BlockHasWeapon"] = new Func<MyEntity, bool>(HasWeapon),
+                ["SubtypeHasDefinition"] = new Func<string, bool>(SubtypeHasDefinition),
+                ["GetWeaponDefinitions"] = new Func<string[]>(GetWeaponDefinitions),
+                ["GetWeaponDefinition"] = new Func<string, byte[]>(GetWeaponDefinition),
+                ["RegisterWeaponDefinition"] = new Func<byte[], bool>(RegisterWeaponDefinition),
+                ["UpdateWeaponDefinition"] = new Func<byte[], bool>(UpdateWeaponDefinition),
 
                 // Standard
                 ["LogWriteLine"] = new Action<string>(HeartData.I.Log.Log),
+                ["GetNetworkLoad"] = new Func<int>(GetNetworkLoad),
             };
         }
 
@@ -118,7 +128,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
             ProjectileDefinitionBase def = MyAPIGateway.Utilities.SerializeFromBinary<ProjectileDefinitionBase>(serialized);
             if (def == null)
                 return -1;
-            return ProjectileDefinitionManager.RegisterDefinition(def, true);
+            return ProjectileDefinitionManager.RegisterModApiDefinition(def);
         }
         public bool UpdateProjectileDefinition(int definitionId, byte[] serialized)
         {
@@ -136,6 +146,56 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
         {
             return block is IMyConveyorSorter && ((IMyConveyorSorter) block).GameLogic is SorterWeaponLogic;
         }
+
+        public bool SubtypeHasDefinition(string subtype)
+        {
+            return WeaponDefinitionManager.HasDefinition(subtype);
+        }
+
+        public string[] GetWeaponDefinitions() => WeaponDefinitionManager.GetAllDefinitions();
+
+        public byte[] GetWeaponDefinition(string subtype)
+        {
+            if (WeaponDefinitionManager.HasDefinition(subtype))
+                return MyAPIGateway.Utilities.SerializeToBinary(WeaponDefinitionManager.GetDefinition(subtype));
+            return null;
+        }
+
+        public bool RegisterWeaponDefinition(byte[] definition)
+        {
+            if (definition == null || definition.Length == 0)
+                return false;
+
+            WeaponDefinitionBase weaponDef = MyAPIGateway.Utilities.SerializeFromBinary<WeaponDefinitionBase>(definition);
+            if (definition == null)
+            {
+                SoftHandle.RaiseException("Invalid weapon definition!");
+                return false;
+            }
+
+            return WeaponDefinitionManager.RegisterModApiDefinition(weaponDef);
+        }
+
+        public bool UpdateWeaponDefinition(byte[] definition)
+        {
+            if (definition == null || definition.Length == 0)
+                return false;
+
+            WeaponDefinitionBase weaponDef = MyAPIGateway.Utilities.SerializeFromBinary<WeaponDefinitionBase>(definition);
+            if (definition == null)
+            {
+                SoftHandle.RaiseException("Invalid weapon definition!");
+                return false;
+            }
+
+            return WeaponDefinitionManager.UpdateDefinition(weaponDef);
+        }
+        #endregion
+
+        #region Debug Methods
+
+        public int GetNetworkLoad() => HeartData.I.Net.NetworkLoad;
+
         #endregion
     }
 }
