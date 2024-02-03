@@ -38,6 +38,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
                 ["GetProjectileDefinition"] = new Func<int, byte[]>(GetProjectileDefinition), // TODO: Allow projectiles/weapons to have independent definitions
                 ["RegisterProjectileDefinition"] = new Func<byte[], int>(RegisterProjectileDefinition),
                 ["UpdateProjectileDefinition"] = new Func<int, byte[], bool>(UpdateProjectileDefinition),
+                ["RemoveProjectileDefinition"] = new Action<int>(ProjectileDefinitionManager.RemoveDefinition),
 
                 // Weapon Generics
                 ["BlockHasWeapon"] = new Func<MyEntity, bool>(HasWeapon),
@@ -46,6 +47,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
                 ["GetWeaponDefinition"] = new Func<string, byte[]>(GetWeaponDefinition),
                 ["RegisterWeaponDefinition"] = new Func<byte[], bool>(RegisterWeaponDefinition),
                 ["UpdateWeaponDefinition"] = new Func<byte[], bool>(UpdateWeaponDefinition),
+                ["RemoveWeaponDefinition"] = new Action<string>(WeaponDefinitionManager.RemoveDefinition),
 
                 // Standard
                 ["LogWriteLine"] = new Action<string>(HeartData.I.Log.Log),

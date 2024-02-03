@@ -1,5 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
+using Sandbox.Game.GUI.DebugInputComponents;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,6 +13,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
     {
         public static WeaponDefinitionManager I;
 
+        // TODO: Unorganized list of definitions for single-block definitions
         private Dictionary<string, WeaponDefinitionBase> Definitions = new Dictionary<string, WeaponDefinitionBase>(); // TODO: Store serialized versions of definitions in case of modded functionality.
 
         public static WeaponDefinitionBase GetDefinition(string subTypeId)
@@ -65,6 +67,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
             if (HeartData.I.IsLoaded)
                 WeaponManager.I.UpdateLogicOnExistingBlocks(definition);
+        }
+
+        public static void RemoveDefinition(string subtype)
+        {
+            if (!HasDefinition(subtype))
+                return;
+
+            WeaponDefinitionBase definition = I.Definitions[subtype];
+            WeaponManager.I.RemoveLogicOnExistingBlocks(definition);
+            I.Definitions.Remove(subtype);
+
+            HeartData.I.Log.Log("Removed weapon definition " + subtype);
         }
 
         public static int DefinitionCount()

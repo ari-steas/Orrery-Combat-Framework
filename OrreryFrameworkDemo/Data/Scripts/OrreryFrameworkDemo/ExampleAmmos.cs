@@ -89,6 +89,13 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             LiveMethods = new LiveMethods()
             {
+                //OnSpawn = (a, b) => {
+                //    HeartApi.RegisterWeaponDefinition(Example2BarrelTurretWeapon);
+                //},
+                //OnImpact = (a, b, c, d) =>
+                //{
+                //    HeartApi.RemoveWeaponDefinition(Example2BarrelTurretWeapon.Assignments.BlockSubtype);
+                //}
             }
         };
 

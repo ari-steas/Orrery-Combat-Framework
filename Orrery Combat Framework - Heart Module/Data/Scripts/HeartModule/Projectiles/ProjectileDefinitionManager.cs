@@ -2,6 +2,7 @@
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Sandbox.ModAPI;
 using System.Collections.Generic;
+using VRage.Utils;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 {
@@ -13,26 +14,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         public static ProjectileDefinitionManager I;
         private List<ProjectileDefinitionBase> Definitions = new List<ProjectileDefinitionBase>(); // TODO: Store serialized versions of definitions in case of modded functionality
         private Dictionary<string, int> DefinitionNamePairs = new Dictionary<string, int>();
-
-        /// <summary>
-        /// Changes the ID of a projectile definition. If the ID is already occupied, swaps the two definitions. DO NOT CALL ON SERVER!
-        /// Unused.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="newId"></param>
-        public static void ReorderDefinitions(string name, int newId)
-        {
-            //if (!HasDefinition(name)) return;
-            //int oldId = GetId(name);
-            //if (oldId == newId) return;
-            //ProjectileDefinitionBase bufferDefinition = GetDefinition(name);
-            //while (!HasDefinition(newId))
-            //    I.Definitions.Add(null);
-            //I.Definitions[oldId] = GetDefinition(newId);
-            //I.DefinitionNamePairs[I.Definitions[oldId].Name] = newId;
-            //I.Definitions[newId] = bufferDefinition;
-            //I.DefinitionNamePairs[name] = newId;
-        }
 
         public static ProjectileDefinitionBase GetDefinition(int id)
         {
@@ -121,6 +102,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     MyAPIGateway.Utilities.SerializeToBinary(definition)
                     ));
             return true;
+        }
+
+        public static void RemoveDefinition(int definitionId)
+        {
+            if (!HasDefinition(definitionId))
+                return;
+
+            var definition = I.Definitions[definitionId];
+            I.DefinitionNamePairs.Remove(definition.Name);
+            I.Definitions.RemoveAt(definitionId);
+
+            HeartData.I.Log.Log($"Removed ammo definition " + definitionId);
         }
 
         public static int DefinitionCount()
