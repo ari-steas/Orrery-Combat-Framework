@@ -125,8 +125,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
                     weaponStatus.Remove(weaponTextId);
             }
 
+            int i = 0;
             foreach (var weapon in weapons)
+            {
+                if (i > 14)
+                    break;
                 UpdateWeaponText(weapon);
+                i++;
+            }
         }
 
         public void ClearWeaponText()
