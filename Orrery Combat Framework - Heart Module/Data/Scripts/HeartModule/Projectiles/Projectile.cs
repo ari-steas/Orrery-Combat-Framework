@@ -188,8 +188,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
             if (RemainingImpacts > 0 && Definition.Damage.DamageToProjectiles > 0)
             {
-                MyAPIGateway.Utilities.ShowNotification("RemI " + RemainingImpacts);
-
                 List<Projectile> hittableProjectiles = new List<Projectile>();
                 ProjectileManager.I.GetProjectilesInSphere(new BoundingSphereD(Position, len), ref hittableProjectiles, true);
 

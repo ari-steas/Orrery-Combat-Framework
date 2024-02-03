@@ -1,4 +1,5 @@
 ﻿using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.ProjectileBases;
+using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.WeaponBases;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
@@ -57,6 +58,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 
                     // Standard
                     SetApiMethod("LogWriteLine", ref logWriteLine);
+                    SetApiMethod("GetNetworkLoad", ref getNetworkLoad);
 
                     // Projectile LiveMethods
                     SetApiMethod("AddOnProjectileSpawn", ref addOnProjectileSpawn);
@@ -72,6 +74,12 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 
                     // Weapon Generics
                     SetApiMethod("BlockHasWeapon", ref blockHasWeapon);
+                    SetApiMethod("SubtypeHasDefinition", ref subtypeHasDefinition);
+                    SetApiMethod("GetWeaponDefinitions", ref getWeaponDefinitions);
+                    SetApiMethod("GetWeaponDefinition", ref getWeaponDefinition);
+                    SetApiMethod("RegisterWeaponDefinition", ref registerWeaponDefinition);
+                    SetApiMethod("UpdateWeaponDefinition", ref updateWeaponDefinition);
+
 
                     HasInited = true;
                     LogWriteLine($"HeartAPI inited.");
@@ -100,6 +108,8 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
         #endregion
 
         public static bool HasInited = false;
+
+        #region Projectiles
 
         private Action<string, Action<uint, MyEntity>> addOnProjectileSpawn;
         /// <summary>
@@ -148,10 +158,57 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
         private Func<int, byte[], bool> updateProjectileDefinition;
         public static bool UpdateProjectileDefinition(int definitionId, ProjectileDefinitionBase definition) => I?.updateProjectileDefinition?.Invoke(definitionId, MyAPIGateway.Utilities.SerializeToBinary(definition)) ?? false;
 
+        #endregion
+
         private Func<MyEntity, bool> blockHasWeapon;
         public static bool BlockHasWeapon(MyEntity block) => I?.blockHasWeapon?.Invoke(block) ?? false;
 
+        private Func<string, bool> subtypeHasDefinition;
+        public static bool SubtypeHasDefinition(string subtype) => I?.subtypeHasDefinition?.Invoke(subtype) ?? false;
 
+        private Func<string[]> getWeaponDefinitions;
+        public static string[] GetWeaponDefinitions() => I?.getWeaponDefinitions?.Invoke();
+
+        private Func<string, byte[]> getWeaponDefinition;
+        public static WeaponDefinitionBase GetWeaponDefinition(string subtype)
+        {
+            byte[] serialized = I?.getWeaponDefinition?.Invoke(subtype);
+            if (serialized == null || serialized.Length == 0)
+                return null;
+
+            return MyAPIGateway.Utilities.SerializeFromBinary<WeaponDefinitionBase>(serialized);
+        }
+
+        private Func<byte[], bool> registerWeaponDefinition;
+        public static bool RegisterWeaponDefinition(WeaponDefinitionBase definition)
+        {
+            if (definition == null)
+                return false;
+
+            byte[] serialized = MyAPIGateway.Utilities.SerializeToBinary(definition);
+
+            if (serialized == null || serialized.Length == 0)
+                return false;
+
+            return I?.registerWeaponDefinition?.Invoke(serialized) ?? false;
+        }
+
+        private Func<byte[], bool> updateWeaponDefinition;
+        public static bool UpdateWeaponDefinition(WeaponDefinitionBase definition)
+        {
+            if (definition == null)
+                return false;
+
+            byte[] serialized = MyAPIGateway.Utilities.SerializeToBinary(definition);
+
+            if (serialized == null || serialized.Length == 0)
+                return false;
+
+            return I?.updateWeaponDefinition?.Invoke(serialized) ?? false;
+        }
+
+
+        #region Standard
 
         private Action<string> logWriteLine;
         /// <summary>
@@ -159,5 +216,14 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
         /// </summary>
         /// <param name="text"></param>
         public static void LogWriteLine(string text) => I?.logWriteLine?.Invoke($"[{I.ModContext.ModName}] {text}");
+
+        private Func<int> getNetworkLoad;
+        /// <summary>
+        /// Returns current Orrery network load, in bytes per second.
+        /// </summary>
+        /// <returns></returns>
+        public static int GetNetworkLoad() => I?.getNetworkLoad?.Invoke() ?? -1;
+
+        #endregion
     }
 }
