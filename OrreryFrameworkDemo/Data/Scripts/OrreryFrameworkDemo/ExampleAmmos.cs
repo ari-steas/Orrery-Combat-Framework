@@ -18,7 +18,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 Recoil = 5000,
                 Impulse = 5000,
                 ShotsPerMagazine = 5,
-                MagazineItemToConsume = "SteelPlate",
+                MagazineItemToConsume = "",
             },
             Damage = new Damage()
             {

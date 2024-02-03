@@ -9,7 +9,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
     public class HeartNetwork
     {
         public int NetworkLoadTicks = 240;
-        public int NetworkLoad { get; private set; } = 0;
+        public int NetworkLoad { get; private set; } = 0; // TODO: Per-packet type network load
 
         private List<int> networkLoadArray = new List<int>();
         private int networkLoadUpdate = 0;

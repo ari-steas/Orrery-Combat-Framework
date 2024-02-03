@@ -32,6 +32,24 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         }
 
         /// <summary>
+        /// Check for blocks already in the world without weapon logic.
+        /// </summary>
+        /// <param name="definition"></param>
+        public void UpdateLogicOnExistingBlocks(WeaponDefinitionBase definition)
+        {
+            foreach (var grid in GridWeapons.Keys)
+            {
+                foreach (var block in grid.GetFatBlocks<IMyConveyorSorter>())
+                {
+                    if (block.BlockDefinition.SubtypeName != definition.Assignments.BlockSubtype || block.GameLogic?.GetAs<SorterWeaponLogic>() != null)
+                        continue;
+
+                    AddWeapon(block);
+                }
+            }
+        }
+
+        /// <summary>
         /// Check if new grids contain valid weapons.
         /// </summary>
         /// <param name="entity"></param>

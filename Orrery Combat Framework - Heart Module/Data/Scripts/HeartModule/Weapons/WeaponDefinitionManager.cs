@@ -1,13 +1,18 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
+﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
+    /// <summary>
+    /// Collects and distributes all weapon definitions.
+    /// </summary>
     internal class WeaponDefinitionManager
     {
         public static WeaponDefinitionManager I;
 
-        private Dictionary<string, WeaponDefinitionBase> Definitions = new Dictionary<string, WeaponDefinitionBase>();
+        private Dictionary<string, WeaponDefinitionBase> Definitions = new Dictionary<string, WeaponDefinitionBase>(); // TODO: Store serialized versions of definitions in case of modded functionality.
 
         public static WeaponDefinitionBase GetDefinition(string subTypeId)
         {
@@ -20,6 +25,26 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         public static bool HasDefinition(string subTypeId)
         {
             return I.Definitions.ContainsKey(subTypeId);
+        }
+
+        public static bool UpdateDefinition(WeaponDefinitionBase definition)
+        {
+            if (!HasDefinition(definition.Assignments.BlockSubtype))
+                return false;
+
+            I.Definitions[definition.Assignments.BlockSubtype] = definition;
+            return true;
+        }
+
+        public static bool RegisterModApiDefinition(WeaponDefinitionBase definition)
+        {
+            if (HasDefinition(definition.Assignments.BlockSubtype))
+            {
+                SoftHandle.RaiseException("Attempted to assign WeaponDefinition to existing ID!", callingType: typeof(WeaponDefinitionManager));
+                return false;
+            }
+            RegisterDefinition(definition);
+            return true;
         }
 
         public static void RegisterDefinition(WeaponDefinitionBase definition)
@@ -37,11 +62,19 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
             HeartData.I.OrreryBlockCategory.AddBlock(definition.Assignments.BlockSubtype);
             HeartData.I.Log.Log($"Registered weapon definition {definition.Assignments.BlockSubtype}.");
+
+            if (HeartData.I.IsLoaded)
+                WeaponManager.I.UpdateLogicOnExistingBlocks(definition);
         }
 
         public static int DefinitionCount()
         {
             return I.Definitions.Count;
+        }
+
+        public static string[] GetAllDefinitions()
+        {
+            return I.Definitions.Keys.ToArray();
         }
     }
 }
