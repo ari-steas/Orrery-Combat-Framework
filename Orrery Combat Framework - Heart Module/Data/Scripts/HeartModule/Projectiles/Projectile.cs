@@ -5,6 +5,7 @@ using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRageMath;
@@ -233,6 +234,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
             if (RemainingImpacts > 0)
             {
+                Stopwatch sw = Stopwatch.StartNew();
+
                 //List<MyLineSegmentOverlapResult<MyEntity>> intersects = new List<MyLineSegmentOverlapResult<MyEntity>>();
                 List<IHitInfo> intersects = new List<IHitInfo>();
                 MyAPIGateway.Physics.CastRay(Position, NextMoveStep, intersects);
@@ -264,6 +267,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
                     RemainingImpacts--;
                 }
+
+                sw.Stop();
+
+                if (MyAPIGateway.Input.IsKeyPress(VRage.Input.MyKeys.Shift))
+                    HeartData.I.Log.Log("T: " + sw.ElapsedTicks);
             }
 
             if (RemainingImpacts <= 0)
