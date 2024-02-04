@@ -3,8 +3,6 @@ using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.WeaponB
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRage.Utils;
@@ -71,6 +69,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     SetApiMethod("GetProjectileDefinition", ref getProjectileDefinition);
                     SetApiMethod("RegisterProjectileDefinition", ref registerProjectileDefinition);
                     SetApiMethod("UpdateProjectileDefinition", ref updateProjectileDefinition);
+                    SetApiMethod("RemoveProjectileDefinition", ref removeProjectileDefinition);
 
                     // Weapon Generics
                     SetApiMethod("BlockHasWeapon", ref blockHasWeapon);
@@ -79,6 +78,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     SetApiMethod("GetWeaponDefinition", ref getWeaponDefinition);
                     SetApiMethod("RegisterWeaponDefinition", ref registerWeaponDefinition);
                     SetApiMethod("UpdateWeaponDefinition", ref updateWeaponDefinition);
+                    SetApiMethod("RemoveWeaponDefinition", ref removeWeaponDefinition);
 
 
                     HasInited = true;
@@ -158,7 +158,12 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
         private Func<int, byte[], bool> updateProjectileDefinition;
         public static bool UpdateProjectileDefinition(int definitionId, ProjectileDefinitionBase definition) => I?.updateProjectileDefinition?.Invoke(definitionId, MyAPIGateway.Utilities.SerializeToBinary(definition)) ?? false;
 
+        private Action<int> removeProjectileDefinition;
+        public static void RemoveProjectileDefinition(int definitionId) => I?.removeProjectileDefinition?.Invoke(definitionId);
+
         #endregion
+
+        #region Weapons
 
         private Func<MyEntity, bool> blockHasWeapon;
         public static bool BlockHasWeapon(MyEntity block) => I?.blockHasWeapon?.Invoke(block) ?? false;
@@ -207,6 +212,10 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             return I?.updateWeaponDefinition?.Invoke(serialized) ?? false;
         }
 
+        private Action<string> removeWeaponDefinition;
+        public static void RemoveWeaponDefinition(string definitionType) => I?.removeWeaponDefinition?.Invoke(definitionType);
+
+        #endregion
 
         #region Standard
 

@@ -6,6 +6,7 @@ using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
+using static VRage.Game.MyObjectBuilder_BehaviorTreeDecoratorNode;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
@@ -47,6 +48,29 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                     AddWeapon(block);
                 }
             }
+        }
+
+        /// <summary>
+        /// Removes weapon logic on weapons of a given type
+        /// </summary>
+        /// <param name="definition"></param>
+        public void RemoveLogicOnExistingBlocks(WeaponDefinitionBase definition)
+        {
+            foreach (var grid in GridWeapons)
+            {
+                foreach (var weapon in grid.Value)
+                {
+                    if (weapon.Definition == definition)
+                    {
+                        ActiveWeapons.Remove(weapon.Id);
+                        List<SorterWeaponLogic> values;
+                        GridWeapons.TryGetValue(weapon.SorterWep.CubeGrid, out values);
+                        values?.Remove(weapon);
+
+                        weapon.MarkForClose();
+                    }
+                }
+            }        
         }
 
         /// <summary>

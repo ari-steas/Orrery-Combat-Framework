@@ -26,10 +26,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions
         {
             if (MyAPIGateway.Session.IsServer)
                 return;
-            HeartData.I.Log.Log("I'M SYNCIIIING");
+            HeartData.I.Log.Log("Syncing projectile definition " + Name + " to " + Id);
             if (Serialized != null)
                 ProjectileDefinitionManager.RegisterDefinition(MyAPIGateway.Utilities.SerializeFromBinary<ProjectileDefinitionBase>(Serialized));
-            ProjectileDefinitionManager.ReorderDefinitions(Name, Id);
+            //ProjectileDefinitionManager.ReorderDefinitions(Name, Id);
         }
     }
 }

@@ -2,6 +2,7 @@
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Sandbox.ModAPI;
 using System.Collections.Generic;
+using VRage.Utils;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 {
@@ -12,27 +13,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
     {
         public static ProjectileDefinitionManager I;
         private List<ProjectileDefinitionBase> Definitions = new List<ProjectileDefinitionBase>(); // TODO: Store serialized versions of definitions in case of modded functionality
+        private List<byte[]> SerializedDefinitions = new List<byte[]>();
         private Dictionary<string, int> DefinitionNamePairs = new Dictionary<string, int>();
-
-        /// <summary>
-        /// Changes the ID of a projectile definition. If the ID is already occupied, swaps the two definitions. DO NOT CALL ON SERVER!
-        /// Unused.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="newId"></param>
-        public static void ReorderDefinitions(string name, int newId)
-        {
-            //if (!HasDefinition(name)) return;
-            //int oldId = GetId(name);
-            //if (oldId == newId) return;
-            //ProjectileDefinitionBase bufferDefinition = GetDefinition(name);
-            //while (!HasDefinition(newId))
-            //    I.Definitions.Add(null);
-            //I.Definitions[oldId] = GetDefinition(newId);
-            //I.DefinitionNamePairs[I.Definitions[oldId].Name] = newId;
-            //I.Definitions[newId] = bufferDefinition;
-            //I.DefinitionNamePairs[name] = newId;
-        }
 
         public static ProjectileDefinitionBase GetDefinition(int id)
         {
@@ -42,9 +24,22 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 return null;
         }
 
+        public static byte[] GetSerializedDefinition(int id)
+        {
+            if (HasDefinition(id))
+                return I.SerializedDefinitions[id];
+            else
+                return null;
+        }
+
         public static ProjectileDefinitionBase GetDefinition(string name)
         {
             return GetDefinition(GetId(name));
+        }
+
+        public static byte[] GetSerializedDefinition(string name)
+        {
+            return GetSerializedDefinition(GetId(name));
         }
 
         public static int GetId(string definitionName)
@@ -76,11 +71,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         /// </summary>
         /// <param name="definition"></param>
         /// <returns></returns>
-        public static int RegisterModApiDefinition(ProjectileDefinitionBase definition)
+        public static int RegisterModApiDefinition(byte[] serializedDefinition)
         {
-            if (HasDefinition(definition.Name))
-                throw new System.Exception("Attempted to assign ProjectileDefinition to existing ID!");
-            return RegisterDefinition(definition, true);
+            return RegisterDefinition(serializedDefinition);
         }
 
         /// <summary>
@@ -89,7 +82,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         /// <param name="definition"></param>
         /// <param name="syncToClients"></param>
         /// <returns></returns>
-        public static int RegisterDefinition(ProjectileDefinitionBase definition, bool syncToClients = false)
+        public static int RegisterDefinition(ProjectileDefinitionBase definition)
         {
             if (I.DefinitionNamePairs.ContainsKey(definition.Name))
             {
@@ -97,30 +90,102 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 return -1;
             }
 
+            var serializedDefinition = MyAPIGateway.Utilities.SerializeToBinary(definition);
+
             I.Definitions.Add(definition);
+            I.SerializedDefinitions.Add(serializedDefinition);
             I.DefinitionNamePairs.Add(definition.Name, I.Definitions.Count - 1);
             if (MyAPIGateway.Session.IsServer)
                 HeartData.I.Net.SendToEveryone(new n_ProjectileDefinitionIdSync(
                     I.Definitions.Count - 1,
                     definition.Name,
-                    syncToClients ? MyAPIGateway.Utilities.SerializeToBinary(definition) : null
+                    serializedDefinition
                     ));
-            HeartData.I.Log.Log($"Registered projectile definition {definition.Name} for ID {I.Definitions.Count - 1}.");
+            HeartData.I.Log.Log($"Registered class projectile definition {definition.Name} for ID {I.Definitions.Count - 1}.");
             return I.Definitions.Count - 1;
+        }
+
+        /// <summary>
+        /// Registers a projectile definition.
+        /// </summary>
+        /// <param name="definition"></param>
+        /// <param name="syncToClients"></param>
+        /// <returns></returns>
+        public static int RegisterDefinition(byte[] serializedDefinition)
+        {
+            var definition = MyAPIGateway.Utilities.SerializeFromBinary<ProjectileDefinitionBase>(serializedDefinition);
+            if (I.DefinitionNamePairs.ContainsKey(definition.Name))
+            {
+                HeartData.I.Log.Log($"Duplicate ammo definition {definition.Name}! Skipping...");
+                return -1;
+            }
+
+            I.Definitions.Add(definition);
+            I.SerializedDefinitions.Add(serializedDefinition);
+            I.DefinitionNamePairs.Add(definition.Name, I.Definitions.Count - 1);
+            if (MyAPIGateway.Session.IsServer)
+                HeartData.I.Net.SendToEveryone(new n_ProjectileDefinitionIdSync(
+                    I.Definitions.Count - 1,
+                    definition.Name,
+                    serializedDefinition
+                    ));
+            HeartData.I.Log.Log($"Registered binary projectile definition {definition.Name} for ID {I.Definitions.Count - 1}.");
+            return I.Definitions.Count - 1;
+        }
+
+        public static bool ReplaceDefinition(int definitionId, byte[] serializedDefinition, bool syncToClients = false)
+        {
+            if (!HasDefinition(definitionId))
+                return false;
+            var definition = MyAPIGateway.Utilities.SerializeFromBinary<ProjectileDefinitionBase>(serializedDefinition);
+
+            I.Definitions[definitionId] = definition;
+            I.SerializedDefinitions[definitionId] = serializedDefinition;
+            if (MyAPIGateway.Session.IsServer && syncToClients)
+                HeartData.I.Net.SendToEveryone(new n_ProjectileDefinitionIdSync(
+                    definitionId,
+                    definition.Name,
+                    serializedDefinition
+                    ));
+
+            HeartData.I.Log.Log($"Updated binary projectile definition {definition.Name} for ID {definitionId}");
+            return true;
         }
 
         public static bool ReplaceDefinition(int definitionId, ProjectileDefinitionBase definition, bool syncToClients = false)
         {
             if (!HasDefinition(definitionId))
                 return false;
+            var serializedDefinition = MyAPIGateway.Utilities.SerializeToBinary(definition);
+
             I.Definitions[definitionId] = definition;
+            I.SerializedDefinitions[definitionId] = serializedDefinition;
             if (MyAPIGateway.Session.IsServer && syncToClients)
                 HeartData.I.Net.SendToEveryone(new n_ProjectileDefinitionIdSync(
                     definitionId,
                     definition.Name,
-                    MyAPIGateway.Utilities.SerializeToBinary(definition)
+                    serializedDefinition
                     ));
+
+            HeartData.I.Log.Log($"Updated class projectile definition {definition.Name} for ID {definitionId}");
             return true;
+        }
+
+        /// <summary>
+        /// TODO: Does not properly remove ammos!
+        /// </summary>
+        /// <param name="definitionId"></param>
+        public static void RemoveDefinition(int definitionId)
+        {
+            if (!HasDefinition(definitionId))
+                return;
+
+            var definition = I.Definitions[definitionId];
+            I.DefinitionNamePairs.Remove(definition.Name);
+            I.Definitions[definitionId] = null;
+            I.SerializedDefinitions[definitionId] = null;
+
+            HeartData.I.Log.Log($"Removed ammo definition " + definitionId);
         }
 
         public static int DefinitionCount()

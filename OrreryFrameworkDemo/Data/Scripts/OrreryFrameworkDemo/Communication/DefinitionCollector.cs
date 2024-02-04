@@ -1,6 +1,8 @@
 ﻿using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.ProjectileBases;
 using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.WeaponBases;
 using ProtoBuf;
+using Sandbox.ModAPI;
+using System.Collections.Generic;
 
 namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 {
@@ -10,10 +12,18 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 
         internal void LoadWeaponDefinitions(params WeaponDefinitionBase[] defs)
         {
+            List<byte[]> serialWeapons = new List<byte[]>();
+            foreach (var weapon in defs)
+                serialWeapons.Add(MyAPIGateway.Utilities.SerializeToBinary(weapon));
+            Container.SerializedWeaponDefs = serialWeapons.ToArray();
             Container.WeaponDefs = defs;
         }
         internal void LoadAmmoDefinitions(params ProjectileDefinitionBase[] defs)
         {
+            List<byte[]> serialAmmos = new List<byte[]>();
+            foreach (var ammo in defs)
+                serialAmmos.Add(MyAPIGateway.Utilities.SerializeToBinary(ammo));
+            Container.SerializedAmmoDefs = serialAmmos.ToArray();
             Container.AmmoDefs = defs;
         }
 
@@ -31,8 +41,11 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
     internal class DefinitionContainer
     {
         [ProtoMember(1)]
-        public WeaponDefinitionBase[] WeaponDefs { get; set; }
+        public byte[][] SerializedWeaponDefs { get; set; }
         [ProtoMember(2)]
+        public byte[][] SerializedAmmoDefs { get; set; }
+
+        public WeaponDefinitionBase[] WeaponDefs { get; set; }
         public ProjectileDefinitionBase[] AmmoDefs { get; set; }
     }
 }
