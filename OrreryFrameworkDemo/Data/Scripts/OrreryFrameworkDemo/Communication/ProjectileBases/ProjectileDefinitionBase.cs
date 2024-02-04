@@ -48,8 +48,6 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         /// The item that needs to get consumed for the magazine to reload. Leave blank to not consume anything. The weapon model should probably have a conveyor port.
         /// </summary>
         [ProtoMember(5)] public string MagazineItemToConsume;
-
-        [ProtoMember(6)] public string notsynced; // TODO remove
     }
 
     [ProtoContract]
@@ -140,7 +138,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         [ProtoMember(11)] public float Inaccuracy;
     }
 
-    public class LiveMethods // TODO: Callback on recieved to RegisterMethods()
+    public class LiveMethods
     {
         public void RegisterMethods(string definitionName)
         {
