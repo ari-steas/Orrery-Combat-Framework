@@ -1,4 +1,5 @@
-﻿using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.ProjectileBases;
+﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.ProjectileBases;
 using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.WeaponBases;
 using Sandbox.ModAPI;
 using System;
@@ -70,6 +71,8 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     SetApiMethod("RegisterProjectileDefinition", ref registerProjectileDefinition);
                     SetApiMethod("UpdateProjectileDefinition", ref updateProjectileDefinition);
                     SetApiMethod("RemoveProjectileDefinition", ref removeProjectileDefinition);
+                    SetApiMethod("SpawnProjectile", ref spawnProjectile);
+                    SetApiMethod("GetProjectileInfo", ref getProjectileInfo);
 
                     // Weapon Generics
                     SetApiMethod("BlockHasWeapon", ref blockHasWeapon);
@@ -160,6 +163,38 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 
         private Action<int> removeProjectileDefinition;
         public static void RemoveProjectileDefinition(int definitionId) => I?.removeProjectileDefinition?.Invoke(definitionId);
+
+        private Func<int, Vector3D, Vector3D, long, Vector3D, uint> spawnProjectile;
+        public static uint SpawnProjectile(int definitionId, Vector3D position, Vector3D direction, long firerId, Vector3D initialVelocity) => I?.spawnProjectile?.Invoke(definitionId, position, direction, firerId, initialVelocity) ?? uint.MaxValue;
+
+
+
+        public static List<uint> SpawnProjectilesInCone(int definitionId, Vector3D position, Vector3D direction, int count, double angleRads)
+        {
+            List<uint> spawned = new List<uint>();
+            Random random = new Random();
+            for (int i = 0; i < count; i++)
+                spawned.Add(SpawnProjectile(definitionId, position, direction.Rotate(Vector3D.CalculatePerpendicularVector(direction).Rotate(direction, Math.PI * 2 * random.NextDouble()), angleRads * random.NextDouble()), 0, Vector3D.Zero));
+
+            return spawned;
+        }
+
+        private Func<uint, int, byte[]> getProjectileInfo;
+        /// <summary>
+        /// DetailLevel 0 = full
+        /// <para>DetailLevel 1 = Position, Direction, Id, IsActive, Timestamp</para>
+        /// DetailLevel 2 = Id, IsActive, Timestamp
+        /// </summary>
+        /// <param name="projectileId"></param>
+        /// <param name="detailLevel"></param>
+        /// <returns></returns>
+        public static n_SerializableProjectile GetProjectileInfo(uint projectileId, int detailLevel)
+        {
+            byte[] serialized = I?.getProjectileInfo?.Invoke(projectileId, detailLevel);
+            if (serialized == null)
+                return null;
+            return MyAPIGateway.Utilities.SerializeFromBinary<n_SerializableProjectile>(serialized);
+        }
 
         #endregion
 

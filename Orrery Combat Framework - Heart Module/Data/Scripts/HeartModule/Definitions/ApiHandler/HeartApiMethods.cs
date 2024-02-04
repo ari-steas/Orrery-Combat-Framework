@@ -39,6 +39,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
                 ["RegisterProjectileDefinition"] = new Func<byte[], int>(RegisterProjectileDefinition),
                 ["UpdateProjectileDefinition"] = new Func<int, byte[], bool>(UpdateProjectileDefinition),
                 ["RemoveProjectileDefinition"] = new Action<int>(ProjectileDefinitionManager.RemoveDefinition),
+                ["SpawnProjectile"] = new Func<int, Vector3D, Vector3D, long, Vector3D, uint>(SpawnProjectile),
+                ["GetProjectileInfo"] = new Func<uint, int, byte[]>(GetProjectileInfo),
 
                 // Weapon Generics
                 ["BlockHasWeapon"] = new Func<MyEntity, bool>(HasWeapon),
@@ -135,6 +137,20 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
                 return false;
             return ProjectileDefinitionManager.ReplaceDefinition(definitionId, serialized, true);
         }
+
+        public uint SpawnProjectile(int definitionId, Vector3D position, Vector3D direction, long firerId, Vector3D initialVelocity)
+        {
+            return ProjectileManager.I.AddProjectile(definitionId, position, direction, firerId, initialVelocity).Id;
+        }
+
+        public byte[] GetProjectileInfo(uint projectileId, int detailLevel)
+        {
+            n_SerializableProjectile info = ProjectileManager.I.GetProjectile(projectileId)?.AsSerializable(detailLevel);
+            if (info == null)
+                return null;
+            return MyAPIGateway.Utilities.SerializeToBinary(info);
+        }
+
         #endregion
 
         #region Weapon Methods

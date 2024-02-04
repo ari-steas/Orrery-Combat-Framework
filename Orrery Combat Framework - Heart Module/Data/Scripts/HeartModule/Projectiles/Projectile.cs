@@ -260,7 +260,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     if (!MyAPIGateway.Utilities.IsDedicated)
                         DrawImpactParticle(hitInfo.Position, hitInfo.Normal); // Visuals are clientside
 
-                    Definition.LiveMethods.OnImpact?.Invoke(Id, hitInfo.Position, hitInfo.Normal, (MyEntity)hitInfo.HitEntity);
+                    Definition.LiveMethods.OnImpact?.Invoke(Id, hitInfo.Position, Direction, (MyEntity)hitInfo.HitEntity);
 
                     RemainingImpacts--;
                 }

@@ -1,9 +1,12 @@
-﻿using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.ProjectileBases;
+﻿using EmptyKeys.UserInterface.Generated.StoreBlockView_Bindings;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.ProjectileBases;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using VRage.Game.Entity;
 using VRage.Utils;
+using VRageMath;
 
 namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 {
@@ -62,30 +65,6 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             Guidance = new Guidance[]
             {
-                //new Guidance()
-                //{
-                //    TriggerTime = 0,
-                //    ActiveDuration = -1,
-                //    UseAimPrediction = false,
-                //    TurnRate = -1.5f,
-                //    IFF = 2,
-                //    DoRaycast = false,
-                //    CastCone = 0.5f,
-                //    CastDistance = 1000,
-                //    Velocity = 50f,
-                //},
-                //new Guidance()
-                //{
-                //    TriggerTime = 1f,
-                //    ActiveDuration = -1f,
-                //    UseAimPrediction = false,
-                //    TurnRate = 3.14f,
-                //    IFF = 2,
-                //    DoRaycast = false,
-                //    CastCone = 0.5f,
-                //    CastDistance = 1000,
-                //    Velocity = -1f,
-                //}
             },
             LiveMethods = new LiveMethods()
             {
@@ -93,14 +72,17 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     if (id == 0)
                         id = HeartApi.RegisterProjectileDefinition(ExampleAmmoMissile);
                 },
-                OnImpact = (a, b, c, d) =>
+                OnImpact = (projectileInfo, hitPosition, hitNormal, hitEntity) =>
                 {
-                    HeartApi.LogWriteLine("Checking " + id + " ...");
-                    HeartApi.LogWriteLine(": " + HeartApi.GetProjectileDefinition(id).Ungrouped.notsynced);
+                    if (hitEntity == null)
+                        return;
+                    HeartApi.SpawnProjectilesInCone(id, hitPosition - hitNormal * 50, hitNormal, 10, 0.1f);
                 }
             }
         };
+
         int id = 0;
+
         ProjectileDefinitionBase ExampleAmmoMissile => new ProjectileDefinitionBase()
         {
             Name = "ExampleAmmoMissile",
@@ -111,7 +93,6 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 Impulse = 5000,
                 ShotsPerMagazine = 10,
                 MagazineItemToConsume = "",
-                notsynced = "my goofy ahh is NOT synced!",
             },
             Damage = new Damage()
             {

@@ -5,6 +5,7 @@ using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using VRage.Game.Components;
 using VRageMath;
 
@@ -47,7 +48,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (HeartData.I.IsSuspended) return;
 
             // Tick projectiles
-            foreach (var projectile in ActiveProjectiles.Values)
+            foreach (var projectile in ActiveProjectiles.Values.ToArray()) // This can be modified by ModApi calls during run
             {
                 projectile.TickUpdate(deltaTick);
                 if (projectile.QueuedDispose)
@@ -125,9 +126,25 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             try
             {
                 if (ProjectileDefinitionManager.GetDefinition(projectileDefinitionId)?.PhysicalProjectile.IsHitscan ?? false)
-                    return AddHitscanProjectile(projectileDefinitionId, position, direction, sorterWep);
+                    return AddHitscanProjectile(projectileDefinitionId, position, direction, sorterWep.EntityId);
                 else
                     return AddProjectile(new Projectile(projectileDefinitionId, position, direction, sorterWep));
+            }
+            catch (Exception ex)
+            {
+                SoftHandle.RaiseException($"Invalid ammo definition ({projectileDefinitionId} of {ProjectileDefinitionManager.DefinitionCount()})", ex, typeof(ProjectileManager));
+                return null;
+            }
+        }
+
+        public Projectile AddProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, long firer, Vector3D initialVelocity)
+        {
+            try
+            {
+                if (ProjectileDefinitionManager.GetDefinition(projectileDefinitionId)?.PhysicalProjectile.IsHitscan ?? false)
+                    return AddHitscanProjectile(projectileDefinitionId, position, direction, firer);
+                else
+                    return AddProjectile(new Projectile(projectileDefinitionId, position, direction, firer, initialVelocity));
             }
             catch (Exception ex)
             {
@@ -157,16 +174,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         }
 
         Dictionary<long, uint> HitscanList = new Dictionary<long, uint>();
-        private Projectile AddHitscanProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, IMyConveyorSorter sorterWep)
+        private Projectile AddHitscanProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, long firer)
         {
-            if (!HitscanList.ContainsKey(sorterWep.EntityId))
+            if (!HitscanList.ContainsKey(firer))
             {
-                Projectile p = new Projectile(projectileDefinitionId, position, direction, sorterWep);
+                Projectile p = new Projectile(projectileDefinitionId, position, direction, firer);
                 AddProjectile(p);
-                p.OnClose += (projectile) => HitscanList.Remove(sorterWep.EntityId);
-                HitscanList.Add(sorterWep.EntityId, p.Id);
+                p.OnClose += (projectile) => HitscanList.Remove(firer);
+                HitscanList.Add(firer, p.Id);
             }
-            Projectile outProjectile = GetProjectile(HitscanList[sorterWep.EntityId]);
+            Projectile outProjectile = GetProjectile(HitscanList[firer]);
             outProjectile?.UpdateHitscan(position, direction);
             return outProjectile;
         }
