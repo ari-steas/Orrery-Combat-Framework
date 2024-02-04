@@ -118,28 +118,22 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
         }
         public byte[] GetProjectileDefinition(int definitionId)
         {
-            ProjectileDefinitionBase def = ProjectileDefinitionManager.GetDefinition(definitionId);
+            var def = ProjectileDefinitionManager.GetSerializedDefinition(definitionId);
             if (def == null)
                 return null;
-            return MyAPIGateway.Utilities.SerializeToBinary(def);
+            return def;
         }
         public int RegisterProjectileDefinition(byte[] serialized)
         {
             if (serialized == null)
                 return -1;
-            ProjectileDefinitionBase def = MyAPIGateway.Utilities.SerializeFromBinary<ProjectileDefinitionBase>(serialized);
-            if (def == null)
-                return -1;
-            return ProjectileDefinitionManager.RegisterModApiDefinition(def);
+            return ProjectileDefinitionManager.RegisterModApiDefinition(serialized);
         }
         public bool UpdateProjectileDefinition(int definitionId, byte[] serialized)
         {
             if (serialized == null)
                 return false;
-            ProjectileDefinitionBase def = MyAPIGateway.Utilities.SerializeFromBinary<ProjectileDefinitionBase>(serialized);
-            if (def == null)
-                return false;
-            return ProjectileDefinitionManager.ReplaceDefinition(definitionId, def, true);
+            return ProjectileDefinitionManager.ReplaceDefinition(definitionId, serialized, true);
         }
         #endregion
 
@@ -159,7 +153,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
         public byte[] GetWeaponDefinition(string subtype)
         {
             if (WeaponDefinitionManager.HasDefinition(subtype))
-                return MyAPIGateway.Utilities.SerializeToBinary(WeaponDefinitionManager.GetDefinition(subtype));
+                return WeaponDefinitionManager.GetSerializedDefinition(subtype);
             return null;
         }
 
@@ -168,14 +162,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
             if (definition == null || definition.Length == 0)
                 return false;
 
-            WeaponDefinitionBase weaponDef = MyAPIGateway.Utilities.SerializeFromBinary<WeaponDefinitionBase>(definition);
-            if (definition == null)
-            {
-                SoftHandle.RaiseException("Invalid weapon definition!");
-                return false;
-            }
-
-            return WeaponDefinitionManager.RegisterModApiDefinition(weaponDef);
+            return WeaponDefinitionManager.RegisterModApiDefinition(definition);
         }
 
         public bool UpdateWeaponDefinition(byte[] definition)
@@ -183,14 +170,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
             if (definition == null || definition.Length == 0)
                 return false;
 
-            WeaponDefinitionBase weaponDef = MyAPIGateway.Utilities.SerializeFromBinary<WeaponDefinitionBase>(definition);
-            if (definition == null)
-            {
-                SoftHandle.RaiseException("Invalid weapon definition!");
-                return false;
-            }
-
-            return WeaponDefinitionManager.UpdateDefinition(weaponDef);
+            return WeaponDefinitionManager.UpdateDefinition(definition);
         }
         #endregion
 

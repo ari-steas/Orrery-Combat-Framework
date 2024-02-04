@@ -3,8 +3,6 @@ using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.WeaponB
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRage.Utils;

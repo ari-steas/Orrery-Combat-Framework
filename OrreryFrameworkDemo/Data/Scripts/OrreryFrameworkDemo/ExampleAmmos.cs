@@ -89,16 +89,18 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             LiveMethods = new LiveMethods()
             {
-                //OnSpawn = (a, b) => {
-                //    HeartApi.RegisterWeaponDefinition(Example2BarrelTurretWeapon);
-                //},
-                //OnImpact = (a, b, c, d) =>
-                //{
-                //    HeartApi.RemoveWeaponDefinition(Example2BarrelTurretWeapon.Assignments.BlockSubtype);
-                //}
+                OnSpawn = (a, b) => {
+                    if (id == 0)
+                        id = HeartApi.RegisterProjectileDefinition(ExampleAmmoMissile);
+                },
+                OnImpact = (a, b, c, d) =>
+                {
+                    HeartApi.LogWriteLine("Checking " + id + " ...");
+                    HeartApi.LogWriteLine(": " + HeartApi.GetProjectileDefinition(id).Ungrouped.notsynced);
+                }
             }
         };
-
+        int id = 0;
         ProjectileDefinitionBase ExampleAmmoMissile => new ProjectileDefinitionBase()
         {
             Name = "ExampleAmmoMissile",
@@ -109,6 +111,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 Impulse = 5000,
                 ShotsPerMagazine = 10,
                 MagazineItemToConsume = "",
+                notsynced = "my goofy ahh is NOT synced!",
             },
             Damage = new Damage()
             {

@@ -8,8 +8,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.StandardClasses
     internal class DefinitionContainer
     {
         [ProtoMember(1)]
-        public WeaponDefinitionBase[] WeaponDefs { get; set; }
+        public byte[][] WeaponDefs { get; set; }
         [ProtoMember(2)]
-        public ProjectileDefinitionBase[] AmmoDefs { get; set; }
+        public byte[][] AmmoDefs { get; set; }
     }
 }
