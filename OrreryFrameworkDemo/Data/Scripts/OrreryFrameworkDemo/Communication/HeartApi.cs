@@ -73,6 +73,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     SetApiMethod("RemoveProjectileDefinition", ref removeProjectileDefinition);
                     SetApiMethod("SpawnProjectile", ref spawnProjectile);
                     SetApiMethod("GetProjectileInfo", ref getProjectileInfo);
+                    SetApiMethod("GetProjectileDefinitionId", ref getProjectileDefinitionId);
 
                     // Weapon Generics
                     SetApiMethod("BlockHasWeapon", ref blockHasWeapon);
