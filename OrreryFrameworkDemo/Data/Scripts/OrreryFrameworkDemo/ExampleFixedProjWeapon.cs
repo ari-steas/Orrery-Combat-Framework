@@ -49,12 +49,12 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 },
 
                 RateOfFire = 10,
-                RateOfFireVariance = 5f,
+                RateOfFireVariance = 20f,
                 BarrelsPerShot = 1,
                 ProjectilesPerBarrel = 1,
-                ReloadTime = 6,
-                DelayUntilFire = 3,
-                MagazinesToLoad = 100,
+                ReloadTime = 3,
+                DelayUntilFire = 2,
+                MagazinesToLoad = 1,
 
                 MaxReloads = -1,
             },

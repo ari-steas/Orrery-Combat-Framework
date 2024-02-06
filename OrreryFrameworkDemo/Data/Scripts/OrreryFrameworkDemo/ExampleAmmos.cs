@@ -20,7 +20,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 ReloadPowerUsage = 10,
                 Recoil = 5000,
                 Impulse = 5000,
-                ShotsPerMagazine = 5,
+                ShotsPerMagazine = 100,
                 MagazineItemToConsume = "",
             },
             Damage = new Damage()
