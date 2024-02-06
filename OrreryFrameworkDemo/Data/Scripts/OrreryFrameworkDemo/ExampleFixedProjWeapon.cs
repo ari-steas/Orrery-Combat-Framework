@@ -46,13 +46,15 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 Ammos = new string[]
                 {
                     ExampleAmmoProjectile.Name,
+                    Hotloaded.Name,
                 },
 
-                RateOfFire = 2,
+                RateOfFire = 10,
+                RateOfFireVariance = 20f,
                 BarrelsPerShot = 1,
                 ProjectilesPerBarrel = 1,
-                ReloadTime = 6,
-                DelayUntilFire = 3,
+                ReloadTime = 3,
+                DelayUntilFire = 2,
                 MagazinesToLoad = 1,
 
                 MaxReloads = -1,

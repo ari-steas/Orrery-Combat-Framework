@@ -87,6 +87,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         /// The size of the projectile in meters. Used for point defense hit checking.
         /// </summary>
         [ProtoMember(7)] public float ProjectileSize;
+        [ProtoMember(8)] public float VelocityVariance;
+        /// <summary>
+        /// How much the weapon's ShotInaccuracy will be multiplied by for this ammo. 0 to ignore.
+        /// </summary>
+        [ProtoMember(9)] public float AccuracyVarianceMultiplier;
     }
 
     [ProtoContract]

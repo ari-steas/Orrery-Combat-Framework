@@ -14,6 +14,7 @@ using VRage.Game;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.Game.ModAPI.Network;
+using VRage.Library.Utils;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
 using VRage.Sync;
@@ -146,11 +147,20 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         internal bool AutoShoot = false;
         int nextBarrel = 0; // For alternate firing
         public float delayCounter = 0f;
+        private Random random = new Random();
 
         public virtual void TryShoot()
         {
+            float modifiedRateOfFire = Definition.Loading.RateOfFire;
+
+            // Only apply variance if RateOfFireVariance is not zero
+            if (Definition.Loading.RateOfFireVariance != 0)
+            {
+                modifiedRateOfFire += (float)((random.NextDouble() * 2 - 1) * Definition.Loading.RateOfFireVariance);
+            }
+
             if (lastShoot < 60)
-                lastShoot += Definition.Loading.RateOfFire;
+                lastShoot += modifiedRateOfFire; // Use the modified rate of fire
 
             // Manage fire delay. If there is an easier way to do this, TODO implement
             if ((ShootState.Value || AutoShoot) && Magazines.IsLoaded && delayCounter > 0)
@@ -170,12 +180,16 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 delayCounter <= 0 &&
                 HasLoS)                                   // Has line of sight
             {
-
                 if (Magazines.SelectedAmmo == -1)
                 {
                     SoftHandle.RaiseSyncException($"Invalid ammo type on weapon! Subtype: {SorterWep.BlockDefinition.SubtypeId} | AmmoId: {Magazines.SelectedAmmo}");
                     return;
                 }
+
+                // Retrieve the AccuracyVarianceMultiplier for the selected ammo
+                float accuracyVarianceMultiplier = ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmo).PhysicalProjectile.AccuracyVarianceMultiplier;
+                // Calculate the effective inaccuracy by applying the multiplier, default to 1 if multiplier is 0 to avoid change
+                float effectiveInaccuracy = Definition.Hardpoint.ShotInaccuracy * (accuracyVarianceMultiplier != 0 ? accuracyVarianceMultiplier : 1);
 
                 for (int i = 0; i < Definition.Loading.BarrelsPerShot; i++)
                 {
@@ -188,7 +202,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     for (int j = 0; j < Definition.Loading.ProjectilesPerBarrel; j++)
                     {
                         SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmo).Ungrouped.Recoil, muzzleMatrix.Translation);
-                        Projectile newProjectile = ProjectileManager.I.AddProjectile(Magazines.SelectedAmmo, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
+                        // Use the effectiveInaccuracy instead of the original ShotInaccuracy
+                        Projectile newProjectile = ProjectileManager.I.AddProjectile(Magazines.SelectedAmmo, muzzlePos, RandomCone(muzzleMatrix.Forward, effectiveInaccuracy), SorterWep);
 
                         if (!string.IsNullOrEmpty(Definition.Audio.ShootSound))
                             MyVisualScriptLogicProvider.PlaySingleSoundAtPosition(Definition.Audio.ShootSound, muzzlePos);
@@ -211,7 +226,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 Magazines.UseShot(MuzzleMatrix.Translation);
             }
         }
-
 
         public void MuzzleFlash(bool increment = false) // GROSS AND UGLY AND STUPID
         {

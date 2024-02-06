@@ -119,13 +119,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
             IsHitscan = Definition.PhysicalProjectile.IsHitscan;
 
+            // Apply velocity variance
             if (!IsHitscan)
             {
-                Velocity = Definition.PhysicalProjectile.Velocity;
+                // Randomly adjust velocity within the variance range
+                float variance = (float)(new Random().NextDouble() * 2 - 1) * Definition.PhysicalProjectile.VelocityVariance;
+                Velocity = Definition.PhysicalProjectile.Velocity + variance;
                 this.InheritedVelocity = InitialVelocity;
             }
             else
+            {
                 Definition.PhysicalProjectile.MaxLifetime = 1 / 60f;
+            }
 
             RemainingImpacts = Definition.Damage.MaxImpacts;
             Health = Definition.PhysicalProjectile.Health;
@@ -133,7 +138,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (Definition.Guidance.Length > 0)
                 Guidance = new ProjectileGuidance(this);
 
-            Definition.LiveMethods.OnSpawn?.Invoke(Id, (MyEntity) MyAPIGateway.Entities.GetEntityById(Firer));
+            Definition.LiveMethods.OnSpawn?.Invoke(Id, (MyEntity)MyAPIGateway.Entities.GetEntityById(Firer));
         }
 
         public void TickUpdate(float delta)
