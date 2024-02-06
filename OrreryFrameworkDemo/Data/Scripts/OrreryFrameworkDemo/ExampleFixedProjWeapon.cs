@@ -46,6 +46,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 Ammos = new string[]
                 {
                     ExampleAmmoProjectile.Name,
+                    Hotloaded.Name,
                 },
 
                 RateOfFire = 10,
