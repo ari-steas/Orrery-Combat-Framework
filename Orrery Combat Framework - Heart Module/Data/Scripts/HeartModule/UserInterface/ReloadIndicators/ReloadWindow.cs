@@ -77,7 +77,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
             //MyAPIGateway.Utilities.ShowMessage("OCF", "Show weapon " + weapon.Id);
             var entry = GetEntry(weapon.Id);
             if (entry == null)
+            {
                 entry = weaponStatus.Add("AWAIT INIT", weapon.Id);
+                entry.Element.DimAlignment = DimAlignments.Width;
+                entry.Element.ParentAlignment = ParentAlignments.Left;
+            }
+                
 
             ProjectileDefinitionBase projectileDef = ProjectileDefinitionManager.GetDefinition(weapon.Magazines.SelectedAmmo);
 
