@@ -86,6 +86,10 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         /// </summary>
         [ProtoMember(7)] public float ProjectileSize;
         [ProtoMember(8)] public float VelocityVariance;
+        /// <summary>
+        /// How much the weapon's ShotInaccuracy will be multiplied by for this ammo. 0 to ignore.
+        /// </summary>
+        [ProtoMember(9)] public float AccuracyVarianceMultiplier;
     }
 
     [ProtoContract]

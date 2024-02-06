@@ -180,12 +180,16 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 delayCounter <= 0 &&
                 HasLoS)                                   // Has line of sight
             {
-
                 if (Magazines.SelectedAmmo == -1)
                 {
                     SoftHandle.RaiseSyncException($"Invalid ammo type on weapon! Subtype: {SorterWep.BlockDefinition.SubtypeId} | AmmoId: {Magazines.SelectedAmmo}");
                     return;
                 }
+
+                // Retrieve the AccuracyVarianceMultiplier for the selected ammo
+                float accuracyVarianceMultiplier = ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmo).PhysicalProjectile.AccuracyVarianceMultiplier;
+                // Calculate the effective inaccuracy by applying the multiplier, default to 1 if multiplier is 0 to avoid change
+                float effectiveInaccuracy = Definition.Hardpoint.ShotInaccuracy * (accuracyVarianceMultiplier != 0 ? accuracyVarianceMultiplier : 1);
 
                 for (int i = 0; i < Definition.Loading.BarrelsPerShot; i++)
                 {
@@ -198,7 +202,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     for (int j = 0; j < Definition.Loading.ProjectilesPerBarrel; j++)
                     {
                         SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmo).Ungrouped.Recoil, muzzleMatrix.Translation);
-                        Projectile newProjectile = ProjectileManager.I.AddProjectile(Magazines.SelectedAmmo, muzzlePos, RandomCone(muzzleMatrix.Forward, Definition.Hardpoint.ShotInaccuracy), SorterWep);
+                        // Use the effectiveInaccuracy instead of the original ShotInaccuracy
+                        Projectile newProjectile = ProjectileManager.I.AddProjectile(Magazines.SelectedAmmo, muzzlePos, RandomCone(muzzleMatrix.Forward, effectiveInaccuracy), SorterWep);
 
                         if (!string.IsNullOrEmpty(Definition.Audio.ShootSound))
                             MyVisualScriptLogicProvider.PlaySingleSoundAtPosition(Definition.Audio.ShootSound, muzzlePos);
@@ -221,7 +226,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 Magazines.UseShot(MuzzleMatrix.Translation);
             }
         }
-
 
         public void MuzzleFlash(bool increment = false) // GROSS AND UGLY AND STUPID
         {
