@@ -5,6 +5,7 @@ using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRageMath;
@@ -238,12 +239,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
             if (RemainingImpacts > 0)
             {
-                //List<MyLineSegmentOverlapResult<MyEntity>> intersects = new List<MyLineSegmentOverlapResult<MyEntity>>();
                 List<IHitInfo> intersects = new List<IHitInfo>();
                 MyAPIGateway.Physics.CastRay(Position, NextMoveStep, intersects);
-
-                //LineD ray = new LineD(Position, NextMoveStep);
-                //MyGamePruningStructure.GetTopmostEntitiesOverlappingRay(ref ray, intersects); // TODO: This is causing problems with hitting own grid
 
                 foreach (var hitInfo in intersects)
                 {

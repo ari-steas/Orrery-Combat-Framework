@@ -143,7 +143,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         [ProtoMember(11)] public float Inaccuracy;
     }
 
-    public class LiveMethods
+    public class LiveMethods // TODO: OnGuidanceStage && DistanceToTarget
     {
         public void RegisterMethods(string definitionName)
         {

@@ -135,10 +135,11 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (!Definition.Hardpoint.LineOfSightCheck) // Ignore if LoS check is disabled
                 return true;
 
-            List<IHitInfo> intersects = new List<IHitInfo>();
-            MyAPIGateway.Physics.CastRay(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * GridCheckRange, intersects);
+            List<Vector3I> intersects = new List<Vector3I>();
+            SorterWep.CubeGrid.RayCastCells(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * GridCheckRange, intersects);
+
             foreach (var intersect in intersects)
-                if (intersect.HitEntity.EntityId == SorterWep.CubeGrid.EntityId)
+                if (SorterWep.CubeGrid.CubeExists(intersect) && SorterWep.CubeGrid.GetCubeBlock(intersect) != SorterWep.SlimBlock)
                     return false;
             return true;
         }
@@ -191,38 +192,46 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 // Calculate the effective inaccuracy by applying the multiplier, default to 1 if multiplier is 0 to avoid change
                 float effectiveInaccuracy = Definition.Hardpoint.ShotInaccuracy * (accuracyVarianceMultiplier != 0 ? accuracyVarianceMultiplier : 1);
 
-                for (int i = 0; i < Definition.Loading.BarrelsPerShot; i++)
+                while (lastShoot >= 60) // Allows for firerates higher than 60 rps
                 {
-                    nextBarrel++;
-                    nextBarrel %= Definition.Assignments.Muzzles.Length;
-
-                    MatrixD muzzleMatrix = CalcMuzzleMatrix(nextBarrel);
-                    Vector3D muzzlePos = muzzleMatrix.Translation;
-
-                    for (int j = 0; j < Definition.Loading.ProjectilesPerBarrel; j++)
+                    for (int i = 0; i < Definition.Loading.BarrelsPerShot; i++)
                     {
-                        SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmo).Ungrouped.Recoil, muzzleMatrix.Translation);
-                        // Use the effectiveInaccuracy instead of the original ShotInaccuracy
-                        Projectile newProjectile = ProjectileManager.I.AddProjectile(Magazines.SelectedAmmo, muzzlePos, RandomCone(muzzleMatrix.Forward, effectiveInaccuracy), SorterWep);
+                        nextBarrel++;
+                        nextBarrel %= Definition.Assignments.Muzzles.Length;
 
+                        MatrixD muzzleMatrix = CalcMuzzleMatrix(nextBarrel);
+                        Vector3D muzzlePos = muzzleMatrix.Translation;
+
+                        for (int j = 0; j < Definition.Loading.ProjectilesPerBarrel; j++)
+                        {
+                            SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmo).Ungrouped.Recoil, muzzleMatrix.Translation);
+                            // Use the effectiveInaccuracy instead of the original ShotInaccuracy
+                            Projectile newProjectile = ProjectileManager.I.AddProjectile(Magazines.SelectedAmmo, muzzlePos, RandomCone(muzzleMatrix.Forward, effectiveInaccuracy), SorterWep);
+
+                            if (newProjectile == null) // Emergency failsafe
+                                return;
+
+                            if (newProjectile.Guidance != null) // Assign target for self-guided projectiles
+                            {
+                                if (this is SorterTurretLogic)
+                                    newProjectile.Guidance.SetTarget(((SorterTurretLogic)this).TargetEntity);
+                                else
+                                    newProjectile.Guidance.SetTarget(WeaponManagerAi.I.GetTargeting(SorterWep.CubeGrid)?.PrimaryGridTarget);
+                            }
+                        }
+
+                        lastShoot -= 60f;
+
+                        // Not ideal (what if fire rate is insane?) but I don't care tbh
                         if (!string.IsNullOrEmpty(Definition.Audio.ShootSound))
                             MyVisualScriptLogicProvider.PlaySingleSoundAtPosition(Definition.Audio.ShootSound, muzzlePos);
+                        MuzzleFlash();
 
-                        if (newProjectile == null) // Emergency fail
-                            return;
-
-                        if (newProjectile.Guidance != null)
-                        {
-                            if (this is SorterTurretLogic)
-                                newProjectile.Guidance.SetTarget(((SorterTurretLogic)this).TargetEntity);
-                            else
-                                newProjectile.Guidance.SetTarget(WeaponManagerAi.I.GetTargeting(SorterWep.CubeGrid)?.PrimaryGridTarget);
-                        }
+                        if (lastShoot < 60)
+                            break;
                     }
-                    lastShoot -= 60f;
-
-                    MuzzleFlash();
                 }
+
                 Magazines.UseShot(MuzzleMatrix.Translation);
             }
         }

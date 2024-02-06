@@ -67,7 +67,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             Visuals = new Visuals()
             {
-                ShootParticle = "Muzzle_Flash_Autocannon",
+                ShootParticle = "",
                 ContinuousShootParticle = false,
                 ReloadParticle = "",
             },
