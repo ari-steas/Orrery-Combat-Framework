@@ -139,7 +139,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             SorterWep.CubeGrid.RayCastCells(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * GridCheckRange, intersects);
 
             foreach (var intersect in intersects)
-                if (intersect != SorterWep.Position && SorterWep.CubeGrid.CubeExists(intersect))
+                if (SorterWep.CubeGrid.CubeExists(intersect) && SorterWep.CubeGrid.GetCubeBlock(intersect) != SorterWep.SlimBlock)
                     return false;
             return true;
         }
