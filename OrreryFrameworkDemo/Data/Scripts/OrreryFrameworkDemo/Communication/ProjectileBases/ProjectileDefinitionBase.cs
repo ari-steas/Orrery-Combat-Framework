@@ -85,6 +85,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         /// The size of the projectile in meters. Used for point defense hit checking.
         /// </summary>
         [ProtoMember(7)] public float ProjectileSize;
+        [ProtoMember(8)] public float VelocityVariance;
     }
 
     [ProtoContract]

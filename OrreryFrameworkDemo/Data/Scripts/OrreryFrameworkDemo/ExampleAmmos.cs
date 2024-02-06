@@ -37,6 +37,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             PhysicalProjectile = new PhysicalProjectile()
             {
                 Velocity = 800,
+                VelocityVariance = 400,
                 Acceleration = 0,
                 Health = 1,
                 MaxTrajectory = 4000,
@@ -100,6 +101,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             PhysicalProjectile = new PhysicalProjectile()
             {
                 Velocity = 800,
+                VelocityVariance = 0,
                 Acceleration = 1,
                 Health = 1,
                 MaxTrajectory = 4000,
@@ -189,6 +191,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             PhysicalProjectile = new PhysicalProjectile()
             {
                 Velocity = 800,
+                VelocityVariance = 0,
                 Acceleration = 0,
                 Health = 1,
                 MaxTrajectory = 4000,
