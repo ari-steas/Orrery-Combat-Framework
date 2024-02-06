@@ -208,7 +208,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 TrailWidth = 0.5f,
                 TrailColor = new VRageMath.Vector4(61, 24, 24, 200),
                 //AttachedParticle = "Smoke_Missile",
-                ImpactParticle = "MaterialHit_Metal",
+                ImpactParticle = "",
                 VisibleChance = 1f,
             },
             Audio = new Audio()
@@ -216,7 +216,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 TravelSound = "",
                 TravelVolume = 100,
                 TravelMaxDistance = 1000,
-                ImpactSound = "WepSmallWarheadExpl",
+                ImpactSound = "",
                 SoundChance = 0.1f,
             },
             Guidance = new Guidance[]

@@ -135,10 +135,11 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (!Definition.Hardpoint.LineOfSightCheck) // Ignore if LoS check is disabled
                 return true;
 
-            List<IHitInfo> intersects = new List<IHitInfo>();
-            MyAPIGateway.Physics.CastRay(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * GridCheckRange, intersects);
+            List<Vector3I> intersects = new List<Vector3I>();
+            SorterWep.CubeGrid.RayCastCells(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * GridCheckRange, intersects);
+
             foreach (var intersect in intersects)
-                if (intersect.HitEntity.EntityId == SorterWep.CubeGrid.EntityId)
+                if (intersect != SorterWep.Position && SorterWep.CubeGrid.CubeExists(intersect))
                     return false;
             return true;
         }
