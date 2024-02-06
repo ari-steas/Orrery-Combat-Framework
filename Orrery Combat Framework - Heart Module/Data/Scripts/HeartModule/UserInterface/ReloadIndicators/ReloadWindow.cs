@@ -86,10 +86,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
             {
                 SorterTurretLogic turret = weapon as SorterTurretLogic;
                 if (turret.AimPoint != Vector3D.MaxValue)
-                    targetStatus = (turret.IsTargetAligned ? "" : "ALIGN") + (turret.IsTargetInRange ? "" : " RANGE") + (turret.HasLoS ? "" : " LOS");
+                    targetStatus = (turret.IsTargetAligned ? "" : "ALIGN") + (turret.IsTargetInRange ? "" : " RANGE");
                 else
                     targetStatus = "NO TARGET";
             }
+
+            targetStatus += weapon.HasLoS ? "" : " LOS";
 
             string ammoStatus = $"{weapon.Magazines.ShotsInMag}/{projectileDef?.Ungrouped.ShotsPerMagazine}"; // Placeholder value for max ammo
             //if (weapon.Definition.Loading.MagazinesToLoad > 1)
@@ -97,7 +99,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
             if (weapon.Magazines.NextReloadTime != weapon.Definition.Loading.ReloadTime)
                 ammoStatus += $" {Math.Round(weapon.Magazines.NextReloadTime, 1)}";
             if (weapon.Definition.Loading.DelayUntilFire > 0)
-                ammoStatus += $" (Delay {Math.Round(weapon.delayCounter, 1)}s)";
+                ammoStatus += $" (Del{Math.Round(weapon.delayCounter, 1)}s)";
 
             entry.Element.Text = $"{weapon.Id}: [{ammoStatus}] {targetStatus}";
         }
