@@ -14,6 +14,7 @@ using VRage.Game;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.Game.ModAPI.Network;
+using VRage.Library.Utils;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
 using VRage.Sync;
@@ -146,11 +147,20 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         internal bool AutoShoot = false;
         int nextBarrel = 0; // For alternate firing
         public float delayCounter = 0f;
+        private Random random = new Random();
 
         public virtual void TryShoot()
         {
+            float modifiedRateOfFire = Definition.Loading.RateOfFire;
+
+            // Only apply variance if RateOfFireVariance is not zero
+            if (Definition.Loading.RateOfFireVariance != 0)
+            {
+                modifiedRateOfFire += (float)((random.NextDouble() * 2 - 1) * Definition.Loading.RateOfFireVariance);
+            }
+
             if (lastShoot < 60)
-                lastShoot += Definition.Loading.RateOfFire;
+                lastShoot += modifiedRateOfFire; // Use the modified rate of fire
 
             // Manage fire delay. If there is an easier way to do this, TODO implement
             if ((ShootState.Value || AutoShoot) && Magazines.IsLoaded && delayCounter > 0)
