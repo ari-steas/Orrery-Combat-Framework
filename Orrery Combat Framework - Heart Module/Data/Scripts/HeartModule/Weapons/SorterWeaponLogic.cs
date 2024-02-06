@@ -192,7 +192,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 // Calculate the effective inaccuracy by applying the multiplier, default to 1 if multiplier is 0 to avoid change
                 float effectiveInaccuracy = Definition.Hardpoint.ShotInaccuracy * (accuracyVarianceMultiplier != 0 ? accuracyVarianceMultiplier : 1);
 
-                while (lastShoot >= 60) // Allows for firerates higher than 60 rps
+                while (lastShoot >= 60 && Magazines.ShotsInMag > 0) // Allows for firerates higher than 60 rps
                 {
                     for (int i = 0; i < Definition.Loading.BarrelsPerShot; i++)
                     {
@@ -227,12 +227,12 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                             MyVisualScriptLogicProvider.PlaySingleSoundAtPosition(Definition.Audio.ShootSound, muzzlePos);
                         MuzzleFlash();
 
+                        Magazines.UseShot(MuzzleMatrix.Translation);
+
                         if (lastShoot < 60)
                             break;
                     }
                 }
-
-                Magazines.UseShot(MuzzleMatrix.Translation);
             }
         }
 
