@@ -44,6 +44,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (definition == null || !HasDefinition(definition.Assignments.BlockSubtype))
                 return false;
 
+            ApplyTrainingWheels(ref definition);
+
             I.Definitions[definition.Assignments.BlockSubtype] = definition;
             I.SerializedDefinitions[definition.Assignments.BlockSubtype] = serializedDefinition;
             return true;
@@ -53,6 +55,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             if (!HasDefinition(definition.Assignments.BlockSubtype))
                 return false;
+
+            ApplyTrainingWheels(ref definition);
 
             I.Definitions[definition.Assignments.BlockSubtype] = definition;
             I.SerializedDefinitions[definition.Assignments.BlockSubtype] = MyAPIGateway.Utilities.SerializeToBinary(definition);
@@ -99,6 +103,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (definition == null)
                 return;
 
+            ApplyTrainingWheels(ref definition);
+
             RegisterDefinition(MyAPIGateway.Utilities.SerializeToBinary(definition));
         }
 
@@ -123,6 +129,19 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         public static string[] GetAllDefinitions()
         {
             return I.Definitions.Keys.ToArray();
+        }
+
+        /// <summary>
+        /// Fixes weird definition values. TODO expand.
+        /// </summary>
+        /// <param name="input"></param>
+        private static void ApplyTrainingWheels(ref WeaponDefinitionBase input)
+        {
+            if (input.Loading.RateOfFire > 500)
+            {
+                input.Loading.RateOfFire = 500;
+                HeartData.I.Log.Log($"WeaponDefinitionManager.TrainingWheels: Definition {input.Assignments.BlockSubtype}'s firerate is over 500 rps!\nI've gone ahead and clamped it for you, but if you reeealllly want to break stuff, increase ProjectilesPerBarrel :)");
+            }
         }
     }
 }
