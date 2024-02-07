@@ -30,8 +30,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
                 if (!MyAPIGateway.Utilities.IsDedicated)
                     MyVisualScriptLogicProvider.SessionClose(1000, false, true);
                 else
+                {
                     //throw Exception;
-                    MyAPIGateway.Session.Unload();
+                    MyAPIGateway.Session.Unload(); // This might cause improver unloading
+                    MyAPIGateway.Session.UnloadDataComponents();
+                }
+                    
             }
 
             if (!MyAPIGateway.Utilities.IsDedicated)

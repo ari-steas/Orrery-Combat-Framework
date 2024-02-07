@@ -3,6 +3,7 @@ using Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler;
 using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using RichHudFramework.Client;
 using Sandbox.ModAPI;
@@ -21,6 +22,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
         CriticalHandle handle;
         ApiSender apiSender;
         DefinitionReciever definitionReciever;
+        CommandHandler commands;
         int remainingDegradedModeTicks = 300;
 
         public override void LoadData()
@@ -52,6 +54,9 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
                 apiSender = new ApiSender();
                 apiSender.LoadData();
+
+                commands = new CommandHandler();
+                commands.Init();
 
                 HeartData.I.IsSuspended = false;
                 HeartData.I.Log.Log($"Finished loading core.");
@@ -143,6 +148,8 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
         protected override void UnloadData()
         {
+            commands.Close();
+
             handle.UnloadData();
             HeartData.I.Net.UnloadData();
             HeartData.I.Log.Log($"Unloaded HeartNetwork");
