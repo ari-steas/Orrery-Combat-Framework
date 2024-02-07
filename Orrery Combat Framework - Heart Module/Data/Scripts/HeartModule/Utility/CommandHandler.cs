@@ -1,5 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using RichHudFramework.Internal;
 using RichHudFramework.UI;
 using Sandbox.Game.GameSystems.Chat;
 using Sandbox.Game.Screens.Helpers.RadialMenuActions;
@@ -76,11 +77,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
 
             sendToOthers = false;
 
-            string[] parts = messageText.Substring(4).ToLower().Split(' '); // Convert commands to be more parseable
+            string[] parts = messageText.Substring(4).Split(' '); // Convert commands to be more parseable
 
             // Really basic command handler
-            if (commands.ContainsKey(parts[0]))
-                commands[parts[0]].action.Invoke(parts);
+            if (commands.ContainsKey(parts[0].ToLower()))
+                commands[parts[0].ToLower()].action.Invoke(parts);
+            else
+                MyAPIGateway.Utilities.ShowMessage("[OCF]", $"Unrecognized command " + parts[0]);
+
         }
 
         public void Close()
@@ -106,7 +110,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
                 return;
             }
 
-            I.commands.Add(modName, new Command(modName, helpText, action));
+            I.commands.Add(command, new Command(modName, helpText, action));
             HeartData.I.Log.Log($"Registered new chat command \"/{command}\" from [{modName}]");
         }
 
