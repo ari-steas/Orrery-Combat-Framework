@@ -58,6 +58,18 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 MagazinesToLoad = 1,
 
                 MaxReloads = -1,
+
+                Resources = new Loading.Resource[]
+                {
+                    new Loading.Resource
+                    {
+                        ResourceType = "Heat",
+                        ResourceGeneration = 5, 
+                        ResourceStorage = 100, 
+                        ResourcePerShot = 10,
+                        MinResourceBeforeFire = 10 
+                    }
+                },
             },
             Audio = new Audio()
             {
