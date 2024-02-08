@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.ModAPI;
-using VRage.Game.ModAPI;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.ResourceSystem
@@ -34,7 +32,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.ResourceSystem
             {
                 if (_resources[resource.ResourceType] < resource.MinResourceBeforeFire)
                 {
-                    ShowNotification($"Insufficient {resource.ResourceType} to fire. Current {resource.ResourceType} count: {_resources[resource.ResourceType]}", 1000); // Show notification for insufficient resources
+                    if (MyAPIGateway.Multiplayer.IsServer)
+                    {
+                        ShowNotification($"Insufficient {resource.ResourceType} to fire. Current {resource.ResourceType} count: {_resources[resource.ResourceType]}", 1000); // Show notification for insufficient resources
+                    }
                     return false;
                 }
             }
@@ -51,7 +52,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.ResourceSystem
             }
 
             // Update resource status after consumption
-            ShowResourceStatus();
+            if (MyAPIGateway.Multiplayer.IsServer)
+            {
+                ShowResourceStatus();
+            }
         }
 
         public void RegenerateResources(float deltaTime)
@@ -65,13 +69,19 @@ namespace Heart_Module.Data.Scripts.HeartModule.ResourceSystem
             }
 
             // Update resource status after regeneration
-            ShowResourceStatus();
+            if (MyAPIGateway.Multiplayer.IsServer)
+            {
+                ShowResourceStatus();
+            }
         }
 
         // Call this method every update tick
         public void Update(float deltaTime)
         {
-            RegenerateResources(deltaTime);
+            if (MyAPIGateway.Multiplayer.IsServer)
+            {
+                RegenerateResources(deltaTime);
+            }
         }
 
         private void ShowResourceStatus()
