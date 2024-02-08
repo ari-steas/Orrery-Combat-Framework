@@ -2,6 +2,7 @@
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Sandbox.ModAPI;
 using System.Collections.Generic;
+using VRage.Game;
 using VRage.Utils;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
@@ -63,7 +64,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public static bool HasDefinition(int id)
         {
-            return I.Definitions.Count > id && id >= 0;
+            return I.Definitions.Count > id && id >= 0 && I.Definitions[id] != null;
         }
 
         /// <summary>
@@ -186,6 +187,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             I.SerializedDefinitions[definitionId] = null;
 
             HeartData.I.Log.Log($"Removed ammo definition " + definitionId);
+        }
+
+        public static void ClearDefinitions()
+        {
+            I.Definitions.Clear();
+            I.DefinitionNamePairs.Clear();
+            I.SerializedDefinitions.Clear();
+            HeartData.I.Log.Log($"Cleared all ammo definitions.");
         }
 
         public static int DefinitionCount()

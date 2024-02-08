@@ -131,6 +131,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             return I.Definitions.Keys.ToArray();
         }
 
+        public static void ClearDefinitions()
+        {
+            foreach (var id in GetAllDefinitions())
+            {
+                RemoveDefinition(id);
+            }
+
+            HeartData.I.Log.Log("Cleared all weapon definitions.");
+        }
+
         /// <summary>
         /// Fixes weird definition values. TODO expand.
         /// </summary>

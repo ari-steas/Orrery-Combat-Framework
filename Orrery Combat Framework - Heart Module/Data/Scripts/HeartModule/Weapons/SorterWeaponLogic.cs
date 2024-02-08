@@ -186,7 +186,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     SoftHandle.RaiseSyncException($"Invalid ammo type on weapon! Subtype: {SorterWep.BlockDefinition.SubtypeId} | AmmoId: {Magazines.SelectedAmmo}");
                     return;
                 }
-
+                
                 // Retrieve the AccuracyVarianceMultiplier for the selected ammo
                 float accuracyVarianceMultiplier = ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmo).PhysicalProjectile.AccuracyVarianceMultiplier;
                 // Calculate the effective inaccuracy by applying the multiplier, default to 1 if multiplier is 0 to avoid change

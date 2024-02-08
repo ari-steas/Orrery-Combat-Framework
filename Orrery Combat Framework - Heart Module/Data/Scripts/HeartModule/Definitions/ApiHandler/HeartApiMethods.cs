@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using VRage.Game.Entity;
 using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
-using static VRage.Game.MyObjectBuilder_BehaviorTreeActionNode;
+using Heart_Module.Data.Scripts.HeartModule.Utility;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
 {
@@ -25,6 +25,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
 
         internal HeartApiMethods()
         {
+
             ModApiMethods = new Dictionary<string, Delegate>()
             {
                 // Projectile LiveMethods
@@ -54,6 +55,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
                 // Standard
                 ["LogWriteLine"] = new Action<string>(HeartData.I.Log.Log),
                 ["GetNetworkLoad"] = new Func<int>(GetNetworkLoad),
+                ["AddChatCommand"] = new Action<string, string, Action<string[]>, string>(CommandHandler.AddCommand),
             };
         }
 

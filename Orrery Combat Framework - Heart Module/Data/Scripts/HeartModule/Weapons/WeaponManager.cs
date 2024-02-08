@@ -58,7 +58,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             foreach (var grid in GridWeapons)
             {
-                foreach (var weapon in grid.Value)
+                foreach (var weapon in grid.Value.ToArray())
                 {
                     if (weapon.Definition == definition)
                     {

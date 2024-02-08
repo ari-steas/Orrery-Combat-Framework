@@ -3,6 +3,7 @@ using Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler;
 using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using RichHudFramework.Client;
 using Sandbox.ModAPI;
@@ -18,13 +19,17 @@ namespace Heart_Module.Data.Scripts.HeartModule
     [MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation, priority: int.MaxValue)]
     internal class HeartLoad : MySessionComponentBase
     {
+        private static HeartLoad I;
+
         CriticalHandle handle;
         ApiSender apiSender;
         DefinitionReciever definitionReciever;
+        CommandHandler commands;
         int remainingDegradedModeTicks = 300;
 
         public override void LoadData()
         {
+            I = this;
             HeartData.I = new HeartData();
             HeartData.I.Log.Log($"Start loading core...");
 
@@ -52,6 +57,9 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
                 apiSender = new ApiSender();
                 apiSender.LoadData();
+
+                commands = new CommandHandler();
+                commands.Init();
 
                 HeartData.I.IsSuspended = false;
                 HeartData.I.Log.Log($"Finished loading core.");
@@ -143,6 +151,8 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
         protected override void UnloadData()
         {
+            commands.Close();
+
             handle.UnloadData();
             HeartData.I.Net.UnloadData();
             HeartData.I.Log.Log($"Unloaded HeartNetwork");
@@ -160,6 +170,8 @@ namespace Heart_Module.Data.Scripts.HeartModule
             HeartData.I.Log.Log($"Closing core, log finishes here.");
             HeartData.I.Log.Close();
             HeartData.I = null;
+
+            I = null;
         }
 
         private void OnEntityAdd(IMyEntity entity)
@@ -172,6 +184,17 @@ namespace Heart_Module.Data.Scripts.HeartModule
         {
             if (entity is IMyCubeGrid)
                 HeartData.I?.OnGridRemove?.Invoke(entity as IMyCubeGrid);
+        }
+
+        public static void ResetDefinitions()
+        {
+            WeaponDefinitionManager.ClearDefinitions();
+
+            ProjectileDefinitionManager.ClearDefinitions();
+
+            // Re-request definitions
+            I.definitionReciever.UnloadData();
+            I.definitionReciever.LoadData();
         }
     }
 }
