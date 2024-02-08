@@ -64,9 +64,9 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     new Loading.Resource
                     {
                         ResourceType = "Heat",
-                        ResourceGeneration = 5, 
+                        ResourceGeneration = -5, 
                         ResourceStorage = 100, 
-                        ResourcePerShot = 10,
+                        ResourcePerShot = -10,
                         MinResourceBeforeFire = 10 
                     }
                 },
