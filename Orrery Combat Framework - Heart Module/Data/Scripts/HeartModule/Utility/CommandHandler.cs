@@ -1,5 +1,7 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+﻿using Heart_Module.Data.Scripts.HeartModule.Definitions;
+using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using RichHudFramework.Internal;
 using RichHudFramework.UI;
 using Sandbox.Game.GameSystems.Chat;
@@ -24,7 +26,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
 
         private Dictionary<string, Command> commands = new Dictionary<string, Command>()
         {
-            ["help"] = new Command("HeartMod", "Displays command help.", (message) => I?.ShowHelp()), // TODO: Call for adding chat commands
+            ["help"] = new Command("HeartMod", "Displays command help.", (message) => I.ShowHelp()),
+            ["debug.fillammo"] = new Command("HeartMod.Debug", "Fills all magazines on your current grid.", (message) => I.FillGridWeapons()),
+            ["debug.reloadammo"] = new Command("HeartMod.Debug", "Forces all weapons on your current grid to reload.", (message) => I.ReloadGridWeapons()),
+            ["debug.reloaddefs"] = new Command("HeartMod.Debug", "Clears and refreshes all weapon definitions.", (message) => { HeartLoad.ResetDefinitions(); MyAPIGateway.Utilities.ShowMessage("[OCF]", "All definitions cleared. Good luck fixing the bug!"); }),
         };
 
         private void ShowHelp()
@@ -35,21 +40,81 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
                 if (!modNames.Contains(command.modName))
                     modNames.Add(command.modName);
 
-            MyAPIGateway.Utilities.ShowMessage("[OCF]", "Orrery HeartMod Help");
+            MyAPIGateway.Utilities.ShowMessage("Orrery Combat Framework Help", "");
 
             foreach (var modName in modNames)
             {
                 foreach (var command in commands)
-                    if (command.Value.modName == "HeartMod")
-                        helpBuilder.Append($"\n/{command.Key} " + command.Value.helpText);
+                    if (command.Value.modName == modName)
+                        helpBuilder.Append($"\n{{/ocf {command.Key}}}: " + command.Value.helpText);
 
-                MyAPIGateway.Utilities.ShowMessage("[OCF]", $"\n[{modName}]" + helpBuilder);
+                MyAPIGateway.Utilities.ShowMessage($"[{modName}]", helpBuilder + "\n");
                 helpBuilder.Clear();
             }
         }
 
+        private void FillGridWeapons()
+        {
+            if (MyAPIGateway.Utilities.IsDedicated)
+                return;
 
+            if (MyAPIGateway.Session.Player.PromoteLevel < MyPromoteLevel.SpaceMaster)
+            {
+                MyAPIGateway.Utilities.ShowMessage($"[HeartMod.Debug]", $"You need a minimum rank of Space Master to run this command!\nlook at this nerd trying to cheat");
+                return;
+            }
 
+            IMyEntity entity = MyAPIGateway.Session.Player.Controller.ControlledEntity.Entity;
+
+            if (entity is IMyCubeBlock)
+            {
+                int ct = 0;
+                IMyCubeGrid grid = ((IMyCubeBlock)entity).CubeGrid;
+                foreach (var weapon in WeaponManager.I.GridWeapons[grid])
+                {
+                    weapon.Magazines.MagazinesLoaded = weapon.Definition.Loading.MagazinesToLoad;
+                    weapon.Magazines.ShotsInMag = ProjectileDefinitionManager.GetDefinition(weapon.Magazines.SelectedAmmo).Ungrouped.ShotsPerMagazine;
+                    ct++;
+                }
+                MyAPIGateway.Utilities.ShowMessage($"[HeartMod.Debug]", $"Filled {ct} weapons.");
+            }
+            else
+            {
+                MyAPIGateway.Utilities.ShowMessage($"[HeartMod.Debug]", "No grid found!");
+            }
+        }
+
+        private void ReloadGridWeapons()
+        {
+            if (MyAPIGateway.Utilities.IsDedicated)
+                return;
+
+            if (MyAPIGateway.Session.Player.PromoteLevel < MyPromoteLevel.SpaceMaster)
+            {
+                MyAPIGateway.Utilities.ShowMessage($"[HeartMod.Debug]", $"You need a minimum rank of Space Master to run this command!\nlook at this nerd trying to cheat");
+                return;
+            }
+
+            IMyEntity entity = MyAPIGateway.Session.Player.Controller.ControlledEntity.Entity;
+
+            if (entity is IMyCubeBlock)
+            {
+                int ct = 0;
+                IMyCubeGrid grid = ((IMyCubeBlock)entity).CubeGrid;
+                foreach (var weapon in WeaponManager.I.GridWeapons[grid])
+                {
+                    weapon.Magazines.EmptyMagazines();
+                    //weapon.Magazines.NextReloadTime = 0;
+                    //weapon.Magazines.UpdateReload();
+                    ct++;
+                }
+                MyAPIGateway.Utilities.ShowMessage($"[HeartMod.Debug]", $"Force-reloaded {ct} weapons.");
+            }
+            else
+            {
+                MyAPIGateway.Utilities.ShowMessage($"[HeartMod.Debug]", "No grid found!");
+            }
+        }
 
 
 
@@ -77,19 +142,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
 
             sendToOthers = false;
 
-            string[] parts = messageText.Substring(4).Split(' '); // Convert commands to be more parseable
+            string[] parts = messageText.Substring(5).Split(' '); // Convert commands to be more parseable
 
             // Really basic command handler
             if (commands.ContainsKey(parts[0].ToLower()))
                 commands[parts[0].ToLower()].action.Invoke(parts);
             else
-                MyAPIGateway.Utilities.ShowMessage("[OCF]", $"Unrecognized command " + parts[0]);
-
+                MyAPIGateway.Utilities.ShowMessage("[OCF]", $"Unrecognized command \"{messageText}\" ({sender})");
         }
 
         public void Close()
         {
-            //MyAPIGateway.Utilities.MessageEnteredSender -= Command_MessageEnteredSender;
+            MyAPIGateway.Utilities.MessageEnteredSender -= Command_MessageEnteredSender;
             I = null;
         }
 
