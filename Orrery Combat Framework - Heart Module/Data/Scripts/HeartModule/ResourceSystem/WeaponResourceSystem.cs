@@ -40,7 +40,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ResourceSystem
                     throw new Exception($"Invalid resource storage value for {resource.ResourceType}.");
                 }
 
-                _resources[resource.ResourceType] = resource.ResourceStorage;
+                _resources.Add(resource.ResourceType, resource.ResourceStorage);
             }
         }
 
@@ -56,7 +56,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ResourceSystem
 
             // Check if the loading resources are null
             if (_weaponDefinition.Loading.Resources == null)
-                return false;
+                return true;
 
             // Check if there are enough resources for at least one shot
             foreach (var resource in _weaponDefinition.Loading.Resources)
@@ -87,6 +87,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.ResourceSystem
             if (_weaponLogic.SorterWep.CubeGrid.Physics == null)
                 return;
 
+            // Check if the loading resources are null
+            if (_weaponDefinition.Loading.Resources == null)
+                return;
+
             // Consume resources per shot
             foreach (var resource in _weaponDefinition.Loading.Resources)
             {
@@ -105,6 +109,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.ResourceSystem
         {
             // Check if the block has valid physics
             if (_weaponLogic.SorterWep.CubeGrid.Physics == null)
+                return;
+
+            // Check if the loading resources are null
+            if (_weaponDefinition.Loading.Resources == null)
                 return;
 
             // Regenerate resources over time
@@ -143,6 +151,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.ResourceSystem
         private void ShowNotification(string message, int duration)
         {
             MyAPIGateway.Utilities.ShowNotification(message, duration);
+        }
+
+        public void Unload()
+        {
+            _resources = null; // Release the dictionary
         }
     }
 }
