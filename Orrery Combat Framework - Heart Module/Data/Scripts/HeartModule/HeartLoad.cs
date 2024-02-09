@@ -25,6 +25,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
         ApiSender apiSender;
         DefinitionReciever definitionReciever;
         CommandHandler commands;
+        ProjectileManager projectileManager;
         int remainingDegradedModeTicks = 300;
 
         public override void LoadData()
@@ -54,12 +55,19 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
                 definitionReciever = new DefinitionReciever();
                 definitionReciever.LoadData();
+                HeartData.I.Log.Log($"Initialized DefinitionReciever");
 
                 apiSender = new ApiSender();
                 apiSender.LoadData();
+                HeartData.I.Log.Log($"Initialized ApiSender");
 
                 commands = new CommandHandler();
                 commands.Init();
+                HeartData.I.Log.Log($"Initialized CommandHandler");
+
+                projectileManager = new ProjectileManager();
+                MyAPIGateway.Parallel.Start(projectileManager.UpdateProjectilesParallel);
+                HeartData.I.Log.Log($"Started ProjectileManager on parallel thread.");
 
                 HeartData.I.IsSuspended = false;
                 HeartData.I.Log.Log($"Finished loading core.");
@@ -137,6 +145,8 @@ namespace Heart_Module.Data.Scripts.HeartModule
                     else if (remainingDegradedModeTicks > 0)
                         remainingDegradedModeTicks--;
                 }
+
+                projectileManager.UpdateAfterSimulation();
             }
             catch (Exception ex)
             {
@@ -160,6 +170,9 @@ namespace Heart_Module.Data.Scripts.HeartModule
             MyAPIGateway.Entities.OnEntityAdd -= OnEntityAdd;
             MyAPIGateway.Entities.OnEntityRemove -= OnEntityRemove;
 
+            projectileManager.UnloadData();
+            HeartData.I.Log.Log($"Closed ProjectileManager");
+
             definitionReciever.UnloadData();
             WeaponDefinitionManager.I = null;
             ProjectileDefinitionManager.I = null;
@@ -172,6 +185,11 @@ namespace Heart_Module.Data.Scripts.HeartModule
             HeartData.I = null;
 
             I = null;
+        }
+
+        public override void Draw()
+        {
+            projectileManager.Draw();
         }
 
         private void OnEntityAdd(IMyEntity entity)

@@ -15,8 +15,7 @@ using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 {
-    [MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation)]
-    public partial class ProjectileManager : MySessionComponentBase
+    public partial class ProjectileManager
     {
         public static ProjectileManager I = new ProjectileManager();
 
@@ -35,15 +34,17 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public int NumProjectiles => ActiveProjectiles.Count;
 
-        public override void LoadData()
+        public ProjectileManager()
         {
+            I?.UnloadData();
             I = this;
             DamageHandler.Load();
         }
 
-        protected override void UnloadData()
+        public void UnloadData()
         {
             I = null;
+            isActive = false;
             DamageHandler.Unload();
         }
 
@@ -54,7 +55,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         HashSet<BoundingSphere> allValidEntities = new HashSet<BoundingSphere>();
 
-        public override void UpdateAfterSimulation()
+        public void UpdateAfterSimulation()
         {
             try
             {
@@ -70,7 +71,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 );
 
                 // Tick projectiles
-                MyAPIGateway.Parallel.ForEach(ActiveProjectiles.Values.ToArray(), ProjectileTick);
                 foreach (var projectile in ActiveProjectiles.Values.ToArray()) // This can be modified by ModApi calls during run
                 {
                     projectile.TickUpdate(deltaTick);
@@ -110,6 +110,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 DamageHandler.Update();
 
                 clockTick.Restart();
+
+                ticksReady++;
             }
             catch (Exception ex)
             {
@@ -117,12 +119,33 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
         }
 
-        public override void UpdatingStopped()
+        bool isActive = false;
+        int ticksReady = 0;
+        /// <summary>
+        /// Updates parallel at MAX 60tps, but can run at under that without lagging the game.
+        /// </summary>
+        public void UpdateProjectilesParallel()
+        {
+            while (isActive)
+            {
+                if (ticksReady <= 0)
+                    continue;
+
+                foreach (var projectile in ActiveProjectiles.Values.ToArray()) // This can be modified by ModApi calls during run
+                {
+                    projectile.UpdateBoundingBoxCheck(allValidEntities);
+                }
+
+                ticksReady = 0;
+            }
+        }
+
+        public void UpdatingStopped()
         {
             clockTick.Stop();
         }
 
-        public override void Draw() // Called once per frame to avoid jitter
+        public void Draw() // Called once per frame to avoid jitter
         {
             if (HeartData.I.IsSuspended || MyAPIGateway.Utilities.IsDedicated) // We don't want to needlessly use server CPU time
                 return;
