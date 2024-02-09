@@ -66,8 +66,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
                 HeartData.I.Log.Log($"Initialized CommandHandler");
 
                 projectileManager = new ProjectileManager();
-                MyAPIGateway.Parallel.Start(projectileManager.UpdateProjectilesParallel);
-                HeartData.I.Log.Log($"Started ProjectileManager on parallel thread.");
+                HeartData.I.Log.Log($"Started ProjectileManager.");
 
                 HeartData.I.IsSuspended = false;
                 HeartData.I.Log.Log($"Finished loading core.");

@@ -17,7 +17,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 {
     public partial class ProjectileManager
     {
-        public static ProjectileManager I = new ProjectileManager();
+        public static ProjectileManager I;
 
         private Dictionary<uint, Projectile> ActiveProjectiles = new Dictionary<uint, Projectile>();
         private HashSet<Projectile> ProjectilesWithHealth = new HashSet<Projectile>();
@@ -34,16 +34,26 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public int NumProjectiles => ActiveProjectiles.Count;
 
+        private Task projectileTask;
+
         public ProjectileManager()
         {
             I?.UnloadData();
             I = this;
             DamageHandler.Load();
+
+            projectileTask = MyAPIGateway.Parallel.Start(UpdateProjectilesParallel);
         }
 
         public void UnloadData()
         {
             isActive = false;
+            if (!projectileTask.IsComplete)
+            {
+                HeartData.I.Log.Log("Waiting for projectileTask to end...");
+                projectileTask.Wait();
+            }
+
             I = null;
             DamageHandler.Unload();
         }
@@ -121,16 +131,23 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         /// </summary>
         public void UpdateProjectilesParallel()
         {
-            while (I.isActive)
+            Projectile[] projectiles;
+            BoundingSphere[] spheres;
+
+            HeartData.I.Log.Log("Started parallel projectile thread.");
+            while (isActive)
             {
                 if (ticksReady <= 0)
                     continue;
 
                 float delta = ticksReady / 60f;
 
-                foreach (var projectile in ActiveProjectiles.Values.ToArray()) // This can be modified by ModApi calls during run
+                projectiles = ActiveProjectiles.Values.ToArray();
+                spheres = allValidEntities.ToArray();
+
+                foreach (var projectile in projectiles) // This can be modified by ModApi calls during run
                 {
-                    projectile.UpdateBoundingBoxCheck(I.allValidEntities);
+                    projectile.UpdateBoundingBoxCheck(spheres);
                     projectile.AsyncTickUpdate(delta);
                 }
 

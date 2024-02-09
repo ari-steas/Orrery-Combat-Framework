@@ -21,7 +21,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         /// <summary>
         /// Perform a cheap intersection check to see if it's worth doing a raycast.
         /// </summary>
-        public void UpdateBoundingBoxCheck(HashSet<BoundingSphere> entitiesToCheck)
+        public void UpdateBoundingBoxCheck(BoundingSphere[] entitiesToCheck)
         {
             shouldCheckEntities = false;
             Ray travelLine = new Ray(Position, Direction);
