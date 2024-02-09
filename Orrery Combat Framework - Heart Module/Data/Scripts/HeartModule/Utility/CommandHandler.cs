@@ -30,6 +30,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
             ["debug.fillammo"] = new Command("HeartMod.Debug", "Fills all magazines on your current grid.", (message) => I.FillGridWeapons()),
             ["debug.reloadammo"] = new Command("HeartMod.Debug", "Forces all weapons on your current grid to reload.", (message) => I.ReloadGridWeapons()),
             ["debug.reloaddefs"] = new Command("HeartMod.Debug", "Clears and refreshes all weapon definitions.", (message) => { HeartLoad.ResetDefinitions(); MyAPIGateway.Utilities.ShowMessage("[OCF]", "All definitions cleared. Good luck fixing the bug!"); }),
+            ["degraded"] = new Command("HeartMod", "Enables degraded mode for [arg1] seconds (default 10).", (message) =>
+            {
+                int seconds = 10;
+
+                if (message.Length > 1)
+                {
+                    int.TryParse(message[1], out seconds);
+                }
+
+                MyAPIGateway.Utilities.ShowMessage("[OCF]", $"Entering degraded mode (no visuals) for {seconds} seconds.");
+                HeartLoad.EnterDegradedMode(seconds * 60);
+            }),
             // TODO: Full on mod reload if possible
         };
 

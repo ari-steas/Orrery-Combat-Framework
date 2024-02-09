@@ -154,6 +154,12 @@ namespace Heart_Module.Data.Scripts.HeartModule
             }
         }
 
+        public static void EnterDegradedMode(int ticks)
+        {
+            I.remainingDegradedModeTicks = ticks;
+            HeartData.I.DegradedMode = true;
+        }
+
         public override void UpdatingStopped()
         {
             HeartData.I.IsPaused = true;
