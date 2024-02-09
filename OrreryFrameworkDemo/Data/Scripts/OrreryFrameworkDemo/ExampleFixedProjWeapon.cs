@@ -17,7 +17,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             Assignments = new Assignments()
             {
-                BlockSubtype = "SC_AR_Nimrod",
+                BlockSubtype = "OCF_ExampleFixedProjectileWeapon",
                 MuzzleSubpart = "",
                 ElevationSubpart = "",
                 AzimuthSubpart = "",

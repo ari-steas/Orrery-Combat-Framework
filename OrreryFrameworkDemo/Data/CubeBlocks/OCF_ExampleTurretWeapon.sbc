@@ -4,9 +4,9 @@
 		<Definition xsi:type="MyObjectBuilder_ConveyorSorterDefinition">
 			<Id>
 				<TypeId>ConveyorSorter</TypeId>
-				<SubtypeId>SC_AR_Resheph</SubtypeId>
+				<SubtypeId>OCF_ExampleTurretWeapon</SubtypeId>
 			</Id>
-			<DisplayName>Resheph-250 Railgun Turret</DisplayName>
+			<DisplayName>OCF_ExampleTurretWeapon</DisplayName>
 			<Icon>Textures\GUI\Icons\Cubes\SC_AR_Resheph.dds</Icon>
 			<Description>Le Gun (Turreted)</Description>
 			<CubeSize>Large</CubeSize>

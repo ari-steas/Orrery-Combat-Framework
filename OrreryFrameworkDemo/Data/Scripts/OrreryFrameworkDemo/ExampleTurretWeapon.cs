@@ -19,7 +19,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             Assignments = new Assignments()
             {
-                BlockSubtype = "SC_AR_Resheph",
+                BlockSubtype = "OCF_ExampleTurretWeapon",
                 MuzzleSubpart = "reshephbarrels",
                 ElevationSubpart = "reshephbarrels",
                 AzimuthSubpart = "reshephtop",

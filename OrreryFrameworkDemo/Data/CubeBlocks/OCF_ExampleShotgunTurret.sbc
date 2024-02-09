@@ -4,9 +4,9 @@
 		<Definition xsi:type="MyObjectBuilder_ConveyorSorterDefinition">
 			<Id>
 				<TypeId>ConveyorSorter</TypeId>
-				<SubtypeId>SC_AR_Afflictor</SubtypeId>
+				<SubtypeId>OCF_ExampleShotgunTurret</SubtypeId>
 			</Id>
-			<DisplayName>Afflictor Burst Cannon</DisplayName>
+			<DisplayName>OCF_ExampleShotgunTurret</DisplayName>
 			<Icon>Textures\GUI\Icons\Cubes\SC_AR_Afflictor.dds</Icon>
 			<Description>
 				Le Shotgun
