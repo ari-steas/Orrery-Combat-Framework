@@ -4,9 +4,9 @@
     <Definition xsi:type="MyObjectBuilder_ConveyorSorterDefinition">
       <Id>
         <TypeId>ConveyorSorter</TypeId>
-        <SubtypeId>SC_AR_Forager</SubtypeId>
+        <SubtypeId>OCF_ExamplePenetrativeRailgun</SubtypeId>
       </Id>
-      <DisplayName>Forager Coilgun</DisplayName>
+      <DisplayName>OCF_ExamplePenetrativeRailgun</DisplayName>
       <Description>
         Le Railgun
       </Description>

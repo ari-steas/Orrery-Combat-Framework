@@ -4,9 +4,9 @@
 		<Definition xsi:type="MyObjectBuilder_ConveyorSorterDefinition">
 			<Id>
 				<TypeId>ConveyorSorter</TypeId>
-				<SubtypeId>SC_AR_CataclysmicVariable</SubtypeId>
+				<SubtypeId>OCF_ExampleBigResourceTurret</SubtypeId>
 			</Id>
-			<DisplayName>0SH-1T Cataclysmic Variable Cannon</DisplayName>
+			<DisplayName>OCF_ExampleBigResourceTurret</DisplayName>
 			<Icon>Textures\GUI\Icons\Cubes\SC_AR_CataclysmicVariable.dds</Icon>
 			<Description>
 				Long Range Turret: [6km]
