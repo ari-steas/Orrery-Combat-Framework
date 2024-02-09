@@ -192,8 +192,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     return;
                 }
 
-                // Check if there are enough resources for at least one shot
-                if (_resourceSystem.CanShoot())
+                // Check if the weapon has a resource system and there are enough resources for at least one shot
+                if (_resourceSystem != null && _resourceSystem.CanShoot())
                 {
                     // Retrieve the AccuracyVarianceMultiplier for the selected ammo
                     float accuracyVarianceMultiplier = ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmo).PhysicalProjectile.AccuracyVarianceMultiplier;

@@ -18,18 +18,57 @@ namespace Heart_Module.Data.Scripts.HeartModule.ResourceSystem
             _weaponLogic = weaponLogic;
             _resources = new Dictionary<string, float>();
 
+            // Check if the weapon definition has a resource section
+            if (_weaponDefinition.Loading.Resources == null)
+            {
+                // If the resource section is missing, create an empty dictionary
+                return;
+            }
+
             // Initialize resources with maximum storage capacity
             foreach (var resource in _weaponDefinition.Loading.Resources)
             {
+                // Check for invalid resource definitions
+                if (string.IsNullOrEmpty(resource.ResourceType))
+                {
+                    throw new Exception("Invalid resource type defined in the weapon definition.");
+                }
+
+                // Check for negative or zero resource storage
+                if (resource.ResourceStorage <= 0)
+                {
+                    throw new Exception($"Invalid resource storage value for {resource.ResourceType}.");
+                }
+
                 _resources[resource.ResourceType] = resource.ResourceStorage;
             }
         }
 
         public bool CanShoot()
         {
+            // Check if the weapon logic is null or if SorterWep is null
+            if (_weaponLogic == null || _weaponLogic.SorterWep == null)
+                return false;
+
+            // Check if CubeGrid is null or if CubeGrid.Physics is null
+            if (_weaponLogic.SorterWep.CubeGrid == null || _weaponLogic.SorterWep.CubeGrid.Physics == null)
+                return false;
+
+            // Check if the loading resources are null
+            if (_weaponDefinition.Loading.Resources == null)
+                return false;
+
             // Check if there are enough resources for at least one shot
             foreach (var resource in _weaponDefinition.Loading.Resources)
             {
+                if (!_resources.ContainsKey(resource.ResourceType))
+                {
+                    // Handle the case where the resource type is not found in the dictionary
+                    // This could happen if the resource is not initialized properly
+                    // You can log an error or handle it based on your requirements
+                    return false;
+                }
+
                 if (_resources[resource.ResourceType] < resource.MinResourceBeforeFire)
                 {
                     if (MyAPIGateway.Multiplayer.IsServer)
@@ -44,6 +83,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.ResourceSystem
 
         public void ConsumeResources()
         {
+            // Check if the block has valid physics
+            if (_weaponLogic.SorterWep.CubeGrid.Physics == null)
+                return;
+
             // Consume resources per shot
             foreach (var resource in _weaponDefinition.Loading.Resources)
             {
@@ -60,6 +103,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.ResourceSystem
 
         public void RegenerateResources(float deltaTime)
         {
+            // Check if the block has valid physics
+            if (_weaponLogic.SorterWep.CubeGrid.Physics == null)
+                return;
+
             // Regenerate resources over time
             foreach (var resource in _weaponDefinition.Loading.Resources)
             {
