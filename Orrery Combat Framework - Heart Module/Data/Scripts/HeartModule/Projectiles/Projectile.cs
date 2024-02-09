@@ -141,8 +141,20 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             Definition.LiveMethods.OnSpawn?.Invoke(Id, (MyEntity)MyAPIGateway.Entities.GetEntityById(Firer));
         }
 
-        public void TickUpdate(float delta)
+        public void AVTickUpdate(float delta)
         {
+            if (QueuedDispose)
+                return;
+
+            if (MyAPIGateway.Session.IsServer)
+                UpdateAudio();
+        }
+
+        public void AsyncTickUpdate(float delta)
+        {
+            if (QueuedDispose)
+                return;
+
             if ((Definition.PhysicalProjectile.MaxTrajectory != -1 && Definition.PhysicalProjectile.MaxTrajectory < DistanceTravelled) || (Definition.PhysicalProjectile.MaxLifetime != -1 && Definition.PhysicalProjectile.MaxLifetime < Age))
                 QueueDispose();
 
@@ -180,8 +192,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                         MaxBeamLength = Definition.PhysicalProjectile.MaxTrajectory;
                 }
             }
-            if (MyAPIGateway.Session.IsServer)
-                UpdateAudio();
         }
 
         public Vector3D NextMoveStep = Vector3D.Zero;
@@ -204,7 +214,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 InheritedVelocity = projectile.InheritedVelocity.Value;
             if (projectile.Firer.HasValue)
                 Firer = projectile.Firer.Value;
-            TickUpdate(delta);
+            AsyncTickUpdate(delta);
         }
 
         public void UpdateHitscan(Vector3D newPosition, Vector3D newDirection)

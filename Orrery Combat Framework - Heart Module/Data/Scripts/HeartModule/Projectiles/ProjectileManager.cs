@@ -43,14 +43,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public void UnloadData()
         {
-            I = null;
             isActive = false;
+            I = null;
             DamageHandler.Unload();
-        }
-
-        private void ProjectileTick(Projectile projectile)
-        {
-            projectile?.UpdateBoundingBoxCheck(allValidEntities);
         }
 
         HashSet<BoundingSphere> allValidEntities = new HashSet<BoundingSphere>();
@@ -73,7 +68,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 // Tick projectiles
                 foreach (var projectile in ActiveProjectiles.Values.ToArray()) // This can be modified by ModApi calls during run
                 {
-                    projectile.TickUpdate(deltaTick);
+                    projectile.AVTickUpdate(deltaTick);
                     if (projectile.QueuedDispose)
                         QueuedCloseProjectiles.Add(projectile);
                 }
@@ -119,21 +114,24 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
         }
 
-        bool isActive = false;
+        bool isActive = true;
         int ticksReady = 0;
         /// <summary>
         /// Updates parallel at MAX 60tps, but can run at under that without lagging the game.
         /// </summary>
         public void UpdateProjectilesParallel()
         {
-            while (isActive)
+            while (I.isActive)
             {
                 if (ticksReady <= 0)
                     continue;
 
+                float delta = ticksReady / 60f;
+
                 foreach (var projectile in ActiveProjectiles.Values.ToArray()) // This can be modified by ModApi calls during run
                 {
-                    projectile.UpdateBoundingBoxCheck(allValidEntities);
+                    projectile.UpdateBoundingBoxCheck(I.allValidEntities);
+                    projectile.AsyncTickUpdate(delta);
                 }
 
                 ticksReady = 0;
