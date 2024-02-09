@@ -1,12 +1,15 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
+using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using VRage.Game.Components;
+using VRage.Game.ModAPI;
+using VRage.ModAPI;
 using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
@@ -47,9 +50,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             if (HeartData.I.IsSuspended) return;
 
+            HashSet<BoundingSphere> allValidEntities = new HashSet<BoundingSphere>();
+            MyAPIGateway.Entities.GetEntities(null, (ent) => {
+                if (ent is IMyCubeGrid || ent is IMyCharacter)
+                    allValidEntities.Add(ent.WorldVolume);
+                return false;
+                }
+            );
+
             // Tick projectiles
             foreach (var projectile in ActiveProjectiles.Values.ToArray()) // This can be modified by ModApi calls during run
             {
+                projectile.UpdateBoundingBoxCheck(allValidEntities);
                 projectile.TickUpdate(deltaTick);
                 if (projectile.QueuedDispose)
                     QueuedCloseProjectiles.Add(projectile);
@@ -201,6 +213,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             projectiles.Clear();
             double rangeSq = sphere.Radius * sphere.Radius;
+
             Vector3D pos = sphere.Center;
 
             if (onlyDamageable)

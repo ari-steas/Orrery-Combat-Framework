@@ -70,11 +70,11 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             LiveMethods = new LiveMethods()
             {
-                OnImpact = (projectileInfo, hitPosition, hitNormal, hitEntity) =>
+                OnImpact = (projectileId, hitPosition, hitNormal, hitEntity) =>
                 {
                     if (hitEntity == null)
                         return;
-                    HeartApi.SpawnProjectilesInCone(HeartApi.GetProjectileDefinitionId(ExampleAmmoMissile.Name), hitPosition - hitNormal * 50, hitNormal, 10, 0.1f);
+                    HeartApi.SpawnProjectilesInCone(HeartApi.GetProjectileDefinitionId(ExampleAmmoMissile.Name), hitPosition - hitNormal * 50, hitNormal, 10, 0.1f, HeartApi.GetProjectileInfo(projectileId, 0).Firer.GetValueOrDefault());
                 }
             }
         };

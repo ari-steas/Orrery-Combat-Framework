@@ -170,12 +170,12 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 
 
 
-        public static List<uint> SpawnProjectilesInCone(int definitionId, Vector3D position, Vector3D direction, int count, double angleRads)
+        public static List<uint> SpawnProjectilesInCone(int definitionId, Vector3D position, Vector3D direction, int count, double angleRads, long firerId = 0)
         {
             List<uint> spawned = new List<uint>();
             Random random = new Random();
             for (int i = 0; i < count; i++)
-                spawned.Add(SpawnProjectile(definitionId, position, direction.Rotate(Vector3D.CalculatePerpendicularVector(direction).Rotate(direction, Math.PI * 2 * random.NextDouble()), angleRads * random.NextDouble()), 0, Vector3D.Zero));
+                spawned.Add(SpawnProjectile(definitionId, position, direction.Rotate(Vector3D.CalculatePerpendicularVector(direction).Rotate(direction, Math.PI * 2 * random.NextDouble()), angleRads * random.NextDouble()), firerId, Vector3D.Zero));
 
             return spawned;
         }
