@@ -146,9 +146,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (QueuedDispose)
                 return;
 
-            if ((Definition.PhysicalProjectile.MaxTrajectory != -1 && Definition.PhysicalProjectile.MaxTrajectory < DistanceTravelled) || (Definition.PhysicalProjectile.MaxLifetime != -1 && Definition.PhysicalProjectile.MaxLifetime < Age))
-                QueueDispose();
-
             if (MyAPIGateway.Session.IsServer)
                 UpdateAudio();
         }

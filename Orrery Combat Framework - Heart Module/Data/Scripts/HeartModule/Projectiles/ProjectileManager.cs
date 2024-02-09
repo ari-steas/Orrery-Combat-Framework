@@ -47,7 +47,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public void UnloadData()
         {
-            isActive = false;
             if (!projectileTask.IsComplete)
             {
                 HeartData.I.Log.Log("Waiting for projectileTask to end...");
@@ -82,13 +81,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     if (projectile.QueuedDispose)
                         QueuedCloseProjectiles.Add(projectile);
                 }
-                //foreach (var projectile in ActiveProjectiles.Values.ToArray()) // This can be modified by ModApi calls during run
-                //{
-                //    projectile.UpdateBoundingBoxCheck(allValidEntities);
-                //    projectile.TickUpdate(deltaTick);
-                //    if (projectile.QueuedDispose)
-                //        QueuedCloseProjectiles.Add(projectile);
-                //}
 
                 // Queued removal of projectiles
                 foreach (var projectile in QueuedCloseProjectiles)
@@ -117,6 +109,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 clockTick.Restart();
 
                 ticksReady++;
+
+                if (projectileTask.IsComplete)
+                    projectileTask = MyAPIGateway.Parallel.Start(UpdateProjectilesParallel);
             }
             catch (Exception ex)
             {
@@ -124,7 +119,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
         }
 
-        bool isActive = true;
         int ticksReady = 0;
         /// <summary>
         /// Updates parallel at MAX 60tps, but can run at under that without lagging the game.
@@ -134,14 +128,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             Projectile[] projectiles;
             BoundingSphere[] spheres;
 
-            HeartData.I.Log.Log("Started parallel projectile thread.");
-            while (isActive)
+            if (ticksReady <= 0)
+                return;
+
+            float delta = ticksReady / 60f;
+            MyAPIGateway.Utilities.ShowNotification("" + delta, (int)(1000*delta));
+
+            try
             {
-                if (ticksReady <= 0)
-                    continue;
-
-                float delta = ticksReady / 60f;
-
                 projectiles = ActiveProjectiles.Values.ToArray();
                 spheres = allValidEntities.ToArray();
 
@@ -150,9 +144,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     projectile.UpdateBoundingBoxCheck(spheres);
                     projectile.AsyncTickUpdate(delta);
                 }
-
-                ticksReady = 0;
             }
+            catch (Exception ex)
+            {
+                SoftHandle.RaiseException(ex, typeof(ProjectileManager));
+            }
+
+            ticksReady = 0;
         }
 
         public void UpdatingStopped()
