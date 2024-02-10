@@ -27,7 +27,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         private ConcurrentDictionary<uint, Projectile> ActiveProjectiles = new ConcurrentDictionary<uint, Projectile>();
         private ConcurrentCachingHashSet<Projectile> ProjectilesWithHealth = new ConcurrentCachingHashSet<Projectile>();
         public uint NextId { get; private set; } = 0;
-        private List<uint> QueuedCloseProjectiles = new List<uint>();
+        private ConcurrentQueue<uint> QueuedCloseProjectiles = new ConcurrentQueue<uint>();
         /// <summary>
         /// Delta for engine ticks; 60tps
         /// </summary>
@@ -91,7 +91,36 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     return false;
                 });
 
+                // Queued removal of projectiles
+                uint toRemove = 0;
+                while (QueuedCloseProjectiles.TryDequeue(out toRemove))
+                {
+                    if (!ActiveProjectiles.ContainsKey(toRemove))
+                        continue;
+
+                    Projectile projectile = ActiveProjectiles[toRemove];
+                    if (projectile == null) // Emergency cull null projectiles.
+                    {
+                        ActiveProjectiles.Remove(toRemove);
+                        continue;
+                    }
+
+                    //MyAPIGateway.Utilities.ShowMessage("Heart", $"Closing projectile {projectile.Id}. Age: {projectile.Age} ");
+                    if (MyAPIGateway.Session.IsServer)
+                        QueueSync(projectile, 2);
+
+                    if (!MyAPIGateway.Utilities.IsDedicated)
+                        projectile.CloseDrawing();
+
+                    ActiveProjectiles.Remove(toRemove);
+                    ProjectilesWithHealth.Remove(projectile);
+                    projectile.OnClose.Invoke(projectile);
+                }
+
                 DamageHandler.Update();
+
+                // Sync stuff
+                UpdateSync();
 
                 clockTick.Restart();
 
@@ -135,37 +164,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
                 MyAPIGateway.Parallel.ForEach(projectiles, (projectile) =>
                 {
+                    if (HeartData.I.IsSuspended)
+                        return;
+
                     projectile.Value.AVTickUpdate(deltaTick);
                     projectile.Value.AsyncTickUpdate(delta, spheres);
                     if (projectile.Value == null || projectile.Value.QueuedDispose)
-                        QueuedCloseProjectiles.Add(projectile.Key);
+                        QueuedCloseProjectiles.Enqueue(projectile.Key);
                 });
-
-                // Queued removal of projectiles
-                foreach (var projectileId in QueuedCloseProjectiles)
-                {
-                    Projectile projectile = ActiveProjectiles[projectileId];
-                    if (projectile == null) // Emergency cull null projectiles.
-                    {
-                        ActiveProjectiles.Remove(projectileId);
-                        continue;
-                    }
-
-                    //MyAPIGateway.Utilities.ShowMessage("Heart", $"Closing projectile {projectile.Id}. Age: {projectile.Age} ");
-                    if (MyAPIGateway.Session.IsServer)
-                        QueueSync(projectile, 2);
-
-                    if (!MyAPIGateway.Utilities.IsDedicated)
-                        projectile.CloseDrawing();
-
-                    ActiveProjectiles.Remove(projectileId);
-                    ProjectilesWithHealth.Remove(projectile);
-                    projectile.OnClose.Invoke(projectile);
-                }
-                QueuedCloseProjectiles.Clear();
-
-                // Sync stuff
-                UpdateSync();
             }
             catch (Exception ex)
             {
