@@ -18,6 +18,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
     public partial class ProjectileManager
     {
         public static ProjectileManager I;
+        public const int MaxActiveProjectiles = 150000;
 
         private Dictionary<uint, Projectile> ActiveProjectiles = new Dictionary<uint, Projectile>();
         private HashSet<Projectile> ProjectilesWithHealth = new HashSet<Projectile>();
@@ -43,6 +44,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             DamageHandler.Load();
 
             projectileTask = MyAPIGateway.Parallel.Start(UpdateProjectilesParallel);
+
+            //MyAPIGateway.Utilities.CreateNotification("PSim: " + Math.Round(pSim, 2), 1001 / 60);
         }
 
         public void UnloadData()
@@ -61,6 +64,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public void UpdateAfterSimulation()
         {
+            float pSim = 0;
+            for (int i = 0; i < projectileSim.Count; i++)
+                pSim += projectileSim.ElementAt(i);
+            pSim /= projectileSim.Count == 0 ? 1 : projectileSim.Count;
+
+            while (projectileSim.Count > 30)
+                projectileSim.Dequeue();
+
+            HeartData.I.ProjectileSimSpeed = pSim;
+
             try
             {
                 if (HeartData.I.IsSuspended) return;
@@ -119,12 +132,17 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
         }
 
+        Queue<float> projectileSim = new Queue<float>();
+        Stopwatch watch = new Stopwatch();
+
         int ticksReady = 0;
         /// <summary>
         /// Updates parallel at MAX 60tps, but can run at under that without lagging the game.
         /// </summary>
         public void UpdateProjectilesParallel()
         {
+            I.projectileSim.Enqueue(16.6666667f / watch.ElapsedMilliseconds);
+            watch.Restart();
             Projectile[] projectiles;
             BoundingSphere[] spheres;
 
@@ -132,18 +150,22 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 return;
 
             float delta = ticksReady / 60f;
-            MyAPIGateway.Utilities.ShowNotification("" + delta, (int)(1000*delta));
 
             try
             {
                 projectiles = ActiveProjectiles.Values.ToArray();
                 spheres = allValidEntities.ToArray();
 
-                foreach (var projectile in projectiles) // This can be modified by ModApi calls during run
-                {
-                    projectile.UpdateBoundingBoxCheck(spheres);
-                    projectile.AsyncTickUpdate(delta);
-                }
+                MyAPIGateway.Parallel.ForEach(projectiles, (p) => p.AsyncTickUpdate(delta, spheres));
+
+                //foreach (var projectile in projectiles) // This can be modified by ModApi calls during run
+                //{
+                //    if (HeartData.I.IsSuspended)
+                //        return;
+                //
+                //    //projectile.UpdateBoundingBoxCheck(spheres);
+                //    projectile.AsyncTickUpdate(delta, spheres);
+                //}
             }
             catch (Exception ex)
             {
@@ -194,6 +216,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public Projectile AddProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, IMyConveyorSorter sorterWep)
         {
+            if (ActiveProjectiles.Count > MaxActiveProjectiles) return null;
+
             try
             {
                 if (ProjectileDefinitionManager.GetDefinition(projectileDefinitionId)?.PhysicalProjectile.IsHitscan ?? false)
@@ -210,6 +234,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public Projectile AddProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, long firer, Vector3D initialVelocity)
         {
+            if (ActiveProjectiles.Count > MaxActiveProjectiles) return null;
+
             try
             {
                 if (ProjectileDefinitionManager.GetDefinition(projectileDefinitionId)?.PhysicalProjectile.IsHitscan ?? false)
@@ -227,6 +253,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         private Projectile AddProjectile(Projectile projectile)
         {
             if (projectile == null || projectile.DefinitionId == -1) return null; // Ensure that invalid projectiles don't get added
+
+            if (ActiveProjectiles.Count > MaxActiveProjectiles) return null;
+
+            if (ActiveProjectiles.Count > MaxActiveProjectiles) return null;
 
             projectile.Position -= projectile.InheritedVelocity / 60f; // Because this doesn't run during simulation
 
@@ -247,6 +277,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         Dictionary<long, uint> HitscanList = new Dictionary<long, uint>();
         private Projectile AddHitscanProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, long firer)
         {
+            if (ActiveProjectiles.Count > MaxActiveProjectiles) return null;
+
             if (!HitscanList.ContainsKey(firer))
             {
                 Projectile p = new Projectile(projectileDefinitionId, position, direction, firer);

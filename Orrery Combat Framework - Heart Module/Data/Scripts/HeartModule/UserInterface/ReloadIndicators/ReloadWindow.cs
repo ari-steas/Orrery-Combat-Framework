@@ -17,6 +17,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
     {
         Label debugInfo;
         Label debugInfo2;
+        Label debugInfo3;
         ListBox<uint> weaponStatus;
 
         public ReloadWindow(HudParentBase parent) : base(parent)
@@ -25,12 +26,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
             {
                 ParentAlignment = ParentAlignments.Bottom | ParentAlignments.InnerV,
                 DimAlignment = DimAlignments.Width,
+                Padding = new Vector2(1f, 0f),
             };
 
             debugInfo2 = new Label(body)
             {
-                ParentAlignment = ParentAlignments.Bottom | ParentAlignments.InnerV,
-                DimAlignment = DimAlignments.Width,
+                ParentAlignment = ParentAlignments.Bottom | ParentAlignments.InnerV | ParentAlignments.Left | ParentAlignments.InnerH,
+                Offset = new Vector2(0, debugInfo.Height),
+            };
+
+            debugInfo3 = new Label(body)
+            {
+                ParentAlignment = ParentAlignments.Bottom | ParentAlignments.InnerV | ParentAlignments.Right | ParentAlignments.InnerH,
                 Offset = new Vector2(0, debugInfo.Height),
             };
 
@@ -66,7 +73,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
         public void UpdateDebugText(int numProjectiles, int numWeapons, int networkLoad)
         {
             debugInfo.Text = $"Projectiles: {numProjectiles} | Weapons: {numWeapons}";
-            debugInfo2.Text = $"Estimated Network Load: {Math.Round(networkLoad / 1000f, 1)}kb/s";
+            debugInfo2.Text = $"  {Math.Round(networkLoad / 1000f, 1)}kb/s";
+            debugInfo3.Text = $"{Math.Round(HeartData.I.ProjectileSimSpeed*100, 1)}%  ";
         }
 
         public void UpdateWeaponText(SorterWeaponLogic weapon)

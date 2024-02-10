@@ -166,6 +166,9 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
         protected override void UnloadData()
         {
+            HeartData.I.Log.Log($"Start closing core...");
+            HeartData.I.IsSuspended = true;
+
             commands.Close();
 
             handle.UnloadData();

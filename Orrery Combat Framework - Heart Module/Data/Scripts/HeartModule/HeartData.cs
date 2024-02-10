@@ -27,5 +27,6 @@ namespace Heart_Module.Data.Scripts.HeartModule
         public Action<IMyCubeGrid> OnGridAdd = (a) => { };
         public Action<IMyCubeGrid> OnGridRemove = (a) => { };
         public GuiBlockCategoryHelper OrreryBlockCategory = new GuiBlockCategoryHelper("[Orrery Combat Framework]", "OrreryBlockCategory");
+        public float ProjectileSimSpeed = 0;
     }
 }

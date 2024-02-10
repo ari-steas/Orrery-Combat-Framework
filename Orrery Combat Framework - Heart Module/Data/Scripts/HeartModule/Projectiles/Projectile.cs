@@ -150,9 +150,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 UpdateAudio();
         }
 
-        public void AsyncTickUpdate(float delta)
+        public void AsyncTickUpdate(float delta, BoundingSphere[] spheres)
         {
-            if (QueuedDispose)
+            if (QueuedDispose || HeartData.I.IsSuspended)
                 return;
 
             if ((Definition.PhysicalProjectile.MaxTrajectory != -1 && Definition.PhysicalProjectile.MaxTrajectory < DistanceTravelled) || (Definition.PhysicalProjectile.MaxLifetime != -1 && Definition.PhysicalProjectile.MaxLifetime < Age))
@@ -160,6 +160,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
             if (Guidance == null && Definition.Guidance.Length > 0)
                 Guidance = new ProjectileGuidance(this);
+
+            UpdateBoundingBoxCheck(spheres);
 
             Age += delta;
             if (!IsHitscan)
@@ -214,7 +216,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 InheritedVelocity = projectile.InheritedVelocity.Value;
             if (projectile.Firer.HasValue)
                 Firer = projectile.Firer.Value;
-            AsyncTickUpdate(delta);
+            AsyncTickUpdate(delta, new BoundingSphere[0]);
         }
 
         public void UpdateHitscan(Vector3D newPosition, Vector3D newDirection)

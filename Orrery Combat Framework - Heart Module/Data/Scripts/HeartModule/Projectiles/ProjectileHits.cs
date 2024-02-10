@@ -60,7 +60,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
                 RayD ray = new RayD(Position, Direction);
 
-                foreach (var projectile in hittableProjectiles)
+                foreach (var projectile in hittableProjectiles.ToArray())
                 {
                     if (RemainingImpacts <= 0 || projectile == this || projectile.Firer == Firer)
                         continue;
