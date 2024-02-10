@@ -1,4 +1,5 @@
 ﻿using Sandbox.ModAPI;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using VRage.Game;
 using VRage.Game.ModAPI;
@@ -31,10 +32,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         }
 
 
-        private List<DamageEvent> DamageEvents = new List<DamageEvent>();
+        private ConcurrentQueue<DamageEvent> DamageEvents = new ConcurrentQueue<DamageEvent>();
         private void m_Update()
         {
-            foreach (var damageEvent in DamageEvents)
+            DamageEvent damageEvent = null;
+            while (DamageEvents.TryDequeue(out damageEvent))
             {
                 switch (damageEvent.Type)
                 {
@@ -49,12 +51,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                         break;
                 }
             }
-            DamageEvents.Clear();
         }
 
         private void m_QueueEvent(DamageEvent damageEvent)
         {
-            DamageEvents.Add(damageEvent);
+            DamageEvents.Enqueue(damageEvent);
         }
 
         /// <summary>

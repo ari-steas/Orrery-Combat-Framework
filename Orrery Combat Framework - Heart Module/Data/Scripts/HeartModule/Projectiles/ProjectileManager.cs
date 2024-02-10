@@ -5,10 +5,13 @@ using ParallelTasks;
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using VRage.Collections;
 using VRage.Game.Components;
+using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
 using VRageMath;
@@ -20,8 +23,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         public static ProjectileManager I;
         public const int MaxActiveProjectiles = 150000;
 
-        private Dictionary<uint, Projectile> ActiveProjectiles = new Dictionary<uint, Projectile>();
-        private HashSet<Projectile> ProjectilesWithHealth = new HashSet<Projectile>();
+
+        private ConcurrentDictionary<uint, Projectile> ActiveProjectiles = new ConcurrentDictionary<uint, Projectile>();
+        private ConcurrentCachingHashSet<Projectile> ProjectilesWithHealth = new ConcurrentCachingHashSet<Projectile>();
         public uint NextId { get; private set; } = 0;
         private List<uint> QueuedCloseProjectiles = new List<uint>();
         /// <summary>
@@ -85,16 +89,57 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     if (ent is IMyCubeGrid || ent is IMyCharacter)
                         allValidEntities.Add(ent.WorldVolume);
                     return false;
-                }
-                );
+                });
 
-                // Tick projectiles
-                foreach (var projectile in ActiveProjectiles.ToHashSet()) // This can be modified by ModApi calls during run
+                DamageHandler.Update();
+
+                clockTick.Restart();
+
+                ticksReady++;
+
+                if (projectileTask.IsComplete)
+                    projectileTask = MyAPIGateway.Parallel.Start(UpdateProjectilesParallel);
+            }
+            catch (Exception ex)
+            {
+                SoftHandle.RaiseException(ex, typeof(ProjectileManager));
+            }
+        }
+
+        Queue<float> projectileSim = new Queue<float>();
+        Stopwatch watch = new Stopwatch();
+
+        int ticksReady = 0;
+        /// <summary>
+        /// Updates parallel at MAX 60tps, but can run at under that without lagging the game.
+        /// </summary>
+        public void UpdateProjectilesParallel()
+        {
+            if (HeartData.I.IsSuspended)
+                return;
+
+            I.projectileSim.Enqueue(16.6666667f / watch.ElapsedMilliseconds);
+            watch.Restart();
+            KeyValuePair<uint, Projectile>[] projectiles;
+            BoundingSphere[] spheres;
+
+            if (ticksReady <= 0)
+                return;
+
+            float delta = ticksReady / 60f;
+
+            try
+            {
+                projectiles = ActiveProjectiles.ToArray();
+                spheres = allValidEntities.ToArray();
+
+                MyAPIGateway.Parallel.ForEach(projectiles, (projectile) =>
                 {
+                    projectile.Value.AVTickUpdate(deltaTick);
+                    projectile.Value.AsyncTickUpdate(delta, spheres);
                     if (projectile.Value == null || projectile.Value.QueuedDispose)
                         QueuedCloseProjectiles.Add(projectile.Key);
-                    projectile.Value.AVTickUpdate(deltaTick);
-                }
+                });
 
                 // Queued removal of projectiles
                 foreach (var projectileId in QueuedCloseProjectiles)
@@ -121,56 +166,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
                 // Sync stuff
                 UpdateSync();
-
-                DamageHandler.Update();
-
-                clockTick.Restart();
-
-                ticksReady++;
-
-                if (projectileTask.IsComplete)
-                    projectileTask = MyAPIGateway.Parallel.Start(UpdateProjectilesParallel);
-            }
-            catch (Exception ex)
-            {
-                SoftHandle.RaiseException(ex, typeof(ProjectileManager));
-            }
-        }
-
-        Queue<float> projectileSim = new Queue<float>();
-        Stopwatch watch = new Stopwatch();
-
-        int ticksReady = 0;
-        /// <summary>
-        /// Updates parallel at MAX 60tps, but can run at under that without lagging the game.
-        /// </summary>
-        public void UpdateProjectilesParallel()
-        {
-            I.projectileSim.Enqueue(16.6666667f / watch.ElapsedMilliseconds);
-            watch.Restart();
-            Projectile[] projectiles;
-            BoundingSphere[] spheres;
-
-            if (ticksReady <= 0)
-                return;
-
-            float delta = ticksReady / 60f;
-
-            try
-            {
-                projectiles = ActiveProjectiles.Values.ToArray();
-                spheres = allValidEntities.ToArray();
-
-                MyAPIGateway.Parallel.ForEach(projectiles, (p) => p.AsyncTickUpdate(delta, spheres));
-
-                //foreach (var projectile in projectiles) // This can be modified by ModApi calls during run
-                //{
-                //    if (HeartData.I.IsSuspended)
-                //        return;
-                //
-                //    //projectile.UpdateBoundingBoxCheck(spheres);
-                //    projectile.AsyncTickUpdate(delta, spheres);
-                //}
             }
             catch (Exception ex)
             {
@@ -221,7 +216,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
             catch (Exception ex)
             {
-                SoftHandle.RaiseException($"Invalid ammo definition ({projectileDefinitionId} of {ProjectileDefinitionManager.DefinitionCount()})", ex, typeof(ProjectileManager));
+                SoftHandle.RaiseException($"Error spawning projectile! Ammo Definition ({projectileDefinitionId} of {ProjectileDefinitionManager.DefinitionCount()})", ex, typeof(ProjectileManager));
                 return null;
             }
         }
@@ -239,7 +234,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
             catch (Exception ex)
             {
-                SoftHandle.RaiseException($"Invalid ammo definition ({projectileDefinitionId} of {ProjectileDefinitionManager.DefinitionCount()})", ex, typeof(ProjectileManager));
+                SoftHandle.RaiseException($"Error spawning projectile! Ammo Definition ({projectileDefinitionId} of {ProjectileDefinitionManager.DefinitionCount()})", ex, typeof(ProjectileManager));
                 return null;
             }
         }
@@ -252,11 +247,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
             projectile.Position -= projectile.InheritedVelocity / 60f; // Because this doesn't run during simulation
 
-            NextId++;
-            while (!IsIdAvailable(NextId))
+            while (!ActiveProjectiles.TryAdd(projectile.Id, projectile))
+            {
                 NextId++;
-            projectile.SetId(NextId);
-            ActiveProjectiles.Add(projectile.Id, projectile);
+                projectile.SetId(NextId);
+            }
+            
             if (MyAPIGateway.Session.IsServer)
                 QueueSync(projectile, 0);
             if (!MyAPIGateway.Utilities.IsDedicated)
