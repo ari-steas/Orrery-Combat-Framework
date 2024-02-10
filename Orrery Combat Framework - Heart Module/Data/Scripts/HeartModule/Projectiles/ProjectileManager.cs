@@ -23,7 +23,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         private Dictionary<uint, Projectile> ActiveProjectiles = new Dictionary<uint, Projectile>();
         private HashSet<Projectile> ProjectilesWithHealth = new HashSet<Projectile>();
         public uint NextId { get; private set; } = 0;
-        private List<Projectile> QueuedCloseProjectiles = new List<Projectile>();
+        private List<uint> QueuedCloseProjectiles = new List<uint>();
         /// <summary>
         /// Delta for engine ticks; 60tps
         /// </summary>
@@ -60,6 +60,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             DamageHandler.Unload();
         }
 
+        private bool AllowProjectileRemoval = true;
         HashSet<BoundingSphere> allValidEntities = new HashSet<BoundingSphere>();
 
         public void UpdateAfterSimulation()
@@ -88,16 +89,23 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 );
 
                 // Tick projectiles
-                foreach (var projectile in ActiveProjectiles.Values.ToArray()) // This can be modified by ModApi calls during run
+                foreach (var projectile in ActiveProjectiles.ToHashSet()) // This can be modified by ModApi calls during run
                 {
-                    projectile.AVTickUpdate(deltaTick);
-                    if (projectile.QueuedDispose)
-                        QueuedCloseProjectiles.Add(projectile);
+                    if (projectile.Value == null || projectile.Value.QueuedDispose)
+                        QueuedCloseProjectiles.Add(projectile.Key);
+                    projectile.Value.AVTickUpdate(deltaTick);
                 }
 
                 // Queued removal of projectiles
-                foreach (var projectile in QueuedCloseProjectiles)
+                foreach (var projectileId in QueuedCloseProjectiles)
                 {
+                    Projectile projectile = ActiveProjectiles[projectileId];
+                    if (projectile == null) // Emergency cull null projectiles.
+                    {
+                        ActiveProjectiles.Remove(projectileId);
+                        continue;
+                    }
+
                     //MyAPIGateway.Utilities.ShowMessage("Heart", $"Closing projectile {projectile.Id}. Age: {projectile.Age} ");
                     if (MyAPIGateway.Session.IsServer)
                         QueueSync(projectile, 2);
@@ -105,12 +113,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     if (!MyAPIGateway.Utilities.IsDedicated)
                         projectile.CloseDrawing();
 
-                    ActiveProjectiles.Remove(projectile.Id);
-                    if (ProjectilesWithHealth.Contains(projectile))
-                        ProjectilesWithHealth.Remove(projectile);
+                    ActiveProjectiles.Remove(projectileId);
+                    ProjectilesWithHealth.Remove(projectile);
                     projectile.OnClose.Invoke(projectile);
-                    if (projectile.Health < 0)
-                        MyAPIGateway.Utilities.ShowNotification(projectile.Id + "");
                 }
                 QueuedCloseProjectiles.Clear();
 
@@ -180,17 +185,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             clockTick.Stop();
         }
 
-        public void Draw() // Called once per frame to avoid jitter
-        {
-            if (HeartData.I.IsSuspended || MyAPIGateway.Utilities.IsDedicated) // We don't want to needlessly use server CPU time
-                return;
-
-            float deltaDrawTick = (float)clockTick.ElapsedTicks / TimeSpan.TicksPerSecond; // deltaDrawTick is the current offset between tick and draw, to account for variance between FPS and tickrate
-
-            foreach (var projectile in ActiveProjectiles.Values)
-                projectile.DrawUpdate(); // Draw delta is always 1/60 because Keen:tm:
-        }
-
         public void UpdateProjectileSync(n_SerializableProjectile projectile)
         {
             if (MyAPIGateway.Session.IsServer)
@@ -252,9 +246,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         private Projectile AddProjectile(Projectile projectile)
         {
-            if (projectile == null || projectile.DefinitionId == -1) return null; // Ensure that invalid projectiles don't get added
-
-            if (ActiveProjectiles.Count > MaxActiveProjectiles) return null;
+            if (projectile == null || projectile.DefinitionId == -1 || projectile.Definition == null) return null; // Ensure that invalid projectiles don't get added
 
             if (ActiveProjectiles.Count > MaxActiveProjectiles) return null;
 
@@ -281,8 +273,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
             if (!HitscanList.ContainsKey(firer))
             {
-                Projectile p = new Projectile(projectileDefinitionId, position, direction, firer);
-                AddProjectile(p);
+                Projectile p = AddProjectile(new Projectile(projectileDefinitionId, position, direction, firer));
                 p.OnClose += (projectile) => HitscanList.Remove(firer);
                 HitscanList.Add(firer, p.Id);
             }
@@ -308,13 +299,17 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             Vector3D pos = sphere.Center;
 
             if (onlyDamageable)
-                foreach (var projectil in ProjectilesWithHealth)
-                    if (Vector3D.DistanceSquared(pos, projectil.Position) < rangeSq)
+            {
+                foreach (var projectil in ProjectilesWithHealth.ToArray())
+                    if (projectil != null && Vector3D.DistanceSquared(pos, projectil.Position) < rangeSq)
                         projectiles.Add(projectil);
+            }
             else
-                foreach (var projectile in ActiveProjectiles.Values)
-                    if (Vector3D.DistanceSquared(pos, projectile.Position) < rangeSq)
+            {
+                foreach (var projectile in ActiveProjectiles.Values.ToArray())
+                    if (projectile != null && Vector3D.DistanceSquared(pos, projectile.Position) < rangeSq)
                         projectiles.Add(projectile);
+            }
         }
     }
 }

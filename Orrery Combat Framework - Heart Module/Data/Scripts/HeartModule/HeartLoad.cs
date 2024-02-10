@@ -195,11 +195,6 @@ namespace Heart_Module.Data.Scripts.HeartModule
             I = null;
         }
 
-        public override void Draw()
-        {
-            projectileManager.Draw();
-        }
-
         private void OnEntityAdd(IMyEntity entity)
         {
             if (entity is IMyCubeGrid)

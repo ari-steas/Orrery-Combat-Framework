@@ -148,6 +148,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
             if (MyAPIGateway.Session.IsServer)
                 UpdateAudio();
+            else
+                DrawUpdate();
         }
 
         public void AsyncTickUpdate(float delta, BoundingSphere[] spheres)
