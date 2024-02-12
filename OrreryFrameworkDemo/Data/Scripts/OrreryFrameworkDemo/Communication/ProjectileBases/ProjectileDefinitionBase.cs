@@ -132,7 +132,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         [ProtoMember(2)] public float ActiveDuration; // Ignore if -1 or greater than next
         [ProtoMember(3)] public bool UseAimPrediction;
         [ProtoMember(4)] public float TurnRate;
-        [ProtoMember(6)] public IFF_Enum IFF; // 1 is TargetSelf, 2 is TargetEnemies, 4 is TargetFriendlies // TODO
+        [ProtoMember(6)] public IFF_Enum IFF; // 1 is TargetSelf, 2 is TargetEnemies, 4 is TargetFriendlies
         [ProtoMember(7)] public bool DoRaycast;
         [ProtoMember(8)] public float CastCone;
         [ProtoMember(9)] public float CastDistance;
@@ -141,6 +141,10 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         /// Random offset from target, in meters.
         /// </summary>
         [ProtoMember(11)] public float Inaccuracy;
+        /// <summary>
+        /// Maximum G-force the projectile can sustain.
+        /// </summary>
+        [ProtoMember(12)] public float MaxGs;
     }
 
     public class LiveMethods // TODO: OnGuidanceStage && DistanceToTarget
