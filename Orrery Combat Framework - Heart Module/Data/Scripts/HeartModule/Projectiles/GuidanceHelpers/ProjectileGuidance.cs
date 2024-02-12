@@ -139,7 +139,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
             if (stagePid != null)
             {
                 // I always want to have an angle of zero, with an offset of zero.
-                finalAngle = HeartUtils.ClampAbs(stagePid.Tick(AngleDifference, 0, 0, delta), actualTurnRate);
+                finalAngle = HeartUtils.MinAbs(stagePid.Tick(AngleDifference, 0, 0, delta), actualTurnRate);
             }
             else
             {
