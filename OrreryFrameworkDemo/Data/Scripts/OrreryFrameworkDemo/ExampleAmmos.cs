@@ -149,14 +149,14 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     TriggerTime = 2f,
                     ActiveDuration = -1f,
                     UseAimPrediction = true,
-                    TurnRate = 999f,
+                    TurnRate = 99f,
                     IFF = IFF_Enum.TargetEnemies,
                     DoRaycast = false,
                     CastCone = 0.5f,
                     CastDistance = 1000,
-                    Velocity = -1f,
+                    Velocity = 50f,
                     Inaccuracy = 5f,
-                    MaxGs = 10,
+                    MaxGs = 10f,
                 }
             },
             LiveMethods = new LiveMethods()
