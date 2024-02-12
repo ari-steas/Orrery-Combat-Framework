@@ -91,6 +91,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         /// How much the weapon's ShotInaccuracy will be multiplied by for this ammo. 0 to ignore.
         /// </summary>
         [ProtoMember(9)] public float AccuracyVarianceMultiplier;
+        [ProtoMember(10)] public float GravityInfluenceMultiplier;
     }
 
     [ProtoContract]

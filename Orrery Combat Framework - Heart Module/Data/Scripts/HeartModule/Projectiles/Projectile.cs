@@ -155,10 +155,30 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 Guidance?.RunGuidance(delta);
 
                 CheckHits();
-                Velocity += Definition.PhysicalProjectile.Acceleration * delta;
+
+                // Apply gravity influence
+                float gravityMultiplier = Definition.PhysicalProjectile.GravityInfluenceMultiplier;
+                Vector3D gravity;
+                float dummyNaturalGravityInterference;
+                gravity = MyAPIGateway.Physics.CalculateNaturalGravityAt(Position, out dummyNaturalGravityInterference);
+                Vector3D gravityDirection = Vector3D.Normalize(gravity);
+                double gravityAcceleration = gravity.Length() * gravityMultiplier;
+
+                Velocity += (float)(gravityAcceleration * delta);
+
+                // Adjust position accounting for gravity
                 Position += (InheritedVelocity + Direction * Velocity) * delta;
+
+                // Update distance travelled
                 DistanceTravelled += Velocity * delta;
 
+                // Check if the projectile is affected by gravity and show notification
+                if (gravityAcceleration > 0)
+                {
+                    MyAPIGateway.Utilities.ShowNotification("Projectile is affected by gravity!", 1000); // Display notification
+                }
+
+                // Calculate next move step
                 if (Velocity < 0)
                 {
                     Direction = -Direction;

@@ -38,13 +38,14 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             PhysicalProjectile = new PhysicalProjectile()
             {
-                Velocity = 800,
-                VelocityVariance = 400,
+                Velocity = 10,
+                VelocityVariance = 0,
                 Acceleration = 0,
                 Health = 1,
                 MaxTrajectory = 4000,
                 MaxLifetime = -1,
                 IsHitscan = false,
+                GravityInfluenceMultiplier = 10f,
             },
             Visual = new Visual()
             {
