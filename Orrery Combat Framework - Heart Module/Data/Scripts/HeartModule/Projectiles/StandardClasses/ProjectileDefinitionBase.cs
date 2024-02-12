@@ -143,7 +143,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         /// Random offset from target, in meters.
         /// </summary>
         [ProtoMember(11)] public float Inaccuracy;
+        /// <summary>
+        /// Maximum G-force the projectile can sustain.
+        /// </summary>
+        [ProtoMember(12)] public float MaxGs;
     }
+
 
     public class LiveMethods
     {
