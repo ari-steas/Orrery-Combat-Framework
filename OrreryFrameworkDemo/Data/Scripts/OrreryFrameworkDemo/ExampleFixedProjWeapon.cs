@@ -37,7 +37,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 MaxElevation = (float)Math.PI / 4,
                 MinElevation = (float)-Math.PI / 4,
                 IdlePower = 0,
-                ShotInaccuracy = 0.0175f,
+                ShotInaccuracy = 0f,
                 LineOfSightCheck = true,
                 ControlRotation = true,
             },
@@ -46,11 +46,10 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 Ammos = new string[]
                 {
                     ExampleAmmoProjectile.Name,
-                    Hotloaded.Name,
                 },
 
-                RateOfFire = 10,
-                RateOfFireVariance = 20f,
+                RateOfFire = 1,
+                RateOfFireVariance = 0f,
                 BarrelsPerShot = 1,
                 ProjectilesPerBarrel = 1,
                 ReloadTime = 3,
