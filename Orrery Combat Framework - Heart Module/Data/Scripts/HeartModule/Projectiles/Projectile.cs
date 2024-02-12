@@ -166,6 +166,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
                 Velocity += (float)(gravityAcceleration * delta);
 
+                // Adjust direction based on gravity
+                Direction = Vector3D.Normalize(Direction + gravityDirection * gravityMultiplier);
+
                 // Adjust position accounting for gravity
                 Position += (InheritedVelocity + Direction * Velocity) * delta;
 
@@ -173,10 +176,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 DistanceTravelled += Velocity * delta;
 
                 // Check if the projectile is affected by gravity and show notification
-                if (gravityAcceleration > 0)
-                {
-                    MyAPIGateway.Utilities.ShowNotification("Projectile is affected by gravity!", 1000); // Display notification
-                }
+                //if (gravityAcceleration > 0)
+                //{
+                //    MyAPIGateway.Utilities.ShowNotification("Projectile is affected by gravity!", 1000); // Display notification
+                //}
 
                 // Calculate next move step
                 if (Velocity < 0)

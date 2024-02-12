@@ -38,14 +38,14 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             PhysicalProjectile = new PhysicalProjectile()
             {
-                Velocity = 10,
+                Velocity = 800,
                 VelocityVariance = 0,
                 Acceleration = 0,
                 Health = 1,
                 MaxTrajectory = 4000,
                 MaxLifetime = -1,
                 IsHitscan = false,
-                GravityInfluenceMultiplier = 10f,
+                GravityInfluenceMultiplier = 0.01f,
             },
             Visual = new Visual()
             {
@@ -72,12 +72,12 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             LiveMethods = new LiveMethods()
             {
-                OnImpact = (projectileInfo, hitPosition, hitNormal, hitEntity) =>
-                {
-                    if (hitEntity == null)
-                        return;
-                    HeartApi.SpawnProjectilesInCone(HeartApi.GetProjectileDefinitionId(ExampleAmmoMissile.Name), hitPosition - hitNormal * 50, hitNormal, 10, 0.1f);
-                }
+               // OnImpact = (projectileInfo, hitPosition, hitNormal, hitEntity) =>
+               // {
+               //     if (hitEntity == null)
+               //         return;
+               //     HeartApi.SpawnProjectilesInCone(HeartApi.GetProjectileDefinitionId(ExampleAmmoMissile.Name), hitPosition - hitNormal * 50, hitNormal, 10, 0.1f);
+               // }
             }
         };
 
