@@ -155,7 +155,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     CastCone = 0.5f,
                     CastDistance = 1000,
                     Velocity = 50f,
-                    Inaccuracy = 5f,
+                    //Inaccuracy = 5f,
                     MaxGs = 10f,
                 }
             },
@@ -203,11 +203,11 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             Visual = new Visual()
             {
                 Model = "Models\\Weapons\\Projectile_Missile.mwm",
-                //TrailTexture = MyStringId.GetOrCompute("WeaponLaser"),
+                TrailTexture = MyStringId.GetOrCompute("WeaponLaser"),
                 //TrailFadeTime = 0f,
                 //TrailLength = 8,
                 //TrailWidth = 0.5f,
-                //TrailColor = new VRageMath.Vector4(61, 24, 24, 200),
+                TrailColor = new VRageMath.Vector4(61, 24, 24, 200),
                 AttachedParticle = "Smoke_Missile",
                 ImpactParticle = "MaterialHit_Metal",
                 VisibleChance = 1f,
@@ -252,9 +252,9 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 
                     PID = new Definition_PID()
                     {
-                        kProportional = 1f,
-                        kIntegral = 1f,
-                        kDerivative = 1f,
+                        kProportional = 0.2f,
+                        kIntegral = 0.2f,
+                        kDerivative = 0.2f,
                     }
                 }
             },
