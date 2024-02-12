@@ -1,6 +1,7 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule;
 using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Heart_Module.Data.Scripts.HeartModule.ResourceSystem;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting;
@@ -44,6 +45,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public MatrixD MuzzleMatrix { get; internal set; } = MatrixD.Identity;
         public bool HasLoS = false;
         public readonly uint Id = uint.MaxValue;
+        private WeaponResourceSystem _resourceSystem;
 
         public SorterWeaponLogic(IMyConveyorSorter sorterWeapon, WeaponDefinitionBase definition, uint id)
         {
@@ -59,6 +61,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             // You need to provide the missing arguments for WeaponLogic_Magazines constructor here
             Magazines = new WeaponLogic_Magazines(definition.Loading, definition.Audio, getInventoryFunc, (int)Terminal_Heart_AmmoComboBox);
+
+            // Initialize the WeaponResourceSystem
+            _resourceSystem = new WeaponResourceSystem(definition, this);
 
             Id = id;
         }
@@ -186,52 +191,59 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     SoftHandle.RaiseSyncException($"Invalid ammo type on weapon! Subtype: {SorterWep.BlockDefinition.SubtypeId} | AmmoId: {Magazines.SelectedAmmo}");
                     return;
                 }
-                
-                // Retrieve the AccuracyVarianceMultiplier for the selected ammo
-                float accuracyVarianceMultiplier = ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmo).PhysicalProjectile.AccuracyVarianceMultiplier;
-                // Calculate the effective inaccuracy by applying the multiplier, default to 1 if multiplier is 0 to avoid change
-                float effectiveInaccuracy = Definition.Hardpoint.ShotInaccuracy * (accuracyVarianceMultiplier != 0 ? accuracyVarianceMultiplier : 1);
 
-                while (lastShoot >= 60 && Magazines.ShotsInMag > 0) // Allows for firerates higher than 60 rps
+                // Check if the weapon has a resource system and there are enough resources for at least one shot
+                if (_resourceSystem != null && _resourceSystem.CanShoot())
                 {
-                    for (int i = 0; i < Definition.Loading.BarrelsPerShot; i++)
+                    // Retrieve the AccuracyVarianceMultiplier for the selected ammo
+                    float accuracyVarianceMultiplier = ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmo).PhysicalProjectile.AccuracyVarianceMultiplier;
+                    // Calculate the effective inaccuracy by applying the multiplier, default to 1 if multiplier is 0 to avoid change
+                    float effectiveInaccuracy = Definition.Hardpoint.ShotInaccuracy * (accuracyVarianceMultiplier != 0 ? accuracyVarianceMultiplier : 1);
+
+                    while (lastShoot >= 60 && Magazines.ShotsInMag > 0) // Allows for firerates higher than 60 rps
                     {
-                        nextBarrel++;
-                        nextBarrel %= Definition.Assignments.Muzzles.Length;
-
-                        MatrixD muzzleMatrix = CalcMuzzleMatrix(nextBarrel);
-                        Vector3D muzzlePos = muzzleMatrix.Translation;
-
-                        for (int j = 0; j < Definition.Loading.ProjectilesPerBarrel; j++)
+                        for (int i = 0; i < Definition.Loading.BarrelsPerShot; i++)
                         {
-                            SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmo).Ungrouped.Recoil, muzzleMatrix.Translation);
-                            // Use the effectiveInaccuracy instead of the original ShotInaccuracy
-                            Projectile newProjectile = ProjectileManager.I.AddProjectile(Magazines.SelectedAmmo, muzzlePos, RandomCone(muzzleMatrix.Forward, effectiveInaccuracy), SorterWep);
+                            nextBarrel++;
+                            nextBarrel %= Definition.Assignments.Muzzles.Length;
 
-                            if (newProjectile == null) // Emergency failsafe
-                                return;
+                            MatrixD muzzleMatrix = CalcMuzzleMatrix(nextBarrel);
+                            Vector3D muzzlePos = muzzleMatrix.Translation;
 
-                            if (newProjectile.Guidance != null) // Assign target for self-guided projectiles
+                            for (int j = 0; j < Definition.Loading.ProjectilesPerBarrel; j++)
                             {
-                                if (this is SorterTurretLogic)
-                                    newProjectile.Guidance.SetTarget(((SorterTurretLogic)this).TargetEntity);
-                                else
-                                    newProjectile.Guidance.SetTarget(WeaponManagerAi.I.GetTargeting(SorterWep.CubeGrid)?.PrimaryGridTarget);
+                                SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmo).Ungrouped.Recoil, muzzleMatrix.Translation);
+                                // Use the effectiveInaccuracy instead of the original ShotInaccuracy
+                                Projectile newProjectile = ProjectileManager.I.AddProjectile(Magazines.SelectedAmmo, muzzlePos, RandomCone(muzzleMatrix.Forward, effectiveInaccuracy), SorterWep);
+
+                                if (newProjectile == null) // Emergency failsafe
+                                    return;
+
+                                if (newProjectile.Guidance != null) // Assign target for self-guided projectiles
+                                {
+                                    if (this is SorterTurretLogic)
+                                        newProjectile.Guidance.SetTarget(((SorterTurretLogic)this).TargetEntity);
+                                    else
+                                        newProjectile.Guidance.SetTarget(WeaponManagerAi.I.GetTargeting(SorterWep.CubeGrid)?.PrimaryGridTarget);
+                                }
                             }
+
+                            lastShoot -= 60f;
+
+                            // Not ideal (what if fire rate is insane?) but I don't care tbh
+                            if (!string.IsNullOrEmpty(Definition.Audio.ShootSound))
+                                MyVisualScriptLogicProvider.PlaySingleSoundAtPosition(Definition.Audio.ShootSound, muzzlePos);
+                            MuzzleFlash();
+
+                            Magazines.UseShot(MuzzleMatrix.Translation);
+
+                            if (lastShoot < 60)
+                                break;
                         }
-
-                        lastShoot -= 60f;
-
-                        // Not ideal (what if fire rate is insane?) but I don't care tbh
-                        if (!string.IsNullOrEmpty(Definition.Audio.ShootSound))
-                            MyVisualScriptLogicProvider.PlaySingleSoundAtPosition(Definition.Audio.ShootSound, muzzlePos);
-                        MuzzleFlash();
-
-                        Magazines.UseShot(MuzzleMatrix.Translation);
-
-                        if (lastShoot < 60)
-                            break;
                     }
+
+                    // Consume resources after shooting
+                    _resourceSystem.ConsumeResources();
                 }
             }
         }

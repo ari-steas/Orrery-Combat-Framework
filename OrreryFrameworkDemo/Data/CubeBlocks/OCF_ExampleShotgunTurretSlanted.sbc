@@ -4,9 +4,9 @@
 		<Definition xsi:type="MyObjectBuilder_ConveyorSorterDefinition">
 			<Id>
 				<TypeId>ConveyorSorter</TypeId>
-				<SubtypeId>SC_AR_Afflictor_Slanted</SubtypeId>
+				<SubtypeId>OCF_ExampleShotgunTurretSlanted</SubtypeId>
 			</Id>
-			<DisplayName>Afflictor Burst Cannon Slanted</DisplayName>
+			<DisplayName>OCF_ExampleShotgunTurretSlanted</DisplayName>
 			<Icon>Textures\GUI\Icons\Cubes\SC_AR_Afflictor_Slanted.dds</Icon>
 			<Description>
 				Short Range Turret: [3km]

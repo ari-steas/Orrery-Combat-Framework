@@ -17,7 +17,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             Assignments = new Assignments()
             {
-                BlockSubtype = "SC_AR_Nimrod",
+                BlockSubtype = "OCF_ExampleFixedProjectileWeapon",
                 MuzzleSubpart = "",
                 ElevationSubpart = "",
                 AzimuthSubpart = "",
@@ -58,6 +58,18 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 MagazinesToLoad = 1,
 
                 MaxReloads = -1,
+
+                Resources = new Loading.Resource[]
+                {
+                    new Loading.Resource
+                    {
+                        ResourceType = "Heat",
+                        ResourceGeneration = 5,     //fug this doesn't work yet
+                        ResourceStorage = 100, 
+                        ResourcePerShot = 1,
+                        MinResourceBeforeFire = 10 
+                    }
+                },
             },
             Audio = new Audio()
             {

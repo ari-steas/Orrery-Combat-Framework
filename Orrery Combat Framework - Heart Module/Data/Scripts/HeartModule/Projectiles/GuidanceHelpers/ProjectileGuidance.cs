@@ -65,15 +65,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
             if (currentStage.DoRaycast)
                 CheckRaycast(currentStage);
 
-            if (targetEntity != null && !targetEntity.Closed) // If target is null, just move forward lol lmao
+            if (targetEntity != null && !targetEntity.Closed) // If target is null, just move forward
             {
                 Vector3D leadPos = targetEntity.PositionComp.WorldAABB.Center;
                 if (currentStage.UseAimPrediction)
                     leadPos = TargetingHelper.InterceptionPoint(projectile.Position, projectile.InheritedVelocity, targetEntity.PositionComp.WorldAABB.Center, targetEntity.Physics.LinearVelocity, projectile.Velocity) ?? leadPos;
                 leadPos += randomOffset;
 
-                //DebugDraw.AddPoint(leadPos, Color.Wheat, 0);
-                StepDirecion((leadPos - projectile.Position).Normalized(), currentStage.TurnRate, delta);
+                // Assuming MaxGs is part of the currentStage object
+                float maxGs = currentStage.MaxGs; // You need to have MaxGs defined in your Guidance structure
+
+                // Adjust the call to StepDirection to include the maxGs parameter
+                StepDirection((leadPos - projectile.Position).Normalized(), currentStage.TurnRate, delta, maxGs);
             }
         }
 
@@ -99,15 +102,49 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
             RunGuidance(delta); // Avoid a tick of delay
         }
 
-        internal void StepDirecion(Vector3D targetDir, float turnRate, float delta)
+        internal void StepDirection(Vector3D targetDir, float turnRate, float delta, float maxGs)
         {
-            double AngleDifference = Vector3D.Angle(projectile.Direction, targetDir);
+            double angleDifference = Vector3D.Angle(projectile.Direction, targetDir);
 
-            Vector3 RotAxis = Vector3.Cross(projectile.Direction, targetDir);
-            RotAxis.Normalize();
+            // Calculate the rotational axis
+            Vector3D rotAxis = Vector3D.Cross(projectile.Direction, targetDir);
+            rotAxis.Normalize();
 
-            Matrix RotationMatrix = Matrix.CreateFromAxisAngle(RotAxis, (float)HeartUtils.ClampAbs(AngleDifference, turnRate * delta));
-            projectile.Direction = Vector3.Transform(projectile.Direction, RotationMatrix).Normalized();
+            // Calculate the maximum allowable angle change based on turn rate
+            float maxAngleChangeByTurnRate = turnRate * delta;
+
+            // Calculate the maximum allowable angle change based on MaxGs
+            float maxAngleChangeByMaxGs = CalculateMaxAngleChange(projectile.Velocity, maxGs, delta);
+
+            // Apply the most restrictive limit
+            float actualAngleChange = Math.Min((float)angleDifference, Math.Min(maxAngleChangeByTurnRate, maxAngleChangeByMaxGs));
+
+            // Ensure the angle change does not exceed the physical capabilities of the projectile
+            actualAngleChange = Math.Min(actualAngleChange, (float)angleDifference);
+
+            // Apply the calculated rotation
+            if (angleDifference > 0) // Avoid division by zero
+            {
+                MatrixD rotationMatrix = MatrixD.CreateFromAxisAngle(rotAxis, actualAngleChange / angleDifference * (float)angleDifference);
+                projectile.Direction = Vector3D.Transform(projectile.Direction, rotationMatrix).Normalized();
+            }
+        }
+
+        // Helper method to calculate the maximum angle change allowed by MaxGs
+        private float CalculateMaxAngleChange(float velocity, float maxGs, float delta)
+        {
+            // Assuming velocity is in meters per second and delta is in seconds,
+            // calculate the radius of the circular path for the given velocity and G-force
+            float gForceAcceleration = maxGs * 9.81f; // Earth gravity in m/s^2
+            float radiusOfTurn = (velocity * velocity) / gForceAcceleration;
+
+            // The maximum distance the projectile can travel in one tick, given its velocity
+            float distance = velocity * delta;
+
+            // The maximum angle change, in radians, without exceeding the MaxGs
+            float maxAngleChange = distance / radiusOfTurn;
+
+            return maxAngleChange;
         }
 
         internal void CheckRaycast(Guidance currentstage)
