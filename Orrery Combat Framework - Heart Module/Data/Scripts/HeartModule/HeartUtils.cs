@@ -96,6 +96,20 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
         public static double ClampAbs(double value, double absMax) => Clamp(value, -absMax, absMax);
 
+        public static double MinAbs(double value1, double value2)
+        {
+            if (Math.Abs(value1) < Math.Abs(value2))
+                return value1;
+            return value2;
+        }
+
+        public static double MaxAbs(double value1, double value2)
+        {
+            if (Math.Abs(value1) > Math.Abs(value2))
+                return value1;
+            return value2;
+        }
+
         public static double LimitRotationSpeed(double currentAngle, double targetAngle, double maxRotationSpeed)
         {
             // https://yal.cc/angular-rotations-explained/

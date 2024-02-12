@@ -122,9 +122,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
             Vector3 RotAxis = Vector3.Cross(projectile.Direction, targetDir);
             RotAxis.Normalize();
 
-            double actualTurnRate = maxTurnRate > 0 ? maxTurnRate : double.MaxValue;
+            double actualTurnRate = maxTurnRate >= 0 ? maxTurnRate : double.MaxValue;
 
-            if (maxGs > 0)
+            if (maxGs >= 0)
             {
                 double gravityLimited = Definition.PhysicalProjectile.Velocity / (maxGs*9.81); // I swear to god I did the math for this, it really is that easy.
 
@@ -139,7 +139,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
             if (stagePid != null)
             {
                 // I always want to have an angle of zero, with an offset of zero.
-                finalAngle = HeartUtils.ClampAbs(stagePid.Tick(AngleDifference, 0, 0, delta), actualTurnRate);
+                finalAngle = HeartUtils.MinAbs(stagePid.Tick(AngleDifference, 0, 0, delta), actualTurnRate);
             }
             else
             {
