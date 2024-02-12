@@ -156,7 +156,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
                 CheckHits();
 
-                // Apply gravity influence
+                // Apply gravity as an acceleration
                 float gravityMultiplier = Definition.PhysicalProjectile.GravityInfluenceMultiplier;
                 Vector3D gravity;
                 float dummyNaturalGravityInterference;
@@ -164,31 +164,35 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 Vector3D gravityDirection = Vector3D.Normalize(gravity);
                 double gravityAcceleration = gravity.Length() * gravityMultiplier;
 
+                // Update velocity based on gravity acceleration
                 Velocity += (float)(gravityAcceleration * delta);
 
-                // Adjust direction based on gravity
-                Direction = Vector3D.Normalize(Direction + gravityDirection * gravityMultiplier);
-
-                // Adjust position accounting for gravity
+                // Update position accounting for gravity
                 Position += (InheritedVelocity + Direction * Velocity) * delta;
 
                 // Update distance travelled
                 DistanceTravelled += Velocity * delta;
 
-                // Check if the projectile is affected by gravity and show notification
-                //if (gravityAcceleration > 0)
-                //{
-                //    MyAPIGateway.Utilities.ShowNotification("Projectile is affected by gravity!", 1000); // Display notification
-                //}
+                // Calculate next move step with gravity acceleration
+                NextMoveStep = Position + (InheritedVelocity + Direction * Velocity) * delta;
 
-                // Calculate next move step
-                if (Velocity < 0)
+                // Ensure the projectile continues its trajectory when leaving gravity
+                if (gravityAcceleration <= 0)
                 {
-                    Direction = -Direction;
-                    Velocity = -Velocity;
+                    // No gravity, continue with current velocity
+                    NextMoveStep = Position + (InheritedVelocity + Direction * Velocity) * delta;
                 }
+                else
+                {
+                    // Apply gravity acceleration to velocity
+                    Velocity += (float)(gravityAcceleration * delta);
 
-                NextMoveStep = Position + (InheritedVelocity + Direction * (Velocity + Definition.PhysicalProjectile.Acceleration * delta)) * delta;
+                    // Adjust direction based on gravity
+                    Direction = Vector3D.Normalize(Direction + gravityDirection * gravityMultiplier);
+
+                    // Calculate next move step with gravity acceleration
+                    NextMoveStep = Position + (InheritedVelocity + Direction * (Velocity + Definition.PhysicalProjectile.Acceleration * delta)) * delta;
+                }
             }
             else // Beams are really special, and need their own handling.
             {
