@@ -64,7 +64,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 ProjectilesPerBarrel = 1,
                 ReloadTime = 6,
                 DelayUntilFire = 0,
-                MagazinesToLoad = 2,
+                MagazinesToLoad = 1,
 
                 MaxReloads = -1,
             },

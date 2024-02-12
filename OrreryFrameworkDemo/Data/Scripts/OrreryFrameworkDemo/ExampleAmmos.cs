@@ -137,7 +137,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     TriggerTime = 0,
                     ActiveDuration = -1,
                     UseAimPrediction = false,
-                    MaxTurnRate = 0f,
+                    MaxTurnRate = 1f,
                     IFF = IFF_Enum.TargetEnemies,
                     DoRaycast = false,
                     CastCone = 0.5f,
@@ -227,13 +227,19 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     TriggerTime = 0,
                     ActiveDuration = -1,
                     UseAimPrediction = false,
-                    MaxTurnRate = 0f,
+                    MaxTurnRate = -1f,
                     IFF = IFF_Enum.TargetEnemies,
                     DoRaycast = false,
                     CastCone = 0.5f,
                     CastDistance = 1000,
                     Velocity = 50f,
 
+                    PID = new Definition_PID()
+                    {
+                        kProportional = 0.0001f,
+                        kIntegral = 0.0001f,
+                        kDerivative = 0.0001f,
+                    }
                 },
                 new Guidance()
                 {
@@ -251,9 +257,9 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
 
                     PID = new Definition_PID()
                     {
-                        kProportional = 0.1f,
-                        kIntegral = 0.1f,
-                        kDerivative = 0.1f,
+                        kProportional = 0.01f,
+                        kIntegral = 0.01f,
+                        kDerivative = 0.01f,
                     }
                 }
             },
