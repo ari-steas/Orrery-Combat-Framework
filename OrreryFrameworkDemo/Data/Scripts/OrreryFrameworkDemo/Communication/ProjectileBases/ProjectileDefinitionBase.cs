@@ -1,6 +1,7 @@
 ﻿using ProtoBuf;
 using Sandbox.Game.Entities;
 using System;
+using System.Security.Cryptography;
 using VRage.Game.Entity;
 using VRage.Utils;
 using VRageMath;
@@ -71,7 +72,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
     {
         [ProtoMember(1)] public float Velocity;
         [ProtoMember(2)] public float Acceleration;
-        [ProtoMember(3)] public float Health; // TODO // <=0 for un-targetable
+        [ProtoMember(3)] public float Health; // TODO // <= 0 for un-targetable
         /// <summary>
         /// Max range of projectile, relative to first firing. For hitscans, max hitscan length.
         /// </summary>
@@ -131,7 +132,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         [ProtoMember(1)] public float TriggerTime;
         [ProtoMember(2)] public float ActiveDuration; // Ignore if -1 or greater than next
         [ProtoMember(3)] public bool UseAimPrediction;
-        [ProtoMember(4)] public float TurnRate;
+        [ProtoMember(4)] public float MaxTurnRate;
         [ProtoMember(6)] public IFF_Enum IFF; // 1 is TargetSelf, 2 is TargetEnemies, 4 is TargetFriendlies
         [ProtoMember(7)] public bool DoRaycast;
         [ProtoMember(8)] public float CastCone;
@@ -145,6 +146,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         /// Maximum G-force the projectile can sustain.
         /// </summary>
         [ProtoMember(12)] public float MaxGs;
+        [ProtoMember(13)] public Definition_PID? PID;
     }
 
     public class LiveMethods // TODO: OnGuidanceStage && DistanceToTarget
@@ -164,5 +166,14 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         public Action<uint, Vector3D, Vector3D, MyEntity> OnImpact;
         public Action<uint> OnEndOfLife;
         //public Action<uint, Guidance?> OnGuidanceStage;
+    }
+
+    [ProtoContract]
+    public struct Definition_PID
+    {
+        [ProtoMember(1)] public float kProportional; // Direct response to error
+        [ProtoMember(2)] public float kIntegral; // Response to historical error
+        [ProtoMember(3)] public float kDerivative; // Damping factor
+
     }
 }
