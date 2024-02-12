@@ -1,6 +1,7 @@
 ﻿using EmptyKeys.UserInterface.Generated.StoreBlockView_Bindings;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.ProjectileBases;
+using Sandbox.Game;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
@@ -144,23 +145,14 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     CastDistance = 1000,
                     Velocity = 50f,
                 },
-                new Guidance()
-                {
-                    TriggerTime = 4f,
-                    ActiveDuration = -1f,
-                    UseAimPrediction = true,
-                    MaxTurnRate = 99f,
-                    IFF = IFF_Enum.TargetEnemies,
-                    DoRaycast = false,
-                    CastCone = 0.5f,
-                    CastDistance = 1000,
-                    Velocity = 50f,
-                    //Inaccuracy = 5f,
-                    MaxGs = 10f,
-                }
             },
             LiveMethods = new LiveMethods()
             {
+
+                OnSpawn = (ProjectileId, Firer) => {
+                    MyVisualScriptLogicProvider.SendChatMessage(ExampleAmmoMissile.Name + "WARNING: SOMEONE HAS FIRED A MISSILE WITHOUT A PID! LAUGH AT HIM!");
+                },
+
                 //OnSpawn = (ProjectileId, Firer) => {
                 //    HeartApi.LogWriteLine("OnSpawn " + ProjectileId + " | " + HeartApi.BlockHasWeapon(Firer));
                 //    },
@@ -233,7 +225,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     CastCone = 0.5f,
                     CastDistance = 1000,
                     Velocity = 50f,
-                    MaxGs = 99f,
+                    //MaxGs = 99f,
 
                 },
                 new Guidance()
