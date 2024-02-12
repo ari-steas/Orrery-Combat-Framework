@@ -137,7 +137,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     TriggerTime = 0,
                     ActiveDuration = -1,
                     UseAimPrediction = false,
-                    TurnRate = 0f,
+                    MaxTurnRate = 1f,
                     IFF = IFF_Enum.TargetEnemies,
                     DoRaycast = false,
                     CastCone = 0.5f,
@@ -149,7 +149,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     TriggerTime = 2f,
                     ActiveDuration = -1f,
                     UseAimPrediction = true,
-                    TurnRate = 99f,
+                    MaxTurnRate = 99f,
                     IFF = IFF_Enum.TargetEnemies,
                     DoRaycast = false,
                     CastCone = 0.5f,
@@ -157,6 +157,110 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                     Velocity = 50f,
                     Inaccuracy = 5f,
                     MaxGs = 10f,
+                }
+            },
+            LiveMethods = new LiveMethods()
+            {
+                //OnSpawn = (ProjectileId, Firer) => {
+                //    HeartApi.LogWriteLine("OnSpawn " + ProjectileId + " | " + HeartApi.BlockHasWeapon(Firer));
+                //    },
+                //OnImpact = (ProjectileId, HitPos, HitNormal, HitEntity) => HeartApi.LogWriteLine("OnImpact " + ProjectileId),
+                //OnEndOfLife = (ProjectileId) => HeartApi.LogWriteLine("EndOfLife " + ProjectileId),
+            }
+        };
+
+        ProjectileDefinitionBase ExampleAmmoMissilePID => new ProjectileDefinitionBase()
+        {
+            Name = "ExampleAmmoMissilePID",
+            Ungrouped = new Ungrouped()
+            {
+                ReloadPowerUsage = 0,
+                Recoil = 0,
+                Impulse = 5000,
+                ShotsPerMagazine = 10,
+                MagazineItemToConsume = "",
+            },
+            Damage = new Damage()
+            {
+                SlimBlockDamageMod = 1,
+                FatBlockDamageMod = 1,
+                BaseDamage = 1000,
+                AreaDamage = 0,
+                AreaRadius = 0,
+                MaxImpacts = 1,
+            },
+            PhysicalProjectile = new PhysicalProjectile()
+            {
+                Velocity = 800,
+                VelocityVariance = 0,
+                Acceleration = 1,
+                Health = 1,
+                MaxTrajectory = 4000,
+                MaxLifetime = -1,
+                IsHitscan = false,
+                ProjectileSize = 1,
+            },
+            Visual = new Visual()
+            {
+                Model = "Models\\Weapons\\Projectile_Missile.mwm",
+                //TrailTexture = MyStringId.GetOrCompute("WeaponLaser"),
+                //TrailFadeTime = 0f,
+                //TrailLength = 8,
+                //TrailWidth = 0.5f,
+                //TrailColor = new VRageMath.Vector4(61, 24, 24, 200),
+                AttachedParticle = "Smoke_Missile",
+                ImpactParticle = "MaterialHit_Metal",
+                VisibleChance = 1f,
+            },
+            Audio = new Audio()
+            {
+                TravelSound = "",
+                TravelVolume = 100,
+                TravelMaxDistance = 1000,
+                ImpactSound = "WepSmallWarheadExpl",
+                SoundChance = 0.1f,
+            },
+            Guidance = new Guidance[]
+            {
+                new Guidance()
+                {
+                    TriggerTime = 0,
+                    ActiveDuration = -1,
+                    UseAimPrediction = false,
+                    MaxTurnRate = -1f,
+                    IFF = IFF_Enum.TargetEnemies,
+                    DoRaycast = false,
+                    CastCone = 0.5f,
+                    CastDistance = 1000,
+                    Velocity = 50f,
+
+                    PID = new Definition_PID()
+                    {
+                        kProportional = 0.0001f,
+                        kIntegral = 0.0001f,
+                        kDerivative = 0.0001f,
+                    }
+                },
+                new Guidance()
+                {
+                    TriggerTime = 2f,
+                    ActiveDuration = -1f,
+                    UseAimPrediction = true,
+                    MaxTurnRate = -1f,
+                    IFF = IFF_Enum.TargetEnemies,
+                    DoRaycast = false,
+                    CastCone = 0.5f,
+                    CastDistance = 1000,
+                    Velocity = 50f,
+                    Inaccuracy = 5f,
+                    MaxGs = 99f,
+
+                    PID = new Definition_PID()
+                    {
+                        kProportional = 0.01f,
+                        kIntegral = 0.01f,
+                        kDerivative = 0.01f,
+                    }
                 }
             },
             LiveMethods = new LiveMethods()
@@ -226,7 +330,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 //    TriggerTime = 0,
                 //    ActiveDuration = -1,
                 //    UseAimPrediction = false,
-                //    TurnRate = -1.5f,
+                //    MaxTurnRate = -1.5f,
                 //    IFF = 2,
                 //    DoRaycast = false,
                 //    CastCone = 0.5f,
@@ -238,7 +342,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 //    TriggerTime = 1f,
                 //    ActiveDuration = -1f,
                 //    UseAimPrediction = false,
-                //    TurnRate = 3.14f,
+                //    MaxTurnRate = 3.14f,
                 //    IFF = 2,
                 //    DoRaycast = false,
                 //    CastCone = 0.5f,

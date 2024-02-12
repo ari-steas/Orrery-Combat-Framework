@@ -163,9 +163,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     [ProtoContract]
     public struct Definition_PID
     {
-        [ProtoMember(0)] public float kProportional; // Direct response to error
-        [ProtoMember(1)] public float kIntegral; // Response to historical error
-        [ProtoMember(2)] public float kDerivative; // Damping factor
+        [ProtoMember(1)] public float kProportional; // Direct response to error
+        [ProtoMember(2)] public float kIntegral; // Response to historical error
+        [ProtoMember(3)] public float kDerivative; // Damping factor
 
         public PID GetPID()
         {
