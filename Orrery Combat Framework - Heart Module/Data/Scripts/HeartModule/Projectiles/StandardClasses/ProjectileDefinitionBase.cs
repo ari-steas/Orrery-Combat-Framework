@@ -1,4 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Definitions.StandardClasses;
+using Heart_Module.Data.Scripts.HeartModule.Utility;
 using ProtoBuf;
 using Sandbox.Game.Entities;
 using System;
@@ -133,7 +134,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         [ProtoMember(1)] public float TriggerTime;
         [ProtoMember(2)] public float ActiveDuration; // Ignore if -1 or greater than next
         [ProtoMember(3)] public bool UseAimPrediction;
-        [ProtoMember(4)] public float TurnRate;
+        [ProtoMember(4)] public float MaxTurnRate;
         [ProtoMember(6)] public IFF_Enum IFF; // 1 is TargetSelf, 2 is TargetEnemies, 4 is TargetFriendlies
         [ProtoMember(7)] public bool DoRaycast;
         [ProtoMember(8)] public float CastCone;
@@ -147,6 +148,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         /// Maximum G-force the projectile can sustain.
         /// </summary>
         [ProtoMember(12)] public float MaxGs;
+        [ProtoMember(13)] public Definition_PID? PID;
     }
 
 
@@ -156,5 +158,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         public Action<uint, Vector3D, Vector3D, MyEntity> OnImpact;
         public Action<uint> OnEndOfLife;
         //public Action<uint, Guidance?> OnGuidanceStage;
+    }
+
+    [ProtoContract]
+    public struct Definition_PID
+    {
+        [ProtoMember(0)] public float kProportional; // Direct response to error
+        [ProtoMember(1)] public float kIntegral; // Response to historical error
+        [ProtoMember(2)] public float kDerivative; // Damping factor
+
+        public PID GetPID()
+        {
+            return new PID(kProportional, kIntegral, kDerivative);
+        }
     }
 }
