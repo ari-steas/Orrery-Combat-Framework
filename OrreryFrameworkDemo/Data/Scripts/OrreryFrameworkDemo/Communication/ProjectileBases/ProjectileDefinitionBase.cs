@@ -171,9 +171,18 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
     [ProtoContract]
     public struct Definition_PID
     {
-        [ProtoMember(1)] public float kProportional; // Direct response to error
-        [ProtoMember(2)] public float kIntegral; // Response to historical error
-        [ProtoMember(3)] public float kDerivative; // Damping factor
+        /// <summary>
+        /// Direct response to error
+        /// </summary>
+        [ProtoMember(1)] public float kProportional;
+        /// <summary>
+        /// Response to historical error
+        /// </summary>
+        [ProtoMember(2)] public float kIntegral;
+        /// <summary>
+        /// Damping factor
+        /// </summary>
+        [ProtoMember(3)] public float kDerivative;
 
     }
 }
