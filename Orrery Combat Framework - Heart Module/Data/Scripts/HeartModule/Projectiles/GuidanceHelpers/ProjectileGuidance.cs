@@ -22,11 +22,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
         float time = 0;
         Vector3D randomOffset = Vector3D.Zero;
 
+        PID stagePid;
+
         public ProjectileGuidance(Projectile projectile)
         {
             this.projectile = projectile;
             Definition = projectile.Definition;
             stages = new LinkedList<Guidance>(Definition.Guidance);
+
+            stagePid = stages.First?.Value.PID?.GetPID();
 
             // Set projectile velocity
             if ((stages.First?.Value.Velocity ?? -1) != -1)
@@ -73,7 +77,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
                 leadPos += randomOffset;
 
                 // Adjust the call to StepDirection to include the maxGs parameter
-                StepDirection((leadPos - projectile.Position).Normalized(), currentStage.TurnRate, currentStage.MaxGs, delta);
+                StepDirection((leadPos - projectile.Position).Normalized(), currentStage.MaxTurnRate, currentStage.MaxGs, delta);
             }
         }
 
@@ -95,28 +99,55 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
                 Vector3D.CreateFromAzimuthAndElevation(HeartData.I.Random.NextDouble() * 2 * Math.PI, HeartData.I.Random.NextDouble() * 2 * Math.PI, out randomOffset);
                 randomOffset *= stages.First.Value.Inaccuracy * HeartData.I.Random.NextDouble();
             }
+
+            stagePid = stages.First?.Value.PID?.GetPID();
+
             //projectile.Definition.LiveMethods.OnGuidanceStage?.Invoke(projectile.Id, stages.First?.Value);
             RunGuidance(delta); // Avoid a tick of delay
         }
 
-        internal void StepDirection(Vector3D targetDir, float turnRate, float maxGs, float delta)
+        /// <summary>
+        /// Steps the projectile towards a specified direction, with an optional PID.
+        /// </summary>
+        /// <param name="targetDir">Normalized target direction.</param>
+        /// <param name="maxTurnRate">Maximum turn rate in radians.</param>
+        /// <param name="maxGs">Maximum 'pull' of the missile, in Gs.</param>
+        /// <param name="delta">Delta time, in seconds.</param>
+        internal void StepDirection(Vector3D targetDir, float maxTurnRate, float maxGs, float delta)
         {
-            //currentStage.MaxGs;
+            // turnRate and maxGs serve as ABSOLUTE LIMITS (of the absolute value). Set to -1 (or any negative value lol lmao) if you want to disable them.
+
             double AngleDifference = Vector3D.Angle(projectile.Direction, targetDir);
 
             Vector3 RotAxis = Vector3.Cross(projectile.Direction, targetDir);
             RotAxis.Normalize();
 
-            double actualTurnRate = turnRate * delta;
+            double actualTurnRate = maxTurnRate > 0 ? maxTurnRate : double.MaxValue;
 
             if (maxGs > 0)
             {
-                double gravityLimited = Definition.PhysicalProjectile.Velocity / maxGs;
+                double gravityLimited = Definition.PhysicalProjectile.Velocity / (maxGs*9.81);
 
-                actualTurnRate = Math.Min(gravityLimited, turnRate) * delta;
+                actualTurnRate = Math.Min(gravityLimited, actualTurnRate);
             }
 
-            Matrix RotationMatrix = Matrix.CreateFromAxisAngle(RotAxis, (float)HeartUtils.ClampAbs(AngleDifference, actualTurnRate));
+            // DELTATICK YOURSELF *RIGHT FUCKING NOW*
+            actualTurnRate *= delta;
+
+            // Check if we even have a PID, then set values according to result.
+            double finalAngle;
+            if (stagePid != null)
+            {
+                // I always want to have an angle of zero, with an offset of zero.
+                finalAngle = HeartUtils.ClampAbs(stagePid.Tick(AngleDifference, 0, 0, delta), actualTurnRate);
+            }
+            else
+            {
+                finalAngle = HeartUtils.ClampAbs(AngleDifference, actualTurnRate);
+            }
+
+
+            Matrix RotationMatrix = Matrix.CreateFromAxisAngle(RotAxis, (float)finalAngle);
             projectile.Direction = Vector3.Transform(projectile.Direction, RotationMatrix).Normalized();
         }
 

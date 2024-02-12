@@ -23,7 +23,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
 
         public PID() { }
 
-        public PID(double kIntegral, double kDerivative, double kProportional)
+        public PID(double kProportional, double kIntegral, double kDerivative)
         {
             this.kIntegral = kIntegral;
             this.kDerivative = kDerivative;
@@ -43,6 +43,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
         }
     }
 
+    /// <summary>
+    /// Three-dimensional PID system.
+    /// </summary>
     public class VectorPID
     {
         public double kIntegral
@@ -89,13 +92,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
         private PID y = new PID();
         private PID z = new PID();
 
-        public VectorPID(double kIntegral, double kDerivative, double kProportional)
+        public VectorPID(double kProportional, double kIntegral, double kDerivative)
         {
             this.kIntegral = kIntegral;
             this.kDerivative = kDerivative;
             this.kProportional = kProportional;
-
-
         }
 
         public Vector3D Tick(Vector3D current, Vector3D desired, Vector3D bias, double delta)
