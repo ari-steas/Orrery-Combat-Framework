@@ -266,6 +266,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 Terminal_Heart_TargetNeutrals = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetNeutrals) == IFF_Enum.TargetNeutrals;
                 Terminal_Heart_TargetUnowned = false;
                 Terminal_Heart_PreferUniqueTargets = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetUnique) == IFF_Enum.TargetUnique;
+
             }
         }
 
@@ -532,6 +533,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                     NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
             }
         }
+
         #endregion
     }
 }

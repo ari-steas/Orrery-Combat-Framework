@@ -15,25 +15,36 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface
 
         public override void UpdateAfterSimulation()
         {
+            base.UpdateAfterSimulation();
+
             if (MyAPIGateway.Utilities.IsDedicated || !HeartData.I.IsLoaded)
+            {
                 Visible = false;
-            else
-                Visible = MyAPIGateway.Gui.GetCurrentScreen == MyTerminalPageEnum.None;
+                return;
+            }
+
+            Visible = MyAPIGateway.Gui.GetCurrentScreen == MyTerminalPageEnum.None;
 
             if (!Visible)
                 return;
 
-            IMyEntity controlledEntity = MyAPIGateway.Session.Player?.Controller?.ControlledEntity?.Entity?.GetTopMostParent(); // Get the currently controlled grid.
+            IMyEntity controlledEntity = MyAPIGateway.Session.Player?.Controller?.ControlledEntity?.Entity?.GetTopMostParent();
             if (!(controlledEntity is IMyCubeGrid))
             {
                 controlledGrid = null;
                 return;
             }
 
-            controlledGrid = (IMyCubeGrid)controlledEntity; // TODO: Make work on subparts
+            controlledGrid = (IMyCubeGrid)controlledEntity;
 
-            foreach (var gridWeapon in WeaponManager.I.GridWeapons[controlledGrid])
-                PerWeaponUpdate(gridWeapon);
+            foreach (var weaponLogic in WeaponManager.I.GridWeapons[controlledGrid])
+            {
+                // Check if the HUD Barrel Indicator is enabled for this weapon
+                if (weaponLogic.Terminal_Heart_ToggleHUDBarrelIndicator)
+                {
+                    PerWeaponUpdate(weaponLogic);
+                }
+            }
         }
 
         public abstract void PerWeaponUpdate(SorterWeaponLogic weapon);

@@ -56,4 +56,5 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
             //Window?.UpdateWeaponText(weapon);
         }
     }
+
 }

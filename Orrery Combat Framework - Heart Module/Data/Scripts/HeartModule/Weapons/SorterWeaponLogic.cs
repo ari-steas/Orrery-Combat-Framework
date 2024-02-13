@@ -35,6 +35,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         //insert ammo loaded state here (how the hell are we gonna do that)
         public MySync<long, SyncDirection.BothWays> AmmoLoadedState;          //dang this mysync thing is pretty cool it will surely not bite me in the ass when I need over 32 entries      
         public MySync<long, SyncDirection.BothWays> ControlTypeState;
+        public MySync<bool, SyncDirection.BothWays> HudBarrelIndicatorState;
 
         public readonly Heart_Settings Settings = new Heart_Settings();
 
@@ -372,6 +373,22 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             Terminal_Heart_AmmoComboBox = Magazines.AmmoIndex;
         }
 
+        public bool Terminal_Heart_ToggleHUDBarrelIndicator
+        {
+            get
+            {
+                return Settings.HudBarrelIndicatorState;
+            }
+
+            set
+            {
+                Settings.HudBarrelIndicatorState = value;
+                HudBarrelIndicatorState.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+            }
+        }
+
         #endregion
 
         #region Saving
@@ -403,6 +420,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             Terminal_Heart_Shoot = false;
             Terminal_Heart_AmmoComboBox = 0;
+            Terminal_Heart_ToggleHUDBarrelIndicator = false;
+
         }
 
         internal virtual bool LoadSettings()
@@ -438,6 +457,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
                     Settings.ControlTypeState = loadedSettings.ControlTypeState;
                     ControlTypeState.Value = Settings.ControlTypeState;
+
+                    Settings.HudBarrelIndicatorState = loadedSettings.HudBarrelIndicatorState;
+                    HudBarrelIndicatorState.Value = Settings.HudBarrelIndicatorState;
 
                     return true;
                 }

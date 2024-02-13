@@ -285,6 +285,22 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetUnowned = v
                     );
             }
+            {
+                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlLabel, IMyConveyorSorter>(IdPrefix + "HeartWeaponHUDDivider");
+                c.Label = MyStringId.GetOrCompute("=== HUD ===");
+                c.SupportsMultipleBlocks = true;
+                c.Visible = CustomVisibleCondition;
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
+            }
+            {
+                ControlsHelper.CreateToggle<SorterTurretLogic>(
+                    "HeartHUDBarrelIndicatorToggle",
+                    "HUD Barrel Indicator",
+                    "HUDBarrelIndicatorDesc",
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_ToggleHUDBarrelIndicator,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_ToggleHUDBarrelIndicator = v
+                    );
+            }
         }
 
         static void CreateActions(IMyModContext context)
@@ -631,6 +647,32 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     @"Textures\GUI\Icons\Actions\Toggle.dds"
                     );
             }
+
+            {
+                ControlsHelper.CreateAction<SorterTurretLogic>(
+                    "ToggleHUDBarrelIndicator",
+                    "Toggle HUD Barrel Indicator",
+                    (b) =>
+                    {
+                        var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
+                        if (logic != null)
+                        {
+                            // Toggle the "Target Unowned" option and ensure sync
+                            logic.Terminal_Heart_ToggleHUDBarrelIndicator = !logic.Terminal_Heart_ToggleHUDBarrelIndicator; // Toggling the value
+                        }
+                    },
+                    (b, sb) =>
+                    {
+                        var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
+                        if (logic != null)
+                        {
+                            sb.Append(logic.Terminal_Heart_ToggleHUDBarrelIndicator ? "Ind. ON" : "Ind. OFF");
+                        }
+                    },
+                    @"Textures\GUI\Icons\Actions\Toggle.dds"
+                    );
+            }
+
         }
 
 
