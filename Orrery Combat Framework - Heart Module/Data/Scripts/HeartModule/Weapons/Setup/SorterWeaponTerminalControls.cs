@@ -647,6 +647,32 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     @"Textures\GUI\Icons\Actions\Toggle.dds"
                     );
             }
+
+            {
+                ControlsHelper.CreateAction<SorterTurretLogic>(
+                    "ToggleHUDBarrelIndicator",
+                    "Toggle HUD Barrel Indicator",
+                    (b) =>
+                    {
+                        var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
+                        if (logic != null)
+                        {
+                            // Toggle the "Target Unowned" option and ensure sync
+                            logic.Terminal_Heart_ToggleHUDBarrelIndicator = !logic.Terminal_Heart_ToggleHUDBarrelIndicator; // Toggling the value
+                        }
+                    },
+                    (b, sb) =>
+                    {
+                        var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
+                        if (logic != null)
+                        {
+                            sb.Append(logic.Terminal_Heart_ToggleHUDBarrelIndicator ? "Ind. ON" : "Ind. OFF");
+                        }
+                    },
+                    @"Textures\GUI\Icons\Actions\Toggle.dds"
+                    );
+            }
+
         }
 
 
