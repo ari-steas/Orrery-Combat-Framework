@@ -266,7 +266,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 Terminal_Heart_TargetNeutrals = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetNeutrals) == IFF_Enum.TargetNeutrals;
                 Terminal_Heart_TargetUnowned = false;
                 Terminal_Heart_PreferUniqueTargets = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetUnique) == IFF_Enum.TargetUnique;
-                Terminal_Heart_ToggleHUDBarrelIndicator = false;
 
             }
         }
@@ -328,9 +327,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                     Settings.TargetUnownedState = loadedSettings.TargetUnownedState;
                     TargetUnownedState.Value = Settings.TargetUnownedState;
 
-                    Settings.HudBarrelIndicatorState = loadedSettings.HudBarrelIndicatorState;
-                    HudBarrelIndicatorState.Value = Settings.HudBarrelIndicatorState;
-
                     return baseRet;
                 }
             }
@@ -360,7 +356,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         public MySync<bool, SyncDirection.BothWays> TargetNeutralsState;
         public MySync<bool, SyncDirection.BothWays> TargetEnemiesState;
         public MySync<bool, SyncDirection.BothWays> TargetUnownedState;
-        public MySync<bool, SyncDirection.BothWays> HudBarrelIndicatorState;
 
         public float Terminal_Heart_Range_Slider
         {
@@ -539,21 +534,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             }
         }
 
-        public bool Terminal_Heart_ToggleHUDBarrelIndicator
-        {
-            get
-            {
-                return Settings.HudBarrelIndicatorState;
-            }
-
-            set
-            {
-                Settings.HudBarrelIndicatorState = value;
-                HudBarrelIndicatorState.Value = value;
-                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
-                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
-            }
-        }
         #endregion
     }
 }
