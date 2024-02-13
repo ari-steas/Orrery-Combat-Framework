@@ -295,10 +295,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             {
                 ControlsHelper.CreateToggle<SorterTurretLogic>(
                     "HeartHUDBarrelIndicatorToggle",
-                    "Target Unowned",
-                    "TargetUnownedDesc",
-                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetUnowned,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetUnowned = v
+                    "HUD Barrel Indicator",
+                    "HUDBarrelIndicatorDesc",
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_ToggleHUDBarrelIndicator,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_ToggleHUDBarrelIndicator = v
                     );
             }
         }

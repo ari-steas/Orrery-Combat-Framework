@@ -355,6 +355,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         public MySync<bool, SyncDirection.BothWays> TargetNeutralsState;
         public MySync<bool, SyncDirection.BothWays> TargetEnemiesState;
         public MySync<bool, SyncDirection.BothWays> TargetUnownedState;
+        public MySync<bool, SyncDirection.BothWays> HudBarrelIndicatorState;
 
         public float Terminal_Heart_Range_Slider
         {
@@ -528,6 +529,22 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             {
                 Settings.TargetUnownedState = value;
                 TargetUnownedState.Value = value;
+                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
+                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+            }
+        }
+
+        public bool Terminal_Heart_ToggleHUDBarrelIndicator
+        {
+            get
+            {
+                return Settings.HudBarrelIndicatorState;
+            }
+
+            set
+            {
+                Settings.HudBarrelIndicatorState = value;
+                HudBarrelIndicatorState.Value = value;
                 if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
                     NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
             }

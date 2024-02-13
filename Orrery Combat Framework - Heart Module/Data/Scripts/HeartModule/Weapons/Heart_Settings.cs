@@ -49,5 +49,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
 
         [ProtoMember(15)]
         public bool MouseShootState;
+
+        [ProtoMember(16)]
+        public bool HudBarrelIndicatorState;
     }
 }
