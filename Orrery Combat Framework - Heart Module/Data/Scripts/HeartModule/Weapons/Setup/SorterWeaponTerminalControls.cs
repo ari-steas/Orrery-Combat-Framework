@@ -285,6 +285,22 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetUnowned = v
                     );
             }
+            {
+                var c = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlLabel, IMyConveyorSorter>(IdPrefix + "HeartWeaponHUDDivider");
+                c.Label = MyStringId.GetOrCompute("=== HUD ===");
+                c.SupportsMultipleBlocks = true;
+                c.Visible = CustomVisibleCondition;
+                MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(c);
+            }
+            {
+                ControlsHelper.CreateToggle<SorterTurretLogic>(
+                    "HeartHUDBarrelIndicatorToggle",
+                    "Target Unowned",
+                    "TargetUnownedDesc",
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetUnowned,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetUnowned = v
+                    );
+            }
         }
 
         static void CreateActions(IMyModContext context)
