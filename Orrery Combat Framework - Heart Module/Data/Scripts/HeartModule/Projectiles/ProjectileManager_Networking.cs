@@ -11,7 +11,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 {
     partial class ProjectileManager
     {
-        const int MaxProjectilesSynced = 50; // This value should result in ~100kB/s up per player.
+        const int MaxProjectilesSynced = 100; // This value should result in ~100kB/s up per player.
+        const int NetworkInterval = 2;
 
         public Dictionary<ulong, LinkedList<n_SerializableProjectile>> SyncStream = new Dictionary<ulong, LinkedList<n_SerializableProjectile>>();
 
@@ -40,9 +41,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 SyncStream[Player.SteamUserId].AddLast(sP); // Queue other projectile updates last
         }
 
+        int tick = 0;
         public void UpdateSync()
         {
-            if (MyAPIGateway.Session.IsServer && MyAPIGateway.Multiplayer.MultiplayerActive)
+            if (MyAPIGateway.Session.IsServer && MyAPIGateway.Multiplayer.MultiplayerActive && tick % NetworkInterval == 0)
             {
                 foreach (var player in HeartData.I.Players) // Ensure that all players are being synced
                 {
@@ -71,6 +73,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     }
                 }
             }
+
+            tick++;
         }
 
         private void SyncPlayerProjectiles(IMyPlayer player)

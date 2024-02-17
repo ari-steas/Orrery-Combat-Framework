@@ -103,7 +103,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (MyAPIGateway.Session.IsServer)
                 return;
 
-            if (IsIdAvailable(projectile.Id) && projectile.IsActive && projectile.DefinitionId.HasValue)
+            if (IsIdAvailable(projectile.Id) && projectile.DefinitionId.HasValue)
             {
                 if (projectile.Firer != null)
                 {
@@ -116,7 +116,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 Projectile p = GetProjectile(projectile.Id);
                 if (p != null)
                     p.UpdateFromSerializable(projectile);
-                else if (projectile.IsActive)
+                else if (projectile.IsActive ?? false)
                     HeartData.I.Net.SendToServer(new n_ProjectileRequest(projectile.Id));
             }
         }

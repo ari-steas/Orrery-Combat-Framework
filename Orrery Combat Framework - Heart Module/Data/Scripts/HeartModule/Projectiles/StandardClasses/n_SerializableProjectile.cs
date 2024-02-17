@@ -12,9 +12,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
     public class n_SerializableProjectile : PacketBase
     {
         // ProtoMember IDs are high to avoid collisions
-        [ProtoMember(22)] public bool IsActive = true;
+        [ProtoMember(22)] public bool? IsActive = true;
         [ProtoMember(23)] public uint Id;
-        [ProtoMember(211)] public long Timestamp;
+        [ProtoMember(211)] public uint TimestampFromMidnight; // surely this will not bite me in the ass later
 
         // All non-required values are nullable
         [ProtoMember(24)] public int? DefinitionId;

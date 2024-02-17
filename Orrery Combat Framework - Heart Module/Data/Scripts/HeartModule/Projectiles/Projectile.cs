@@ -279,9 +279,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         public void UpdateFromSerializable(n_SerializableProjectile projectile)
         {
-            QueuedDispose = !projectile.IsActive;
+            if (projectile.IsActive.HasValue)
+                QueuedDispose = !projectile.IsActive.Value;
 
-            LastUpdate = projectile.Timestamp;
+            LastUpdate = DateTime.Now.Date.AddMilliseconds(projectile.TimestampFromMidnight).Ticks;
             float delta = (DateTime.Now.Ticks - LastUpdate) / (float)TimeSpan.TicksPerSecond;
 
             // The following values may be null to save network load
@@ -315,14 +316,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             n_SerializableProjectile projectile = new n_SerializableProjectile()
             {
-                IsActive = !QueuedDispose,
                 Id = Id,
-                Timestamp = DateTime.Now.Ticks,
+                TimestampFromMidnight = (uint) DateTime.Now.TimeOfDay.TotalMilliseconds, // Surely this will not bite me in the ass later
             };
 
             switch (DetailLevel)
             {
                 case 0:
+                    projectile.IsActive = !QueuedDispose;
                     projectile.DefinitionId = DefinitionId;
                     projectile.Position = Position;
                     projectile.Direction = Direction;
@@ -331,11 +332,19 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     //projectile.Velocity = Velocity;
                     break;
                 case 1:
+                    projectile.IsActive = !QueuedDispose;
                     projectile.Position = Position;
                     if (IsHitscan || Definition.Guidance.Length > 0)
                         projectile.Direction = Direction;
                     if (!IsHitscan && Definition.PhysicalProjectile.Acceleration > 0)
                         projectile.Velocity = Velocity;
+                    break;
+                case 3:
+                    projectile.DefinitionId = DefinitionId;
+                    projectile.Position = Position;
+                    projectile.Direction = Direction;
+                    projectile.InheritedVelocity = InheritedVelocity;
+                    projectile.Firer = Firer;
                     break;
             }
 
