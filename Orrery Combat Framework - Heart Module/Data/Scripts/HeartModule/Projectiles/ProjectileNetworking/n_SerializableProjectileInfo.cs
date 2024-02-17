@@ -1,4 +1,5 @@
-﻿using ProtoBuf;
+﻿using Heart_Module.Data.Scripts.HeartModule.Network;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,10 @@ using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
 {
+    // TODO: Make these implement packetbase stuff
+
     [ProtoContract]
-    internal class n_SerializableProjectileInfo
+    internal class n_SerializableProjectileInfo : PacketBase
     {
         public n_SerializableProjectileInfo() { }
 
@@ -51,7 +54,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
     }
 
     [ProtoContract]
-    internal class n_SerializableFireEvent
+    internal class n_SerializableFireEvent : PacketBase
     {
         public n_SerializableFireEvent() { }
 
