@@ -3,14 +3,17 @@ using Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler;
 using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
+using ProtoBuf;
 using RichHudFramework.Client;
 using Sandbox.ModAPI;
 using System;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
+using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding;
 
@@ -68,13 +71,17 @@ namespace Heart_Module.Data.Scripts.HeartModule
             {
                 CriticalHandle.ThrowCriticalException(ex, typeof(HeartLoad));
             }
+
+            HeartData.I.Log.Log("Small: " + MyAPIGateway.Utilities.SerializeToBinary(new n_SerializableProjectileInfo(1, Vector3.One, Vector3.Forward, 3, 235345645)).Length);
+            HeartData.I.Log.Log("Large: " + MyAPIGateway.Utilities.SerializeToBinary(new n_SerializableProjectileInfo(1, Vector3.One, Vector3.Forward, 3, 235345645, 345345, 3453454, 124334)).Length);
+            HeartData.I.Log.Log("Event: " + MyAPIGateway.Utilities.SerializeToBinary(new n_SerializableFireEvent(1, 234, Vector3.One, 12434)).Length);
         }
 
         public override void UpdateAfterSimulation()
         {
             // This has the power to shut down the server. Afaik the only way to do this is throwing an exception. Yeah.
             handle.Update();
-
+            byte[] a = BitConverter.GetBytes(1.2f);
             try
             {
                 if (HeartData.I.IsSuspended)
