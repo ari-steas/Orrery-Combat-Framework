@@ -13,8 +13,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
         const int ProjectilesPerPacket = 50;
         const int TicksPerPacket = 4;
 
-        private Dictionary<ulong, Queue<n_SerializableProjectileInfo>> SyncStream_PP = new Dictionary<ulong, Queue<n_SerializableProjectileInfo>>();
-        private Dictionary<ulong, Queue<n_SerializableFireEvent>> SyncStream_FireEvent = new Dictionary<ulong, Queue<n_SerializableFireEvent>>();
+        private Dictionary<ulong, Queue<n_SerializableProjectileInfos>> SyncStream_PP = new Dictionary<ulong, Queue<n_SerializableProjectileInfos>>();
+        private Dictionary<ulong, Queue<n_SerializableFireEvents>> SyncStream_FireEvent = new Dictionary<ulong, Queue<n_SerializableFireEvents>>();
 
         public void QueueSync_PP(Projectile projectile)
         {
@@ -32,6 +32,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
         }
 
         public void QueueSync_FireEvent(IMyPlayer player, SorterWeaponLogic weapon, Projectile projectile)
+        {
+
+        }
+
+        public void Recieve_PP()
+        {
+
+        }
+
+        public void Recieve_FireEvent()
         {
 
         }

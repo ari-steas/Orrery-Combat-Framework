@@ -72,9 +72,9 @@ namespace Heart_Module.Data.Scripts.HeartModule
                 CriticalHandle.ThrowCriticalException(ex, typeof(HeartLoad));
             }
 
-            HeartData.I.Log.Log("Small: " + MyAPIGateway.Utilities.SerializeToBinary(new n_SerializableProjectileInfo(1, Vector3.One, Vector3.Forward, 3, 235345645)).Length);
-            HeartData.I.Log.Log("Large: " + MyAPIGateway.Utilities.SerializeToBinary(new n_SerializableProjectileInfo(1, Vector3.One, Vector3.Forward, 3, 235345645, 345345, 3453454, 124334)).Length);
-            HeartData.I.Log.Log("Event: " + MyAPIGateway.Utilities.SerializeToBinary(new n_SerializableFireEvent(1, 234, Vector3.One, 12434)).Length);
+            HeartData.I.Log.Log("Small: " + MyAPIGateway.Utilities.SerializeToBinary(new n_SerializableProjectileInfos(1, Vector3.One, Vector3.Forward, 3, 235345645)).Length);
+            HeartData.I.Log.Log("Large: " + MyAPIGateway.Utilities.SerializeToBinary(new n_SerializableProjectileInfos(1, Vector3.One, Vector3.Forward, 3, 235345645, 345345, 3453454, 124334)).Length);
+            HeartData.I.Log.Log("Event: " + MyAPIGateway.Utilities.SerializeToBinary(new n_SerializableFireEvents(1, 234, Vector3.One, 12434)).Length);
         }
 
         public override void UpdateAfterSimulation()
