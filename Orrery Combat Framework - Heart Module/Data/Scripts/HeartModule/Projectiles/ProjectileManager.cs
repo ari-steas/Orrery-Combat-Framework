@@ -1,4 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Sandbox.ModAPI;
@@ -15,6 +16,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
     public partial class ProjectileManager : MySessionComponentBase
     {
         public static ProjectileManager I = new ProjectileManager();
+        public ProjectileNetwork Network = new ProjectileNetwork();
 
         private Dictionary<uint, Projectile> ActiveProjectiles = new Dictionary<uint, Projectile>();
         private HashSet<Projectile> ProjectilesWithHealth = new HashSet<Projectile>();

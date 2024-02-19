@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+using Sandbox.ModAPI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +10,7 @@ using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
 {
-    public class ProjectileNetworking
+    public class ProjectileNetwork
     {
         const int ProjectilesPerPacket = 50;
         const int TicksPerPacket = 4;
@@ -36,12 +38,23 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
 
         }
 
-        public void Recieve_PP()
+        internal void Recieve_PP(n_SerializableProjectileInfos projectileInfos)
         {
+            if (MyAPIGateway.Session.IsServer)
+                return;
 
+            for (int i = 0; i < projectileInfos.UniqueProjectileId.Length; i++)
+            {
+                n_SerializableProjectile projectile = new n_SerializableProjectile()
+                {
+
+                };
+
+                ProjectileManager.I.UpdateProjectileSync(projectile);
+            }
         }
 
-        public void Recieve_FireEvent()
+        internal void Recieve_FireEvent(n_SerializableFireEvents fireEvents)
         {
 
         }
