@@ -1,4 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Sandbox.ModAPI;
@@ -68,8 +69,17 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
         /// <param name="projectileInfos"></param>
         internal void Recieve_PP(n_SerializableProjectileInfos projectileInfos)
         {
-            if (MyAPIGateway.Session.IsServer)
+            if (MyAPIGateway.Session.IsServer || MyAPIGateway.Session.Player?.Character == null)
                 return;
+
+            if (projectileInfos == null)
+            {
+                SoftHandle.RaiseException("Null ProjectileInfos!", null, typeof(ProjectileNetwork));
+                return;
+            }
+
+            if (projectileInfos.UniqueProjectileId == null)
+                return; // Zero projectiles to sync
 
             for (int i = 0; i < projectileInfos.UniqueProjectileId.Length; i++)
             {
@@ -155,6 +165,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
 
         private void SyncPlayerProjectiles(IMyPlayer player)
         {
+            if (player.Character == null) // TODO: Proper handling for spectator
+                return;
+
             if (!SyncStream_PP.ContainsKey(player.SteamUserId)) // Avoid breaking if the player somehow hasn't been added
             {
                 SoftHandle.RaiseSyncException("Player " + player.DisplayName + " is missing projectile sync queue!");
