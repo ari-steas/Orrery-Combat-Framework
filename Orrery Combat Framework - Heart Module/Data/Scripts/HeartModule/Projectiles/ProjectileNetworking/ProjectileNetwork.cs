@@ -23,10 +23,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
         private Dictionary<ulong, SortedList<ushort, Projectile>> SyncStream_PP = new Dictionary<ulong, SortedList<ushort, Projectile>>();
         private Dictionary<ulong, SortedList<ushort, Projectile>> SyncStream_FireEvent = new Dictionary<ulong, SortedList<ushort, Projectile>>();
 
-        public void QueueSync_PP(Projectile projectile)
+        public void QueueSync_PP(Projectile projectile, int detailLevel = 0)
         {
             foreach (var player in HeartData.I.Players)
-                QueueSync_PP(player, projectile);
+                QueueSync_PP(player, projectile, detailLevel);
         }
 
         public void QueueSync_PP(IMyPlayer player, Projectile projectile, int detailLevel = 0)
