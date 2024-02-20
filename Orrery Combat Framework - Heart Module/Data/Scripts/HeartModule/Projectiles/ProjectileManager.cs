@@ -1,4 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Sandbox.ModAPI;
@@ -15,6 +16,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
     public partial class ProjectileManager : MySessionComponentBase
     {
         public static ProjectileManager I = new ProjectileManager();
+        public ProjectileNetwork Network = new ProjectileNetwork();
 
         private Dictionary<uint, Projectile> ActiveProjectiles = new Dictionary<uint, Projectile>();
         private HashSet<Projectile> ProjectilesWithHealth = new HashSet<Projectile>();
@@ -59,8 +61,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             foreach (var projectile in QueuedCloseProjectiles)
             {
                 //MyAPIGateway.Utilities.ShowMessage("Heart", $"Closing projectile {projectile.Id}. Age: {projectile.Age} ");
-                if (MyAPIGateway.Session.IsServer)
-                    QueueSync(projectile, 2);
+                //if (MyAPIGateway.Session.IsServer)
+                //    QueueSync(projectile, 2);
 
                 if (!MyAPIGateway.Utilities.IsDedicated)
                     projectile.CloseDrawing();
@@ -75,7 +77,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             QueuedCloseProjectiles.Clear();
 
             // Sync stuff
-            UpdateSync();
+            Network.Update1();
 
             DamageHandler.Update();
 
@@ -121,14 +123,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
         }
 
-        public Projectile AddProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, IMyConveyorSorter sorterWep)
+        public Projectile AddProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, IMyConveyorSorter sorterWep, bool shouldSync = true)
         {
             try
             {
-                if (ProjectileDefinitionManager.GetDefinition(projectileDefinitionId)?.PhysicalProjectile.IsHitscan ?? false)
-                    return AddHitscanProjectile(projectileDefinitionId, position, direction, sorterWep.EntityId);
-                else
-                    return AddProjectile(new Projectile(projectileDefinitionId, position, direction, sorterWep));
+                return AddProjectile(new Projectile(projectileDefinitionId, position, direction, sorterWep), shouldSync);
             }
             catch (Exception ex)
             {
@@ -137,14 +136,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
         }
 
-        public Projectile AddProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, long firer, Vector3D initialVelocity)
+        public Projectile AddProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, long firer, Vector3D initialVelocity, bool shouldSync = true)
         {
             try
             {
-                if (ProjectileDefinitionManager.GetDefinition(projectileDefinitionId)?.PhysicalProjectile.IsHitscan ?? false)
-                    return AddHitscanProjectile(projectileDefinitionId, position, direction, firer);
-                else
-                    return AddProjectile(new Projectile(projectileDefinitionId, position, direction, firer, initialVelocity));
+                return AddProjectile(new Projectile(projectileDefinitionId, position, direction, firer, initialVelocity), shouldSync);
             }
             catch (Exception ex)
             {
@@ -153,7 +149,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
         }
 
-        private Projectile AddProjectile(Projectile projectile)
+        internal Projectile AddProjectile(Projectile projectile, bool shouldSync = true)
         {
             if (projectile == null || projectile.DefinitionId == -1) return null; // Ensure that invalid projectiles don't get added
 
@@ -164,8 +160,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 NextId++;
             projectile.SetId(NextId);
             ActiveProjectiles.Add(projectile.Id, projectile);
-            if (MyAPIGateway.Session.IsServer)
-                QueueSync(projectile, 0);
+            if (MyAPIGateway.Session.IsServer && shouldSync)
+                Network.QueueSync_PP(projectile, 0);
             if (!MyAPIGateway.Utilities.IsDedicated)
                 projectile.InitEffects();
             if (projectile.Definition.PhysicalProjectile.Health > 0 && projectile.Definition.PhysicalProjectile.ProjectileSize > 0)
@@ -174,19 +170,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         }
 
         Dictionary<long, uint> HitscanList = new Dictionary<long, uint>();
-        private Projectile AddHitscanProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, long firer)
-        {
-            if (!HitscanList.ContainsKey(firer))
-            {
-                Projectile p = new Projectile(projectileDefinitionId, position, direction, firer);
-                AddProjectile(p);
-                p.OnClose += (projectile) => HitscanList.Remove(firer);
-                HitscanList.Add(firer, p.Id);
-            }
-            Projectile outProjectile = GetProjectile(HitscanList[firer]);
-            outProjectile?.UpdateHitscan(position, direction);
-            return outProjectile;
-        }
 
         public Projectile GetProjectile(uint id) => ActiveProjectiles.GetValueOrDefault(id, null);
         public bool IsIdAvailable(uint id) => !ActiveProjectiles.ContainsKey(id);

@@ -34,10 +34,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             p.Definition.LiveMethods.OnEndOfLife?.Invoke(p.Id);
         };
-        public long LastUpdate { get; private set; }
+        public long LastUpdate { get; set; }
 
         public float DistanceTravelled { get; private set; } = 0;
-        public float Age { get; private set; } = 0;
+        public float Age { get; set; } = 0;
         public bool QueuedDispose { get; private set; } = false;
 
         private float _health = 0;
@@ -206,6 +206,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     if (MaxBeamLength == -1)
                         MaxBeamLength = Definition.PhysicalProjectile.MaxTrajectory;
                 }
+
+                DrawUpdate();
+                QueueDispose();
             }
             if (MyAPIGateway.Session.IsServer)
                 UpdateAudio();
@@ -280,9 +283,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     dist = hitInfo.Fraction * len;
 
                     if (hitInfo.HitEntity is IMyCubeGrid)
-                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Grid, this, hitInfo.Position, hitInfo.Normal));
+                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Grid, this, hitInfo.Position, hitInfo.Normal, Position, NextMoveStep));
                     else if (hitInfo.HitEntity is IMyCharacter)
-                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Character, this, hitInfo.Position, hitInfo.Normal));
+                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Character, this, hitInfo.Position, hitInfo.Normal, Position, NextMoveStep));
 
                     if (MyAPIGateway.Session.IsServer)
                         PlayImpactAudio(hitInfo.Position); // Audio is global
@@ -296,8 +299,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
 
             if (RemainingImpacts <= 0)
-                if (!IsHitscan)
-                    QueueDispose();
+                QueueDispose();
 
             return (float)dist;
         }
