@@ -39,9 +39,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
                 projectile.Velocity = projectile.Definition.PhysicalProjectile.Velocity;
         }
 
+        public IMyEntity GetTarget()
+        {
+            return targetEntity;
+        }
+
         public void SetTarget(IMyEntity target)
         {
-            targetEntity = target;
+            if (IsTargetAllowed(target, stages.First.Value))
+                targetEntity = target;
         }
 
         public void RunGuidance(float delta)
@@ -189,9 +195,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
             }
         }
 
-        internal bool IsTargetAllowed(IMyEntity target, Guidance currentStage)
+        internal bool IsTargetAllowed(IMyEntity target, Guidance? currentStage)
         {
-            if (projectile.Firer == 0) return true;
+            if (currentStage == null)
+                return false;
+            if (projectile.Firer == 0)
+                return true;
             IMyEntity firer = MyAPIGateway.Entities.GetEntityById(projectile.Firer);
             if (firer == null || !(firer is IMyCubeBlock))
                 return true;
@@ -206,16 +215,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
                 return true;
 
             if ((relations == MyRelationsBetweenPlayerAndBlock.NoOwnership || relations == MyRelationsBetweenPlayerAndBlock.Neutral) &&
-                (currentStage.IFF & IFF_Enum.TargetNeutrals) == IFF_Enum.TargetNeutrals)
+                (currentStage?.IFF & IFF_Enum.TargetNeutrals) == IFF_Enum.TargetNeutrals)
                 return true;
             if ((relations == MyRelationsBetweenPlayerAndBlock.Owner) &&
-                (currentStage.IFF & IFF_Enum.TargetSelf) == IFF_Enum.TargetSelf)
+                (currentStage?.IFF & IFF_Enum.TargetSelf) == IFF_Enum.TargetSelf)
                 return true;
             if ((relations == MyRelationsBetweenPlayerAndBlock.Friends) &&
-                (currentStage.IFF & IFF_Enum.TargetFriendlies) == IFF_Enum.TargetFriendlies)
+                (currentStage?.IFF & IFF_Enum.TargetFriendlies) == IFF_Enum.TargetFriendlies)
                 return true;
             if ((relations == MyRelationsBetweenPlayerAndBlock.Enemies) &&
-                (currentStage.IFF & IFF_Enum.TargetEnemies) == IFF_Enum.TargetEnemies)
+                (currentStage?.IFF & IFF_Enum.TargetEnemies) == IFF_Enum.TargetEnemies)
                 return true;
 
             return false;

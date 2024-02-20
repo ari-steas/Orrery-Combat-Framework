@@ -1,4 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Sandbox.ModAPI;
@@ -15,6 +16,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
     public partial class ProjectileManager : MySessionComponentBase
     {
         public static ProjectileManager I = new ProjectileManager();
+        public ProjectileNetwork Network = new ProjectileNetwork();
 
         private Dictionary<uint, Projectile> ActiveProjectiles = new Dictionary<uint, Projectile>();
         private HashSet<Projectile> ProjectilesWithHealth = new HashSet<Projectile>();
@@ -103,7 +105,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (MyAPIGateway.Session.IsServer)
                 return;
 
-            if (IsIdAvailable(projectile.Id) && projectile.IsActive && projectile.DefinitionId.HasValue)
+            if (IsIdAvailable(projectile.Id) && projectile.DefinitionId.HasValue)
             {
                 if (projectile.Firer != null)
                 {
@@ -116,7 +118,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 Projectile p = GetProjectile(projectile.Id);
                 if (p != null)
                     p.UpdateFromSerializable(projectile);
-                else if (projectile.IsActive)
+                else if (projectile.IsActive ?? false)
                     HeartData.I.Net.SendToServer(new n_ProjectileRequest(projectile.Id));
             }
         }

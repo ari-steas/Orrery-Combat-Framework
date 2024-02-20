@@ -29,7 +29,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             {
                 SlimBlockDamageMod = 1,
                 FatBlockDamageMod = 1,
-                BaseDamage = 1000,
+                BaseDamage = 5000,
                 AreaDamage = 0,
                 AreaRadius = 0,
                 MaxImpacts = 1,
@@ -96,7 +96,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             {
                 SlimBlockDamageMod = 1,
                 FatBlockDamageMod = 1,
-                BaseDamage = 1000,
+                BaseDamage = 5000,
                 AreaDamage = 0,
                 AreaRadius = 0,
                 MaxImpacts = 1,
@@ -177,7 +177,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             {
                 SlimBlockDamageMod = 1,
                 FatBlockDamageMod = 1,
-                BaseDamage = 1000,
+                BaseDamage = 5000,
                 AreaDamage = 0,
                 AreaRadius = 0,
                 MaxImpacts = 1,
@@ -359,7 +359,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             {
                 SlimBlockDamageMod = 1,
                 FatBlockDamageMod = 1,
-                BaseDamage = 1000,
+                BaseDamage = 5000,
                 AreaDamage = 0,
                 AreaRadius = 0,
                 MaxImpacts = 1,
@@ -421,7 +421,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             {
                 SlimBlockDamageMod = 1,
                 FatBlockDamageMod = 1,
-                BaseDamage = 1000,
+                BaseDamage = 5000,
                 AreaDamage = 0,
                 AreaRadius = 0,
                 MaxImpacts = 1,

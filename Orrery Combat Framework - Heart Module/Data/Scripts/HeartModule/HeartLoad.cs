@@ -3,14 +3,17 @@ using Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler;
 using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
+using ProtoBuf;
 using RichHudFramework.Client;
 using Sandbox.ModAPI;
 using System;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
+using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding;
 
@@ -25,7 +28,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
         ApiSender apiSender;
         DefinitionReciever definitionReciever;
         CommandHandler commands;
-        int remainingDegradedModeTicks = 300;
+        int remainingDegradedModeTicks = 30;
 
         public override void LoadData()
         {
@@ -74,7 +77,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
         {
             // This has the power to shut down the server. Afaik the only way to do this is throwing an exception. Yeah.
             handle.Update();
-
+            byte[] a = BitConverter.GetBytes(1.2f);
             try
             {
                 if (HeartData.I.IsSuspended)
