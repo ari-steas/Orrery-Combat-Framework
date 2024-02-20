@@ -280,9 +280,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     dist = hitInfo.Fraction * len;
 
                     if (hitInfo.HitEntity is IMyCubeGrid)
-                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Grid, this, hitInfo.Position, hitInfo.Normal));
+                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Grid, this, hitInfo.Position, hitInfo.Normal, Position, NextMoveStep));
                     else if (hitInfo.HitEntity is IMyCharacter)
-                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Character, this, hitInfo.Position, hitInfo.Normal));
+                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Character, this, hitInfo.Position, hitInfo.Normal, Position, NextMoveStep));
 
                     if (MyAPIGateway.Session.IsServer)
                         PlayImpactAudio(hitInfo.Position); // Audio is global
