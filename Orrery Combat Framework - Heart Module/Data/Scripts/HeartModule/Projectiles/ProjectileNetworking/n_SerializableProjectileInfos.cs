@@ -1,5 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Network;
 using ProtoBuf;
+using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -116,6 +117,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             return array;
         }
 
+        public Vector3 PlayerRelativePosition(int index)
+        {
+            return new Vector3(playerRelativeX[index], playerRelativeY[index], playerRelativeZ[index]);
+        }
+
         [ProtoMember(25)] private float[] directionX;
         [ProtoMember(26)] private float[] directionY;
         [ProtoMember(27)] private float[] directionZ;
@@ -128,6 +134,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                 array[i] = new Vector3(directionX[i], directionY[i], directionZ[i]);
 
             return array;
+        }
+
+        public Vector3 Direction(int index)
+        {
+            return new Vector3(directionX[index], directionY[index], directionZ[index]);
         }
 
         [ProtoMember(28)] public int[] DefinitionId;
@@ -147,6 +158,44 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             Full = 0,
             NoGuidance = 1,
             Minimal = 2,
+        }
+
+        /// <summary>
+        /// This is dangerous to call!
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public Projectile ToProjectile(int index)
+        {
+            if (DefinitionId == null)
+                return null;
+
+            Projectile p = new Projectile(
+                DefinitionId[index],
+                PlayerRelativePosition(index) + MyAPIGateway.Session.Player.Character.GetPosition(),
+                Direction(index),
+                FirerEntityId[index],
+                ((IMyCubeBlock)MyAPIGateway.Entities.GetEntityById(FirerEntityId[index]))?.CubeGrid.LinearVelocity ?? Vector3D.Zero
+                )
+            {
+                LastUpdate = DateTime.Now.Date.AddMilliseconds(MillisecondsFromMidnight[index]).Ticks
+            };
+
+            if (ProjectileAge != null)
+                p.Age = ProjectileAge[index];
+            if (TargetEntityId != null)
+            {
+                if (TargetEntityId[index] == null)
+                    p.Guidance.SetTarget(null);
+                else
+                    p.Guidance.SetTarget(MyAPIGateway.Entities.GetEntityById(TargetEntityId[index]));
+            }
+                
+
+            float delta = (DateTime.Now.Ticks - p.LastUpdate) / (float)TimeSpan.TicksPerSecond;
+            p.TickUpdate(delta);
+
+            return p;
         }
     }
 

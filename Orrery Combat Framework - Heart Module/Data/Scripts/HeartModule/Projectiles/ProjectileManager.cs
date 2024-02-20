@@ -155,7 +155,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
         }
 
-        private Projectile AddProjectile(Projectile projectile)
+        internal Projectile AddProjectile(Projectile projectile)
         {
             if (projectile == null || projectile.DefinitionId == -1) return null; // Ensure that invalid projectiles don't get added
 

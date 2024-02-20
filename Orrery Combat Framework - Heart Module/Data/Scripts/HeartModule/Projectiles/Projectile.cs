@@ -34,10 +34,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             p.Definition.LiveMethods.OnEndOfLife?.Invoke(p.Id);
         };
-        public long LastUpdate { get; private set; }
+        public long LastUpdate { get; set; }
 
         public float DistanceTravelled { get; private set; } = 0;
-        public float Age { get; private set; } = 0;
+        public float Age { get; set; } = 0;
         public bool QueuedDispose { get; private set; } = false;
 
         private float _health = 0;
