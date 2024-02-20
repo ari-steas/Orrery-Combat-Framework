@@ -21,8 +21,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
         const int ProjectilesPerPacket = 50;
         const int TicksPerPacket = 4;
 
-        private Dictionary<ulong, SortedList<ushort, Projectile>> SyncStream_PP = new Dictionary<ulong, SortedList<ushort, Projectile>>();
-        private Dictionary<ulong, SortedList<ushort, Projectile>> SyncStream_FireEvent = new Dictionary<ulong, SortedList<ushort, Projectile>>();
+        private Dictionary<ulong, Queue<Projectile>> SyncStream_PP = new Dictionary<ulong, Queue<Projectile>>();
+        private Dictionary<ulong, Queue<Projectile>> SyncStream_FireEvent = new Dictionary<ulong, Queue<Projectile>>();
 
         public void QueueSync_PP(Projectile projectile, int detailLevel = 0)
         {
@@ -35,7 +35,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             if (!SyncStream_PP.ContainsKey(player.SteamUserId)) // Avoid throwing an error if the player hasn't been added yet
                 return;
 
-            SyncStream_PP[player.SteamUserId].Add(projectile.Definition.Ungrouped.SyncPriority, projectile);
+            SyncStream_PP[player.SteamUserId].Enqueue(projectile);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             if (!SyncStream_FireEvent.ContainsKey(player.SteamUserId)) // Avoid throwing an error if the player hasn't been added yet
                 return;
 
-            SyncStream_FireEvent[player.SteamUserId].Add(projectile.Definition.Ungrouped.SyncPriority, projectile);
+            SyncStream_FireEvent[player.SteamUserId].Enqueue(projectile);
         }
 
         /// <summary>
@@ -137,8 +137,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             {
                 if (!SyncStream_PP.ContainsKey(player.SteamUserId))
                 {
-                    SyncStream_PP.Add(player.SteamUserId, new SortedList<ushort, Projectile>());
-                    SyncStream_FireEvent.Add(player.SteamUserId, new SortedList<ushort, Projectile>());
+                    SyncStream_PP.Add(player.SteamUserId, new Queue<Projectile>());
+                    SyncStream_FireEvent.Add(player.SteamUserId, new Queue<Projectile>());
                     MyLog.Default.WriteLineAndConsole($"Heart Module: Registered player {player.SteamUserId}");
                 }
             }
@@ -175,8 +175,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             }
 
             List<Projectile> PPProjectiles = new List<Projectile>();
-            for (int i = 0; i < SyncStream_PP[player.SteamUserId].Count && i < ProjectilesPerPacket; i++) // Add up to (n) projectiles to the queue
-                PPProjectiles.Add(SyncStream_PP[player.SteamUserId].Values[i]);
+            for (int i = 0; SyncStream_PP[player.SteamUserId].Count > 0 && i < ProjectilesPerPacket; i++) // Add up to (n) projectiles to the queue
+                PPProjectiles.Add(SyncStream_PP[player.SteamUserId].Dequeue());
 
             n_SerializableProjectileInfos ppInfos = new n_SerializableProjectileInfos(PPProjectiles, player.Character);
             HeartData.I.Net.SendToPlayer(ppInfos, player.SteamUserId);
