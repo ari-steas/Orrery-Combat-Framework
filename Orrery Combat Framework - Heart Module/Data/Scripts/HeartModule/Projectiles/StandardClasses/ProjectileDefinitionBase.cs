@@ -51,6 +51,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         /// The item that needs to get consumed for the magazine to reload. Leave blank to not consume anything. The weapon model should probably have a conveyor port.
         /// </summary>
         [ProtoMember(5)] public string MagazineItemToConsume;
+        /// <summary>
+        /// The order in which projectiles are synced.
+        /// </summary>
+        [ProtoMember(6)] public ushort SyncPriority;
     }
 
     [ProtoContract]
