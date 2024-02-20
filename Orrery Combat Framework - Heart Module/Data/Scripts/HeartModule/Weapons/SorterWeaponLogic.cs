@@ -1,6 +1,7 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule;
 using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.ResourceSystem;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
@@ -89,10 +90,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 return; // ignore ghost/projected grids
 
             // the bonus part, enforcing it to stay a specific value.
-            if (MyAPIGateway.Multiplayer.IsServer) // serverside only to avoid network spam
-            {
+            //if (MyAPIGateway.Multiplayer.IsServer) // serverside only to avoid network spam
+            //{
                 NeedsUpdate = MyEntityUpdateEnum.EACH_FRAME;
-            }
+            //}
 
             if (Definition.Assignments.HasMuzzleSubpart) // Get muzzle dummies
                 ((IMyEntity)SubpartManager.RecursiveGetSubpart(SorterWep, Definition.Assignments.MuzzleSubpart))?.Model?.GetDummies(MuzzleDummies);
@@ -203,6 +204,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
                     while (lastShoot >= 60 && Magazines.ShotsInMag > 0) // Allows for firerates higher than 60 rps
                     {
+                        ProjectileDefinitionBase ammoDef = ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmo);
                         for (int i = 0; i < Definition.Loading.BarrelsPerShot; i++)
                         {
                             nextBarrel++;
@@ -213,19 +215,28 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
                             for (int j = 0; j < Definition.Loading.ProjectilesPerBarrel; j++)
                             {
-                                SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmo).Ungrouped.Recoil, muzzleMatrix.Translation);
-                                // Use the effectiveInaccuracy instead of the original ShotInaccuracy
-                                Projectile newProjectile = ProjectileManager.I.AddProjectile(Magazines.SelectedAmmo, muzzlePos, RandomCone(muzzleMatrix.Forward, effectiveInaccuracy), SorterWep);
-
-                                if (newProjectile == null) // Emergency failsafe
-                                    return;
-
-                                if (newProjectile.Guidance != null) // Assign target for self-guided projectiles
+                                if (MyAPIGateway.Session.IsServer)
                                 {
-                                    if (this is SorterTurretLogic)
-                                        newProjectile.Guidance.SetTarget(((SorterTurretLogic)this).TargetEntity);
-                                    else
-                                        newProjectile.Guidance.SetTarget(WeaponManagerAi.I.GetTargeting(SorterWep.CubeGrid)?.PrimaryGridTarget);
+                                    SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ammoDef.Ungrouped.Recoil, muzzleMatrix.Translation);
+                                    // Use the effectiveInaccuracy instead of the original ShotInaccuracy
+                                    // Don't sync hitscan projectiles!
+                                    Projectile newProjectile = ProjectileManager.I.AddProjectile(Magazines.SelectedAmmo, muzzlePos, RandomCone(muzzleMatrix.Forward, effectiveInaccuracy), SorterWep, !ammoDef.PhysicalProjectile.IsHitscan);
+
+                                    if (newProjectile == null) // Emergency failsafe
+                                        return;
+
+                                    if (newProjectile.Guidance != null) // Assign target for self-guided projectiles
+                                    {
+                                        if (this is SorterTurretLogic)
+                                            newProjectile.Guidance.SetTarget(((SorterTurretLogic)this).TargetEntity);
+                                        else
+                                            newProjectile.Guidance.SetTarget(WeaponManagerAi.I.GetTargeting(SorterWep.CubeGrid)?.PrimaryGridTarget);
+                                    }
+                                }
+                                else
+                                {
+                                    if (ammoDef.PhysicalProjectile.IsHitscan)
+                                        DrawHitscanBeam(ammoDef);
                                 }
                             }
 
@@ -246,6 +257,39 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     // Consume resources after shooting
                     _resourceSystem.ConsumeResources();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Fakes a hitscan beam, to lower network load.
+        /// </summary>
+        /// <param name="beam"></param>
+        private void DrawHitscanBeam(ProjectileDefinitionBase beam)
+        {
+            List<IHitInfo> intersects = new List<IHitInfo>();
+            Vector3D pos = MuzzleMatrix.Translation;
+            Vector3D end = MuzzleMatrix.Translation + MuzzleMatrix.Forward * beam.PhysicalProjectile.MaxTrajectory;
+            MyAPIGateway.Physics.CastRay(pos, end, intersects);
+
+            if (intersects.Count > 0)
+            {
+                Vector3D hitPos = intersects[0].Position;
+                GlobalEffects.AddLine(pos, hitPos, beam.Visual.TrailFadeTime, beam.Visual.TrailWidth, beam.Visual.TrailColor, beam.Visual.TrailTexture);
+                
+                MatrixD matrix = MatrixD.CreateWorld(hitPos, (Vector3D) intersects[0].Normal, Vector3D.CalculatePerpendicularVector(intersects[0].Normal));
+                MyParticleEffect hitEffect;
+                if (MyParticlesManager.TryCreateParticleEffect(beam.Visual.ImpactParticle, ref matrix, ref hitPos, uint.MaxValue, out hitEffect))
+                {
+                    //MyAPIGateway.Utilities.ShowNotification("Spawned particle at " + hitEffect.WorldMatrix.Translation);
+                    //hitEffect.Velocity = av.Hit.HitVelocity;
+
+                    if (hitEffect.Loop)
+                        hitEffect.Stop();
+                }
+            }
+            else
+            {
+                GlobalEffects.AddLine(pos, end, beam.Visual.TrailFadeTime, beam.Visual.TrailWidth, beam.Visual.TrailColor, beam.Visual.TrailTexture);
             }
         }
 

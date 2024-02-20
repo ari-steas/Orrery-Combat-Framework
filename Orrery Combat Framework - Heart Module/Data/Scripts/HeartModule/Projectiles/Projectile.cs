@@ -206,6 +206,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     if (MaxBeamLength == -1)
                         MaxBeamLength = Definition.PhysicalProjectile.MaxTrajectory;
                 }
+
+                DrawUpdate();
+                QueueDispose();
             }
             if (MyAPIGateway.Session.IsServer)
                 UpdateAudio();
@@ -296,8 +299,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
 
             if (RemainingImpacts <= 0)
-                if (!IsHitscan)
-                    QueueDispose();
+                QueueDispose();
 
             return (float)dist;
         }
