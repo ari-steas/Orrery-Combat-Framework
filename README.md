@@ -1,14 +1,14 @@
-Design Document
-
-https://docs.google.com/document/d/1SfOe0oDfZ97juKFSFPZHWTcpRJ5QAKmOrpGCZW8wZy8/
-
-
-
-
-
-![Discord_2024-01-01_15-54-13](https://github.com/StarCoreSE/The-Framework-That-Saved-Space-Engineers-Modding/assets/51190031/413b97fe-8420-4a41-842f-801599cd46e1)
+| Website                   | Link                                           |
+|---------------------------|------------------------------------------------|
+| Wiki                      | https://github.com/StarCoreSE/Orrery-Combat-Framework/wiki |
+| StarCore Discord       | https://discord.com/invite/starcore |
+| Heart Module (Workshop)| https://steamcommunity.com/sharedfiles/filedetails/?id=3130655435 |
+| Demo Mod (Workshop) | https://steamcommunity.com/sharedfiles/filedetails/?id=3130655435 |
 
 
-https://hackmd.io/@Iyev4w-vTemyMCOqjPAqBA/VanillaPlusAnalysis
 
-https://hackmd.io/@Iyev4w-vTemyMCOqjPAqBA/WhipsRailgunFrameWork
+
+
+Thanks to Nerd, the creator of Vanilla+ for letting us use his code as a base for some of the initial systems.
+
+https://steamcommunity.com/workshop/filedetails/?id=2915780227
