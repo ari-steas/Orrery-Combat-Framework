@@ -25,6 +25,12 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 ShotsPerMagazine = 100,
                 MagazineItemToConsume = "",
             },
+            Networking = new Networking()
+            {
+                NetworkingMode = Networking.NetworkingModeEnum.FireEvent,
+                DoConstantSync = false,
+                NetworkPriority = 0,
+            },
             Damage = new Damage()
             {
                 SlimBlockDamageMod = 1,
@@ -91,6 +97,12 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 Impulse = 5000,
                 ShotsPerMagazine = 10,
                 MagazineItemToConsume = "",
+            },
+            Networking = new Networking()
+            {
+                NetworkingMode = Networking.NetworkingModeEnum.FireEvent,
+                DoConstantSync = false,
+                NetworkPriority = 1,
             },
             Damage = new Damage()
             {
@@ -172,6 +184,12 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 Impulse = 5000,
                 ShotsPerMagazine = 10,
                 MagazineItemToConsume = "",
+            },
+            Networking = new Networking()
+            {
+                NetworkingMode = Networking.NetworkingModeEnum.FireEvent,
+                DoConstantSync = false,
+                NetworkPriority = 1,
             },
             Damage = new Damage()
             {
@@ -271,6 +289,12 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 Impulse = 0,
                 ShotsPerMagazine = 1,
                 MagazineItemToConsume = "",
+            },
+            Networking = new Networking()
+            {
+                NetworkingMode = Networking.NetworkingModeEnum.NoNetworking,
+                DoConstantSync = false,
+                NetworkPriority = 0,
             },
             Damage = new Damage()
             {
