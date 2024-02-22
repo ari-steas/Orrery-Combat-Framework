@@ -65,15 +65,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         /// <summary>
         /// The networking mode of the projectile.
         /// </summary>
-        [ProtoMember(1), DefaultValue(NetworkingModeEnum.FireEvent)] public NetworkingModeEnum NetworkingMode;
+        [ProtoMember(1)] public NetworkingModeEnum NetworkingMode;
         /// <summary>
         /// Set this to true if the projectile should constantly be updated over the network.
         /// </summary>
-        [ProtoMember(2), DefaultValue(false)] public bool DoConstantSync;
+        [ProtoMember(2)] public bool DoConstantSync;
         /// <summary>
         /// Higher numbers take precedence over lower ones.
         /// </summary>
-        [ProtoMember(3), DefaultValue(0)] public ushort NetworkPriority;
+        [ProtoMember(3)] public ushort NetworkPriority;
 
         public enum NetworkingModeEnum
         {

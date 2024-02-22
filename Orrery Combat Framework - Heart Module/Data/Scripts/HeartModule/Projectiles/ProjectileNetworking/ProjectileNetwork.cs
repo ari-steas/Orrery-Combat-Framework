@@ -204,18 +204,22 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             for (int i = 0; SyncStream_PP[player.SteamUserId].Count > 0 && i < ProjectilesPerPacket; i++) // Add up to (n) projectiles to the queue
                 PPProjectiles.Add(SyncStream_PP[player.SteamUserId].Dequeue());
 
-            n_SerializableProjectileInfos ppInfos = new n_SerializableProjectileInfos(PPProjectiles, player.Character);
-            HeartData.I.Net.SendToPlayer(ppInfos, player.SteamUserId);
-
+            if (PPProjectiles.Count > 0)
+            {
+                n_SerializableProjectileInfos ppInfos = new n_SerializableProjectileInfos(PPProjectiles, player.Character);
+                HeartData.I.Net.SendToPlayer(ppInfos, player.SteamUserId);
+            }
 
             // FireEvent packets (these are smaller but less precise)
             List<Projectile> FEProjectiles = new List<Projectile>();
             for (int i = 0; SyncStream_FireEvent[player.SteamUserId].Count > 0 && i < ProjectilesPerPacket; i++) // Add up to (n) projectiles to the queue
                 FEProjectiles.Add(SyncStream_FireEvent[player.SteamUserId].Dequeue());
 
-            n_SerializableFireEvents feInfos = new n_SerializableFireEvents(FEProjectiles);
-            HeartData.I.Net.SendToPlayer(feInfos, player.SteamUserId);
-
+            if (FEProjectiles.Count > 0)
+            {
+                n_SerializableFireEvents feInfos = new n_SerializableFireEvents(FEProjectiles);
+                HeartData.I.Net.SendToPlayer(feInfos, player.SteamUserId);
+            }
 
             // TODO: FireEvents
         }

@@ -180,8 +180,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             return projectile;
         }
 
-        Dictionary<long, uint> HitscanList = new Dictionary<long, uint>();
-
         public Projectile GetProjectile(uint id) => ActiveProjectiles.GetValueOrDefault(id, null);
         public bool IsIdAvailable(uint id) => !ActiveProjectiles.ContainsKey(id);
 
