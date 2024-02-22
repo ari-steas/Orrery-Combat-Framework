@@ -32,7 +32,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                 QueueSync_PP(player, projectile, detailLevel);
         }
 
-        public void QueueSync_PP(IMyPlayer player, Projectile projectile, int detailLevel = 0)
+        public void QueueSync_PP(IMyPlayer player, Projectile projectile, int detailLevel = 0) // TODO implement detailLevel
         {
             if (!SyncStream_PP.ContainsKey(player.SteamUserId)) // Avoid throwing an error if the player hasn't been added yet
                 return;
@@ -100,7 +100,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                     {
                         p.Position = projectileInfos.PlayerRelativePosition(i) + MyAPIGateway.Session.Player.Character.GetPosition();
                         p.Direction = projectileInfos.Direction(i);
-                        p.LastUpdate = DateTime.Now.Date.AddMilliseconds(projectileInfos.MillisecondsFromMidnight[i]).Ticks;
+                        p.LastUpdate = DateTime.Now.Date.AddMilliseconds(projectileInfos.MillisecondsFromMidnight).Ticks;
 
                         if (projectileInfos.ProjectileAge != null)
                             p.Age = projectileInfos.ProjectileAge[i];
@@ -120,7 +120,30 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
 
         internal void Recieve_FireEvent(n_SerializableFireEvents fireEvents)
         {
+            if (MyAPIGateway.Session.IsServer)
+                return;
 
+            if (fireEvents == null)
+            {
+                SoftHandle.RaiseException("Null ProjectileInfos!", null, typeof(ProjectileNetwork));
+                return;
+            }
+
+            if (fireEvents.UniqueProjectileId == null)
+                return; // Zero projectiles to sync
+
+            for (int i = 0; i < fireEvents.UniqueProjectileId.Length; i++)
+            {
+                if (ProjectileManager.I.IsIdAvailable(fireEvents.UniqueProjectileId[i]))
+                {
+                    if (fireEvents.FirerEntityId != null)
+                    {
+                        WeaponManager.I.GetWeapon(fireEvents.FirerEntityId[i])?.MuzzleFlash(true);
+                    }
+                    Projectile p = ProjectileManager.I.AddProjectile(fireEvents.ToProjectile(i));
+                }
+                // No need for an update case because this is only for new projectiles
+            }
         }
 
 
@@ -176,12 +199,23 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                 return;
             }
 
+            // Full Projectile Packets
             List<Projectile> PPProjectiles = new List<Projectile>();
             for (int i = 0; SyncStream_PP[player.SteamUserId].Count > 0 && i < ProjectilesPerPacket; i++) // Add up to (n) projectiles to the queue
                 PPProjectiles.Add(SyncStream_PP[player.SteamUserId].Dequeue());
 
             n_SerializableProjectileInfos ppInfos = new n_SerializableProjectileInfos(PPProjectiles, player.Character);
             HeartData.I.Net.SendToPlayer(ppInfos, player.SteamUserId);
+
+
+            // FireEvent packets (these are smaller but less precise)
+            List<Projectile> FEProjectiles = new List<Projectile>();
+            for (int i = 0; SyncStream_FireEvent[player.SteamUserId].Count > 0 && i < ProjectilesPerPacket; i++) // Add up to (n) projectiles to the queue
+                FEProjectiles.Add(SyncStream_FireEvent[player.SteamUserId].Dequeue());
+
+            n_SerializableFireEvents feInfos = new n_SerializableFireEvents(FEProjectiles);
+            HeartData.I.Net.SendToPlayer(feInfos, player.SteamUserId);
+
 
             // TODO: FireEvents
         }

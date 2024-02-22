@@ -1,4 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Network;
+using Heart_Module.Data.Scripts.HeartModule.Weapons;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting;
 using ProtoBuf;
 using Sandbox.ModAPI;
 using System;
@@ -9,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VRage.Game.ModAPI;
 using VRageMath;
+using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
 {
@@ -19,7 +22,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
     {
         public n_SerializableProjectileInfos() { }
 
-        public n_SerializableProjectileInfos(uint[] uniqueProjectileId, Vector3[] positionRelativeToPlayer, Vector3[] direction, int[] definitionId, int[] msFromMidnight, long[] firerEntityId = null, long?[] targetEntityId = null, uint[] projectileAge = null)
+        public n_SerializableProjectileInfos(uint[] uniqueProjectileId, Vector3[] positionRelativeToPlayer, Vector3[] direction, int[] definitionId, long[] firerEntityId = null, long?[] targetEntityId = null, uint[] projectileAge = null)
         {
             UniqueProjectileId = uniqueProjectileId;
 
@@ -44,10 +47,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             }
 
             DefinitionId = definitionId;
-            MillisecondsFromMidnight = msFromMidnight;
             FirerEntityId = firerEntityId;
             TargetEntityId = targetEntityId;
             ProjectileAge = projectileAge;
+
+            MillisecondsFromMidnight = (int)DateTime.Now.TimeOfDay.TotalMilliseconds;
         }
 
         public n_SerializableProjectileInfos(List<Projectile> projectiles, IMyCharacter character, ProjectileDetailLevel detailLevel = ProjectileDetailLevel.Full)
@@ -59,7 +63,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             directionX = new float[projectiles.Count];
             directionY = new float[projectiles.Count];
             directionZ = new float[projectiles.Count];
-            MillisecondsFromMidnight = new int[projectiles.Count];
 
             if (detailLevel != ProjectileDetailLevel.Minimal)
             {
@@ -85,8 +88,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                 directionY[i] = (float)projectiles[i].Direction.Y;
                 directionZ[i] = (float)projectiles[i].Direction.Z;
 
-                MillisecondsFromMidnight[i] = (int)DateTime.Now.TimeOfDay.TotalMilliseconds;
-
                 if (detailLevel != ProjectileDetailLevel.Minimal)
                 {
                     DefinitionId[i] = projectiles[i].DefinitionId;
@@ -97,7 +98,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                         ProjectileAge[i] = (uint)(projectiles[i].Age * 60);
                     }
                 }
-            }  
+            }
+
+            MillisecondsFromMidnight = (int) DateTime.Now.TimeOfDay.TotalMilliseconds;
         }
 
 
@@ -142,7 +145,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
         }
 
         [ProtoMember(28)] public int[] DefinitionId;
-        [ProtoMember(29)] public int[] MillisecondsFromMidnight;
+        [ProtoMember(29)] public int MillisecondsFromMidnight;
         [ProtoMember(30)] public long[] FirerEntityId;
 
         [ProtoMember(31)] public long?[] TargetEntityId;
@@ -178,7 +181,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                 ((IMyCubeBlock)MyAPIGateway.Entities.GetEntityById(FirerEntityId[index]))?.CubeGrid.LinearVelocity ?? Vector3D.Zero
                 )
             {
-                LastUpdate = DateTime.Now.Date.AddMilliseconds(MillisecondsFromMidnight[index]).Ticks
+                LastUpdate = DateTime.Now.Date.AddMilliseconds(MillisecondsFromMidnight).Ticks
             };
 
             if (ProjectileAge != null)
@@ -204,9 +207,29 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
     {
         public n_SerializableFireEvents() { }
 
-        public n_SerializableFireEvents(long[] firerWeaponId, uint[] uniqueProjectileId, Vector3[] direction, int[] millisecondsFromMidnight)
+        public n_SerializableFireEvents(List<Projectile> projectiles)
         {
-            FirerWeaponId = firerWeaponId;
+            FirerEntityId = new long[projectiles.Count];
+            UniqueProjectileId = new uint[projectiles.Count];
+            directionX = new float[projectiles.Count];
+            directionY = new float[projectiles.Count];
+            directionZ = new float[projectiles.Count];
+
+            for (int i = 0; i < projectiles.Count; i++)
+            {
+                FirerEntityId[i] = projectiles[i].Firer;
+                UniqueProjectileId[i] = projectiles[i].Id;
+                directionX[i] = (float) projectiles[i].Direction.X;
+                directionY[i] = (float) projectiles[i].Direction.Y;
+                directionZ[i] = (float) projectiles[i].Direction.Z;
+            }
+
+            MillisecondsFromMidnight = (int) DateTime.Now.TimeOfDay.TotalMilliseconds;
+        }
+
+        public n_SerializableFireEvents(long[] firerWeaponId, uint[] uniqueProjectileId, Vector3[] direction)
+        {
+            FirerEntityId = firerWeaponId;
             UniqueProjectileId = uniqueProjectileId;
 
             directionX = new float[direction.Length];
@@ -218,11 +241,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                 directionY[i] = direction[i].Y;
                 directionZ[i] = direction[i].Z;
             }
-
-            MillisecondsFromMidnight = millisecondsFromMidnight;
         }
 
-        [ProtoMember(21)] public long[] FirerWeaponId;
+        [ProtoMember(21)] public long[] FirerEntityId;
         [ProtoMember(22)] public uint[] UniqueProjectileId;
 
         [ProtoMember(23)] private float[] directionX;
@@ -239,7 +260,41 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             return array;
         }
 
-        [ProtoMember(26)] public int[] MillisecondsFromMidnight;
+        public Vector3 Direction(int index)
+        {
+            return new Vector3(directionX[index], directionY[index], directionZ[index]);
+        }
+
+        [ProtoMember(26)] public int MillisecondsFromMidnight;
+
+        public Projectile ToProjectile(int index)
+        {
+            SorterWeaponLogic weapon = WeaponManager.I.GetWeapon(FirerEntityId[index]);
+
+            Projectile p = new Projectile(
+                weapon.Magazines.SelectedAmmo,
+                weapon.MuzzleMatrix.Translation,
+                Direction(index),
+                FirerEntityId[index],
+                ((IMyCubeBlock)MyAPIGateway.Entities.GetEntityById(FirerEntityId[index]))?.CubeGrid.LinearVelocity ?? Vector3D.Zero
+                )
+            {
+                LastUpdate = DateTime.Now.Date.AddMilliseconds(MillisecondsFromMidnight).Ticks
+            };
+
+            if (p.Guidance != null) // Assign target for self-guided projectiles
+            {
+                if (weapon is SorterTurretLogic)
+                    p.Guidance.SetTarget(((SorterTurretLogic)weapon).TargetEntity);
+                else
+                    p.Guidance.SetTarget(WeaponManagerAi.I.GetTargeting(weapon.SorterWep.CubeGrid)?.PrimaryGridTarget);
+            }
+
+            float delta = (DateTime.Now.Ticks - p.LastUpdate) / (float)TimeSpan.TicksPerSecond;
+            p.TickUpdate(delta);
+
+            return p;
+        }
 
         public override void Received(ulong SenderSteamId)
         {
