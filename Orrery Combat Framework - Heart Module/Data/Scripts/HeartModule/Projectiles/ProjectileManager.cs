@@ -162,15 +162,23 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             projectile.SetId(NextId);
             ActiveProjectiles.Add(projectile.Id, projectile);
             if (MyAPIGateway.Session.IsServer && shouldSync)
-                Network.QueueSync_PP(projectile, 0);
+            {
+                switch (projectile.Definition.Networking.NetworkingMode)
+                {
+                    case Networking.NetworkingModeEnum.FullSync:
+                        Network.QueueSync_PP(projectile, 0);
+                        break;
+                    case Networking.NetworkingModeEnum.FireEvent:
+                        Network.QueueSync_FireEvent(projectile);
+                        break;
+                }
+            }
             if (!MyAPIGateway.Utilities.IsDedicated)
                 projectile.InitEffects();
             if (projectile.Definition.PhysicalProjectile.Health > 0 && projectile.Definition.PhysicalProjectile.ProjectileSize > 0)
                 ProjectilesWithHealth.Add(projectile);
             return projectile;
         }
-
-        Dictionary<long, uint> HitscanList = new Dictionary<long, uint>();
 
         public Projectile GetProjectile(uint id) => ActiveProjectiles.GetValueOrDefault(id, null);
         public bool IsIdAvailable(uint id) => !ActiveProjectiles.ContainsKey(id);

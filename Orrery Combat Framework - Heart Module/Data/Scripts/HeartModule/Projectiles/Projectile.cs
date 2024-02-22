@@ -222,7 +222,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             double len = IsHitscan ? Definition.PhysicalProjectile.MaxTrajectory : Vector3D.Distance(Position, NextMoveStep);
             double dist = -1;
 
-            if (RemainingImpacts > 0 && Definition.Damage.DamageToProjectiles > 0)
+            if (MyAPIGateway.Session.IsServer && RemainingImpacts > 0 && Definition.Damage.DamageToProjectiles > 0)
             {
                 List<Projectile> hittableProjectiles = new List<Projectile>();
                 ProjectileManager.I.GetProjectilesInSphere(new BoundingSphereD(Position, len), ref hittableProjectiles, true);
@@ -282,10 +282,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
                     dist = hitInfo.Fraction * len;
 
-                    if (hitInfo.HitEntity is IMyCubeGrid)
-                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Grid, this, hitInfo.Position, hitInfo.Normal, Position, NextMoveStep));
-                    else if (hitInfo.HitEntity is IMyCharacter)
-                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Character, this, hitInfo.Position, hitInfo.Normal, Position, NextMoveStep));
+                    if (MyAPIGateway.Session.IsServer)
+                    {
+                        if (hitInfo.HitEntity is IMyCubeGrid)
+                            DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Grid, this, hitInfo.Position, hitInfo.Normal, Position, NextMoveStep));
+                        else if (hitInfo.HitEntity is IMyCharacter)
+                            DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Character, this, hitInfo.Position, hitInfo.Normal, Position, NextMoveStep));
+                    }
 
                     if (MyAPIGateway.Session.IsServer)
                         PlayImpactAudio(hitInfo.Position); // Audio is global
