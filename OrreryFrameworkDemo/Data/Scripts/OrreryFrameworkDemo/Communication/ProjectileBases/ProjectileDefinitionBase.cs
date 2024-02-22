@@ -1,6 +1,7 @@
 ﻿using ProtoBuf;
 using Sandbox.Game.Entities;
 using System;
+using System.ComponentModel;
 using System.Security.Cryptography;
 using VRage.Game.Entity;
 using VRage.Utils;
@@ -23,6 +24,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         [ProtoMember(5)] public Visual Visual;
         [ProtoMember(6)] public Audio Audio;
         [ProtoMember(7)] public Guidance[] Guidance = new Guidance[0];
+        [ProtoMember(8)] public Networking Networking;
         [ProtoIgnore] public LiveMethods LiveMethods = new LiveMethods();
     }
 
@@ -49,6 +51,43 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         /// The item that needs to get consumed for the magazine to reload. Leave blank to not consume anything. The weapon model should probably have a conveyor port.
         /// </summary>
         [ProtoMember(5)] public string MagazineItemToConsume;
+        /// <summary>
+        /// The order in which projectiles are synced.
+        /// </summary>
+        [ProtoMember(6)] public ushort SyncPriority;
+    }
+
+    [ProtoContract]
+    public struct Networking
+    {
+        /// <summary>
+        /// The networking mode of the projectile.
+        /// </summary>
+        [ProtoMember(1), DefaultValue(NetworkingModeEnum.FireEvent)] public NetworkingModeEnum NetworkingMode;
+        /// <summary>
+        /// Set this to true if the projectile should constantly be updated over the network.
+        /// </summary>
+        [ProtoMember(2), DefaultValue(false)] public bool DoConstantSync;
+        /// <summary>
+        /// Higher numbers take precedence over lower ones.
+        /// </summary>
+        [ProtoMember(3), DefaultValue(0)] public ushort NetworkPriority;
+
+        public enum NetworkingModeEnum
+        {
+            /// <summary>
+            /// Projectiles are not synced between server and client. Use this for hitscans.
+            /// </summary>
+            NoNetworking,
+            /// <summary>
+            /// Projectiles are synced in a 'light' manner. This should be your default.
+            /// </summary>
+            FireEvent,
+            /// <summary>
+            /// Projectiles are hard-synced between server and client. Use this for projectiles that *have* to be accurate.
+            /// </summary>
+            FullSync
+        }
     }
 
     [ProtoContract]
@@ -150,6 +189,23 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         [ProtoMember(13)] public Definition_PID? PID;
     }
 
+    [ProtoContract]
+    public struct Definition_PID
+    {
+        /// <summary>
+        /// Direct response to error
+        /// </summary>
+        [ProtoMember(1)] public float kProportional;
+        /// <summary>
+        /// Response to historical error
+        /// </summary>
+        [ProtoMember(2)] public float kIntegral;
+        /// <summary>
+        /// Damping factor
+        /// </summary>
+        [ProtoMember(3)] public float kDerivative;
+    }
+
     public class LiveMethods // TODO: OnGuidanceStage && DistanceToTarget
     {
         public void RegisterMethods(string definitionName)
@@ -167,23 +223,5 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.Pro
         public Action<uint, Vector3D, Vector3D, MyEntity> OnImpact;
         public Action<uint> OnEndOfLife;
         //public Action<uint, Guidance?> OnGuidanceStage;
-    }
-
-    [ProtoContract]
-    public struct Definition_PID
-    {
-        /// <summary>
-        /// Direct response to error
-        /// </summary>
-        [ProtoMember(1)] public float kProportional;
-        /// <summary>
-        /// Response to historical error
-        /// </summary>
-        [ProtoMember(2)] public float kIntegral;
-        /// <summary>
-        /// Damping factor
-        /// </summary>
-        [ProtoMember(3)] public float kDerivative;
-
     }
 }

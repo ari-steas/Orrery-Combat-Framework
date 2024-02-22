@@ -100,6 +100,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 projectile.DrawUpdate(); // Draw delta is always 1/60 because Keen:tm:
         }
 
+        [Obsolete]
         public void UpdateProjectileSync(n_SerializableProjectile projectile)
         {
             if (MyAPIGateway.Session.IsServer)
