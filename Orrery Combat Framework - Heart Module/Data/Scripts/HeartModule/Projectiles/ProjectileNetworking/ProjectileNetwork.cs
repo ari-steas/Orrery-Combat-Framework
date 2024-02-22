@@ -1,6 +1,7 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Sandbox.ModAPI;
 using System;
@@ -10,6 +11,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VRage.Game.ModAPI;
+using VRage.Library;
 using VRage.Utils;
 using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
@@ -21,8 +23,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
         const int ProjectilesPerPacket = 50;
         const int TicksPerPacket = 4;
 
-        private Dictionary<ulong, Queue<Projectile>> SyncStream_PP = new Dictionary<ulong, Queue<Projectile>>();
-        private Dictionary<ulong, Queue<Projectile>> SyncStream_FireEvent = new Dictionary<ulong, Queue<Projectile>>();
+        private Dictionary<ulong, PriorityQueue<Projectile, ushort>> SyncStream_PP = new Dictionary<ulong, PriorityQueue<Projectile, ushort>>();
+        private Dictionary<ulong, PriorityQueue<Projectile, ushort>> SyncStream_FireEvent = new Dictionary<ulong, PriorityQueue<Projectile, ushort>>();
 
         public void QueueSync_PP(Projectile projectile, int detailLevel = 0)
         {
@@ -122,11 +124,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
         }
 
 
-        int ticks = 0;
+        int AwaitedTicks = 0;
         public void Update1()
         {
-            ticks++;
-            if (ticks % TicksPerPacket != 0 || !(MyAPIGateway.Session.IsServer && MyAPIGateway.Multiplayer.MultiplayerActive))
+            AwaitedTicks++;
+            if (AwaitedTicks % TicksPerPacket != 0 || !(MyAPIGateway.Session.IsServer && MyAPIGateway.Multiplayer.MultiplayerActive))
                 return;
 
             // Iterate through SyncStreams based on projectilesperpacket
@@ -137,8 +139,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             {
                 if (!SyncStream_PP.ContainsKey(player.SteamUserId))
                 {
-                    SyncStream_PP.Add(player.SteamUserId, new Queue<Projectile>());
-                    SyncStream_FireEvent.Add(player.SteamUserId, new Queue<Projectile>());
+                    SyncStream_PP.Add(player.SteamUserId, new PriorityQueue<Projectile, ushort>(PriorityQueueSelector));
+                    SyncStream_FireEvent.Add(player.SteamUserId, new PriorityQueue<Projectile, ushort>(PriorityQueueSelector));
                     MyLog.Default.WriteLineAndConsole($"Heart Module: Registered player {player.SteamUserId}");
                 }
             }
@@ -193,5 +195,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
         {
             // maybe???
         }
+
+        private static Func<Projectile, ushort> PriorityQueueSelector = (projectile) => projectile.Definition.Networking.NetworkPriority;
     }
 }

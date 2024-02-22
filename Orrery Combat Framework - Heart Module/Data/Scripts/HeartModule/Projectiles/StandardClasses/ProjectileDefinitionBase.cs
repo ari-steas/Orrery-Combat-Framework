@@ -4,6 +4,7 @@ using ProtoBuf;
 using Sandbox.Game.Entities;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using VRage.Game.Entity;
 using VRage.Utils;
 using VRageMath;
@@ -25,6 +26,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         [ProtoMember(5)] public Visual Visual;
         [ProtoMember(6)] public Audio Audio;
         [ProtoMember(7)] public Guidance[] Guidance = new Guidance[0];
+        [ProtoMember(8)] public Networking Networking;
         [ProtoIgnore] public LiveMethods LiveMethods = new LiveMethods();
     }
 
@@ -55,6 +57,39 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         /// The order in which projectiles are synced.
         /// </summary>
         [ProtoMember(6)] public ushort SyncPriority;
+    }
+
+    [ProtoContract]
+    public struct Networking
+    {
+        /// <summary>
+        /// The networking mode of the projectile.
+        /// </summary>
+        [ProtoMember(1), DefaultValue(NetworkingModeEnum.FireEvent)] public NetworkingModeEnum NetworkingMode;
+        /// <summary>
+        /// Set this to true if the projectile should constantly be updated over the network.
+        /// </summary>
+        [ProtoMember(2), DefaultValue(false)] public bool DoConstantSync;
+        /// <summary>
+        /// Higher numbers take precedence over lower ones.
+        /// </summary>
+        [ProtoMember(3), DefaultValue(0)] public ushort NetworkPriority;
+
+        public enum NetworkingModeEnum
+        {
+            /// <summary>
+            /// Projectiles are not synced between server and client. Use this for hitscans.
+            /// </summary>
+            NoNetworking,
+            /// <summary>
+            /// Projectiles are synced in a 'light' manner. This should be your default.
+            /// </summary>
+            FireEvent,
+            /// <summary>
+            /// Projectiles are hard-synced between server and client. Use this for projectiles that *have* to be accurate.
+            /// </summary>
+            FullSync
+        }
     }
 
     [ProtoContract]

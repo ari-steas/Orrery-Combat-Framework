@@ -100,6 +100,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 projectile.DrawUpdate(); // Draw delta is always 1/60 because Keen:tm:
         }
 
+        [Obsolete]
         public void UpdateProjectileSync(n_SerializableProjectile projectile)
         {
             if (MyAPIGateway.Session.IsServer)
@@ -123,14 +124,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
         }
 
-        public Projectile AddProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, IMyConveyorSorter sorterWep)
+        public Projectile AddProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, IMyConveyorSorter sorterWep, bool shouldSync = true)
         {
             try
             {
-                if (ProjectileDefinitionManager.GetDefinition(projectileDefinitionId)?.PhysicalProjectile.IsHitscan ?? false)
-                    return AddHitscanProjectile(projectileDefinitionId, position, direction, sorterWep.EntityId);
-                else
-                    return AddProjectile(new Projectile(projectileDefinitionId, position, direction, sorterWep));
+                return AddProjectile(new Projectile(projectileDefinitionId, position, direction, sorterWep), shouldSync);
             }
             catch (Exception ex)
             {
@@ -139,14 +137,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
         }
 
-        public Projectile AddProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, long firer, Vector3D initialVelocity)
+        public Projectile AddProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, long firer, Vector3D initialVelocity, bool shouldSync = true)
         {
             try
             {
-                if (ProjectileDefinitionManager.GetDefinition(projectileDefinitionId)?.PhysicalProjectile.IsHitscan ?? false)
-                    return AddHitscanProjectile(projectileDefinitionId, position, direction, firer);
-                else
-                    return AddProjectile(new Projectile(projectileDefinitionId, position, direction, firer, initialVelocity));
+                return AddProjectile(new Projectile(projectileDefinitionId, position, direction, firer, initialVelocity), shouldSync);
             }
             catch (Exception ex)
             {
@@ -155,7 +150,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             }
         }
 
-        internal Projectile AddProjectile(Projectile projectile)
+        internal Projectile AddProjectile(Projectile projectile, bool shouldSync = true)
         {
             if (projectile == null || projectile.DefinitionId == -1) return null; // Ensure that invalid projectiles don't get added
 
@@ -166,7 +161,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 NextId++;
             projectile.SetId(NextId);
             ActiveProjectiles.Add(projectile.Id, projectile);
-            if (MyAPIGateway.Session.IsServer)
+            if (MyAPIGateway.Session.IsServer && shouldSync)
                 Network.QueueSync_PP(projectile, 0);
             if (!MyAPIGateway.Utilities.IsDedicated)
                 projectile.InitEffects();
@@ -176,19 +171,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         }
 
         Dictionary<long, uint> HitscanList = new Dictionary<long, uint>();
-        private Projectile AddHitscanProjectile(int projectileDefinitionId, Vector3D position, Vector3D direction, long firer)
-        {
-            if (!HitscanList.ContainsKey(firer))
-            {
-                Projectile p = new Projectile(projectileDefinitionId, position, direction, firer);
-                AddProjectile(p);
-                p.OnClose += (projectile) => HitscanList.Remove(firer);
-                HitscanList.Add(firer, p.Id);
-            }
-            Projectile outProjectile = GetProjectile(HitscanList[firer]);
-            outProjectile?.UpdateHitscan(position, direction);
-            return outProjectile;
-        }
 
         public Projectile GetProjectile(uint id) => ActiveProjectiles.GetValueOrDefault(id, null);
         public bool IsIdAvailable(uint id) => !ActiveProjectiles.ContainsKey(id);
