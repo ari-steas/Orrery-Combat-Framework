@@ -22,8 +22,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
         {
             MyAPIGateway.Multiplayer.RegisterSecureMessageHandler(HeartData.HeartNetworkId, ReceivedPacket);
 
+            UpdateTimeOffset();
+        }
+
+        private void UpdateTimeOffset()
+        {
             estimatedPing = DateTime.UtcNow.TimeOfDay.TotalMilliseconds;
-            HeartLog.Log("Starting ping request @ " + estimatedPing);
             if (!MyAPIGateway.Session.IsServer)
                 SendToServer(new n_TimeSyncPacket() { OutgoingTimestamp = estimatedPing });
         }
@@ -33,6 +37,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
             MyAPIGateway.Multiplayer.UnregisterSecureMessageHandler(HeartData.HeartNetworkId, ReceivedPacket);
         }
 
+        int tickCounter = 0;
         public void Update()
         {
             networkLoadUpdate--;
@@ -45,6 +50,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
                 NetworkLoad /= (NetworkLoadTicks / 60); // Average per-second
                 networkLoadArray.Clear();
             }
+
+            if (tickCounter % 307 == 0)
+                UpdateTimeOffset();
         }
 
         void ReceivedPacket(ushort channelId, byte[] serialized, ulong senderSteamId, bool isSenderServer)
