@@ -14,9 +14,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
         private List<int> networkLoadArray = new List<int>();
         private int networkLoadUpdate = 0;
 
+        internal double serverTimeOffset = 0;
+        internal double estimatedPing = 0;
+
         public void LoadData()
         {
             MyAPIGateway.Multiplayer.RegisterSecureMessageHandler(HeartData.HeartNetworkId, ReceivedPacket);
+
+            estimatedPing = DateTime.UtcNow.Date.TimeOfDay.TotalMilliseconds;
+            if (!MyAPIGateway.Session.IsServer)
+                SendToServer(new n_TimeSyncPacket());
         }
 
         public void UnloadData()
