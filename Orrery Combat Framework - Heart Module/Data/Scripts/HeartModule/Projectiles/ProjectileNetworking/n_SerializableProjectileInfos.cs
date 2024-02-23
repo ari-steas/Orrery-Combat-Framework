@@ -196,7 +196,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             }
                 
 
-            float delta = (p.LastUpdate - DateTime.UtcNow.Ticks) / (float)TimeSpan.TicksPerSecond;
+            float delta = (DateTime.UtcNow.Ticks - p.LastUpdate) / (float)TimeSpan.TicksPerSecond;
             p.TickUpdate(delta);
 
             return p;
@@ -297,8 +297,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                     p.Guidance.SetTarget(WeaponManagerAi.I.GetTargeting(weapon.SorterWep.CubeGrid)?.PrimaryGridTarget);
             }
 
-            float delta = (p.LastUpdate - DateTime.UtcNow.Ticks) / (float)TimeSpan.TicksPerSecond;
-
+            float delta = (DateTime.UtcNow.Ticks - p.LastUpdate) / (float)TimeSpan.TicksPerSecond;
+            HeartData.I.Log.Log("delta " + delta);
             p.TickUpdate(delta);
 
             return p;
