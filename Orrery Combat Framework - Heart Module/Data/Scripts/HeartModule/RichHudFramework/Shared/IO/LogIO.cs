@@ -77,7 +77,7 @@ namespace RichHudFramework.IO
         {
             if (accessible)
             {
-                message = $"[{DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss:ms")}] {message}";
+                message = $"[{DateTime.UtcNow.ToString("MM/dd/yyyy HH:mm:ss:ms")}] {message}";
                 KnownException exception = logFile.TryAppend(message);
 
                 if (exception != null)
@@ -104,7 +104,7 @@ namespace RichHudFramework.IO
         {
             if (accessible)
             {
-                message = $"[{DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss:ms")}] {message}";
+                message = $"[{DateTime.UtcNow.ToString("MM/dd/yyyy HH:mm:ss:ms")}] {message}";
 
                 EnqueueTask(() =>
                 {

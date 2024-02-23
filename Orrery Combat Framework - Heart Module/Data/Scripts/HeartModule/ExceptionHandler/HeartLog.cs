@@ -22,7 +22,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
 
         public void Log(string message)
         {
-            writer.WriteLine($"{DateTime.Now:HH:mm:ss}: {message}");
+            writer.WriteLine($"{DateTime.UtcNow:HH:mm:ss}: {message}");
             writer.Flush();
         }
 
