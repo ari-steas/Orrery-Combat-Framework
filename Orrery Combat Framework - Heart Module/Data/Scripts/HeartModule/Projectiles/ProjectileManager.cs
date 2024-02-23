@@ -199,13 +199,17 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             Vector3D pos = sphere.Center;
 
             if (onlyDamageable)
-                foreach (var projectil in ProjectilesWithHealth)
-                    if (Vector3D.DistanceSquared(pos, projectil.Position) < rangeSq)
-                        projectiles.Add(projectil);
+            {
+                foreach (var projectile in ProjectilesWithHealth)
+                    if (Vector3D.DistanceSquared(pos, projectile.Position) < rangeSq)
+                        projectiles.Add(projectile);
+            }
             else
+            {
                 foreach (var projectile in ActiveProjectiles.Values)
                     if (Vector3D.DistanceSquared(pos, projectile.Position) < rangeSq)
                         projectiles.Add(projectile);
+            }
         }
     }
 }
