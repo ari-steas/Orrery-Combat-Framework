@@ -1,4 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
@@ -177,6 +178,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 projectile.InitEffects();
             if (projectile.Definition.PhysicalProjectile.Health > 0 && projectile.Definition.PhysicalProjectile.ProjectileSize > 0)
                 ProjectilesWithHealth.Add(projectile);
+
+            HeartData.I.Log.Log("REEE " + projectile.Id + " | " + projectile.Age);
             return projectile;
         }
 
