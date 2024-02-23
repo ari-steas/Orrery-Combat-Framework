@@ -22,7 +22,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
         {
             MyAPIGateway.Multiplayer.RegisterSecureMessageHandler(HeartData.HeartNetworkId, ReceivedPacket);
 
-            estimatedPing = DateTime.UtcNow.Date.TimeOfDay.TotalMilliseconds;
+            estimatedPing = DateTime.UtcNow.TimeOfDay.TotalMilliseconds;
             HeartLog.Log("Starting ping request @ " + estimatedPing);
             if (!MyAPIGateway.Session.IsServer)
                 SendToServer(new n_TimeSyncPacket() { OutgoingTimestamp = estimatedPing });

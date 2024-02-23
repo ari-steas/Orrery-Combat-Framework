@@ -27,13 +27,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
                 HeartData.I.Net.SendToPlayer(new n_TimeSyncPacket()
                 {
                     IncomingTimestamp = this.OutgoingTimestamp,
-                    OutgoingTimestamp = DateTime.UtcNow.Date.TimeOfDay.TotalMilliseconds
+                    OutgoingTimestamp = DateTime.UtcNow.TimeOfDay.TotalMilliseconds
                 }, SenderSteamId);
             }
             else
             {
                 HeartLog.Log("Outgoing Timestamp: " + OutgoingTimestamp + "\nIncoming Timestamp: " + IncomingTimestamp);
-                HeartData.I.Net.estimatedPing = DateTime.UtcNow.Date.TimeOfDay.TotalMilliseconds - HeartData.I.Net.estimatedPing;
+                HeartData.I.Net.estimatedPing = DateTime.UtcNow.TimeOfDay.TotalMilliseconds - HeartData.I.Net.estimatedPing;
             }
         }
     }
