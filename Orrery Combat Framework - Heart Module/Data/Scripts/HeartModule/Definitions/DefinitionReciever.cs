@@ -4,7 +4,6 @@ using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Sandbox.ModAPI;
 using System;
-using VRage.Game.Components;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Definitions
 {

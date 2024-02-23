@@ -3,8 +3,6 @@ using Heart_Module.Data.Scripts.HeartModule.Utility;
 using ProtoBuf;
 using Sandbox.Game.Entities;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using VRage.Game.Entity;
 using VRage.Utils;
 using VRageMath;
@@ -214,7 +212,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         /// <summary>
         /// Damping factor
         /// </summary>
-        [ProtoMember(3)] public float kDerivative; 
+        [ProtoMember(3)] public float kDerivative;
 
         public PID GetPID()
         {

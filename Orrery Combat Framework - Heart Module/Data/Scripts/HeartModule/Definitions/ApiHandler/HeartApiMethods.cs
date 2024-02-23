@@ -1,19 +1,15 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
-using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VRage.Game.Entity;
 using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
-using Heart_Module.Data.Scripts.HeartModule.Utility;
-using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
 {
@@ -61,7 +57,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
         }
 
         #region Projectile Methods
-        public void AddOnSpawn(string definitionName,  Action<uint, MyEntity> onSpawn)
+        public void AddOnSpawn(string definitionName, Action<uint, MyEntity> onSpawn)
         {
             if (onSpawn == null)
                 return;
@@ -159,7 +155,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
         #region Weapon Methods
         public bool HasWeapon(MyEntity block)
         {
-            return block is IMyConveyorSorter && ((IMyConveyorSorter) block).GameLogic is SorterWeaponLogic;
+            return block is IMyConveyorSorter && ((IMyConveyorSorter)block).GameLogic is SorterWeaponLogic;
         }
 
         public bool SubtypeHasDefinition(string subtype)

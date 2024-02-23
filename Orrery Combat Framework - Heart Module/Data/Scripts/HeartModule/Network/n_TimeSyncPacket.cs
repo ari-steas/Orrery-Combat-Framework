@@ -2,10 +2,6 @@
 using ProtoBuf;
 using Sandbox.ModAPI;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Network
 {
@@ -18,7 +14,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
         [ProtoMember(21)] public double OutgoingTimestamp;
         [ProtoMember(22)] public double IncomingTimestamp;
 
-        public n_TimeSyncPacket() {}
+        public n_TimeSyncPacket() { }
 
         public override void Received(ulong SenderSteamId)
         {

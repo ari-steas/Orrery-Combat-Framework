@@ -6,7 +6,6 @@ using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
-using static VRage.Game.MyObjectBuilder_BehaviorTreeDecoratorNode;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
@@ -70,7 +69,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                         weapon.MarkForClose();
                     }
                 }
-            }        
+            }
         }
 
         /// <summary>

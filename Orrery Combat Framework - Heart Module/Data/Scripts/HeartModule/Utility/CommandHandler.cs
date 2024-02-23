@@ -1,23 +1,13 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Definitions;
-using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
-using RichHudFramework.Internal;
-using RichHudFramework.UI;
-using Sandbox.Game.GameSystems.Chat;
-using Sandbox.Game.Screens.Helpers.RadialMenuActions;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using VRage.Game;
-using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
-using VRage.ObjectBuilders;
-using static VRage.Game.ObjectBuilders.Definitions.MyObjectBuilder_GameDefinition;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Utility
 {

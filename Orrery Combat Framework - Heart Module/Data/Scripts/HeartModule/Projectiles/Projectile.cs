@@ -1,11 +1,9 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
-using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRageMath;
@@ -353,7 +351,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             n_SerializableProjectile projectile = new n_SerializableProjectile()
             {
                 Id = Id,
-                TimestampFromMidnight = (uint) DateTime.Now.TimeOfDay.TotalMilliseconds, // Surely this will not bite me in the ass later
+                TimestampFromMidnight = (uint)DateTime.Now.TimeOfDay.TotalMilliseconds, // Surely this will not bite me in the ass later
             };
 
             switch (DetailLevel)

@@ -3,17 +3,14 @@ using Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler;
 using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
-using Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
-using ProtoBuf;
 using RichHudFramework.Client;
 using Sandbox.ModAPI;
 using System;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
-using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding;
 

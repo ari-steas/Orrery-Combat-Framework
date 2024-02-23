@@ -16,8 +16,8 @@ using VRage.Game;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.Game.ModAPI.Network;
-using VRage.Library.Utils;
 using VRage.ModAPI;
+using VRage.Network;
 using VRage.ObjectBuilders;
 using VRage.Sync;
 using VRageMath;
@@ -25,7 +25,7 @@ using VRageMath;
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
     //[MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeapon")]
-    public partial class SorterWeaponLogic : MyGameLogicComponent
+    public partial class SorterWeaponLogic : MyGameLogicComponent, IMyEventProxy
     {
         internal IMyConveyorSorter SorterWep;
         internal WeaponDefinitionBase Definition;
@@ -62,7 +62,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             Func<IMyInventory> getInventoryFunc = () => sorterWeapon.GetInventory();
 
             // You need to provide the missing arguments for WeaponLogic_Magazines constructor here
-            Magazines = new WeaponLogic_Magazines(definition.Loading, definition.Audio, getInventoryFunc, (int)Terminal_Heart_AmmoComboBox);
+            Magazines = new WeaponLogic_Magazines(definition.Loading, definition.Audio, getInventoryFunc, Terminal_Heart_AmmoComboBox);
 
             // Initialize the WeaponResourceSystem
             _resourceSystem = new WeaponResourceSystem(definition, this);
@@ -92,7 +92,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             // the bonus part, enforcing it to stay a specific value.
             //if (MyAPIGateway.Multiplayer.IsServer) // serverside only to avoid network spam
             //{
-                NeedsUpdate = MyEntityUpdateEnum.EACH_FRAME;
+            NeedsUpdate = MyEntityUpdateEnum.EACH_FRAME;
             //}
 
             if (Definition.Assignments.HasMuzzleSubpart) // Get muzzle dummies
@@ -275,8 +275,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             {
                 Vector3D hitPos = intersects[0].Position;
                 GlobalEffects.AddLine(pos, hitPos, beam.Visual.TrailFadeTime, beam.Visual.TrailWidth, beam.Visual.TrailColor, beam.Visual.TrailTexture);
-                
-                MatrixD matrix = MatrixD.CreateWorld(hitPos, (Vector3D) intersects[0].Normal, Vector3D.CalculatePerpendicularVector(intersects[0].Normal));
+
+                MatrixD matrix = MatrixD.CreateWorld(hitPos, (Vector3D)intersects[0].Normal, Vector3D.CalculatePerpendicularVector(intersects[0].Normal));
                 MyParticleEffect hitEffect;
                 if (MyParticlesManager.TryCreateParticleEffect(beam.Visual.ImpactParticle, ref matrix, ref hitPos, uint.MaxValue, out hitEffect))
                 {
@@ -497,7 +497,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
                     Settings.AmmoLoadedState = loadedSettings.AmmoLoadedState;
                     AmmoLoadedState.Value = Settings.AmmoLoadedState;
-                    Magazines.AmmoIndex = Array.IndexOf(Definition.Loading.Ammos, ProjectileDefinitionManager.GetDefinition((int)Settings.AmmoLoadedState).Name);
+                    Magazines.AmmoIndex = Array.IndexOf(Definition.Loading.Ammos, ProjectileDefinitionManager.GetDefinition(Settings.AmmoLoadedState).Name);
 
                     Settings.ControlTypeState = loadedSettings.ControlTypeState;
                     ControlTypeState.Value = Settings.ControlTypeState;

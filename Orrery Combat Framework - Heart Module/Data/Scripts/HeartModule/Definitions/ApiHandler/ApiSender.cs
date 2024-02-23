@@ -1,9 +1,7 @@
-﻿using Sandbox.ModAPI;
-using System.Collections.Generic;
+﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
+using Sandbox.ModAPI;
 using System;
-using VRage.Game.Components;
-using VRage.Utils;
-using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
+using System.Collections.Generic;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
 {
@@ -34,7 +32,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
             if (data == null)
                 return;
 
-            if (data is bool && (bool) data)
+            if (data is bool && (bool)data)
             {
                 MyAPIGateway.Utilities.SendModMessage(HeartApiChannel, methods);
                 HeartLog.Log("Orrery Combat Framework: HeartAPISender send methods.");
