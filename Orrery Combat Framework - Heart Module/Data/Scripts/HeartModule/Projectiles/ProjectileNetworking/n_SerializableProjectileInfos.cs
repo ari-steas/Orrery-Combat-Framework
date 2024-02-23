@@ -270,9 +270,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
 
         public Projectile ToProjectile(int index)
         {
-            HeartData.I.Log.Log("1");
             SorterWeaponLogic weapon = WeaponManager.I.GetWeapon(FirerEntityId[index]);
-            HeartData.I.Log.Log("2");
 
             if (weapon == null)
             {
@@ -290,7 +288,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             {
                 LastUpdate = DateTime.Now.Date.AddMilliseconds(MillisecondsFromMidnight).Ticks
             };
-            HeartData.I.Log.Log("3");
 
             if (p.Guidance != null) // Assign target for self-guided projectiles
             {
@@ -300,14 +297,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                     p.Guidance.SetTarget(WeaponManagerAi.I.GetTargeting(weapon.SorterWep.CubeGrid)?.PrimaryGridTarget);
             }
 
-            HeartData.I.Log.Log("4");
-
-
             float delta = (DateTime.Now.Ticks - p.LastUpdate) / (float)TimeSpan.TicksPerSecond;
             p.TickUpdate(delta);
-
-            HeartData.I.Log.Log("5");
-
 
             return p;
         }
