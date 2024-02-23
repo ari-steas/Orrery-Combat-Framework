@@ -2,8 +2,6 @@
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
-using VRage.Game.Components;
-using VRage.Utils;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
 {

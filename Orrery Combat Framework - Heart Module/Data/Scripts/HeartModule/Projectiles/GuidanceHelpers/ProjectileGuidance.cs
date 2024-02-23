@@ -1,5 +1,4 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
-using Heart_Module.Data.Scripts.HeartModule.Definitions.StandardClasses;
+﻿using Heart_Module.Data.Scripts.HeartModule.Definitions.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Sandbox.ModAPI;

@@ -1,7 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Sandbox.ModAPI;
-using System;
 using VRage.Game;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;

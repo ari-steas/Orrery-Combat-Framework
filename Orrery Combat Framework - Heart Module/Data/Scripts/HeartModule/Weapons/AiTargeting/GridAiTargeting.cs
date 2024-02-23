@@ -1,7 +1,6 @@
 using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Sandbox.Game.Entities;
-using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -3,8 +3,6 @@ using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Sandbox.ModAPI;
 using System.Collections.Generic;
-using VRage.Game;
-using VRage.Utils;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 {

@@ -1,10 +1,8 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
-using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
+﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.ModAPI;
 using System.Collections.Generic;
 using System.Linq;
-using VRage.Game.ModAPI;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
