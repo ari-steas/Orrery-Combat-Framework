@@ -15,6 +15,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
     [ProtoInclude(7, typeof(n_ProjectileDefinitionIdSync))]
     [ProtoInclude(8, typeof(n_SerializableProjectileInfos))]
     [ProtoInclude(9, typeof(n_SerializableFireEvents))]
+    [ProtoInclude(10, typeof(n_TimeSyncPacket))]
     [ProtoContract(UseProtoMembersOnly = true)]
     public abstract partial class PacketBase
     {
