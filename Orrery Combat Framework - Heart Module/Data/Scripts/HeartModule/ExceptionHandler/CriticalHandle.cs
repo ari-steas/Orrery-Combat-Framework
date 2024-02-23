@@ -22,7 +22,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
         {
             if (CriticalCloseTime == -1)
                 return;
-            double secondsRemaining = Math.Round((CriticalCloseTime - DateTime.Now.Ticks) / (double)TimeSpan.TicksPerSecond, 1);
+            double secondsRemaining = Math.Round((CriticalCloseTime - DateTime.UtcNow.Ticks) / (double)TimeSpan.TicksPerSecond, 1);
 
             if (secondsRemaining <= 0)
             {
@@ -68,7 +68,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
             HeartData.I.Log.LogException(ex, callingType, (callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "") + "Critical ");
             MyAPIGateway.Utilities.ShowMessage("HeartMod", $"CRITICAL ERROR - Shutting down in {WarnTimeSeconds} seconds.");
             MyLog.Default.WriteLineAndConsole($"HeartMod: CRITICAL ERROR - Shutting down in {WarnTimeSeconds} seconds.");
-            CriticalCloseTime = DateTime.Now.Ticks + WarnTimeSeconds * TimeSpan.TicksPerSecond;
+            CriticalCloseTime = DateTime.UtcNow.Ticks + WarnTimeSeconds * TimeSpan.TicksPerSecond;
 
             if (MyAPIGateway.Session.IsServer)
                 HeartData.I.Net.SendToEveryone(new n_SerializableError(Exception, true));
@@ -85,7 +85,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
             HeartData.I.Log.LogException(ex, callingType, (callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "") + "Critical ");
             MyAPIGateway.Utilities.ShowMessage("HeartMod", $"CRITICAL ERROR - Shutting down in {WarnTimeSeconds} seconds.");
             MyLog.Default.WriteLineAndConsole($"HeartMod: CRITICAL ERROR - Shutting down in {WarnTimeSeconds} seconds.");
-            CriticalCloseTime = DateTime.Now.Ticks + WarnTimeSeconds * TimeSpan.TicksPerSecond;
+            CriticalCloseTime = DateTime.UtcNow.Ticks + WarnTimeSeconds * TimeSpan.TicksPerSecond;
 
             if (MyAPIGateway.Session.IsServer)
                 HeartData.I.Net.SendToEveryone(new n_SerializableError(Exception, true));

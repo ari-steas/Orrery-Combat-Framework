@@ -52,7 +52,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             TargetEntityId = targetEntityId;
             ProjectileAge = projectileAge;
 
-            MillisecondsFromMidnight = (int)DateTime.Now.TimeOfDay.TotalMilliseconds;
+            MillisecondsFromMidnight = (int)DateTime.UtcNow.TimeOfDay.TotalMilliseconds;
         }
 
         public n_SerializableProjectileInfos(List<Projectile> projectiles, IMyCharacter character, ProjectileDetailLevel detailLevel = ProjectileDetailLevel.Full)
@@ -101,7 +101,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                 }
             }
 
-            MillisecondsFromMidnight = (int) DateTime.Now.TimeOfDay.TotalMilliseconds;
+            MillisecondsFromMidnight = (int) DateTime.UtcNow.TimeOfDay.TotalMilliseconds;
         }
 
 
@@ -182,7 +182,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                 ((IMyCubeBlock)MyAPIGateway.Entities.GetEntityById(FirerEntityId[index]))?.CubeGrid.LinearVelocity ?? Vector3D.Zero
                 )
             {
-                LastUpdate = DateTime.Now.Date.AddMilliseconds(MillisecondsFromMidnight).Ticks
+                LastUpdate = DateTime.UtcNow.Date.AddMilliseconds(MillisecondsFromMidnight).Ticks
             };
 
             if (ProjectileAge != null)
@@ -196,7 +196,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             }
                 
 
-            float delta = (DateTime.Now.Ticks - p.LastUpdate) / (float)TimeSpan.TicksPerSecond;
+            float delta = (DateTime.UtcNow.Ticks - p.LastUpdate) / (float)TimeSpan.TicksPerSecond;
             p.TickUpdate(delta);
 
             return p;
@@ -225,7 +225,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                 directionZ[i] = (float) projectiles[i].Direction.Z;
             }
 
-            MillisecondsFromMidnight = (int) DateTime.Now.TimeOfDay.TotalMilliseconds;
+            MillisecondsFromMidnight = (int) DateTime.UtcNow.TimeOfDay.TotalMilliseconds;
         }
 
         public n_SerializableFireEvents(long[] firerWeaponId, uint[] uniqueProjectileId, Vector3[] direction)
@@ -286,7 +286,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                 weapon?.SorterWep?.CubeGrid.LinearVelocity ?? Vector3D.Zero
                 )
             {
-                LastUpdate = DateTime.Now.Date.AddMilliseconds(MillisecondsFromMidnight).Ticks
+                LastUpdate = DateTime.UtcNow.Date.AddMilliseconds(MillisecondsFromMidnight).Ticks
             };
 
             if (p.Guidance != null) // Assign target for self-guided projectiles
@@ -297,8 +297,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                     p.Guidance.SetTarget(WeaponManagerAi.I.GetTargeting(weapon.SorterWep.CubeGrid)?.PrimaryGridTarget);
             }
 
-            float delta = (DateTime.Now.Ticks - p.LastUpdate) / (float)TimeSpan.TicksPerSecond;
-            HeartData.I.Log.Log("WHAT " + delta);
+            float delta = (DateTime.UtcNow.Ticks - p.LastUpdate) / (float)TimeSpan.TicksPerSecond;
+
             p.TickUpdate(delta);
 
             return p;

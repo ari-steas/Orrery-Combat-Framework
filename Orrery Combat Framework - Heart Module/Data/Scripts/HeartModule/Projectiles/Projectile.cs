@@ -318,8 +318,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (projectile.IsActive.HasValue)
                 QueuedDispose = !projectile.IsActive.Value;
 
-            LastUpdate = DateTime.Now.Date.AddMilliseconds(projectile.TimestampFromMidnight).Ticks;
-            float delta = (DateTime.Now.Ticks - LastUpdate) / (float)TimeSpan.TicksPerSecond;
+            LastUpdate = DateTime.UtcNow.Date.AddMilliseconds(projectile.TimestampFromMidnight).Ticks;
+            float delta = (DateTime.UtcNow.Ticks - LastUpdate) / (float)TimeSpan.TicksPerSecond;
 
             // The following values may be null to save network load
             if (projectile.Direction.HasValue)

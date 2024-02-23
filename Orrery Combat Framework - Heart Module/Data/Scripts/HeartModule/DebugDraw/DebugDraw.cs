@@ -44,9 +44,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Debug
 
 
             if (Instance.QueuedPoints.ContainsKey(globalPos))
-                Instance.QueuedPoints[globalPos] = new MyTuple<long, Color>(DateTime.Now.Ticks + (long)(duration * TimeSpan.TicksPerSecond), color);
+                Instance.QueuedPoints[globalPos] = new MyTuple<long, Color>(DateTime.UtcNow.Ticks + (long)(duration * TimeSpan.TicksPerSecond), color);
             else
-                Instance.QueuedPoints.Add(globalPos, new MyTuple<long, Color>(DateTime.Now.Ticks + (long)(duration * TimeSpan.TicksPerSecond), color));
+                Instance.QueuedPoints.Add(globalPos, new MyTuple<long, Color>(DateTime.UtcNow.Ticks + (long)(duration * TimeSpan.TicksPerSecond), color));
         }
 
         public static void AddGPS(string name, Vector3D position, float duration)
@@ -68,9 +68,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Debug
 
 
             if (Instance.QueuedGridPoints.ContainsKey(blockPos))
-                Instance.QueuedGridPoints[blockPos] = new MyTuple<long, Color, IMyCubeGrid>(DateTime.Now.Ticks + (long)(duration * TimeSpan.TicksPerSecond), color, grid);
+                Instance.QueuedGridPoints[blockPos] = new MyTuple<long, Color, IMyCubeGrid>(DateTime.UtcNow.Ticks + (long)(duration * TimeSpan.TicksPerSecond), color, grid);
             else
-                Instance.QueuedGridPoints.Add(blockPos, new MyTuple<long, Color, IMyCubeGrid>(DateTime.Now.Ticks + (long)(duration * TimeSpan.TicksPerSecond), color, grid));
+                Instance.QueuedGridPoints.Add(blockPos, new MyTuple<long, Color, IMyCubeGrid>(DateTime.UtcNow.Ticks + (long)(duration * TimeSpan.TicksPerSecond), color, grid));
         }
 
         public static void AddLine(Vector3D origin, Vector3D destination, Color color, float duration)
@@ -81,9 +81,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Debug
 
             MyTuple<Vector3D, Vector3D> key = new MyTuple<Vector3D, Vector3D>(origin, destination);
             if (Instance.QueuedLinePoints.ContainsKey(key))
-                Instance.QueuedLinePoints[key] = new MyTuple<long, Color>(DateTime.Now.Ticks + (long)(duration * TimeSpan.TicksPerSecond), color);
+                Instance.QueuedLinePoints[key] = new MyTuple<long, Color>(DateTime.UtcNow.Ticks + (long)(duration * TimeSpan.TicksPerSecond), color);
             else
-                Instance.QueuedLinePoints.Add(key, new MyTuple<long, Color>(DateTime.Now.Ticks + (long)(duration * TimeSpan.TicksPerSecond), color));
+                Instance.QueuedLinePoints.Add(key, new MyTuple<long, Color>(DateTime.UtcNow.Ticks + (long)(duration * TimeSpan.TicksPerSecond), color));
         }
 
         public override void Draw()
@@ -92,7 +92,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Debug
             {
                 DrawPoint0(key, QueuedPoints[key].Item2);
 
-                if (DateTime.Now.Ticks > QueuedPoints[key].Item1)
+                if (DateTime.UtcNow.Ticks > QueuedPoints[key].Item1)
                     QueuedPoints.Remove(key);
             }
 
@@ -100,7 +100,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Debug
             {
                 DrawGridPoint0(key, QueuedGridPoints[key].Item3, QueuedGridPoints[key].Item2);
 
-                if (DateTime.Now.Ticks > QueuedGridPoints[key].Item1)
+                if (DateTime.UtcNow.Ticks > QueuedGridPoints[key].Item1)
                     QueuedGridPoints.Remove(key);
             }
 
@@ -108,7 +108,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Debug
             {
                 DrawLine0(key.Item1, key.Item2, QueuedLinePoints[key].Item2);
 
-                if (DateTime.Now.Ticks > QueuedLinePoints[key].Item1)
+                if (DateTime.UtcNow.Ticks > QueuedLinePoints[key].Item1)
                     QueuedLinePoints.Remove(key);
             }
         }
