@@ -297,7 +297,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                     p.Guidance.SetTarget(WeaponManagerAi.I.GetTargeting(weapon.SorterWep.CubeGrid)?.PrimaryGridTarget);
             }
 
+            // TODO: Look into engine tick based syncing? Server time can vary DRASTICALLY.
             float delta = (float)((DateTime.UtcNow.TimeOfDay.TotalMilliseconds - MillisecondsFromMidnight) / 1000d);
+            if (delta < 0f)
+                delta = 0;
             HeartData.I.Log.Log("delta " + delta + " | CurrentMsDelta: " + (DateTime.UtcNow.TimeOfDay.TotalMilliseconds - MillisecondsFromMidnight));
             p.TickUpdate(delta);
 
