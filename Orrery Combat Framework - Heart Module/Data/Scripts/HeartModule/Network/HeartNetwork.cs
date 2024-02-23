@@ -53,6 +53,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
 
             if (tickCounter % 307 == 0)
                 UpdateTimeOffset();
+            tickCounter++;
         }
 
         void ReceivedPacket(ushort channelId, byte[] serialized, ulong senderSteamId, bool isSenderServer)
