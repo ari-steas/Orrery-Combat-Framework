@@ -297,8 +297,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                     p.Guidance.SetTarget(WeaponManagerAi.I.GetTargeting(weapon.SorterWep.CubeGrid)?.PrimaryGridTarget);
             }
 
-            float delta = (DateTime.UtcNow.Ticks - p.LastUpdate) / (float)TimeSpan.TicksPerSecond;
-            HeartData.I.Log.Log("delta " + delta);
+            float delta = (float)((DateTime.UtcNow.TimeOfDay.TotalMilliseconds - MillisecondsFromMidnight) / 1000d);
+            HeartData.I.Log.Log("delta " + delta + " | CurrentMsDelta: " + (DateTime.UtcNow.TimeOfDay.TotalMilliseconds - MillisecondsFromMidnight));
             p.TickUpdate(delta);
 
             return p;
