@@ -15,7 +15,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
     internal class n_TimeSyncPacket : PacketBase
     {
         [ProtoMember(21)] public double OutgoingTimestamp;
-        [ProtoMember(21)] public double IncomingTimestamp;
+        [ProtoMember(22)] public double IncomingTimestamp;
 
         public n_TimeSyncPacket()
         {
