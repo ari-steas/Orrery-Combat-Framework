@@ -34,6 +34,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
             {
                 HeartLog.Log("Outgoing Timestamp: " + OutgoingTimestamp + "\nIncoming Timestamp: " + IncomingTimestamp);
                 HeartData.I.Net.estimatedPing = DateTime.UtcNow.TimeOfDay.TotalMilliseconds - HeartData.I.Net.estimatedPing;
+                HeartData.I.Net.ServerTimeOffset = OutgoingTimestamp - IncomingTimestamp - HeartData.I.Net.estimatedPing;
+                HeartLog.Log("Total ping time (ms): " + HeartData.I.Net.estimatedPing);
             }
         }
     }
