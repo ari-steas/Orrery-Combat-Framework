@@ -13,6 +13,7 @@ using VRage.Game.Entity;
 using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
 {
@@ -53,7 +54,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
                 ["RemoveWeaponDefinition"] = new Action<string>(WeaponDefinitionManager.RemoveDefinition),
 
                 // Standard
-                ["LogWriteLine"] = new Action<string>(HeartData.I.Log.Log),
+                ["LogWriteLine"] = new Action<string>(HeartLog.Log),
                 ["GetNetworkLoad"] = new Func<int>(GetNetworkLoad),
                 ["AddChatCommand"] = new Action<string, string, Action<string[]>, string>(CommandHandler.AddCommand),
             };

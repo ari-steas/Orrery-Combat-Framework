@@ -1,4 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Definitions;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Sandbox.ModAPI;
 using System.Collections.Generic;
@@ -87,7 +88,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             if (I.DefinitionNamePairs.ContainsKey(definition.Name))
             {
-                HeartData.I.Log.Log($"Duplicate ammo definition {definition.Name}! Skipping...");
+                HeartLog.Log($"Duplicate ammo definition {definition.Name}! Skipping...");
                 return -1;
             }
 
@@ -102,7 +103,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     definition.Name,
                     serializedDefinition
                     ));
-            HeartData.I.Log.Log($"Registered class projectile definition {definition.Name} for ID {I.Definitions.Count - 1}.");
+            HeartLog.Log($"Registered class projectile definition {definition.Name} for ID {I.Definitions.Count - 1}.");
             return I.Definitions.Count - 1;
         }
 
@@ -117,7 +118,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             var definition = MyAPIGateway.Utilities.SerializeFromBinary<ProjectileDefinitionBase>(serializedDefinition);
             if (I.DefinitionNamePairs.ContainsKey(definition.Name))
             {
-                HeartData.I.Log.Log($"Duplicate ammo definition {definition.Name}! Skipping...");
+                HeartLog.Log($"Duplicate ammo definition {definition.Name}! Skipping...");
                 return -1;
             }
 
@@ -130,7 +131,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     definition.Name,
                     serializedDefinition
                     ));
-            HeartData.I.Log.Log($"Registered binary projectile definition {definition.Name} for ID {I.Definitions.Count - 1}.");
+            HeartLog.Log($"Registered binary projectile definition {definition.Name} for ID {I.Definitions.Count - 1}.");
             return I.Definitions.Count - 1;
         }
 
@@ -149,7 +150,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     serializedDefinition
                     ));
 
-            HeartData.I.Log.Log($"Updated binary projectile definition {definition.Name} for ID {definitionId}");
+            HeartLog.Log($"Updated binary projectile definition {definition.Name} for ID {definitionId}");
             return true;
         }
 
@@ -168,7 +169,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     serializedDefinition
                     ));
 
-            HeartData.I.Log.Log($"Updated class projectile definition {definition.Name} for ID {definitionId}");
+            HeartLog.Log($"Updated class projectile definition {definition.Name} for ID {definitionId}");
             return true;
         }
 
@@ -186,7 +187,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             I.Definitions[definitionId] = null;
             I.SerializedDefinitions[definitionId] = null;
 
-            HeartData.I.Log.Log($"Removed ammo definition " + definitionId);
+            HeartLog.Log($"Removed ammo definition " + definitionId);
         }
 
         public static void ClearDefinitions()
@@ -194,7 +195,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             I.Definitions.Clear();
             I.DefinitionNamePairs.Clear();
             I.SerializedDefinitions.Clear();
-            HeartData.I.Log.Log($"Cleared all ammo definitions.");
+            HeartLog.Log($"Cleared all ammo definitions.");
         }
 
         public static int DefinitionCount()

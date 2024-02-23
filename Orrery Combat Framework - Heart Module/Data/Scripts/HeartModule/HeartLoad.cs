@@ -34,7 +34,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
         {
             I = this;
             HeartData.I = new HeartData();
-            HeartData.I.Log.Log($"Start loading core...");
+            HeartLog.Log($"Start loading core...");
 
             handle = new CriticalHandle();
             handle.LoadData();
@@ -46,14 +46,14 @@ namespace Heart_Module.Data.Scripts.HeartModule
                 if (!MyAPIGateway.Utilities.IsDedicated)
                 {
                     RichHudClient.Init("HeartModule", () => { }, () => { });
-                    HeartData.I.Log.Log($"Loaded RichHudClient");
+                    HeartLog.Log($"Loaded RichHudClient");
                 }
                 else
-                    HeartData.I.Log.Log($"Skipped loading RichHudClient");
+                    HeartLog.Log($"Skipped loading RichHudClient");
 
                 WeaponDefinitionManager.I = new WeaponDefinitionManager();
                 ProjectileDefinitionManager.I = new ProjectileDefinitionManager();
-                HeartData.I.Log.Log($"Initialized DefinitionManagers");
+                HeartLog.Log($"Initialized DefinitionManagers");
 
                 definitionReciever = new DefinitionReciever();
                 definitionReciever.LoadData();
@@ -65,7 +65,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
                 commands.Init();
 
                 HeartData.I.IsSuspended = false;
-                HeartData.I.Log.Log($"Finished loading core.");
+                HeartLog.Log($"Finished loading core.");
             }
             catch (Exception ex)
             {
@@ -158,7 +158,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
             handle.UnloadData();
             HeartData.I.Net.UnloadData();
-            HeartData.I.Log.Log($"Unloaded HeartNetwork");
+            HeartLog.Log($"Unloaded HeartNetwork");
 
             MyAPIGateway.Entities.OnEntityAdd -= OnEntityAdd;
             MyAPIGateway.Entities.OnEntityRemove -= OnEntityRemove;
@@ -166,11 +166,11 @@ namespace Heart_Module.Data.Scripts.HeartModule
             definitionReciever.UnloadData();
             WeaponDefinitionManager.I = null;
             ProjectileDefinitionManager.I = null;
-            HeartData.I.Log.Log($"Closed DefinitionManagers");
+            HeartLog.Log($"Closed DefinitionManagers");
 
             apiSender.UnloadData();
 
-            HeartData.I.Log.Log($"Closing core, log finishes here.");
+            HeartLog.Log($"Closing core, log finishes here.");
             HeartData.I.Log.Close();
             HeartData.I = null;
 

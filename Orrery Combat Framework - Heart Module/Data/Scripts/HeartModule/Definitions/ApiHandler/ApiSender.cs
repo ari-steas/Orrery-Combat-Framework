@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using VRage.Game.Components;
 using VRage.Utils;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
 {
@@ -16,7 +17,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
         {
             MyAPIGateway.Utilities.SendModMessage(HeartApiChannel, methods); // Update mods that loaded before this one
             MyAPIGateway.Utilities.RegisterMessageHandler(HeartApiChannel, RecieveApiMethods);
-            HeartData.I.Log.Log("Orrery Combat Framework: HeartAPISender ready.");
+            HeartLog.Log("Orrery Combat Framework: HeartAPISender ready.");
         }
 
         public void UnloadData()
@@ -36,7 +37,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
             if (data is bool && (bool) data)
             {
                 MyAPIGateway.Utilities.SendModMessage(HeartApiChannel, methods);
-                HeartData.I.Log.Log("Orrery Combat Framework: HeartAPISender send methods.");
+                HeartLog.Log("Orrery Combat Framework: HeartAPISender send methods.");
             }
         }
     }

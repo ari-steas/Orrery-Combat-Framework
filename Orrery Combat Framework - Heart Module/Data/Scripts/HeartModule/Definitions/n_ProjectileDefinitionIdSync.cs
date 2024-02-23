@@ -1,4 +1,5 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Network;
+﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
+using Heart_Module.Data.Scripts.HeartModule.Network;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using ProtoBuf;
@@ -26,7 +27,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions
         {
             if (MyAPIGateway.Session.IsServer)
                 return;
-            HeartData.I.Log.Log("Syncing projectile definition " + Name + " to " + Id);
+            HeartLog.Log("Syncing projectile definition " + Name + " to " + Id);
             if (Serialized != null)
                 ProjectileDefinitionManager.RegisterDefinition(MyAPIGateway.Utilities.SerializeFromBinary<ProjectileDefinitionBase>(Serialized));
             //ProjectileDefinitionManager.ReorderDefinitions(Name, Id);

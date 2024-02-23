@@ -1,4 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
@@ -22,8 +23,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
             MyAPIGateway.Multiplayer.RegisterSecureMessageHandler(HeartData.HeartNetworkId, ReceivedPacket);
 
             estimatedPing = DateTime.UtcNow.Date.TimeOfDay.TotalMilliseconds;
+            HeartLog.Log("Starting ping request @ " + estimatedPing);
             if (!MyAPIGateway.Session.IsServer)
-                SendToServer(new n_TimeSyncPacket());
+                SendToServer(new n_TimeSyncPacket() { OutgoingTimestamp = estimatedPing });
         }
 
         public void UnloadData()

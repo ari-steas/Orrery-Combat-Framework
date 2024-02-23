@@ -179,7 +179,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (projectile.Definition.PhysicalProjectile.Health > 0 && projectile.Definition.PhysicalProjectile.ProjectileSize > 0)
                 ProjectilesWithHealth.Add(projectile);
 
-            HeartData.I.Log.Log("REEE " + projectile.Id + " | " + projectile.Age);
+            HeartLog.Log("REEE " + projectile.Id + " | " + projectile.Age);
             return projectile;
         }
 
