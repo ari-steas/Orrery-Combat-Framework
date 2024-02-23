@@ -15,7 +15,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
         private List<int> networkLoadArray = new List<int>();
         private int networkLoadUpdate = 0;
 
-        internal double serverTimeOffset = 0;
+        public double ServerTimeOffset { get; internal set; } = 0;
         internal double estimatedPing = 0;
 
         public void LoadData()

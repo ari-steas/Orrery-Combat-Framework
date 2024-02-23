@@ -22,7 +22,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
     [ProtoContract]
     internal class n_SerializableProjectileInfos : PacketBase
     {
-        public n_SerializableProjectileInfos() { }
+        public n_SerializableProjectileInfos()
+        {
+            // Account for difference in server and client time.
+            MillisecondsFromMidnight -= (int) HeartData.I.Net.ServerTimeOffset;
+        }
 
         public n_SerializableProjectileInfos(uint[] uniqueProjectileId, Vector3[] positionRelativeToPlayer, Vector3[] direction, int[] definitionId, long[] firerEntityId = null, long?[] targetEntityId = null, uint[] projectileAge = null)
         {
@@ -198,6 +202,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                 
 
             float delta = (DateTime.UtcNow.Ticks - p.LastUpdate) / (float)TimeSpan.TicksPerSecond;
+            if (delta < 0f)
+                delta = 0;
             p.TickUpdate(delta);
 
             return p;
@@ -207,7 +213,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
     [ProtoContract]
     internal class n_SerializableFireEvents : PacketBase
     {
-        public n_SerializableFireEvents() { }
+        public n_SerializableFireEvents() 
+        {
+            // Account for the delta between server and client time
+            MillisecondsFromMidnight -= (int)HeartData.I.Net.ServerTimeOffset;
+        }
 
         public n_SerializableFireEvents(List<Projectile> projectiles)
         {
