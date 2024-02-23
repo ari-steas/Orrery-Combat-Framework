@@ -100,7 +100,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                     {
                         p.Position = projectileInfos.PlayerRelativePosition(i) + MyAPIGateway.Session.Player.Character.GetPosition();
                         p.Direction = projectileInfos.Direction(i);
-                        p.LastUpdate = DateTime.UtcNow.Date.AddMilliseconds(projectileInfos.MillisecondsFromMidnight).Ticks;
+                        p.LastUpdate = DateTime.UtcNow.Date.AddMilliseconds(projectileInfos.MillisecondsFromMidnight - HeartData.I.Net.ServerTimeOffset).Ticks;
 
                         if (projectileInfos.ProjectileAge != null)
                             p.Age = projectileInfos.ProjectileAge[i];
