@@ -269,6 +269,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
 
         public Projectile ToProjectile(int index)
         {
+            MyAPIGateway.Utilities.ShowNotification("I'M A REAL BOY NOW");
+
             SorterWeaponLogic weapon = WeaponManager.I.GetWeapon(FirerEntityId[index]);
 
             Projectile p = new Projectile(
