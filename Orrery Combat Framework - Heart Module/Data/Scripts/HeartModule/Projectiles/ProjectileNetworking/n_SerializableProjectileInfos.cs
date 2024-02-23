@@ -1,4 +1,5 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Network;
+﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.Network;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting;
 using ProtoBuf;
@@ -269,20 +270,27 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
 
         public Projectile ToProjectile(int index)
         {
-            MyAPIGateway.Utilities.ShowNotification("I'M A REAL BOY NOW");
-
+            HeartData.I.Log.Log("1");
             SorterWeaponLogic weapon = WeaponManager.I.GetWeapon(FirerEntityId[index]);
+            HeartData.I.Log.Log("2");
+
+            if (weapon == null)
+            {
+                SoftHandle.RaiseSyncException("Attempted to call FireEvent for a weapon that doesn't exist!");
+                return null;
+            }
 
             Projectile p = new Projectile(
                 weapon.Magazines.SelectedAmmo,
                 weapon.MuzzleMatrix.Translation,
                 Direction(index),
                 FirerEntityId[index],
-                ((IMyCubeBlock)MyAPIGateway.Entities.GetEntityById(FirerEntityId[index]))?.CubeGrid.LinearVelocity ?? Vector3D.Zero
+                weapon?.SorterWep?.CubeGrid.LinearVelocity ?? Vector3D.Zero
                 )
             {
                 LastUpdate = DateTime.Now.Date.AddMilliseconds(MillisecondsFromMidnight).Ticks
             };
+            HeartData.I.Log.Log("3");
 
             if (p.Guidance != null) // Assign target for self-guided projectiles
             {
@@ -292,8 +300,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                     p.Guidance.SetTarget(WeaponManagerAi.I.GetTargeting(weapon.SorterWep.CubeGrid)?.PrimaryGridTarget);
             }
 
+            HeartData.I.Log.Log("4");
+
+
             float delta = (DateTime.Now.Ticks - p.LastUpdate) / (float)TimeSpan.TicksPerSecond;
             p.TickUpdate(delta);
+
+            HeartData.I.Log.Log("5");
+
 
             return p;
         }
