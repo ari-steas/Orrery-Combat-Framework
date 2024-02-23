@@ -1,5 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Definitions;
 using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using RichHudFramework.Internal;
@@ -175,7 +176,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
             }
 
             I.commands.Add(command, new Command(modName, helpText, action));
-            HeartData.I.Log.Log($"Registered new chat command \"/{command}\" from [{modName}]");
+            HeartLog.Log($"Registered new chat command \"/{command}\" from [{modName}]");
         }
 
         private class Command

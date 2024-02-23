@@ -14,7 +14,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ErrorHandler
             if (!MyAPIGateway.Utilities.IsDedicated)
                 MyAPIGateway.Utilities.ShowNotification("Minor Exception: " + message);
             Exception soft = new Exception(message, ex);
-            HeartData.I.Log.LogException(soft, callingType ?? typeof(SoftHandle), callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "");
+            HeartLog.LogException(soft, callingType ?? typeof(SoftHandle), callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "");
             if (MyAPIGateway.Session.IsServer)
                 HeartData.I.Net.SendToEveryone(new n_SerializableError(soft, false));
         }
@@ -25,7 +25,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ErrorHandler
                 return;
             if (!MyAPIGateway.Utilities.IsDedicated)
                 MyAPIGateway.Utilities.ShowNotification("Minor Exception: " + exception.Message);
-            HeartData.I.Log.LogException(exception, callingType ?? typeof(SoftHandle), callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "");
+            HeartLog.LogException(exception, callingType ?? typeof(SoftHandle), callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "");
         }
 
         public static void RaiseException(n_SerializableError exception, Type callingType = null, ulong callerId = ulong.MaxValue)
@@ -34,7 +34,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ErrorHandler
                 return;
             if (!MyAPIGateway.Utilities.IsDedicated)
                 MyAPIGateway.Utilities.ShowNotification("Minor Exception: " + exception.ExceptionMessage);
-            HeartData.I.Log.LogException(exception, callingType ?? typeof(SoftHandle), callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "");
+            HeartLog.LogException(exception, callingType ?? typeof(SoftHandle), callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "");
         }
 
         public static void RaiseSyncException(string message)

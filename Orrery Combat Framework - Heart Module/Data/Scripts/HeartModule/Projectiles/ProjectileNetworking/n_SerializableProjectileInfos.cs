@@ -1,4 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Network;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting;
@@ -288,7 +289,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             {
                 LastUpdate = DateTime.UtcNow.Date.AddMilliseconds(MillisecondsFromMidnight).Ticks
             };
-
+            
             if (p.Guidance != null) // Assign target for self-guided projectiles
             {
                 if (weapon is SorterTurretLogic)
@@ -301,7 +302,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             float delta = (float)((DateTime.UtcNow.TimeOfDay.TotalMilliseconds - MillisecondsFromMidnight) / 1000d);
             if (delta < 0f)
                 delta = 0;
-            HeartData.I.Log.Log("delta " + delta + " | CurrentMsDelta: " + (DateTime.UtcNow.TimeOfDay.TotalMilliseconds - MillisecondsFromMidnight));
+            HeartLog.Log("delta " + delta + " | CurrentMsDelta: " + (DateTime.UtcNow.TimeOfDay.TotalMilliseconds - MillisecondsFromMidnight));
             p.TickUpdate(delta);
 
             return p;

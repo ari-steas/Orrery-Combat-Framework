@@ -1,4 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.ModAPI;
 using System.Collections.Generic;
@@ -83,7 +84,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             {
                 I.Definitions[definition.Assignments.BlockSubtype] = definition;
                 I.SerializedDefinitions[definition.Assignments.BlockSubtype] = serializedDefinition;
-                HeartData.I.Log.Log($"Duplicate weapon definition {definition.Assignments.BlockSubtype}! Overriding...");
+                HeartLog.Log($"Duplicate weapon definition {definition.Assignments.BlockSubtype}! Overriding...");
             }
             else
             {
@@ -92,7 +93,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             }
 
             HeartData.I.OrreryBlockCategory.AddBlock(definition.Assignments.BlockSubtype);
-            HeartData.I.Log.Log($"Registered weapon definition {definition.Assignments.BlockSubtype}.");
+            HeartLog.Log($"Registered weapon definition {definition.Assignments.BlockSubtype}.");
 
             if (HeartData.I.IsLoaded)
                 WeaponManager.I.UpdateLogicOnExistingBlocks(definition);
@@ -118,7 +119,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             I.Definitions.Remove(subtype);
             I.SerializedDefinitions.Remove(subtype);
 
-            HeartData.I.Log.Log("Removed weapon definition " + subtype);
+            HeartLog.Log("Removed weapon definition " + subtype);
         }
 
         public static int DefinitionCount()
@@ -138,7 +139,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 RemoveDefinition(id);
             }
 
-            HeartData.I.Log.Log("Cleared all weapon definitions.");
+            HeartLog.Log("Cleared all weapon definitions.");
         }
 
         /// <summary>
@@ -150,7 +151,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (input.Loading.RateOfFire > 500)
             {
                 input.Loading.RateOfFire = 500;
-                HeartData.I.Log.Log($"WeaponDefinitionManager.TrainingWheels: Definition {input.Assignments.BlockSubtype}'s firerate is over 500 rps!\nI've gone ahead and clamped it for you, but if you reeealllly want to break stuff, increase ProjectilesPerBarrel :)");
+                HeartLog.Log($"WeaponDefinitionManager.TrainingWheels: Definition {input.Assignments.BlockSubtype}'s firerate is over 500 rps!\nI've gone ahead and clamped it for you, but if you reeealllly want to break stuff, increase ProjectilesPerBarrel :)");
             }
         }
     }

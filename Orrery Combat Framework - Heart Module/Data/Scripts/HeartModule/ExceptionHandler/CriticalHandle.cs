@@ -60,12 +60,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
         private void m_ThrowCriticalException(Exception ex, Type callingType, ulong callerId = ulong.MaxValue)
         {
             HeartData.I.IsSuspended = true;
-            HeartData.I.Log.Log("Start Throw Critical Exception " + CriticalCloseTime);
+            HeartLog.Log("Start Throw Critical Exception " + CriticalCloseTime);
             if (CriticalCloseTime != -1)
                 return;
 
             Exception = ex;
-            HeartData.I.Log.LogException(ex, callingType, (callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "") + "Critical ");
+            HeartLog.LogException(ex, callingType, (callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "") + "Critical ");
             MyAPIGateway.Utilities.ShowMessage("HeartMod", $"CRITICAL ERROR - Shutting down in {WarnTimeSeconds} seconds.");
             MyLog.Default.WriteLineAndConsole($"HeartMod: CRITICAL ERROR - Shutting down in {WarnTimeSeconds} seconds.");
             CriticalCloseTime = DateTime.UtcNow.Ticks + WarnTimeSeconds * TimeSpan.TicksPerSecond;
@@ -77,12 +77,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
         private void m_ThrowCriticalException(n_SerializableError ex, Type callingType, ulong callerId = ulong.MaxValue)
         {
             HeartData.I.IsSuspended = true;
-            HeartData.I.Log.Log("Start Throw Critical Exception " + CriticalCloseTime);
+            HeartLog.Log("Start Throw Critical Exception " + CriticalCloseTime);
             if (CriticalCloseTime != -1)
                 return;
 
             Exception = new Exception(ex.ExceptionMessage);
-            HeartData.I.Log.LogException(ex, callingType, (callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "") + "Critical ");
+            HeartLog.LogException(ex, callingType, (callerId != ulong.MaxValue ? $"Shared exception from {callerId}: " : "") + "Critical ");
             MyAPIGateway.Utilities.ShowMessage("HeartMod", $"CRITICAL ERROR - Shutting down in {WarnTimeSeconds} seconds.");
             MyLog.Default.WriteLineAndConsole($"HeartMod: CRITICAL ERROR - Shutting down in {WarnTimeSeconds} seconds.");
             CriticalCloseTime = DateTime.UtcNow.Ticks + WarnTimeSeconds * TimeSpan.TicksPerSecond;

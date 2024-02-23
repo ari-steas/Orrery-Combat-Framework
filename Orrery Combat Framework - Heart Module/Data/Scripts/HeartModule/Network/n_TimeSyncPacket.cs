@@ -1,4 +1,5 @@
-﻿using ProtoBuf;
+﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
+using ProtoBuf;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
@@ -17,10 +18,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
         [ProtoMember(21)] public double OutgoingTimestamp;
         [ProtoMember(22)] public double IncomingTimestamp;
 
-        public n_TimeSyncPacket()
-        {
-            OutgoingTimestamp = DateTime.UtcNow.Date.TimeOfDay.TotalMilliseconds;
-        }
+        public n_TimeSyncPacket() {}
 
         public override void Received(ulong SenderSteamId)
         {
@@ -28,12 +26,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
             {
                 HeartData.I.Net.SendToPlayer(new n_TimeSyncPacket()
                 {
-                    IncomingTimestamp = this.OutgoingTimestamp
+                    IncomingTimestamp = this.OutgoingTimestamp,
+                    OutgoingTimestamp = DateTime.UtcNow.Date.TimeOfDay.TotalMilliseconds
                 }, SenderSteamId);
             }
             else
             {
-                HeartData.I.Log.Log("Outgoing Timestamp: " + OutgoingTimestamp + "\nIncoming Timestamp: " + IncomingTimestamp);
+                HeartLog.Log("Outgoing Timestamp: " + OutgoingTimestamp + "\nIncoming Timestamp: " + IncomingTimestamp);
                 HeartData.I.Net.estimatedPing = DateTime.UtcNow.Date.TimeOfDay.TotalMilliseconds - HeartData.I.Net.estimatedPing;
             }
         }
