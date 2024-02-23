@@ -17,6 +17,7 @@ using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.Game.ModAPI.Network;
 using VRage.ModAPI;
+using VRage.Network;
 using VRage.ObjectBuilders;
 using VRage.Sync;
 using VRageMath;
@@ -24,7 +25,7 @@ using VRageMath;
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
     //[MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeapon")]
-    public partial class SorterWeaponLogic : MyGameLogicComponent
+    public partial class SorterWeaponLogic : MyGameLogicComponent, IMyEventProxy
     {
         internal IMyConveyorSorter SorterWep;
         internal WeaponDefinitionBase Definition;

@@ -253,6 +253,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
         [ProtoMember(23)] private float[] directionX;
         [ProtoMember(24)] private float[] directionY;
         [ProtoMember(25)] private float[] directionZ;
+        //[ProtoMember(26)] private byte[] muzzleIdx; // TODO: Sync muzzle index for fireevents.
 
         public Vector3[] Direction() // just using a Vector3 adds 2 extra bytes (!!!)
         {
@@ -283,7 +284,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
 
             Projectile p = new Projectile(
                 weapon.Magazines.SelectedAmmo,
-                weapon.MuzzleMatrix.Translation,
+                weapon.CalcMuzzleMatrix(0).Translation,
                 Direction(index),
                 FirerEntityId[index],
                 weapon?.SorterWep?.CubeGrid.LinearVelocity ?? Vector3D.Zero
