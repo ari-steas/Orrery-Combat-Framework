@@ -73,7 +73,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
         {
             if (!weapon.SorterWep.ShowInTerminal) // Hide weapons that aren't shown in terminal
                 return;
-            
+
             //MyAPIGateway.Utilities.ShowMessage("OCF", "Show weapon " + weapon.Id);
             var entry = GetEntry(weapon.Id);
             if (entry == null)
@@ -82,7 +82,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
                 entry.Element.DimAlignment = DimAlignments.Width;
                 entry.Element.ParentAlignment = ParentAlignments.Left;
             }
-                
+
 
             ProjectileDefinitionBase projectileDef = ProjectileDefinitionManager.GetDefinition(weapon.Magazines.SelectedAmmo);
 

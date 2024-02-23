@@ -78,7 +78,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                     ProjectileAge = new uint[projectiles.Count];
                 }
             }
-            
+
 
             Vector3D characterPos = character.GetPosition();
 
@@ -104,7 +104,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                 }
             }
 
-            MillisecondsFromMidnight = (int) DateTime.UtcNow.TimeOfDay.TotalMilliseconds;
+            MillisecondsFromMidnight = (int)DateTime.UtcNow.TimeOfDay.TotalMilliseconds;
         }
 
 
@@ -185,7 +185,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                 ((IMyCubeBlock)MyAPIGateway.Entities.GetEntityById(FirerEntityId[index]))?.CubeGrid.LinearVelocity ?? Vector3D.Zero
                 )
             {
-                LastUpdate = DateTime.UtcNow.Date.AddMilliseconds(MillisecondsFromMidnight + HeartData.I.Net.ServerTimeOffset).Ticks
+                LastUpdate = DateTime.UtcNow.Date.AddMilliseconds(MillisecondsFromMidnight - HeartData.I.Net.ServerTimeOffset).Ticks
             };
 
             if (ProjectileAge != null)
@@ -197,7 +197,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                 else
                     p.Guidance.SetTarget(MyAPIGateway.Entities.GetEntityById(TargetEntityId[index]));
             }
-                
+
 
             float delta = (DateTime.UtcNow.Ticks - p.LastUpdate) / (float)TimeSpan.TicksPerSecond;
             if (delta < 0f)
@@ -211,7 +211,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
     [ProtoContract]
     internal class n_SerializableFireEvents : PacketBase
     {
-        public n_SerializableFireEvents() 
+        public n_SerializableFireEvents()
         {
         }
 
@@ -227,12 +227,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             {
                 FirerEntityId[i] = projectiles[i].Firer;
                 UniqueProjectileId[i] = projectiles[i].Id;
-                directionX[i] = (float) projectiles[i].Direction.X;
-                directionY[i] = (float) projectiles[i].Direction.Y;
-                directionZ[i] = (float) projectiles[i].Direction.Z;
+                directionX[i] = (float)projectiles[i].Direction.X;
+                directionY[i] = (float)projectiles[i].Direction.Y;
+                directionZ[i] = (float)projectiles[i].Direction.Z;
             }
 
-            MillisecondsFromMidnight = (int) DateTime.UtcNow.TimeOfDay.TotalMilliseconds;
+            MillisecondsFromMidnight = (int)DateTime.UtcNow.TimeOfDay.TotalMilliseconds;
         }
 
         public n_SerializableFireEvents(long[] firerWeaponId, uint[] uniqueProjectileId, Vector3[] direction)
@@ -293,9 +293,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                 weapon?.SorterWep?.CubeGrid.LinearVelocity ?? Vector3D.Zero
                 )
             {
-                LastUpdate = DateTime.UtcNow.Date.AddMilliseconds(MillisecondsFromMidnight + HeartData.I.Net.ServerTimeOffset).Ticks
+                LastUpdate = DateTime.UtcNow.Date.AddMilliseconds(MillisecondsFromMidnight - HeartData.I.Net.ServerTimeOffset).Ticks
             };
-            
+
             if (p.Guidance != null) // Assign target for self-guided projectiles
             {
                 if (weapon is SorterTurretLogic)
@@ -305,10 +305,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             }
 
             // TODO: Look into engine tick based syncing? Server time can vary DRASTICALLY.
-            float delta = (float)((DateTime.UtcNow.TimeOfDay.TotalMilliseconds - (MillisecondsFromMidnight + HeartData.I.Net.ServerTimeOffset)) / 1000d);
+            float delta = (float)((DateTime.UtcNow.TimeOfDay.TotalMilliseconds - (MillisecondsFromMidnight - HeartData.I.Net.ServerTimeOffset)) / 1000d);
+            HeartLog.Log("delta " + delta + " | CurrentDelta: " + delta + $"\n        TotalMillis: {DateTime.UtcNow.TimeOfDay.TotalMilliseconds}\n        MsFromMidnight: {MillisecondsFromMidnight}\n        Offset: {HeartData.I.Net.ServerTimeOffset}");
+
             if (delta < 0f)
                 delta = 0;
-            HeartLog.Log("delta " + delta + " | CurrentDelta: " + delta + $"\n        TotalMillis: {DateTime.UtcNow.TimeOfDay.TotalMilliseconds}\n        MsFromMidnight: {MillisecondsFromMidnight}\n        Offset: {HeartData.I.Net.ServerTimeOffset}");
             p.TickUpdate(delta);
 
             return p;

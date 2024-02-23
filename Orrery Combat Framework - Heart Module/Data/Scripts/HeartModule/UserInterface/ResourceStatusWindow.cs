@@ -74,7 +74,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface
             HeaderText = "Resource Status";
             Size = new Vector2(250f, 150f);
             // Adjust Offset here to align it with the ReloadWindow but a bit to the left
-            Offset = new Vector2(580, 464); 
+            Offset = new Vector2(580, 464);
         }
 
         public void UpdateResourceInfo(string infoText)

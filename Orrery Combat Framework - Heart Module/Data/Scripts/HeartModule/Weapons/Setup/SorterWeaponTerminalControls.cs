@@ -161,7 +161,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     }
                     return -1; // Return a default value (e.g., -1) when the index is out of bounds
                 };
-                AmmoComboBox.Setter = (b, key) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_AmmoComboBox = (int) key;
+                AmmoComboBox.Setter = (b, key) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_AmmoComboBox = (int)key;
                 //AmmoComboBox.ComboBoxContent = HeartData.I.AmmoComboBoxSetter; // Set combo box based on what's open
 
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(AmmoComboBox);

@@ -353,7 +353,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             n_SerializableProjectile projectile = new n_SerializableProjectile()
             {
                 Id = Id,
-                TimestampFromMidnight = (uint) DateTime.Now.TimeOfDay.TotalMilliseconds, // Surely this will not bite me in the ass later
+                TimestampFromMidnight = (uint)DateTime.Now.TimeOfDay.TotalMilliseconds, // Surely this will not bite me in the ass later
             };
 
             switch (DetailLevel)

@@ -70,7 +70,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                         weapon.MarkForClose();
                     }
                 }
-            }        
+            }
         }
 
         /// <summary>

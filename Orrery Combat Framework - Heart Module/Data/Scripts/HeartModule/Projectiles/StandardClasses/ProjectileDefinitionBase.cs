@@ -214,7 +214,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses
         /// <summary>
         /// Damping factor
         /// </summary>
-        [ProtoMember(3)] public float kDerivative; 
+        [ProtoMember(3)] public float kDerivative;
 
         public PID GetPID()
         {

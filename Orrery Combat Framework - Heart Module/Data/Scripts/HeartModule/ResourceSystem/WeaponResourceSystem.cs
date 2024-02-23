@@ -1,14 +1,14 @@
-﻿using System;
+﻿using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
+using RichHudFramework.Client;
+using RichHudFramework.UI;
+using RichHudFramework.UI.Client;
+using Sandbox.ModAPI;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Remoting.Messaging;
-using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
-using RichHudFramework.Client;
-using RichHudFramework.UI.Client;
-using RichHudFramework.UI;
-using Sandbox.ModAPI;
 using VRage.Game.Components;
-using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 using VRageMath; // For Vector2, Vector4, Color
+using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 
 namespace Heart_Module.Data.Scripts.HeartModule.ResourceSystem

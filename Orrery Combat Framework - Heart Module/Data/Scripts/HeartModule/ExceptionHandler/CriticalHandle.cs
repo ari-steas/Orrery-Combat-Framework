@@ -35,7 +35,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
                     MyAPIGateway.Session.Unload(); // This might cause improver unloading
                     MyAPIGateway.Session.UnloadDataComponents();
                 }
-                    
+
             }
 
             if (!MyAPIGateway.Utilities.IsDedicated)

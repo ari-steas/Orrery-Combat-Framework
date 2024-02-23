@@ -132,7 +132,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
 
             if (maxGs >= 0)
             {
-                double gravityLimited = Definition.PhysicalProjectile.Velocity / (maxGs*9.81); // I swear to god I did the math for this, it really is that easy.
+                double gravityLimited = Definition.PhysicalProjectile.Velocity / (maxGs * 9.81); // I swear to god I did the math for this, it really is that easy.
 
                 actualTurnRate = Math.Min(gravityLimited, actualTurnRate);
             }

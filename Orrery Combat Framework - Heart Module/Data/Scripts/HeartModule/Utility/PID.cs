@@ -42,7 +42,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
     public class VectorPID
     {
         public double kIntegral
-        { 
+        {
             get
             {
                 return x.kIntegral;

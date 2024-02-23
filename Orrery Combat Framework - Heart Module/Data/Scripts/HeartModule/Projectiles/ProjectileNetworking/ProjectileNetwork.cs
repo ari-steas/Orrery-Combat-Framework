@@ -50,7 +50,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             foreach (var player in HeartData.I.Players)
                 QueueSync_FireEvent(player, projectile);
         }
-        
+
         /// <summary>
         /// Enqueues a FireEvent.
         /// </summary>
@@ -100,7 +100,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                     {
                         p.Position = projectileInfos.PlayerRelativePosition(i) + MyAPIGateway.Session.Player.Character.GetPosition();
                         p.Direction = projectileInfos.Direction(i);
-                        p.LastUpdate = DateTime.UtcNow.Date.AddMilliseconds(projectileInfos.MillisecondsFromMidnight + HeartData.I.Net.ServerTimeOffset).Ticks;
+                        p.LastUpdate = DateTime.UtcNow.Date.AddMilliseconds(projectileInfos.MillisecondsFromMidnight - HeartData.I.Net.ServerTimeOffset).Ticks;
 
                         if (projectileInfos.ProjectileAge != null)
                             p.Age = projectileInfos.ProjectileAge[i];
