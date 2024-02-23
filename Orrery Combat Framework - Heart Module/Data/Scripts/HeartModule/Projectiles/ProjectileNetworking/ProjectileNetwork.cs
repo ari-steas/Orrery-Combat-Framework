@@ -190,25 +190,29 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
 
         private void SyncPlayerProjectiles(IMyPlayer player)
         {
-            if (player.Character == null) // TODO: Proper handling for spectator
-                return;
-
-            if (!SyncStream_PP.ContainsKey(player.SteamUserId)) // Avoid breaking if the player somehow hasn't been added
+            // TODO: Distance based syncing.
+            if (player.Character != null) // TODO: Proper handling for spectator
             {
-                SoftHandle.RaiseSyncException("Player " + player.DisplayName + " is missing projectile sync queue!");
-                return;
+                if (!SyncStream_PP.ContainsKey(player.SteamUserId)) // Avoid breaking if the player somehow hasn't been added
+                {
+                    SoftHandle.RaiseSyncException("Player " + player.DisplayName + " is missing projectile sync queue!");
+                    return;
+                }
+
+                // Full Projectile Packets
+                List<Projectile> PPProjectiles = new List<Projectile>();
+                for (int i = 0; SyncStream_PP[player.SteamUserId].Count > 0 && i < ProjectilesPerPacket; i++) // Add up to (n) projectiles to the queue
+                    PPProjectiles.Add(SyncStream_PP[player.SteamUserId].Dequeue());
+
+                if (PPProjectiles.Count > 0)
+                {
+                    n_SerializableProjectileInfos ppInfos = new n_SerializableProjectileInfos(PPProjectiles, player.Character);
+                    HeartData.I.Net.SendToPlayer(ppInfos, player.SteamUserId);
+                }
             }
 
-            // Full Projectile Packets
-            List<Projectile> PPProjectiles = new List<Projectile>();
-            for (int i = 0; SyncStream_PP[player.SteamUserId].Count > 0 && i < ProjectilesPerPacket; i++) // Add up to (n) projectiles to the queue
-                PPProjectiles.Add(SyncStream_PP[player.SteamUserId].Dequeue());
-
-            if (PPProjectiles.Count > 0)
-            {
-                n_SerializableProjectileInfos ppInfos = new n_SerializableProjectileInfos(PPProjectiles, player.Character);
-                HeartData.I.Net.SendToPlayer(ppInfos, player.SteamUserId);
-            }
+            if (SyncStream_FireEvent[player.SteamUserId].Count > 0)
+                HeartData.I.Log.Log("FESync: " + SyncStream_FireEvent[player.SteamUserId].Count);
 
             // FireEvent packets (these are smaller but less precise)
             List<Projectile> FEProjectiles = new List<Projectile>();

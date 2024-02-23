@@ -34,9 +34,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public MySync<bool, SyncDirection.BothWays> ShootState; //temporary (lmao) magic bullshit in place of actual packet sending
         //insert ammo loaded state here (how the hell are we gonna do that)
-        public MySync<long, SyncDirection.BothWays> AmmoLoadedState;          //dang this mysync thing is pretty cool it will surely not bite me in the ass when I need over 32 entries      
-        public MySync<long, SyncDirection.BothWays> ControlTypeState;
-        public MySync<bool, SyncDirection.BothWays> HudBarrelIndicatorState;
+        public MySync<long, SyncDirection.BothWays> AmmoLoadedState = null;          //dang this mysync thing is pretty cool it will surely not bite me in the ass when I need over 32 entries      
+        public MySync<long, SyncDirection.BothWays> ControlTypeState = null;
+        public MySync<bool, SyncDirection.BothWays> HudBarrelIndicatorState = null;
 
         public readonly Heart_Settings Settings = new Heart_Settings();
 
