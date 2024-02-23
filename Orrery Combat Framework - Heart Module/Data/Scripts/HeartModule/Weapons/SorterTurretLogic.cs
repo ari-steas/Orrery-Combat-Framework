@@ -8,6 +8,7 @@ using System;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI.Network;
 using VRage.ModAPI;
+using VRage.Network;
 using VRage.Sync;
 using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons;
@@ -16,7 +17,7 @@ using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
     //[MyEntityComponentDescriptor(typeof(MyObjectBuilder_ConveyorSorter), false, "TestWeaponTurret")]
-    public partial class SorterTurretLogic : SorterWeaponLogic
+    public partial class SorterTurretLogic : SorterWeaponLogic, IMyEventProxy
     {
         internal float Azimuth = 0; // lol and lmao
         internal float Elevation = 0;
