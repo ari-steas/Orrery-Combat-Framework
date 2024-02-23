@@ -185,7 +185,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                 ((IMyCubeBlock)MyAPIGateway.Entities.GetEntityById(FirerEntityId[index]))?.CubeGrid.LinearVelocity ?? Vector3D.Zero
                 )
             {
-                LastUpdate = DateTime.UtcNow.Date.AddMilliseconds(MillisecondsFromMidnight - HeartData.I.Net.ServerTimeOffset).Ticks
+                LastUpdate = DateTime.UtcNow.Date.AddMilliseconds(MillisecondsFromMidnight + HeartData.I.Net.ServerTimeOffset).Ticks
             };
 
             if (ProjectileAge != null)
@@ -293,7 +293,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                 weapon?.SorterWep?.CubeGrid.LinearVelocity ?? Vector3D.Zero
                 )
             {
-                LastUpdate = DateTime.UtcNow.Date.AddMilliseconds(MillisecondsFromMidnight - HeartData.I.Net.ServerTimeOffset).Ticks
+                LastUpdate = DateTime.UtcNow.Date.AddMilliseconds(MillisecondsFromMidnight + HeartData.I.Net.ServerTimeOffset).Ticks
             };
             
             if (p.Guidance != null) // Assign target for self-guided projectiles
@@ -305,7 +305,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             }
 
             // TODO: Look into engine tick based syncing? Server time can vary DRASTICALLY.
-            float delta = (float)((DateTime.UtcNow.TimeOfDay.TotalMilliseconds - (MillisecondsFromMidnight - HeartData.I.Net.ServerTimeOffset)) / 1000d);
+            float delta = (float)((DateTime.UtcNow.TimeOfDay.TotalMilliseconds - (MillisecondsFromMidnight + HeartData.I.Net.ServerTimeOffset)) / 1000d);
             if (delta < 0f)
                 delta = 0;
             HeartLog.Log("delta " + delta + " | CurrentDelta: " + delta + $"\n        TotalMillis: {DateTime.UtcNow.TimeOfDay.TotalMilliseconds}\n        MsFromMidnight: {MillisecondsFromMidnight}\n        Offset: {HeartData.I.Net.ServerTimeOffset}");
