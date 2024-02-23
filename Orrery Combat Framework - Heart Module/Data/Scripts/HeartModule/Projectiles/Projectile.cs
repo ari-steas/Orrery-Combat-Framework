@@ -34,6 +34,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             p.Definition.LiveMethods.OnEndOfLife?.Invoke(p.Id);
         };
+
+        /// <summary>
+        /// LastUpdate in absolute TICKS
+        /// </summary>
         public long LastUpdate { get; set; }
 
         public float DistanceTravelled { get; private set; } = 0;

@@ -298,6 +298,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             }
 
             float delta = (DateTime.Now.Ticks - p.LastUpdate) / (float)TimeSpan.TicksPerSecond;
+            HeartData.I.Log.Log("WHAT " + delta);
             p.TickUpdate(delta);
 
             return p;
