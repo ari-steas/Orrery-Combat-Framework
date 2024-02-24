@@ -206,6 +206,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                 }
             }
 
+            if (SyncStream_FireEvent[player.SteamUserId].Count > 0)
+                HeartLog.Log("FEStream Count: " + SyncStream_FireEvent[player.SteamUserId].Count);
+
             // FireEvent packets (these are smaller but less precise)
             List<Projectile> FEProjectiles = new List<Projectile>();
             for (int i = 0; SyncStream_FireEvent[player.SteamUserId].Count > 0 && i < ProjectilesPerPacket; i++) // Add up to (n) projectiles to the queue

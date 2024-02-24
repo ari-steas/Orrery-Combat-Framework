@@ -274,6 +274,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
 
         public Projectile ToProjectile(int index)
         {
+            HeartLog.Log("StartSpawn");
             SorterWeaponLogic weapon = WeaponManager.I.GetWeapon(FirerEntityId[index]);
 
             if (weapon == null)

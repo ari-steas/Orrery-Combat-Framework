@@ -1,4 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
@@ -160,6 +161,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             while (!IsIdAvailable(NextId))
                 NextId++;
             projectile.SetId(NextId);
+            HeartLog.Log("SpawnProjectile " + projectile.Id + " | " + projectile.Definition.Networking.NetworkingMode);
             ActiveProjectiles.Add(projectile.Id, projectile);
             if (MyAPIGateway.Session.IsServer && shouldSync)
             {
