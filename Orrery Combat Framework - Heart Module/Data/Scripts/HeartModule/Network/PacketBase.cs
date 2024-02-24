@@ -3,6 +3,7 @@ using Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using ProtoBuf;
+using YourName.ModName.Data.Scripts.HeartModule.Weapons;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Network
 {
@@ -16,6 +17,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
     [ProtoInclude(8, typeof(n_SerializableProjectileInfos))]
     [ProtoInclude(9, typeof(n_SerializableFireEvents))]
     [ProtoInclude(10, typeof(n_TimeSyncPacket))]
+    [ProtoInclude(11, typeof(Heart_Settings))]
     [ProtoContract(UseProtoMembersOnly = true)]
     public abstract partial class PacketBase
     {

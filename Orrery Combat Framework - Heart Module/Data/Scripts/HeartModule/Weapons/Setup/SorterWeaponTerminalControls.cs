@@ -112,8 +112,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                    "HeartWeaponShoot",
                    "Toogle Shoot",
                    "TargetGridsDesc",
-                   (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Shoot,
-                   (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_Shoot = v
+                   (b) => b.GameLogic.GetAs<SorterWeaponLogic>().ShootState,
+                   (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().ShootState = v
                    );
             }
             {
@@ -121,8 +121,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                    "HeartWeaponMouseShoot",
                    "Toogle Mouse Shoot",
                    "TargetGridsDesc",
-                   (b) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_MouseShoot,
-                   (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_MouseShoot = v
+                   (b) => b.GameLogic.GetAs<SorterWeaponLogic>().MouseShootState,
+                   (b, v) => b.GameLogic.GetAs<SorterWeaponLogic>().MouseShootState = v
                    );
             }
             //{
@@ -161,7 +161,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     }
                     return -1; // Return a default value (e.g., -1) when the index is out of bounds
                 };
-                AmmoComboBox.Setter = (b, key) => b.GameLogic.GetAs<SorterWeaponLogic>().Terminal_Heart_AmmoComboBox = (int)key;
+                AmmoComboBox.Setter = (b, key) => b.GameLogic.GetAs<SorterWeaponLogic>().AmmoComboBox = (int)key;
                 //AmmoComboBox.ComboBoxContent = HeartData.I.AmmoComboBoxSetter; // Set combo box based on what's open
 
                 MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(AmmoComboBox);
@@ -180,9 +180,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "HeartSliderDesc",
                     0,
                     10000,
-                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_Range_Slider,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_Range_Slider = v,
-                    (b, sb) => sb.Append($"Current value: {Math.Round(b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_Range_Slider)}")
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().AiRange,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().AiRange = v,
+                    (b, sb) => sb.Append($"Current value: {Math.Round(b.GameLogic.GetAs<SorterTurretLogic>().AiRange)}")
                     )
                     .SetLimits(
                     (b) => b.GameLogic.GetAs<SorterTurretLogic>().Definition.Targeting.MinTargetingRange,
@@ -194,8 +194,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "HeartTargetUnique",
                     "Prefer Unique Targets",
                     "TargetUniqueDesc",
-                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_PreferUniqueTargets,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_PreferUniqueTargets = v
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().PreferUniqueTargetsState,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().PreferUniqueTargetsState = v
                     );
             }
             {
@@ -203,8 +203,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "HeartTargetGrids",
                     "Target Grids",
                     "TargetGridsDesc",
-                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetGrids,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetGrids = v,
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().TargetGridsState,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().TargetGridsState = v,
                     // Hide controls if not allowed to target
                     (b) => ((b.GameLogic?.GetAs<SorterTurretLogic>()?.Definition.Targeting.AllowedTargetTypes ?? 0) & TargetType_Enum.TargetGrids) == TargetType_Enum.TargetGrids
                     );
@@ -214,8 +214,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "HeartTargetLargeGrids",
                     "Target Large Grids",
                     "TargetLargeGridsDesc",
-                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetLargeGrids,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetLargeGrids = v,
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().TargetLargeGridsState,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().TargetLargeGridsState = v,
                     (b) => ((b.GameLogic?.GetAs<SorterTurretLogic>()?.Definition.Targeting.AllowedTargetTypes ?? 0) & TargetType_Enum.TargetGrids) == TargetType_Enum.TargetGrids
                     );
             }
@@ -224,8 +224,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "HeartTargetSmallGrids",
                     "Target Small Grids",
                     "TargetSmallGridsDesc",
-                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetSmallGrids,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetSmallGrids = v,
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().TargetSmallGridsState,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().TargetSmallGridsState = v,
                     (b) => ((b.GameLogic?.GetAs<SorterTurretLogic>()?.Definition.Targeting.AllowedTargetTypes ?? 0) & TargetType_Enum.TargetGrids) == TargetType_Enum.TargetGrids
                     );
             }
@@ -234,8 +234,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "HeartTargetProjectiles",
                     "Target Projectiles",
                     "TargetProjectilesDesc",
-                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetProjectiles,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetProjectiles = v,
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().TargetProjectilesState,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().TargetProjectilesState = v,
                     (b) => ((b.GameLogic?.GetAs<SorterTurretLogic>()?.Definition.Targeting.AllowedTargetTypes ?? 0) & TargetType_Enum.TargetProjectiles) == TargetType_Enum.TargetProjectiles
                     );
             }
@@ -244,8 +244,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "HeartTargetCharacters",
                     "Target Characters",
                     "TargetCharactersDesc",
-                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetCharacters,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetCharacters = v,
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().TargetCharactersState,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().TargetCharactersState = v,
                     (b) => ((b.GameLogic?.GetAs<SorterTurretLogic>()?.Definition.Targeting.AllowedTargetTypes ?? 0) & TargetType_Enum.TargetCharacters) == TargetType_Enum.TargetCharacters
                     );
             }
@@ -254,8 +254,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "HeartTargetFriendlies",
                     "Target Friendlies",
                     "TargetFriendliesDesc",
-                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetFriendlies,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetFriendlies = v
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().TargetFriendliesState,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().TargetFriendliesState = v
                     );
             }
             {
@@ -263,8 +263,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "HeartTargetNeutrals",
                     "Target Neutrals",
                     "TargetNeutralsDesc",
-                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetNeutrals,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetNeutrals = v
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().TargetNeutralsState,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().TargetNeutralsState = v
                     );
             }
             {
@@ -272,8 +272,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "HeartTargetEnemies",
                     "Target Enemies",
                     "TargetEnemiesDesc",
-                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetEnemies,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetEnemies = v
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().TargetEnemiesState,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().TargetEnemiesState = v
                     );
             }
             {
@@ -281,8 +281,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "HeartTargetUnowned",
                     "Target Unowned",
                     "TargetUnownedDesc",
-                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetUnowned,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_TargetUnowned = v
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().TargetUnownedState,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().TargetUnownedState = v
                     );
             }
             {
@@ -297,8 +297,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "HeartHUDBarrelIndicatorToggle",
                     "HUD Barrel Indicator",
                     "HUDBarrelIndicatorDesc",
-                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_ToggleHUDBarrelIndicator,
-                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().Terminal_Heart_ToggleHUDBarrelIndicator = v
+                    (b) => b.GameLogic.GetAs<SorterTurretLogic>().HudBarrelIndicatorState,
+                    (b, v) => b.GameLogic.GetAs<SorterTurretLogic>().HudBarrelIndicatorState = v
                     );
             }
         }
@@ -315,7 +315,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         if (logic != null)
                         {
                             // Toggle the "Shoot" option and ensure sync
-                            logic.Terminal_Heart_Shoot = !logic.Terminal_Heart_Shoot; // Toggling the value
+                            logic.ShootState = !logic.ShootState; // Toggling the value
                         }
                     },
                     (b, sb) =>
@@ -323,7 +323,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
                         if (logic != null)
                         {
-                            sb.Append(logic.Terminal_Heart_Shoot ? "Shoot ON" : "Shoot OFF");
+                            sb.Append(logic.ShootState ? "Shoot ON" : "Shoot OFF");
                         }
                     },
                     @"Textures\GUI\Icons\Actions\Toggle.dds"
@@ -339,7 +339,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         if (logic != null)
                         {
                             // Toggle the "Shoot" option and ensure sync
-                            logic.Terminal_Heart_MouseShoot = !logic.Terminal_Heart_MouseShoot; // Toggling the value
+                            logic.MouseShootState = !logic.MouseShootState; // Toggling the value
                         }
                     },
                     (b, sb) =>
@@ -347,7 +347,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
                         if (logic != null)
                         {
-                            sb.Append(logic.Terminal_Heart_MouseShoot ? "Mouse ON" : "Mouse OFF");
+                            sb.Append(logic.MouseShootState ? "Mouse ON" : "Mouse OFF");
                         }
                     },
                     @"Textures\GUI\Icons\Actions\Toggle.dds"
@@ -388,7 +388,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
                         if (logic != null)
                         {
-                            sb.Append($"{logic.Terminal_Heart_Range_Slider} Range");
+                            sb.Append($"{logic.AiRange} Range");
                         }
                     },
                     @"Textures\GUI\Icons\Actions\Increase.dds"
@@ -407,7 +407,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     {
                         var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
                         if (logic != null)
-                            sb.Append($"{logic.Terminal_Heart_Range_Slider} Range");
+                            sb.Append($"{logic.AiRange} Range");
                     },
                     @"Textures\GUI\Icons\Actions\Decrease.dds"
                     );
@@ -420,13 +420,13 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     {
                         var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
                         if (logic != null)
-                            logic.Terminal_Heart_PreferUniqueTargets = !logic.Terminal_Heart_PreferUniqueTargets; // Toggling the value
+                            logic.PreferUniqueTargetsState = !logic.PreferUniqueTargetsState; // Toggling the value
                     },
                     (b, sb) =>
                     {
                         var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
                         if (logic != null)
-                            sb.Append(logic.Terminal_Heart_PreferUniqueTargets ? "Grid ON" : "Grid OFF");
+                            sb.Append(logic.PreferUniqueTargetsState ? "Grid ON" : "Grid OFF");
                     },
                     @"Textures\GUI\Icons\Actions\Toggle.dds"
                     );
@@ -441,7 +441,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         if (logic != null)
                         {
                             // Toggle the "Target Grids" option and ensure sync
-                            logic.Terminal_Heart_TargetGrids = !logic.Terminal_Heart_TargetGrids; // Toggling the value
+                            logic.TargetGridsState = !logic.TargetGridsState; // Toggling the value
                         }
                     },
                     (b, sb) =>
@@ -449,7 +449,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
                         if (logic != null)
                         {
-                            sb.Append(logic.Terminal_Heart_TargetGrids ? "Grid ON" : "Grid OFF");
+                            sb.Append(logic.TargetGridsState ? "Grid ON" : "Grid OFF");
                         }
                     },
                     @"Textures\GUI\Icons\Actions\Toggle.dds"
@@ -465,7 +465,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         if (logic != null)
                         {
                             // Toggle the "Target Large Grids" option and ensure sync
-                            logic.Terminal_Heart_TargetLargeGrids = !logic.Terminal_Heart_TargetLargeGrids; // Toggling the value
+                            logic.TargetLargeGridsState = !logic.TargetLargeGridsState; // Toggling the value
                         }
                     },
                     (b, sb) =>
@@ -473,7 +473,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
                         if (logic != null)
                         {
-                            sb.Append(logic.Terminal_Heart_TargetLargeGrids ? "LGrid ON" : "LGrid OFF");
+                            sb.Append(logic.TargetLargeGridsState ? "LGrid ON" : "LGrid OFF");
                         }
                     },
                     @"Textures\GUI\Icons\Actions\Toggle.dds"
@@ -489,7 +489,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         if (logic != null)
                         {
                             // Toggle the "Target Small Grids" option and ensure sync
-                            logic.Terminal_Heart_TargetSmallGrids = !logic.Terminal_Heart_TargetSmallGrids; // Toggling the value
+                            logic.TargetSmallGridsState = !logic.TargetSmallGridsState; // Toggling the value
                         }
                     },
                     (b, sb) =>
@@ -497,7 +497,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
                         if (logic != null)
                         {
-                            sb.Append(logic.Terminal_Heart_TargetSmallGrids ? "SGrid ON" : "SGrid OFF");
+                            sb.Append(logic.TargetSmallGridsState ? "SGrid ON" : "SGrid OFF");
                         }
                     },
                     @"Textures\GUI\Icons\Actions\Toggle.dds"
@@ -513,7 +513,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         if (logic != null)
                         {
                             // Toggle the targeting of projectiles and ensure sync
-                            logic.Terminal_Heart_TargetProjectiles = !logic.Terminal_Heart_TargetProjectiles; // Toggling the value
+                            logic.TargetProjectilesState = !logic.TargetProjectilesState; // Toggling the value
                         }
                     },
                     (b, sb) =>
@@ -521,7 +521,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
                         if (logic != null)
                         {
-                            sb.Append(logic.Terminal_Heart_TargetProjectiles ? "Proj. ON" : "Proj. OFF");
+                            sb.Append(logic.TargetProjectilesState ? "Proj. ON" : "Proj. OFF");
                         }
                     },
                     @"Textures\GUI\Icons\Actions\Toggle.dds"
@@ -537,7 +537,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         if (logic != null)
                         {
                             // Toggle the "Target Characters" option and ensure sync
-                            logic.Terminal_Heart_TargetCharacters = !logic.Terminal_Heart_TargetCharacters; // Toggling the value
+                            logic.TargetCharactersState = !logic.TargetCharactersState; // Toggling the value
                         }
                     },
                     (b, sb) =>
@@ -545,7 +545,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
                         if (logic != null)
                         {
-                            sb.Append(logic.Terminal_Heart_TargetCharacters ? "Char. ON" : "Char. OFF");
+                            sb.Append(logic.TargetCharactersState ? "Char. ON" : "Char. OFF");
                         }
                     },
                     @"Textures\GUI\Icons\Actions\Toggle.dds"
@@ -561,7 +561,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         if (logic != null)
                         {
                             // Toggle the "Target Friendlies" option and ensure sync
-                            logic.Terminal_Heart_TargetFriendlies = !logic.Terminal_Heart_TargetFriendlies; // Toggling the value
+                            logic.TargetFriendliesState = !logic.TargetFriendliesState; // Toggling the value
                         }
                     },
                     (b, sb) =>
@@ -569,7 +569,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
                         if (logic != null)
                         {
-                            sb.Append(logic.Terminal_Heart_TargetFriendlies ? "Fr. ON" : "Fr. OFF");
+                            sb.Append(logic.TargetFriendliesState ? "Fr. ON" : "Fr. OFF");
                         }
                     },
                     @"Textures\GUI\Icons\Actions\Toggle.dds"
@@ -585,7 +585,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         if (logic != null)
                         {
                             // Toggle the "Target Neutrals" option and ensure sync
-                            logic.Terminal_Heart_TargetNeutrals = !logic.Terminal_Heart_TargetNeutrals; // Toggling the value
+                            logic.TargetNeutralsState = !logic.TargetNeutralsState; // Toggling the value
                         }
                     },
                     (b, sb) =>
@@ -593,7 +593,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
                         if (logic != null)
                         {
-                            sb.Append(logic.Terminal_Heart_TargetNeutrals ? "Neu. ON" : "Neu. OFF");
+                            sb.Append(logic.TargetNeutralsState ? "Neu. ON" : "Neu. OFF");
                         }
                     },
                     @"Textures\GUI\Icons\Actions\Toggle.dds"
@@ -609,7 +609,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         if (logic != null)
                         {
                             // Toggle the "Target Enemies" option and ensure sync
-                            logic.Terminal_Heart_TargetEnemies = !logic.Terminal_Heart_TargetEnemies; // Toggling the value
+                            logic.TargetEnemiesState = !logic.TargetEnemiesState; // Toggling the value
                         }
                     },
                     (b, sb) =>
@@ -617,7 +617,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
                         if (logic != null)
                         {
-                            sb.Append(logic.Terminal_Heart_TargetEnemies ? "Enem. ON" : "Enem. OFF");
+                            sb.Append(logic.TargetEnemiesState ? "Enem. ON" : "Enem. OFF");
                         }
                     },
                     @"Textures\GUI\Icons\Actions\Toggle.dds"
@@ -633,7 +633,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         if (logic != null)
                         {
                             // Toggle the "Target Unowned" option and ensure sync
-                            logic.Terminal_Heart_TargetUnowned = !logic.Terminal_Heart_TargetUnowned; // Toggling the value
+                            logic.TargetUnownedState = !logic.TargetUnownedState; // Toggling the value
                         }
                     },
                     (b, sb) =>
@@ -641,7 +641,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
                         if (logic != null)
                         {
-                            sb.Append(logic.Terminal_Heart_TargetUnowned ? "Unow. ON" : "Unow. OFF");
+                            sb.Append(logic.TargetUnownedState ? "Unow. ON" : "Unow. OFF");
                         }
                     },
                     @"Textures\GUI\Icons\Actions\Toggle.dds"
@@ -658,7 +658,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         if (logic != null)
                         {
                             // Toggle the "Target Unowned" option and ensure sync
-                            logic.Terminal_Heart_ToggleHUDBarrelIndicator = !logic.Terminal_Heart_ToggleHUDBarrelIndicator; // Toggling the value
+                            logic.HudBarrelIndicatorState = !logic.HudBarrelIndicatorState; // Toggling the value
                         }
                     },
                     (b, sb) =>
@@ -666,7 +666,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
                         if (logic != null)
                         {
-                            sb.Append(logic.Terminal_Heart_ToggleHUDBarrelIndicator ? "Ind. ON" : "Ind. OFF");
+                            sb.Append(logic.HudBarrelIndicatorState ? "Ind. ON" : "Ind. OFF");
                         }
                     },
                     @"Textures\GUI\Icons\Actions\Toggle.dds"

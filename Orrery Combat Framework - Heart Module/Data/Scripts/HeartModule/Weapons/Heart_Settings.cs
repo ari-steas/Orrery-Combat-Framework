@@ -1,10 +1,30 @@
+using Heart_Module.Data.Scripts.HeartModule;
+using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
+using Heart_Module.Data.Scripts.HeartModule.Network;
+using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using ProtoBuf;
+using Sandbox.ModAPI;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
 {
     [ProtoContract(UseProtoMembersOnly = true)]
-    public class Heart_Settings
+    public class Heart_Settings : PacketBase // this will ABSOLUTELY bite me in the ass later.
     {
+        public void Sync()
+        {
+            if (MyAPIGateway.Session.IsServer)
+            {
+                HeartData.I.Net.SendToEveryone(this);
+                HeartLog.Log("Sent settings to all");
+            }
+            else
+            {
+                HeartData.I.Net.SendToServer(this);
+                HeartLog.Log("Sent settings to server");
+            }
+        }
+
         [ProtoMember(1)]
         public bool ShootState;
 
@@ -52,5 +72,22 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
 
         [ProtoMember(16)]
         public bool HudBarrelIndicatorState;
+
+        [ProtoMember(17)]
+        public long WeaponEntityId;
+
+        public override void Received(ulong SenderSteamId)
+        {
+            var weapon = WeaponManager.I.GetWeapon(WeaponEntityId);
+            if (weapon == null)
+            {
+                SoftHandle.RaiseSyncException("Unable to find weapon for settings sync!");
+                return;
+            }
+            weapon.Settings = this;
+
+            if (MyAPIGateway.Session.IsServer)
+                Sync();
+        }
     }
 }

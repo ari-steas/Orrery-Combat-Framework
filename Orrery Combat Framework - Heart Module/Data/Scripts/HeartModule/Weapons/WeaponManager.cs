@@ -186,8 +186,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             bool isMousePressed = MyAPIGateway.Input.IsMousePressed(VRage.Input.MyMouseButtonsEnum.Left);
 
             foreach (var weapon in GridWeapons[grid])
-                if (weapon.Terminal_Heart_MouseShoot && weapon.Terminal_Heart_Shoot != isMousePressed)
-                    weapon.Terminal_Heart_Shoot = isMousePressed;
+                if (weapon.MouseShootState && weapon.ShootState != isMousePressed)
+                    weapon.ShootState = isMousePressed;
         }
 
         public void Update25()
