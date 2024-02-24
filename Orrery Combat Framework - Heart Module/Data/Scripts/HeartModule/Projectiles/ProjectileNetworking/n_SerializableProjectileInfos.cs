@@ -274,6 +274,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
 
         public Projectile ToProjectile(int index)
         {
+            HeartLog.Log("StartSpawn");
             SorterWeaponLogic weapon = WeaponManager.I.GetWeapon(FirerEntityId[index]);
 
             if (weapon == null)
@@ -284,7 +285,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
 
             Projectile p = new Projectile(
                 weapon.Magazines.SelectedAmmo,
-                weapon.CalcMuzzleMatrix(0).Translation,
+                weapon.CalcMuzzleMatrix(weapon.NextMuzzleIdx).Translation,
                 Direction(index),
                 FirerEntityId[index],
                 weapon?.SorterWep?.CubeGrid.LinearVelocity ?? Vector3D.Zero

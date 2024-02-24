@@ -153,9 +153,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         float lastShoot = 0;
         internal bool AutoShoot = false;
-        int nextBarrel = 0; // For alternate firing
+        public int NextMuzzleIdx = 0; // For alternate firing
         public float delayCounter = 0f;
-        private Random random = new Random();
+        private readonly Random random = new Random();
 
         public virtual void TryShoot()
         {
@@ -207,10 +207,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                         ProjectileDefinitionBase ammoDef = ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmo);
                         for (int i = 0; i < Definition.Loading.BarrelsPerShot; i++)
                         {
-                            nextBarrel++;
-                            nextBarrel %= Definition.Assignments.Muzzles.Length;
+                            NextMuzzleIdx++;
+                            NextMuzzleIdx %= Definition.Assignments.Muzzles.Length;
 
-                            MatrixD muzzleMatrix = CalcMuzzleMatrix(nextBarrel);
+                            MatrixD muzzleMatrix = CalcMuzzleMatrix(NextMuzzleIdx);
                             Vector3D muzzlePos = muzzleMatrix.Translation;
 
                             for (int j = 0; j < Definition.Loading.ProjectilesPerBarrel; j++)
@@ -297,8 +297,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         {
             if (Definition.Visuals.HasShootParticle && !HeartData.I.DegradedMode)
             {
-                MatrixD localMuzzleMatrix = CalcMuzzleMatrix(nextBarrel, true);
-                MatrixD muzzleMatrix = CalcMuzzleMatrix(nextBarrel);
+                MatrixD localMuzzleMatrix = CalcMuzzleMatrix(NextMuzzleIdx, true);
+                MatrixD muzzleMatrix = CalcMuzzleMatrix(NextMuzzleIdx);
                 Vector3D muzzlePos = muzzleMatrix.Translation;
 
                 MyParticleEffect hitEffect;

@@ -1,4 +1,5 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
@@ -56,6 +57,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                 return;
 
             SyncStream_FireEvent[player.SteamUserId].Enqueue(projectile);
+            HeartLog.Log("Enqueued fireEvent projectile " + projectile.Id);
         }
 
         /// <summary>
@@ -203,6 +205,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                     HeartData.I.Net.SendToPlayer(ppInfos, player.SteamUserId);
                 }
             }
+
+            if (SyncStream_FireEvent[player.SteamUserId].Count > 0)
+                HeartLog.Log("FEStream Count: " + SyncStream_FireEvent[player.SteamUserId].Count);
 
             // FireEvent packets (these are smaller but less precise)
             List<Projectile> FEProjectiles = new List<Projectile>();
