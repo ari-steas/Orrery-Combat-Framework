@@ -7,6 +7,7 @@ using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using ProtoBuf;
 using Sandbox.ModAPI;
+using System;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
 {
@@ -37,62 +38,6 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
             HeartData.I.Net.SendToServer(new Heart_Settings() { IsSyncRequest = true, WeaponEntityId = weaponEntityId });
         }
 
-        [ProtoMember(1)]
-        public bool ShootState;
-
-        [ProtoMember(2)]
-        public int AmmoLoadedId;
-
-        [ProtoMember(3)]
-        public float AiRange;
-
-        [ProtoMember(4)]
-        public bool TargetGridsState;
-
-        [ProtoMember(5)]
-        public bool TargetLargeGridsState;
-
-        [ProtoMember(6)]
-        public bool TargetSmallGridsState;
-
-        [ProtoMember(7)]
-        public bool TargetProjectilesState;
-
-        [ProtoMember(8)]
-        public bool TargetCharactersState;
-
-        [ProtoMember(9)]
-        public bool TargetFriendliesState;
-
-        [ProtoMember(10)]
-        public bool TargetNeutralsState;
-
-        [ProtoMember(11)]
-        public bool TargetEnemiesState;
-
-        [ProtoMember(12)]
-        public bool TargetUnownedState;
-
-        [ProtoMember(13)]
-        public long ControlTypeState;
-
-        [ProtoMember(14)]
-        public bool PreferUniqueTargetState;
-
-        [ProtoMember(15)]
-        public bool MouseShootState;
-
-        [ProtoMember(16)]
-        public bool HudBarrelIndicatorState;
-
-        [ProtoMember(17)]
-        public long WeaponEntityId;
-
-        [ProtoMember(18)]
-        public bool IsSyncRequest;
-
-        // TODO: Use bitflags for booleans to save performance
-
         public override void Received(ulong SenderSteamId)
         {
             //HeartLog.Log("Recieve called: Sender: " + SenderSteamId + " | Self: " + HeartData.I.SteamId + "\n" + ToString());
@@ -116,9 +61,234 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
                 weapon.Settings.Sync();
         }
 
-        public override string ToString()
+        [ProtoMember(1)]
+        internal int ShootStateContainer;
+
+        [ProtoMember(2)]
+        public int AmmoLoadedId;
+
+        [ProtoMember(3)]
+        public float AiRange;
+
+        [ProtoMember(4)]
+        internal int TargetStateContainer;
+
+        [ProtoMember(5)]
+        public long ControlTypeState;
+
+        [ProtoMember(6)]
+        public long WeaponEntityId;
+
+        #region ShootStates
+
+        public bool ShootState
         {
-            return $"ShootState: {ShootState}\nAmmoLoadedId: {AmmoLoadedId} ({ProjectileDefinitionManager.GetDefinition(AmmoLoadedId).Name})\nAiRange: {AiRange}\nTargetGridsState: {TargetGridsState}\nTargetLargeGridsState: {TargetLargeGridsState}";
+            get
+            {
+                return ExpandValue(ShootStateContainer, ShootStates.Shoot);
+            }
+            set
+            {
+                CompressValue(ref ShootStateContainer, ShootStates.Shoot, value);
+            }
+        }
+
+        public bool MouseShootState
+        {
+            get
+            {
+                return ExpandValue(ShootStateContainer, ShootStates.MouseShoot);
+            }
+            set
+            {
+                CompressValue(ref ShootStateContainer, ShootStates.MouseShoot, value);
+            }
+        }
+
+        public bool HudBarrelIndicatorState
+        {
+            get
+            {
+                return ExpandValue(ShootStateContainer, ShootStates.HudBarrelIndicator);
+            }
+            set
+            {
+                CompressValue(ref ShootStateContainer, ShootStates.HudBarrelIndicator, value);
+            }
+        }
+
+        public bool IsSyncRequest
+        {
+            get
+            {
+                return ExpandValue(ShootStateContainer, ShootStates.IsSyncRequest);
+            }
+            set
+            {
+                CompressValue(ref ShootStateContainer, ShootStates.IsSyncRequest, value);
+            }
+        }
+
+        #endregion
+
+        #region TargetingStates
+
+        public bool TargetGridsState
+        {
+            get
+            {
+                return ExpandValue(TargetStateContainer, TargetingSettingStates.TargetGrids);
+            }
+            set
+            {
+                CompressValue(ref TargetStateContainer, TargetingSettingStates.TargetGrids, value);
+            }
+        }
+
+        public bool TargetSmallGridsState
+        {
+            get
+            {
+                return ExpandValue(TargetStateContainer, TargetingSettingStates.TargetSmallGrids);
+            }
+            set
+            {
+                CompressValue(ref TargetStateContainer, TargetingSettingStates.TargetSmallGrids, value);
+            }
+        }
+
+        public bool TargetLargeGridsState
+        {
+            get
+            {
+                return ExpandValue(TargetStateContainer, TargetingSettingStates.TargetLargeGrids);
+            }
+            set
+            {
+                CompressValue(ref TargetStateContainer, TargetingSettingStates.TargetLargeGrids, value);
+            }
+        }
+
+        public bool TargetCharactersState
+        {
+            get
+            {
+                return ExpandValue(TargetStateContainer, TargetingSettingStates.TargetCharacters);
+            }
+            set
+            {
+                CompressValue(ref TargetStateContainer, TargetingSettingStates.TargetCharacters, value);
+            }
+        }
+
+        public bool TargetProjectilesState
+        {
+            get
+            {
+                return ExpandValue(TargetStateContainer, TargetingSettingStates.TargetProjectiles);
+            }
+            set
+            {
+                CompressValue(ref TargetStateContainer, TargetingSettingStates.TargetProjectiles, value);
+            }
+        }
+
+        public bool TargetEnemiesState
+        {
+            get
+            {
+                return ExpandValue(TargetStateContainer, TargetingSettingStates.TargetEnemies);
+            }
+            set
+            {
+                CompressValue(ref TargetStateContainer, TargetingSettingStates.TargetEnemies, value);
+            }
+        }
+
+        public bool TargetFriendliesState
+        {
+            get
+            {
+                return ExpandValue(TargetStateContainer, TargetingSettingStates.TargetFriendlies);
+            }
+            set
+            {
+                CompressValue(ref TargetStateContainer, TargetingSettingStates.TargetFriendlies, value);
+            }
+        }
+
+        public bool TargetNeutralsState
+        {
+            get
+            {
+                return ExpandValue(TargetStateContainer, TargetingSettingStates.TargetNeutrals);
+            }
+            set
+            {
+                CompressValue(ref TargetStateContainer, TargetingSettingStates.TargetNeutrals, value);
+            }
+        }
+
+        public bool TargetUnownedState
+        {
+            get
+            {
+                return ExpandValue(TargetStateContainer, TargetingSettingStates.TargetUnowned);
+            }
+            set
+            {
+                CompressValue(ref TargetStateContainer, TargetingSettingStates.TargetUnowned, value);
+            }
+        }
+
+        public bool PreferUniqueTargetState
+        {
+            get
+            {
+                return ExpandValue(TargetStateContainer, TargetingSettingStates.PreferUniqueTarget);
+            }
+            set
+            {
+                CompressValue(ref TargetStateContainer, TargetingSettingStates.PreferUniqueTarget, value);
+            }
+        }
+
+        #endregion
+
+
+        private bool ExpandValue(int bitwise, int enumValue)
+        {
+            return (bitwise & enumValue) == enumValue;
+        }
+
+        private void CompressValue(ref int bitwise, int enumValue, bool state)
+        {
+            if (state)
+                bitwise |= enumValue;
+            else
+                bitwise &= ~enumValue; // AND with negated enumValue
+        }
+
+        private static class TargetingSettingStates
+        {
+            public const int TargetGrids = 2;
+            public const int TargetLargeGrids = 4;
+            public const int TargetSmallGrids = 8;
+            public const int TargetProjectiles = 16;
+            public const int TargetCharacters = 32;
+            public const int TargetFriendlies = 64;
+            public const int TargetNeutrals = 128;
+            public const int TargetEnemies = 256;
+            public const int TargetUnowned = 512;
+            public const int PreferUniqueTarget = 1024;
+        }
+
+        private static class ShootStates
+        {
+            public const int Shoot = 1;
+            public const int MouseShoot = 2;
+            public const int HudBarrelIndicator = 4;
+            public const int IsSyncRequest = 8;
         }
     }
 }
