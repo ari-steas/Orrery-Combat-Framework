@@ -272,12 +272,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         internal override bool LoadSettings()
         {
-            if (!MyAPIGateway.Session.IsServer)
-            {
-                Settings.RequestSync();
-                return false;
-            }
-
             if (SorterWep.Storage == null)
             {
                 LoadDefaultSettings();

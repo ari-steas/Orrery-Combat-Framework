@@ -110,7 +110,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (!ShouldConsiderTarget(HeartUtils.GetRelationsBetweeenGrids(SorterWep.CubeGrid, targetGrid)))
                 return false;
 
-            Vector3D? intercept = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, SorterWep.CubeGrid.LinearVelocity, targetGrid, Magazines.SelectedAmmo); // Check if it can even hit
+            Vector3D? intercept = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, SorterWep.CubeGrid.LinearVelocity, targetGrid, Magazines.SelectedAmmoId); // Check if it can even hit
             return intercept != null && CanAimAtTarget(intercept.Value); // All possible negatives have been filtered out
         }
 
@@ -125,7 +125,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (!ShouldConsiderTarget(HeartUtils.GetRelationsBetweenGridAndPlayer(SorterWep.CubeGrid, targetCharacter.ControllerInfo?.ControllingIdentityId)))
                 return false;
 
-            Vector3D? intercept = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, SorterWep.CubeGrid.LinearVelocity, targetCharacter, Magazines.SelectedAmmo); // Check if it can even hit
+            Vector3D? intercept = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, SorterWep.CubeGrid.LinearVelocity, targetCharacter, Magazines.SelectedAmmoId); // Check if it can even hit
             return intercept != null && CanAimAtTarget(intercept.Value); // All possible negatives have been filtered out
         }
 
@@ -150,7 +150,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (!ShouldConsiderTarget(relations))
                 return false;
 
-            Vector3D? intercept = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, SorterWep.CubeGrid.LinearVelocity, targetProjectile, Magazines.SelectedAmmo); // Check if it can even hit
+            Vector3D? intercept = TargetingHelper.InterceptionPoint(MuzzleMatrix.Translation, SorterWep.CubeGrid.LinearVelocity, targetProjectile, Magazines.SelectedAmmoId); // Check if it can even hit
             return intercept != null && CanAimAtTarget(intercept.Value); // All possible negatives have been filtered out
         }
 

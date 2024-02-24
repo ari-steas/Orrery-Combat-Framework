@@ -82,7 +82,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
             }
 
 
-            ProjectileDefinitionBase projectileDef = ProjectileDefinitionManager.GetDefinition(weapon.Magazines.SelectedAmmo);
+            ProjectileDefinitionBase projectileDef = ProjectileDefinitionManager.GetDefinition(weapon.Magazines.SelectedAmmoId);
 
             string targetStatus = "";
             if (weapon is SorterTurretLogic)

@@ -298,7 +298,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                     DoesTargetProjectiles |= turret.Settings.TargetProjectilesState;
                 }
 
-                float maxTrajectory = ProjectileDefinitionManager.GetDefinition(weapon.Magazines.SelectedAmmo)?.PhysicalProjectile.MaxTrajectory ?? 0;
+                float maxTrajectory = ProjectileDefinitionManager.GetDefinition(weapon.Magazines.SelectedAmmoId)?.PhysicalProjectile.MaxTrajectory ?? 0;
                 if (maxTrajectory > MaxTargetingRange)
                     MaxTargetingRange = maxTrajectory;
             }

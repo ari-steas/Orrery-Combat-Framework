@@ -79,6 +79,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public override void UpdateOnceBeforeFrame()
         {
             SorterWep = (IMyConveyorSorter)Entity;
+            Settings.WeaponEntityId = SorterWep.EntityId;
 
             if (SorterWep.CubeGrid?.Physics == null)
                 return; // ignore ghost/projected grids
@@ -182,9 +183,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 delayCounter <= 0 &&
                 HasLoS)                                   // Has line of sight
             {
-                if (Magazines.SelectedAmmo == -1)
+                if (Magazines.SelectedAmmoId == -1)
                 {
-                    SoftHandle.RaiseSyncException($"Invalid ammo type on weapon! Subtype: {SorterWep.BlockDefinition.SubtypeId} | AmmoId: {Magazines.SelectedAmmo}");
+                    SoftHandle.RaiseSyncException($"Invalid ammo type on weapon! Subtype: {SorterWep.BlockDefinition.SubtypeId} | AmmoId: {Magazines.SelectedAmmoId}");
                     return;
                 }
 
@@ -192,13 +193,13 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 if (_resourceSystem != null && _resourceSystem.CanShoot())
                 {
                     // Retrieve the AccuracyVarianceMultiplier for the selected ammo
-                    float accuracyVarianceMultiplier = ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmo).PhysicalProjectile.AccuracyVarianceMultiplier;
+                    float accuracyVarianceMultiplier = ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmoId).PhysicalProjectile.AccuracyVarianceMultiplier;
                     // Calculate the effective inaccuracy by applying the multiplier, default to 1 if multiplier is 0 to avoid change
                     float effectiveInaccuracy = Definition.Hardpoint.ShotInaccuracy * (accuracyVarianceMultiplier != 0 ? accuracyVarianceMultiplier : 1);
 
                     while (lastShoot >= 60 && Magazines.ShotsInMag > 0) // Allows for firerates higher than 60 rps
                     {
-                        ProjectileDefinitionBase ammoDef = ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmo);
+                        ProjectileDefinitionBase ammoDef = ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmoId);
                         for (int i = 0; i < Definition.Loading.BarrelsPerShot; i++)
                         {
                             NextMuzzleIdx++;
@@ -214,7 +215,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                                     SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ammoDef.Ungrouped.Recoil, muzzleMatrix.Translation);
                                     // Use the effectiveInaccuracy instead of the original ShotInaccuracy
                                     // Don't sync hitscan projectiles!
-                                    Projectile newProjectile = ProjectileManager.I.AddProjectile(Magazines.SelectedAmmo, muzzlePos, RandomCone(muzzleMatrix.Forward, effectiveInaccuracy), SorterWep, !ammoDef.PhysicalProjectile.IsHitscan);
+                                    Projectile newProjectile = ProjectileManager.I.AddProjectile(Magazines.SelectedAmmoId, muzzlePos, RandomCone(muzzleMatrix.Forward, effectiveInaccuracy), SorterWep, !ammoDef.PhysicalProjectile.IsHitscan);
 
                                     if (newProjectile == null) // Emergency failsafe
                                         return;
@@ -328,8 +329,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public void SetAmmo(int AmmoId)
         {
-            Magazines.SelectedAmmo = AmmoId;
-            Settings.AmmoLoadedState = Magazines.SelectedAmmo;
+            Magazines.SelectedAmmoId = AmmoId;
+            Settings.AmmoLoadedId = Magazines.SelectedAmmoId;
 
             Magazines.EmptyMagazines();
         }
@@ -340,7 +341,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 return;
 
             Magazines.AmmoIndex = AmmoIdx;
-            Settings.AmmoLoadedState = Magazines.SelectedAmmo;
+            Settings.AmmoLoadedId = Magazines.SelectedAmmoId;
 
             Magazines.EmptyMagazines();
         }
@@ -379,14 +380,14 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         {
             get
             {
-                return Settings.AmmoLoadedState;
+                return Settings.AmmoLoadedId;
             }
 
             set
             {
                 SetAmmoByIdx(value);
 
-                Settings.AmmoLoadedState = value;
+                Settings.AmmoLoadedId = Magazines.SelectedAmmoId;
                 Settings.Sync();
             }
         }
@@ -398,7 +399,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             else
                 Magazines.AmmoIndex = (Magazines.AmmoIndex - 1 + Definition.Loading.Ammos.Length) % Definition.Loading.Ammos.Length;
 
-            Settings.AmmoLoadedState = Magazines.AmmoIndex;
+            Settings.AmmoLoadedId = Magazines.SelectedAmmoId;
             Magazines.EmptyMagazines();
 
             AmmoComboBox = Magazines.AmmoIndex;
@@ -448,18 +449,12 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 return;
 
             Settings.ShootState = false;
-            Settings.AmmoLoadedState = 0;
+            Settings.AmmoLoadedId = Magazines.SelectedAmmoId;
             Settings.HudBarrelIndicatorState = false;
         }
 
         internal virtual bool LoadSettings()
         {
-            if (!MyAPIGateway.Session.IsServer)
-            {
-                Settings.RequestSync();
-                return false;
-            }
-
             if (SorterWep.Storage == null)
             {
                 LoadDefaultSettings();
@@ -482,8 +477,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 {
                     Settings.ShootState = loadedSettings.ShootState;
 
-                    Settings.AmmoLoadedState = loadedSettings.AmmoLoadedState;
-                    Magazines.AmmoIndex = Array.IndexOf(Definition.Loading.Ammos, ProjectileDefinitionManager.GetDefinition(Settings.AmmoLoadedState).Name);
+                    Settings.AmmoLoadedId = loadedSettings.AmmoLoadedId;
+                    Magazines.AmmoIndex = Array.IndexOf(Definition.Loading.Ammos, ProjectileDefinitionManager.GetDefinition(Settings.AmmoLoadedId).Name);
 
                     Settings.ControlTypeState = loadedSettings.ControlTypeState;
                     Settings.HudBarrelIndicatorState = loadedSettings.HudBarrelIndicatorState;

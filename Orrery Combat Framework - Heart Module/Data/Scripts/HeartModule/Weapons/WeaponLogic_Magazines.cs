@@ -18,7 +18,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         private int _selectedAmmo = 0;
         private int shotsPerMag = 0;
 
-        public int SelectedAmmo
+        public int SelectedAmmoId
         {
             get
             {
@@ -31,7 +31,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     return;
                 _selectedAmmo = value;
                 _ammoIndex = idx;
-                shotsPerMag = ProjectileDefinitionManager.GetDefinition(SelectedAmmo).Ungrouped.ShotsPerMagazine;
+                shotsPerMag = ProjectileDefinitionManager.GetDefinition(SelectedAmmoId).Ungrouped.ShotsPerMagazine;
             }
         }
 
@@ -47,7 +47,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     return;
                 _ammoIndex = value;
                 _selectedAmmo = ProjectileDefinitionManager.GetId(Definition.Ammos[value]);
-                shotsPerMag = ProjectileDefinitionManager.GetDefinition(SelectedAmmo).Ungrouped.ShotsPerMagazine;
+                shotsPerMag = ProjectileDefinitionManager.GetDefinition(SelectedAmmoId).Ungrouped.ShotsPerMagazine;
             }
         }
 
@@ -62,7 +62,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (startLoaded)
             {
                 MagazinesLoaded = Definition.MagazinesToLoad;
-                ShotsInMag = ProjectileDefinitionManager.GetDefinition(SelectedAmmo).Ungrouped.ShotsPerMagazine;
+                ShotsInMag = ProjectileDefinitionManager.GetDefinition(SelectedAmmoId).Ungrouped.ShotsPerMagazine;
             }
         }
 
@@ -87,7 +87,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (NextReloadTime <= 0)
             {
                 var inventory = GetInventoryFunc();
-                var ammoDefinition = ProjectileDefinitionManager.GetDefinition(SelectedAmmo);
+                var ammoDefinition = ProjectileDefinitionManager.GetDefinition(SelectedAmmoId);
                 string magazineItem = ammoDefinition.Ungrouped.MagazineItemToConsume;
 
                 // Check and remove the specified item from the inventory

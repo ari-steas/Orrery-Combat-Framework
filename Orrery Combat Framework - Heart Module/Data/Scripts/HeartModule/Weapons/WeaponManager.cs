@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
+using YourName.ModName.Data.Scripts.HeartModule.Weapons;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
@@ -137,6 +138,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 GridWeapons.TryGetValue(sorter.CubeGrid, out values);
                 values?.Remove(logic);
             };
+
+            Heart_Settings.RequestSync(sorter.EntityId);
+
 
             if (logic.Id == uint.MaxValue)
             {

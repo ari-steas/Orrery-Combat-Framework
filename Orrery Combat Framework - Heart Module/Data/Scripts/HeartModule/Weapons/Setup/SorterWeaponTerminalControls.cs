@@ -367,7 +367,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     "HeartCycleAmmoForward",
                     "Cycle Ammo",
                     (b) => b.GameLogic.GetAs<SorterWeaponLogic>().CycleAmmoType(true),
-                    (b, sb) => sb.Append($"{GetAmmoTypeName(b.GameLogic.GetAs<SorterWeaponLogic>().Magazines.SelectedAmmo)}"),
+                    (b, sb) => sb.Append($"{GetAmmoTypeName(b.GameLogic.GetAs<SorterWeaponLogic>().Magazines.SelectedAmmoId)}"),
                     @"Textures\GUI\Icons\Actions\MissileToggle.dds"
                     );
             }
