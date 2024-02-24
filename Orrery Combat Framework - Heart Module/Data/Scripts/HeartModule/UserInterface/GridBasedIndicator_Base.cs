@@ -40,7 +40,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface
             foreach (var weaponLogic in WeaponManager.I.GridWeapons[controlledGrid])
             {
                 // Check if the HUD Barrel Indicator is enabled for this weapon
-                if (weaponLogic.Terminal_Heart_ToggleHUDBarrelIndicator)
+                if (weaponLogic.HudBarrelIndicatorState)
                 {
                     PerWeaponUpdate(weaponLogic);
                 }

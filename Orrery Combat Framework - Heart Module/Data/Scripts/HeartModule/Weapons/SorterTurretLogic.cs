@@ -237,13 +237,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         public void IncreaseAIRange()
         {
             // Increase AI Range within limits
-            Terminal_Heart_Range_Slider = Math.Min(Terminal_Heart_Range_Slider + 100, 1000);
+            AiRange = Math.Min(AiRange + 100, 1000);
         }
 
         public void DecreaseAIRange()
         {
             // Decrease AI Range within limits
-            Terminal_Heart_Range_Slider = Math.Max(Terminal_Heart_Range_Slider - 100, 0);
+            AiRange = Math.Max(AiRange - 100, 0);
         }
 
         internal override void LoadDefaultSettings()
@@ -253,20 +253,20 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             // Defaults
             if (MyAPIGateway.Session.IsServer) // Defaults get set whenever a client joins, which is bad.
             {
-                Terminal_Heart_Range_Slider = Definition.Targeting.MaxTargetingRange;
+                AiRange = Definition.Targeting.MaxTargetingRange;
 
                 // These default to true, and are disabled elsewhere if not allowed.
-                Terminal_Heart_TargetProjectiles = true;
-                Terminal_Heart_TargetCharacters = true;
-                Terminal_Heart_TargetGrids = true;
-                Terminal_Heart_TargetLargeGrids = true;
-                Terminal_Heart_TargetSmallGrids = true;
+                Settings.TargetProjectilesState = true;
+                Settings.TargetCharactersState = true;
+                Settings.TargetGridsState = true;
+                Settings.TargetLargeGridsState = true;
+                Settings.TargetSmallGridsState = true;
 
-                Terminal_Heart_TargetEnemies = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetEnemies) == IFF_Enum.TargetEnemies;
-                Terminal_Heart_TargetFriendlies = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetFriendlies) == IFF_Enum.TargetFriendlies;
-                Terminal_Heart_TargetNeutrals = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetNeutrals) == IFF_Enum.TargetNeutrals;
-                Terminal_Heart_TargetUnowned = false;
-                Terminal_Heart_PreferUniqueTargets = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetUnique) == IFF_Enum.TargetUnique;
+                Settings.TargetEnemiesState = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetEnemies) == IFF_Enum.TargetEnemies;
+                Settings.TargetFriendliesState = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetFriendlies) == IFF_Enum.TargetFriendlies;
+                Settings.TargetNeutralsState = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetNeutrals) == IFF_Enum.TargetNeutrals;
+                Settings.TargetUnownedState = false;
+                Settings.PreferUniqueTargetState = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetUnique) == IFF_Enum.TargetUnique;
             }
         }
 
@@ -292,41 +292,17 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 var loadedSettings = MyAPIGateway.Utilities.SerializeFromBinary<Heart_Settings>(Convert.FromBase64String(rawData));
                 if (loadedSettings != null)
                 {
-                    // Set the AI Range from loaded settings
                     Settings.AiRange = loadedSettings.AiRange;
-                    AiRange.Value = Settings.AiRange;
-
                     Settings.PreferUniqueTargetState = loadedSettings.PreferUniqueTargetState;
-                    PreferUniqueTargets.Value = Settings.PreferUniqueTargetState;
-
-                    // Set the TargetGrids state from loaded settings
                     Settings.TargetGridsState = loadedSettings.TargetGridsState;
-                    TargetGridsState.Value = Settings.TargetGridsState;
-
                     Settings.TargetProjectilesState = loadedSettings.TargetProjectilesState;
-                    TargetProjectilesState.Value = Settings.TargetProjectilesState;
-
                     Settings.TargetCharactersState = loadedSettings.TargetCharactersState;
-                    TargetCharactersState.Value = Settings.TargetCharactersState;
-
                     Settings.TargetLargeGridsState = loadedSettings.TargetLargeGridsState;
-                    TargetLargeGridsState.Value = Settings.TargetLargeGridsState;
-
                     Settings.TargetSmallGridsState = loadedSettings.TargetSmallGridsState;
-                    TargetSmallGridsState.Value = Settings.TargetSmallGridsState;
-
                     Settings.TargetFriendliesState = loadedSettings.TargetFriendliesState;
-                    TargetFriendliesState.Value = Settings.TargetFriendliesState;
-
                     Settings.TargetNeutralsState = loadedSettings.TargetNeutralsState;
-                    TargetNeutralsState.Value = Settings.TargetNeutralsState;
-
                     Settings.TargetEnemiesState = loadedSettings.TargetEnemiesState;
-                    TargetEnemiesState.Value = Settings.TargetEnemiesState;
-
                     Settings.TargetUnownedState = loadedSettings.TargetUnownedState;
-                    TargetUnownedState.Value = Settings.TargetUnownedState;
-
                     return baseRet;
                 }
             }
@@ -336,28 +312,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             }
 
             // In case Target(n) is turned off after a weapon is placed
-            Terminal_Heart_TargetProjectiles &= (Definition.Targeting.AllowedTargetTypes & TargetType_Enum.TargetProjectiles) == TargetType_Enum.TargetProjectiles;
-            Terminal_Heart_TargetCharacters &= (Definition.Targeting.AllowedTargetTypes & TargetType_Enum.TargetCharacters) == TargetType_Enum.TargetCharacters;
-            Terminal_Heart_TargetGrids &= (Definition.Targeting.AllowedTargetTypes & TargetType_Enum.TargetGrids) == TargetType_Enum.TargetGrids;
-            Terminal_Heart_TargetLargeGrids &= (Definition.Targeting.AllowedTargetTypes & TargetType_Enum.TargetGrids) == TargetType_Enum.TargetGrids;
-            Terminal_Heart_TargetSmallGrids &= (Definition.Targeting.AllowedTargetTypes & TargetType_Enum.TargetGrids) == TargetType_Enum.TargetGrids;
+            TargetProjectilesState &= (Definition.Targeting.AllowedTargetTypes & TargetType_Enum.TargetProjectiles) == TargetType_Enum.TargetProjectiles;
+            TargetCharactersState &= (Definition.Targeting.AllowedTargetTypes & TargetType_Enum.TargetCharacters) == TargetType_Enum.TargetCharacters;
+            TargetGridsState &= (Definition.Targeting.AllowedTargetTypes & TargetType_Enum.TargetGrids) == TargetType_Enum.TargetGrids;
+            TargetLargeGridsState &= (Definition.Targeting.AllowedTargetTypes & TargetType_Enum.TargetGrids) == TargetType_Enum.TargetGrids;
+            TargetSmallGridsState &= (Definition.Targeting.AllowedTargetTypes & TargetType_Enum.TargetGrids) == TargetType_Enum.TargetGrids;
 
             return false;
         }
 
-        public MySync<float, SyncDirection.BothWays> AiRange;
-        public MySync<bool, SyncDirection.BothWays> PreferUniqueTargets;
-        public MySync<bool, SyncDirection.BothWays> TargetGridsState;
-        public MySync<bool, SyncDirection.BothWays> TargetProjectilesState;
-        public MySync<bool, SyncDirection.BothWays> TargetCharactersState;
-        public MySync<bool, SyncDirection.BothWays> TargetLargeGridsState;
-        public MySync<bool, SyncDirection.BothWays> TargetSmallGridsState;
-        public MySync<bool, SyncDirection.BothWays> TargetFriendliesState;
-        public MySync<bool, SyncDirection.BothWays> TargetNeutralsState;
-        public MySync<bool, SyncDirection.BothWays> TargetEnemiesState;
-        public MySync<bool, SyncDirection.BothWays> TargetUnownedState;
-
-        public float Terminal_Heart_Range_Slider
+        public float AiRange
         {
             get
             {
@@ -367,13 +331,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.AiRange = value;
-                AiRange.Value = value;
-                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
-                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+                Settings.Sync();
             }
         }
 
-        public bool Terminal_Heart_PreferUniqueTargets
+        public bool PreferUniqueTargetsState
         {
             get
             {
@@ -383,13 +345,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.PreferUniqueTargetState = value;
-                PreferUniqueTargets.Value = value;
-                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
-                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+                Settings.Sync();
             }
         }
 
-        public bool Terminal_Heart_TargetGrids
+        public bool TargetGridsState
         {
             get
             {
@@ -399,14 +359,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.TargetGridsState = value;
-                TargetGridsState.Value = value;
-                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
-                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+                Settings.Sync();
 
             }
         }
 
-        public bool Terminal_Heart_TargetProjectiles
+        public bool TargetProjectilesState
         {
             get
             {
@@ -416,13 +374,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.TargetProjectilesState = value;
-                TargetProjectilesState.Value = value;
-                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
-                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+                Settings.Sync();
             }
         }
 
-        public bool Terminal_Heart_TargetCharacters
+        public bool TargetCharactersState
         {
             get
             {
@@ -432,13 +388,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.TargetCharactersState = value;
-                TargetCharactersState.Value = value;
-                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
-                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+                Settings.Sync();
             }
         }
 
-        public bool Terminal_Heart_TargetLargeGrids
+        public bool TargetLargeGridsState
         {
             get
             {
@@ -448,13 +402,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.TargetLargeGridsState = value;
-                TargetLargeGridsState.Value = value;
-                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
-                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+                Settings.Sync();
             }
         }
 
-        public bool Terminal_Heart_TargetSmallGrids
+        public bool TargetSmallGridsState
         {
             get
             {
@@ -464,13 +416,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.TargetSmallGridsState = value;
-                TargetSmallGridsState.Value = value;
-                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
-                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+                Settings.Sync();
             }
         }
 
-        public bool Terminal_Heart_TargetFriendlies
+        public bool TargetFriendliesState
         {
             get
             {
@@ -480,13 +430,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.TargetFriendliesState = value;
-                TargetFriendliesState.Value = value;
-                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
-                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+                Settings.Sync();
             }
         }
 
-        public bool Terminal_Heart_TargetNeutrals
+        public bool TargetNeutralsState
         {
             get
             {
@@ -496,13 +444,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.TargetNeutralsState = value;
-                TargetNeutralsState.Value = value;
-                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
-                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+                Settings.Sync();
             }
         }
 
-        public bool Terminal_Heart_TargetEnemies
+        public bool TargetEnemiesState
         {
             get
             {
@@ -512,13 +458,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.TargetEnemiesState = value;
-                TargetEnemiesState.Value = value;
-                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
-                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+                Settings.Sync();
             }
         }
 
-        public bool Terminal_Heart_TargetUnowned
+        public bool TargetUnownedState
         {
             get
             {
@@ -528,9 +472,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.TargetUnownedState = value;
-                TargetUnownedState.Value = value;
-                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
-                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+                Settings.Sync();
             }
         }
 

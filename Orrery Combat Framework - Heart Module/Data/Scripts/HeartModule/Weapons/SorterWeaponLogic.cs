@@ -32,13 +32,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public readonly Guid HeartSettingsGUID = new Guid("06edc546-3e42-41f3-bc72-1d640035fbf2");
         public const int HeartSettingsUpdateCount = 60 * 1 / 10;
 
-        public MySync<bool, SyncDirection.BothWays> ShootState; //temporary (lmao) magic bullshit in place of actual packet sending
-        //insert ammo loaded state here (how the hell are we gonna do that)
-        public MySync<long, SyncDirection.BothWays> AmmoLoadedState = null;          //dang this mysync thing is pretty cool it will surely not bite me in the ass when I need over 32 entries      
-        public MySync<long, SyncDirection.BothWays> ControlTypeState = null;
-        public MySync<bool, SyncDirection.BothWays> HudBarrelIndicatorState = null;
-
-        public readonly Heart_Settings Settings = new Heart_Settings();
+        public Heart_Settings Settings = new Heart_Settings();
 
         public WeaponLogic_Magazines Magazines;
 
@@ -62,7 +56,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             Func<IMyInventory> getInventoryFunc = () => sorterWeapon.GetInventory();
 
             // You need to provide the missing arguments for WeaponLogic_Magazines constructor here
-            Magazines = new WeaponLogic_Magazines(definition.Loading, definition.Audio, getInventoryFunc, Terminal_Heart_AmmoComboBox);
+            Magazines = new WeaponLogic_Magazines(definition.Loading, definition.Audio, getInventoryFunc, AmmoComboBox);
 
             // Initialize the WeaponResourceSystem
             _resourceSystem = new WeaponResourceSystem(definition, this);
@@ -85,6 +79,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public override void UpdateOnceBeforeFrame()
         {
             SorterWep = (IMyConveyorSorter)Entity;
+            Settings.WeaponEntityId = SorterWep.EntityId;
 
             if (SorterWep.CubeGrid?.Physics == null)
                 return; // ignore ghost/projected grids
@@ -171,26 +166,26 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 lastShoot += modifiedRateOfFire; // Use the modified rate of fire
 
             // Manage fire delay. If there is an easier way to do this, TODO implement
-            if ((ShootState.Value || AutoShoot) && Magazines.IsLoaded && delayCounter > 0)
+            if ((ShootState || AutoShoot) && Magazines.IsLoaded && delayCounter > 0)
             {
                 if (delayCounter == Definition.Loading.DelayUntilFire && !string.IsNullOrEmpty(Definition.Audio.ShootSound))
                     MyVisualScriptLogicProvider.PlaySingleSoundAtPosition(Definition.Audio.PreShootSound, SorterWep.GetPosition());
                 delayCounter -= 1 / 60f;
             }
-            else if (!((ShootState.Value || AutoShoot) && Magazines.IsLoaded) && delayCounter <= 0 && Definition.Loading.DelayUntilFire > 0) // Check for the initial delay only if not already applied
+            else if (!((ShootState || AutoShoot) && Magazines.IsLoaded) && delayCounter <= 0 && Definition.Loading.DelayUntilFire > 0) // Check for the initial delay only if not already applied
             {
                 delayCounter = Definition.Loading.DelayUntilFire;
             }
 
-            if ((ShootState.Value || AutoShoot) &&          // Is allowed to shoot
+            if ((ShootState || AutoShoot) &&          // Is allowed to shoot
                 Magazines.IsLoaded &&                       // Is mag loaded
                 lastShoot >= 60 &&                          // Fire rate is ready
                 delayCounter <= 0 &&
                 HasLoS)                                   // Has line of sight
             {
-                if (Magazines.SelectedAmmo == -1)
+                if (Magazines.SelectedAmmoId == -1)
                 {
-                    SoftHandle.RaiseSyncException($"Invalid ammo type on weapon! Subtype: {SorterWep.BlockDefinition.SubtypeId} | AmmoId: {Magazines.SelectedAmmo}");
+                    SoftHandle.RaiseSyncException($"Invalid ammo type on weapon! Subtype: {SorterWep.BlockDefinition.SubtypeId} | AmmoId: {Magazines.SelectedAmmoId}");
                     return;
                 }
 
@@ -198,13 +193,13 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 if (_resourceSystem != null && _resourceSystem.CanShoot())
                 {
                     // Retrieve the AccuracyVarianceMultiplier for the selected ammo
-                    float accuracyVarianceMultiplier = ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmo).PhysicalProjectile.AccuracyVarianceMultiplier;
+                    float accuracyVarianceMultiplier = ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmoId).PhysicalProjectile.AccuracyVarianceMultiplier;
                     // Calculate the effective inaccuracy by applying the multiplier, default to 1 if multiplier is 0 to avoid change
                     float effectiveInaccuracy = Definition.Hardpoint.ShotInaccuracy * (accuracyVarianceMultiplier != 0 ? accuracyVarianceMultiplier : 1);
 
                     while (lastShoot >= 60 && Magazines.ShotsInMag > 0) // Allows for firerates higher than 60 rps
                     {
-                        ProjectileDefinitionBase ammoDef = ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmo);
+                        ProjectileDefinitionBase ammoDef = ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmoId);
                         for (int i = 0; i < Definition.Loading.BarrelsPerShot; i++)
                         {
                             NextMuzzleIdx++;
@@ -220,7 +215,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                                     SorterWep.CubeGrid.Physics?.ApplyImpulse(muzzleMatrix.Backward * ammoDef.Ungrouped.Recoil, muzzleMatrix.Translation);
                                     // Use the effectiveInaccuracy instead of the original ShotInaccuracy
                                     // Don't sync hitscan projectiles!
-                                    Projectile newProjectile = ProjectileManager.I.AddProjectile(Magazines.SelectedAmmo, muzzlePos, RandomCone(muzzleMatrix.Forward, effectiveInaccuracy), SorterWep, !ammoDef.PhysicalProjectile.IsHitscan);
+                                    Projectile newProjectile = ProjectileManager.I.AddProjectile(Magazines.SelectedAmmoId, muzzlePos, RandomCone(muzzleMatrix.Forward, effectiveInaccuracy), SorterWep, !ammoDef.PhysicalProjectile.IsHitscan);
 
                                     if (newProjectile == null) // Emergency failsafe
                                         return;
@@ -334,8 +329,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public void SetAmmo(int AmmoId)
         {
-            Magazines.SelectedAmmo = AmmoId;
-            Settings.AmmoLoadedState = Magazines.SelectedAmmo;
+            Magazines.SelectedAmmoId = AmmoId;
+            Settings.AmmoLoadedId = Magazines.SelectedAmmoId;
 
             Magazines.EmptyMagazines();
         }
@@ -346,14 +341,14 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 return;
 
             Magazines.AmmoIndex = AmmoIdx;
-            Settings.AmmoLoadedState = Magazines.SelectedAmmo;
+            Settings.AmmoLoadedId = Magazines.SelectedAmmoId;
 
             Magazines.EmptyMagazines();
         }
 
         #region Terminal controls
 
-        public bool Terminal_Heart_MouseShoot
+        public bool MouseShootState
         {
             get
             {
@@ -363,10 +358,11 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             set
             {
                 Settings.MouseShootState = value;
+                Settings.Sync();
             }
         }
 
-        public bool Terminal_Heart_Shoot
+        public bool ShootState
         {
             get
             {
@@ -376,31 +372,23 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             set
             {
                 Settings.ShootState = value;
-                ShootState.Value = value;
-                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
-                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
-
+                Settings.Sync();
             }
         }
 
-        public int Terminal_Heart_AmmoComboBox
+        public int AmmoComboBox
         {
             get
             {
-                return Settings.AmmoLoadedState;
+                return Settings.AmmoLoadedId;
             }
 
             set
             {
                 SetAmmoByIdx(value);
 
-                Settings.AmmoLoadedState = value;
-                if (AmmoLoadedState != null)
-                {
-                    AmmoLoadedState.Value = value;
-                }
-                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
-                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+                Settings.AmmoLoadedId = Magazines.SelectedAmmoId;
+                Settings.Sync();
             }
         }
 
@@ -411,13 +399,13 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             else
                 Magazines.AmmoIndex = (Magazines.AmmoIndex - 1 + Definition.Loading.Ammos.Length) % Definition.Loading.Ammos.Length;
 
-            Settings.AmmoLoadedState = Magazines.AmmoIndex;
+            Settings.AmmoLoadedId = Magazines.SelectedAmmoId;
             Magazines.EmptyMagazines();
 
-            Terminal_Heart_AmmoComboBox = Magazines.AmmoIndex;
+            AmmoComboBox = Magazines.AmmoIndex;
         }
 
-        public bool Terminal_Heart_ToggleHUDBarrelIndicator
+        public bool HudBarrelIndicatorState
         {
             get
             {
@@ -427,9 +415,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             set
             {
                 Settings.HudBarrelIndicatorState = value;
-                HudBarrelIndicatorState.Value = value;
-                if ((NeedsUpdate & MyEntityUpdateEnum.EACH_10TH_FRAME) == 0)
-                    NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME;
+                Settings.Sync();
             }
         }
 
@@ -462,10 +448,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (!MyAPIGateway.Session.IsServer)
                 return;
 
-            Terminal_Heart_Shoot = false;
-            Terminal_Heart_AmmoComboBox = 0;
-            Terminal_Heart_ToggleHUDBarrelIndicator = false;
-
+            Settings.ShootState = false;
+            Settings.AmmoLoadedId = Magazines.SelectedAmmoId;
+            Settings.HudBarrelIndicatorState = false;
         }
 
         internal virtual bool LoadSettings()
@@ -491,26 +476,20 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 if (loadedSettings != null)
                 {
                     Settings.ShootState = loadedSettings.ShootState;
-                    ShootState.Value = Settings.ShootState;
 
-                    //insert ammo selection state here
-
-                    Settings.AmmoLoadedState = loadedSettings.AmmoLoadedState;
-                    AmmoLoadedState.Value = Settings.AmmoLoadedState;
-                    Magazines.AmmoIndex = Array.IndexOf(Definition.Loading.Ammos, ProjectileDefinitionManager.GetDefinition(Settings.AmmoLoadedState).Name);
+                    Settings.AmmoLoadedId = loadedSettings.AmmoLoadedId;
+                    Magazines.AmmoIndex = Array.IndexOf(Definition.Loading.Ammos, ProjectileDefinitionManager.GetDefinition(Settings.AmmoLoadedId).Name);
 
                     Settings.ControlTypeState = loadedSettings.ControlTypeState;
-                    ControlTypeState.Value = Settings.ControlTypeState;
-
                     Settings.HudBarrelIndicatorState = loadedSettings.HudBarrelIndicatorState;
-                    HudBarrelIndicatorState.Value = Settings.HudBarrelIndicatorState;
+                    Settings.WeaponEntityId = SorterWep.EntityId;
 
                     return true;
                 }
             }
             catch (Exception e)
             {
-                // Log the exception
+                SoftHandle.RaiseException(e, typeof(SorterWeaponLogic));
             }
 
             return false;

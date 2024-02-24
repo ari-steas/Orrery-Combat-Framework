@@ -64,7 +64,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
                 foreach (var weapon in WeaponManager.I.GridWeapons[grid])
                 {
                     weapon.Magazines.MagazinesLoaded = weapon.Definition.Loading.MagazinesToLoad;
-                    weapon.Magazines.ShotsInMag = ProjectileDefinitionManager.GetDefinition(weapon.Magazines.SelectedAmmo).Ungrouped.ShotsPerMagazine;
+                    weapon.Magazines.ShotsInMag = ProjectileDefinitionManager.GetDefinition(weapon.Magazines.SelectedAmmoId).Ungrouped.ShotsPerMagazine;
                     ct++;
                 }
                 MyAPIGateway.Utilities.ShowMessage($"[HeartMod.Debug]", $"Filled {ct} weapons.");

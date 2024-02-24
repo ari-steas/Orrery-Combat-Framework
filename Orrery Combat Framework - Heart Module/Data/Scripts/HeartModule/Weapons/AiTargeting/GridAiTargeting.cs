@@ -131,7 +131,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
                     if (turret.TargetProjectilesState)
                     {
-                        if (turret.PreferUniqueTargets) // Try to balance targeting
+                        if (turret.PreferUniqueTargetsState) // Try to balance targeting
                         {
                             List<Projectile> targetable = new List<Projectile>();
                             foreach (var target in TargetedProjectiles)
@@ -178,7 +178,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                     }
                     if (!turretHasTarget && turret.TargetCharactersState)
                     {
-                        if (turret.PreferUniqueTargets) // Try to balance targeting
+                        if (turret.PreferUniqueTargetsState) // Try to balance targeting
                         {
                             List<IMyCharacter> targetable = new List<IMyCharacter>();
                             foreach (var target in TargetedCharacters.Keys)
@@ -224,7 +224,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                     }
                     if (!turretHasTarget && turret.TargetGridsState)
                     {
-                        if (turret.PreferUniqueTargets) // Try to balance targeting
+                        if (turret.PreferUniqueTargetsState) // Try to balance targeting
                         {
                             List<IMyCubeGrid> targetable = new List<IMyCubeGrid>();
                             foreach (var target in TargetedGrids.Keys)
@@ -298,7 +298,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                     DoesTargetProjectiles |= turret.Settings.TargetProjectilesState;
                 }
 
-                float maxTrajectory = ProjectileDefinitionManager.GetDefinition(weapon.Magazines.SelectedAmmo)?.PhysicalProjectile.MaxTrajectory ?? 0;
+                float maxTrajectory = ProjectileDefinitionManager.GetDefinition(weapon.Magazines.SelectedAmmoId)?.PhysicalProjectile.MaxTrajectory ?? 0;
                 if (maxTrajectory > MaxTargetingRange)
                     MaxTargetingRange = maxTrajectory;
             }

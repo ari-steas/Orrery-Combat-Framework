@@ -274,7 +274,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
 
         public Projectile ToProjectile(int index)
         {
-            HeartLog.Log("StartSpawn");
             SorterWeaponLogic weapon = WeaponManager.I.GetWeapon(FirerEntityId[index]);
 
             if (weapon == null)
@@ -284,7 +283,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             }
 
             Projectile p = new Projectile(
-                weapon.Magazines.SelectedAmmo,
+                weapon.Magazines.SelectedAmmoId,
                 weapon.CalcMuzzleMatrix(weapon.NextMuzzleIdx).Translation,
                 Direction(index),
                 FirerEntityId[index],
@@ -304,7 +303,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
 
             // TODO: Look into engine tick based syncing? Server time can vary DRASTICALLY.
             float delta = (float)((DateTime.UtcNow.TimeOfDay.TotalMilliseconds - (MillisecondsFromMidnight - HeartData.I.Net.ServerTimeOffset)) / 1000d);
-            HeartLog.Log("delta " + delta + " | CurrentDelta: " + delta + $"\n        TotalMillis: {DateTime.UtcNow.TimeOfDay.TotalMilliseconds}\n        MsFromMidnight: {MillisecondsFromMidnight}\n        Offset: {HeartData.I.Net.ServerTimeOffset}");
+            //HeartLog.Log("delta " + delta + " | CurrentDelta: " + delta + $"\n        TotalMillis: {DateTime.UtcNow.TimeOfDay.TotalMilliseconds}\n        MsFromMidnight: {MillisecondsFromMidnight}\n        Offset: {HeartData.I.Net.ServerTimeOffset}");
 
             if (delta < 0f)
                 delta = 0;
