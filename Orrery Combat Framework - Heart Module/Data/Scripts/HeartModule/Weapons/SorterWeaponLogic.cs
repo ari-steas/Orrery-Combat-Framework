@@ -447,14 +447,19 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (!MyAPIGateway.Session.IsServer)
                 return;
 
-            ShootState = false;
-            AmmoComboBox = 0;
-            HudBarrelIndicatorState = false;
-
+            Settings.ShootState = false;
+            Settings.AmmoLoadedState = 0;
+            Settings.HudBarrelIndicatorState = false;
         }
 
         internal virtual bool LoadSettings()
         {
+            if (!MyAPIGateway.Session.IsServer)
+            {
+                Settings.RequestSync();
+                return false;
+            }
+
             if (SorterWep.Storage == null)
             {
                 LoadDefaultSettings();

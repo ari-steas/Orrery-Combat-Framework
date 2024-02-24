@@ -256,22 +256,28 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 AiRange = Definition.Targeting.MaxTargetingRange;
 
                 // These default to true, and are disabled elsewhere if not allowed.
-                TargetProjectilesState = true;
-                TargetCharactersState = true;
-                TargetGridsState = true;
-                TargetLargeGridsState = true;
-                TargetSmallGridsState = true;
+                Settings.TargetProjectilesState = true;
+                Settings.TargetCharactersState = true;
+                Settings.TargetGridsState = true;
+                Settings.TargetLargeGridsState = true;
+                Settings.TargetSmallGridsState = true;
 
-                TargetEnemiesState = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetEnemies) == IFF_Enum.TargetEnemies;
-                TargetFriendliesState = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetFriendlies) == IFF_Enum.TargetFriendlies;
-                TargetNeutralsState = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetNeutrals) == IFF_Enum.TargetNeutrals;
-                TargetUnownedState = false;
-                PreferUniqueTargetsState = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetUnique) == IFF_Enum.TargetUnique;
+                Settings.TargetEnemiesState = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetEnemies) == IFF_Enum.TargetEnemies;
+                Settings.TargetFriendliesState = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetFriendlies) == IFF_Enum.TargetFriendlies;
+                Settings.TargetNeutralsState = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetNeutrals) == IFF_Enum.TargetNeutrals;
+                Settings.TargetUnownedState = false;
+                Settings.PreferUniqueTargetState = (Definition.Targeting.DefaultIFF & IFF_Enum.TargetUnique) == IFF_Enum.TargetUnique;
             }
         }
 
         internal override bool LoadSettings()
         {
+            if (!MyAPIGateway.Session.IsServer)
+            {
+                Settings.RequestSync();
+                return false;
+            }
+
             if (SorterWep.Storage == null)
             {
                 LoadDefaultSettings();

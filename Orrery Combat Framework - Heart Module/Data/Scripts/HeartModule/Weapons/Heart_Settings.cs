@@ -18,10 +18,19 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
                 HeartData.I.Net.SendToEveryone(this);
                 HeartLog.Log("Sent settings to all");
             }
-            else
+            //else
+            //{
+            //    HeartData.I.Net.SendToServer(this);
+            //    HeartLog.Log("Sent settings to server");
+            //}
+        }
+
+        public void RequestSync()
+        {
+            if (!MyAPIGateway.Session.IsServer)
             {
-                HeartData.I.Net.SendToServer(this);
-                HeartLog.Log("Sent settings to server");
+                HeartData.I.Net.SendToServer(new Heart_Settings() { IsRequest = true, WeaponEntityId = this.WeaponEntityId });
+                HeartLog.Log("Requested settings from server...");
             }
         }
 
@@ -76,18 +85,26 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
         [ProtoMember(17)]
         public long WeaponEntityId;
 
+        [ProtoMember(18)]
+        public bool IsRequest = false;
+
         public override void Received(ulong SenderSteamId)
         {
+            HeartLog.Log("Sender: " + SenderSteamId + " | Self: " + HeartData.I.SteamId);
+
             var weapon = WeaponManager.I.GetWeapon(WeaponEntityId);
             if (weapon == null)
+                return;
+
+            if (MyAPIGateway.Session.IsServer && IsRequest)
             {
-                SoftHandle.RaiseSyncException("Unable to find weapon for settings sync!");
+                weapon.Settings.Sync();
                 return;
             }
-            weapon.Settings = this;
 
+            weapon.Settings = this;
             if (MyAPIGateway.Session.IsServer)
-                Sync();
+                weapon.Settings.Sync();
         }
     }
 }
