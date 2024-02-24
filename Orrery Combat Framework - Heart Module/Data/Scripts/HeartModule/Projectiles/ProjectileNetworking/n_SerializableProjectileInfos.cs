@@ -284,7 +284,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
 
             Projectile p = new Projectile(
                 weapon.Magazines.SelectedAmmo,
-                weapon.CalcMuzzleMatrix(0).Translation,
+                weapon.CalcMuzzleMatrix(weapon.NextMuzzleIdx).Translation,
                 Direction(index),
                 FirerEntityId[index],
                 weapon?.SorterWep?.CubeGrid.LinearVelocity ?? Vector3D.Zero
