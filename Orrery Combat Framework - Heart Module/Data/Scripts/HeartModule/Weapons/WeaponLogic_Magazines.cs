@@ -1,4 +1,5 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.Game;
 using System;
@@ -28,12 +29,17 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             set
             {
                 int idx = Array.IndexOf(Definition.Ammos, value);
-                if (idx == -1 || _selectedAmmo == value)
+                if (idx == -1)
                     return;
                 _selectedAmmo = value;
                 _selectedAmmoIndex = idx;
                 shotsPerMag = ProjectileDefinitionManager.GetDefinition(SelectedAmmoId).Ungrouped.ShotsPerMagazine;
+
+                if (value == _selectedAmmo)
+                    return;
                 EmptyMagazines();
+
+                HeartLog.Log("Set Loaded AmmoId: " + SelectedAmmoId + " | IDX " + SelectedAmmoIndex);
             }
         }
 
@@ -45,12 +51,17 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             }
             set
             {
-                if (Definition.Ammos.Length <= value || value < 0 || _selectedAmmoIndex == value)
+                if (Definition.Ammos.Length <= value || value < 0)
                     return;
                 _selectedAmmo = ProjectileDefinitionManager.GetId(Definition.Ammos[value]);
                 _selectedAmmoIndex = value;
                 shotsPerMag = ProjectileDefinitionManager.GetDefinition(SelectedAmmoId).Ungrouped.ShotsPerMagazine;
+
+                if (value == _selectedAmmoIndex)
+                    return;
                 EmptyMagazines();
+
+                HeartLog.Log("Set Loaded AmmoIdx: " + SelectedAmmoId + " | IDX " + SelectedAmmoIndex);
             }
         }
 

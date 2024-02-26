@@ -20,7 +20,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
             if (MyAPIGateway.Session.IsServer)
             {
                 HeartData.I.Net.SendToEveryone(this);
-                HeartLog.Log("Sent settings to all.\n" + ToString() + "\n---------------------------");
+                //HeartLog.Log("Sent settings to all.\n" + ToString() + "\n---------------------------");
             }
             else
             {
@@ -41,8 +41,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
         public override void Received(ulong SenderSteamId)
         {
             //HeartLog.Log("Recieve called: Sender: " + SenderSteamId + " | Self: " + HeartData.I.SteamId + "\n" + ToString());
-            if (!IsSyncRequest)
-                HeartLog.Log("Recieved: " + ToString());
+            //if (!IsSyncRequest)
+            //    HeartLog.Log("Recieved: " + ToString());
 
             var weapon = WeaponManager.I.GetWeapon(WeaponEntityId);
             if (weapon == null)
@@ -59,8 +59,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
 
             weapon.Settings = this;
             weapon.Magazines.SelectedAmmoIndex = AmmoLoadedIdx;
-            HeartLog.Log("UPDATED Id: " + weapon.Magazines.SelectedAmmoId + " | Idx: " + weapon.Magazines.SelectedAmmoIndex);
-            HeartLog.Log("SHOULD BE Idx: " + AmmoLoadedIdx);
+            //HeartLog.Log("UPDATED Id: " + weapon.Magazines.SelectedAmmoId + " | Idx: " + weapon.Magazines.SelectedAmmoIndex);
+            //HeartLog.Log("SHOULD BE Idx: " + AmmoLoadedIdx);
             if (MyAPIGateway.Session.IsServer)
                 weapon.Settings.Sync();
         }
