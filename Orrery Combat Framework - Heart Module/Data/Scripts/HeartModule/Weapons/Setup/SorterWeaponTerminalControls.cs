@@ -157,7 +157,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     var logic = b?.GameLogic?.GetAs<SorterWeaponLogic>();
                     if (logic != null)
                     {
-                        return logic.Magazines.AmmoIndex;
+                        return logic.Magazines.SelectedAmmoIndex;
                     }
                     return -1; // Return a default value (e.g., -1) when the index is out of bounds
                 };

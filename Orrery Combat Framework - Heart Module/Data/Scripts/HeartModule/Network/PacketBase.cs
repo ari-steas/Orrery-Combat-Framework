@@ -21,6 +21,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
     [ProtoContract(UseProtoMembersOnly = true)]
     public abstract partial class PacketBase
     {
+        /// <summary>
+        /// Called whenever your packet is recieved.
+        /// </summary>
+        /// <param name="SenderSteamId"></param>
         public abstract void Received(ulong SenderSteamId);
     }
 }

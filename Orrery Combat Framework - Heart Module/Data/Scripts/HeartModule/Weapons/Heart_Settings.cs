@@ -41,6 +41,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
         public override void Received(ulong SenderSteamId)
         {
             //HeartLog.Log("Recieve called: Sender: " + SenderSteamId + " | Self: " + HeartData.I.SteamId + "\n" + ToString());
+            if (!IsSyncRequest)
+                HeartLog.Log("Recieved: " + ToString());
 
             var weapon = WeaponManager.I.GetWeapon(WeaponEntityId);
             if (weapon == null)
@@ -56,16 +58,18 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
             }
 
             weapon.Settings = this;
-            weapon.Magazines.SelectedAmmoId = AmmoLoadedId;
+            weapon.Magazines.SelectedAmmoIndex = AmmoLoadedIdx;
+            HeartLog.Log("UPDATED Id: " + weapon.Magazines.SelectedAmmoId + " | Idx: " + weapon.Magazines.SelectedAmmoIndex);
+            HeartLog.Log("SHOULD BE Idx: " + AmmoLoadedIdx);
             if (MyAPIGateway.Session.IsServer)
                 weapon.Settings.Sync();
         }
 
         [ProtoMember(1)]
-        internal int ShootStateContainer;
+        internal short ShootStateContainer;
 
         [ProtoMember(2)]
-        public int AmmoLoadedId;
+        public int AmmoLoadedIdx;
 
         [ProtoMember(3)]
         public float AiRange;
@@ -255,6 +259,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
 
         #endregion
 
+        public override string ToString()
+        {
+            return $"ShootState: {ShootState}\nAmmoLoadedIdx: {AmmoLoadedIdx}";
+        }
 
         private bool ExpandValue(int bitwise, int enumValue)
         {
@@ -267,6 +275,19 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
                 bitwise |= enumValue;
             else
                 bitwise &= ~enumValue; // AND with negated enumValue
+        }
+
+        private bool ExpandValue(short bitwise, int enumValue)
+        {
+            return (bitwise & enumValue) == enumValue;
+        }
+
+        private void CompressValue(ref short bitwise, int enumValue, bool state)
+        {
+            if (state)
+                bitwise |= (short) enumValue;
+            else
+                bitwise &= (short) ~enumValue; // AND with negated enumValue
         }
 
         private static class TargetingSettingStates
