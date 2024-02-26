@@ -218,6 +218,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             directionX = new float[projectiles.Count];
             directionY = new float[projectiles.Count];
             directionZ = new float[projectiles.Count];
+            targetEntities = new long[projectiles.Count];
+
+            bool needsTargetEntities = false;
 
             for (int i = 0; i < projectiles.Count; i++)
             {
@@ -226,7 +229,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                 directionX[i] = (float)projectiles[i].Direction.X;
                 directionY[i] = (float)projectiles[i].Direction.Y;
                 directionZ[i] = (float)projectiles[i].Direction.Z;
+
+                if (projectiles[i].Guidance != null && projectiles[i].Guidance.GetTarget() != null)
+                {
+                    needsTargetEntities = true;
+                    targetEntities[i] = projectiles[i].Guidance.GetTarget().EntityId;
+                }
             }
+
+            if (!needsTargetEntities)
+                targetEntities = null;
 
             MillisecondsFromMidnight = (int)DateTime.UtcNow.TimeOfDay.TotalMilliseconds;
         }
@@ -253,6 +265,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
         [ProtoMember(23)] private float[] directionX;
         [ProtoMember(24)] private float[] directionY;
         [ProtoMember(25)] private float[] directionZ;
+        [ProtoMember(26)] private long[] targetEntities;
         //[ProtoMember(26)] private byte[] muzzleIdx; // TODO: Sync muzzle index for fireevents.
 
         public Vector3[] Direction() // just using a Vector3 adds 2 extra bytes (!!!)
@@ -270,7 +283,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
             return new Vector3(directionX[index], directionY[index], directionZ[index]);
         }
 
-        [ProtoMember(26)] public int MillisecondsFromMidnight;
+        [ProtoMember(27)] public int MillisecondsFromMidnight;
 
         public Projectile ToProjectile(int index)
         {
@@ -293,12 +306,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
                 LastUpdate = DateTime.UtcNow.Date.AddMilliseconds(MillisecondsFromMidnight - HeartData.I.Net.ServerTimeOffset).Ticks
             };
 
-            if (p.Guidance != null) // Assign target for self-guided projectiles
+            if (targetEntities != null && p.Guidance != null) // Assign target for self-guided projectiles
             {
-                if (weapon is SorterTurretLogic)
-                    p.Guidance.SetTarget(((SorterTurretLogic)weapon).TargetEntity);
-                else
-                    p.Guidance.SetTarget(WeaponManagerAi.I.GetTargeting(weapon.SorterWep.CubeGrid)?.PrimaryGridTarget);
+                p.Guidance.SetTarget(MyAPIGateway.Entities.GetEntityById(targetEntities[index]));
             }
 
             // TODO: Look into engine tick based syncing? Server time can vary DRASTICALLY.

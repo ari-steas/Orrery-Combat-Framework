@@ -12,9 +12,10 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
     {
         Loading Definition;
         Audio DefinitionAudio;
+        SorterWeaponLogic Weapon;
         private readonly Func<IMyInventory> GetInventoryFunc;
 
-        private int _ammoIndex = 0;
+        private int _selectedAmmoIndex = 0;
         private int _selectedAmmo = 0;
         private int shotsPerMag = 0;
 
@@ -27,38 +28,40 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             set
             {
                 int idx = Array.IndexOf(Definition.Ammos, value);
-                if (idx == -1)
+                if (idx == -1 || _selectedAmmo == value)
                     return;
                 _selectedAmmo = value;
-                _ammoIndex = idx;
+                _selectedAmmoIndex = idx;
                 shotsPerMag = ProjectileDefinitionManager.GetDefinition(SelectedAmmoId).Ungrouped.ShotsPerMagazine;
+                EmptyMagazines();
             }
         }
 
-        public int AmmoIndex
+        public int SelectedAmmoIndex
         {
             get
             {
-                return _ammoIndex;
+                return _selectedAmmoIndex;
             }
             set
             {
-                if (Definition.Ammos.Length <= value || value < 0)
+                if (Definition.Ammos.Length <= value || value < 0 || _selectedAmmoIndex == value)
                     return;
-                _ammoIndex = value;
                 _selectedAmmo = ProjectileDefinitionManager.GetId(Definition.Ammos[value]);
+                _selectedAmmoIndex = value;
                 shotsPerMag = ProjectileDefinitionManager.GetDefinition(SelectedAmmoId).Ungrouped.ShotsPerMagazine;
+                EmptyMagazines();
             }
         }
 
-        public WeaponLogic_Magazines(Loading definition, Audio definitionaudio, Func<IMyInventory> getInventoryFunc, int ammoIdx, bool startLoaded = false)
+        public WeaponLogic_Magazines(SorterWeaponLogic weapon, Func<IMyInventory> getInventoryFunc, int ammoIdx, bool startLoaded = false)
         {
-            Definition = definition;
-            DefinitionAudio = definitionaudio;
+            Definition = weapon.Definition.Loading;
+            DefinitionAudio = weapon.Definition.Audio;
             GetInventoryFunc = getInventoryFunc;
             RemainingReloads = Definition.MaxReloads;
             NextReloadTime = Definition.ReloadTime;
-            AmmoIndex = ammoIdx;
+            SelectedAmmoIndex = ammoIdx;
             if (startLoaded)
             {
                 MagazinesLoaded = Definition.MagazinesToLoad;

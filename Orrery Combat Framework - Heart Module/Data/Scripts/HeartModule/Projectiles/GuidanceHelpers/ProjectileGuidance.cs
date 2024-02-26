@@ -196,7 +196,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers
 
         internal bool IsTargetAllowed(IMyEntity target, Guidance? currentStage)
         {
-            if (currentStage == null)
+            if (currentStage == null || target == null)
                 return false;
             if (projectile.Firer == 0)
                 return true;

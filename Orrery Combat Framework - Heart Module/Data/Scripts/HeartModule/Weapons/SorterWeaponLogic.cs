@@ -1,5 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule;
 using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.ResourceSystem;
@@ -56,7 +57,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             Func<IMyInventory> getInventoryFunc = () => sorterWeapon.GetInventory();
 
             // You need to provide the missing arguments for WeaponLogic_Magazines constructor here
-            Magazines = new WeaponLogic_Magazines(definition.Loading, definition.Audio, getInventoryFunc, AmmoComboBox);
+            Magazines = new WeaponLogic_Magazines(this, getInventoryFunc, AmmoComboBox);
 
             // Initialize the WeaponResourceSystem
             _resourceSystem = new WeaponResourceSystem(definition, this);
@@ -330,9 +331,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public void SetAmmo(int AmmoId)
         {
             Magazines.SelectedAmmoId = AmmoId;
-            Settings.AmmoLoadedId = Magazines.SelectedAmmoId;
-
-            Magazines.EmptyMagazines();
+            Settings.AmmoLoadedIdx = Magazines.SelectedAmmoIndex;
+            HeartLog.Log("Ammo: " + ProjectileDefinitionManager.GetDefinition(Magazines.SelectedAmmoId).Name);
         }
 
         public void SetAmmoByIdx(int AmmoIdx)
@@ -340,10 +340,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (AmmoIdx < 0 || AmmoIdx >= Definition.Loading.Ammos.Length)
                 return;
 
-            Magazines.AmmoIndex = AmmoIdx;
-            Settings.AmmoLoadedId = Magazines.SelectedAmmoId;
-
-            Magazines.EmptyMagazines();
+            Magazines.SelectedAmmoIndex = AmmoIdx;
+            Settings.AmmoLoadedIdx = Magazines.SelectedAmmoIndex;
         }
 
         #region Terminal controls
@@ -380,14 +378,14 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         {
             get
             {
-                return Settings.AmmoLoadedId;
+                return Settings.AmmoLoadedIdx;
             }
 
             set
             {
                 SetAmmoByIdx(value);
 
-                Settings.AmmoLoadedId = Magazines.SelectedAmmoId;
+                Settings.AmmoLoadedIdx = Magazines.SelectedAmmoIndex;
                 Settings.Sync();
             }
         }
@@ -395,14 +393,14 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public void CycleAmmoType(bool forward)
         {
             if (forward)
-                Magazines.AmmoIndex = (Magazines.AmmoIndex + 1) % Definition.Loading.Ammos.Length;
+                Magazines.SelectedAmmoIndex = (Magazines.SelectedAmmoIndex + 1) % Definition.Loading.Ammos.Length;
             else
-                Magazines.AmmoIndex = (Magazines.AmmoIndex - 1 + Definition.Loading.Ammos.Length) % Definition.Loading.Ammos.Length;
+                Magazines.SelectedAmmoIndex = (Magazines.SelectedAmmoIndex - 1 + Definition.Loading.Ammos.Length) % Definition.Loading.Ammos.Length;
 
-            Settings.AmmoLoadedId = Magazines.SelectedAmmoId;
+            Settings.AmmoLoadedIdx = Magazines.SelectedAmmoIndex;
             Magazines.EmptyMagazines();
 
-            AmmoComboBox = Magazines.AmmoIndex;
+            AmmoComboBox = Magazines.SelectedAmmoIndex;
         }
 
         public bool HudBarrelIndicatorState
@@ -449,7 +447,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 return;
 
             Settings.ShootState = false;
-            Settings.AmmoLoadedId = Magazines.SelectedAmmoId;
+            Settings.AmmoLoadedIdx = Magazines.SelectedAmmoIndex;
             Settings.HudBarrelIndicatorState = false;
         }
 
@@ -477,8 +475,8 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 {
                     Settings.ShootState = loadedSettings.ShootState;
 
-                    Settings.AmmoLoadedId = loadedSettings.AmmoLoadedId;
-                    Magazines.AmmoIndex = Array.IndexOf(Definition.Loading.Ammos, ProjectileDefinitionManager.GetDefinition(Settings.AmmoLoadedId).Name);
+                    Settings.AmmoLoadedIdx = loadedSettings.AmmoLoadedIdx;
+                    Magazines.SelectedAmmoIndex = loadedSettings.AmmoLoadedIdx;
 
                     Settings.ControlTypeState = loadedSettings.ControlTypeState;
                     Settings.HudBarrelIndicatorState = loadedSettings.HudBarrelIndicatorState;
