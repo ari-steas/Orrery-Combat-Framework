@@ -14,10 +14,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
         [ProtoMember(1)] internal long WeaponEntityId;
         [ProtoMember(2)] internal int MillisecondsFromMidnight;
         [ProtoMember(3)] internal int MagazinesLoaded;
+        [ProtoMember(4)] internal short NextMuzzleIdx;
 
         public override void Received(ulong SenderSteamId)
         {
-            var magazine = WeaponManager.I.GetWeapon(WeaponEntityId)?.Magazines;
+            var weapon = WeaponManager.I.GetWeapon(WeaponEntityId);
+            var magazine = weapon?.Magazines;
             if (magazine == null)
                 return;
 
@@ -26,6 +28,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
             magazine.EmptyMagazines();
             magazine.MagazinesLoaded = MagazinesLoaded;
             magazine.UpdateReload(timeDelta);
+
+            weapon.NextMuzzleIdx = NextMuzzleIdx;
 
             HeartLog.Log($"Magazine updated for weapon {WeaponEntityId}! Delta: " + timeDelta);
         }

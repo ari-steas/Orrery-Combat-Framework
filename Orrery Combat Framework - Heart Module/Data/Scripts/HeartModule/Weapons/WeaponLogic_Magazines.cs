@@ -3,6 +3,7 @@ using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.Game;
+using Sandbox.ModAPI;
 using System;
 using VRage.Game;
 using VRage.Game.ModAPI;
@@ -159,12 +160,16 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (ShotsInMag % shotsPerMag == 0)
             {
                 MagazinesLoaded--;
-                HeartData.I.Net.SendToEveryoneInSync(new n_MagazineUpdate()
+                if (MyAPIGateway.Session.IsServer)
                 {
-                    WeaponEntityId = Weapon.SorterWep.EntityId,
-                    MillisecondsFromMidnight = (int)DateTime.UtcNow.TimeOfDay.TotalMilliseconds,
-                    MagazinesLoaded = MagazinesLoaded,
-                }, Weapon.SorterWep.GetPosition());
+                    HeartData.I.Net.SendToEveryoneInSync(new n_MagazineUpdate()
+                    {
+                        WeaponEntityId = Weapon.SorterWep.EntityId,
+                        MillisecondsFromMidnight = (int)DateTime.UtcNow.TimeOfDay.TotalMilliseconds,
+                        MagazinesLoaded = MagazinesLoaded,
+                        NextMuzzleIdx = (short)Weapon.NextMuzzleIdx,
+                    }, Weapon.SorterWep.GetPosition());
+                }
 
                 if (!string.IsNullOrEmpty(DefinitionAudio.ReloadSound))
                 {
@@ -173,18 +178,22 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             }
         }
 
-        public void EmptyMagazines()
+        public void EmptyMagazines(bool doSync = false)
         {
             ShotsInMag = 0;
             MagazinesLoaded = 0;
             NextReloadTime = Definition.ReloadTime;
 
-            HeartData.I.Net.SendToEveryoneInSync(new n_MagazineUpdate()
+            if (MyAPIGateway.Session.IsServer || doSync)
             {
-                WeaponEntityId = Weapon.SorterWep.EntityId,
-                MillisecondsFromMidnight = (int)DateTime.UtcNow.TimeOfDay.TotalMilliseconds,
-                MagazinesLoaded = MagazinesLoaded,
-            }, Weapon.SorterWep.GetPosition());
+                HeartData.I.Net.SendToEveryoneInSync(new n_MagazineUpdate()
+                {
+                    WeaponEntityId = Weapon.SorterWep.EntityId,
+                    MillisecondsFromMidnight = (int)DateTime.UtcNow.TimeOfDay.TotalMilliseconds,
+                    MagazinesLoaded = MagazinesLoaded,
+                    NextMuzzleIdx = (short)Weapon.NextMuzzleIdx,
+                }, Weapon.SorterWep.GetPosition());
+            }
         }
     }
 }
