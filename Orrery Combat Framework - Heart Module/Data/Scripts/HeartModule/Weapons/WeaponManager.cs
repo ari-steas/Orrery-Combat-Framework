@@ -2,7 +2,6 @@
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.ModAPI;
 using System.Collections.Generic;
-using System.Diagnostics;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;

@@ -1,8 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
-using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Network;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
-using Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting;
 using ProtoBuf;
 using Sandbox.ModAPI;
 using System;

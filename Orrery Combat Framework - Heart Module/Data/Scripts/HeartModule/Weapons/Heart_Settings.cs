@@ -1,13 +1,8 @@
 using Heart_Module.Data.Scripts.HeartModule;
-using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
-using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Network;
-using Heart_Module.Data.Scripts.HeartModule.Projectiles;
-using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using ProtoBuf;
 using Sandbox.ModAPI;
-using System;
 using VRageMath;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
@@ -286,9 +281,9 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
         private void CompressValue(ref short bitwise, int enumValue, bool state)
         {
             if (state)
-                bitwise |= (short) enumValue;
+                bitwise |= (short)enumValue;
             else
-                bitwise &= (short) ~enumValue; // AND with negated enumValue
+                bitwise &= (short)~enumValue; // AND with negated enumValue
         }
 
         private static class TargetingSettingStates

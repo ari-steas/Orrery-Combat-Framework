@@ -1,5 +1,4 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
-using Heart_Module.Data.Scripts.HeartModule.Network;
+﻿using Heart_Module.Data.Scripts.HeartModule.Network;
 using ProtoBuf;
 using System;
 
@@ -19,11 +18,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
         public override void Received(ulong SenderSteamId)
         {
             var weapon = WeaponManager.I.GetWeapon(WeaponEntityId);
+            //HeartLog.Log($"Trigger update {WeaponEntityId}. " + (weapon == null));
             var magazine = weapon?.Magazines;
             if (magazine == null)
                 return;
 
-            float timeDelta = (float) ((DateTime.UtcNow.TimeOfDay.TotalMilliseconds - MillisecondsFromMidnight)/1000);
+            float timeDelta = (float)((DateTime.UtcNow.TimeOfDay.TotalMilliseconds - MillisecondsFromMidnight) / 1000);
 
             magazine.EmptyMagazines();
             magazine.MagazinesLoaded = MagazinesLoaded;
@@ -31,7 +31,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
 
             weapon.NextMuzzleIdx = NextMuzzleIdx;
 
-            HeartLog.Log($"Magazine updated for weapon {WeaponEntityId}! Delta: " + timeDelta);
+            //HeartLog.Log($"Magazine updated for weapon {WeaponEntityId}! Delta: " + timeDelta);
         }
     }
 }

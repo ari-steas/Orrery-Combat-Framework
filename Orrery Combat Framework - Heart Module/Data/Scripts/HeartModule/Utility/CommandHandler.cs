@@ -94,7 +94,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Utility
                 IMyCubeGrid grid = ((IMyCubeBlock)entity).CubeGrid;
                 foreach (var weapon in WeaponManager.I.GridWeapons[grid])
                 {
-                    weapon.Magazines.EmptyMagazines();
+                    weapon.Magazines.EmptyMagazines(true);
                     //weapon.Magazines.NextReloadTime = 0;
                     //weapon.Magazines.UpdateReload();
                     ct++;

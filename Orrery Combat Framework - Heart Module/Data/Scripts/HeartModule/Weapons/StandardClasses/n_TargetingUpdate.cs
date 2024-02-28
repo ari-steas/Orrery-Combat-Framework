@@ -2,14 +2,8 @@
 using Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting;
 using ProtoBuf;
 using Sandbox.ModAPI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
-using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
 {
@@ -30,7 +24,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
 
             if (thisEntity is IMyCubeGrid)
             {
-                WeaponManagerAi.I.GetTargeting((IMyCubeGrid) thisEntity).SetPrimaryTarget((IMyCubeGrid) targetEntity);
+                WeaponManagerAi.I.GetTargeting((IMyCubeGrid)thisEntity).SetPrimaryTarget((IMyCubeGrid)targetEntity);
             }
             else if (thisEntity is IMyConveyorSorter)
             {
