@@ -16,11 +16,9 @@ using System.Collections.Generic;
 using VRage.Game;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
-using VRage.Game.ModAPI.Network;
 using VRage.ModAPI;
 using VRage.Network;
 using VRage.ObjectBuilders;
-using VRage.Sync;
 using VRageMath;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding

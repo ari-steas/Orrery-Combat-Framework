@@ -1,5 +1,4 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule;
-using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.Game;
@@ -69,6 +68,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public WeaponLogic_Magazines(SorterWeaponLogic weapon, Func<IMyInventory> getInventoryFunc, int ammoIdx, bool startLoaded = false)
         {
+            Weapon = weapon;
             Definition = weapon.Definition.Loading;
             DefinitionAudio = weapon.Definition.Audio;
             GetInventoryFunc = getInventoryFunc;
@@ -87,7 +87,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public float NextReloadTime = -1; // In seconds
         public int RemainingReloads;
 
-        public void UpdateReload(float delta = 1/60f)
+        public void UpdateReload(float delta = 1 / 60f)
         {
             if (RemainingReloads == 0)
                 return;
@@ -178,13 +178,13 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             }
         }
 
-        public void EmptyMagazines(bool doSync = false)
+        public void EmptyMagazines(bool doSyncIfClient = false)
         {
             ShotsInMag = 0;
             MagazinesLoaded = 0;
             NextReloadTime = Definition.ReloadTime;
 
-            if (MyAPIGateway.Session.IsServer || doSync)
+            if (MyAPIGateway.Session.IsServer || doSyncIfClient)
             {
                 HeartData.I.Net.SendToEveryoneInSync(new n_MagazineUpdate()
                 {
