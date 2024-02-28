@@ -1,4 +1,5 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
+﻿using Heart_Module.Data.Scripts.HeartModule;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.Game;
@@ -39,7 +40,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     return;
                 EmptyMagazines();
 
-                HeartLog.Log("Set Loaded AmmoId: " + SelectedAmmoId + " | IDX " + SelectedAmmoIndex);
+                //HeartLog.Log("Set Loaded AmmoId: " + SelectedAmmoId + " | IDX " + SelectedAmmoIndex);
             }
         }
 
@@ -61,7 +62,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     return;
                 EmptyMagazines();
 
-                HeartLog.Log("Set Loaded AmmoIdx: " + SelectedAmmoId + " | IDX " + SelectedAmmoIndex);
+                //HeartLog.Log("Set Loaded AmmoIdx: " + SelectedAmmoId + " | IDX " + SelectedAmmoIndex);
             }
         }
 
@@ -85,7 +86,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
         public float NextReloadTime = -1; // In seconds
         public int RemainingReloads;
 
-        public void UpdateReload()
+        public void UpdateReload(float delta = 1/60f)
         {
             if (RemainingReloads == 0)
                 return;
@@ -96,7 +97,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (NextReloadTime == -1)
                 return;
 
-            NextReloadTime -= 1 / 60f;
+            NextReloadTime -= delta;
 
             if (NextReloadTime <= 0)
             {
@@ -158,6 +159,12 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (ShotsInMag % shotsPerMag == 0)
             {
                 MagazinesLoaded--;
+                HeartData.I.Net.SendToEveryoneInSync(new n_MagazineUpdate()
+                {
+                    WeaponEntityId = Weapon.SorterWep.EntityId,
+                    MillisecondsFromMidnight = (int)DateTime.UtcNow.TimeOfDay.TotalMilliseconds,
+                    MagazinesLoaded = MagazinesLoaded,
+                }, Weapon.SorterWep.GetPosition());
 
                 if (!string.IsNullOrEmpty(DefinitionAudio.ReloadSound))
                 {
@@ -171,6 +178,13 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             ShotsInMag = 0;
             MagazinesLoaded = 0;
             NextReloadTime = Definition.ReloadTime;
+
+            HeartData.I.Net.SendToEveryoneInSync(new n_MagazineUpdate()
+            {
+                WeaponEntityId = Weapon.SorterWep.EntityId,
+                MillisecondsFromMidnight = (int)DateTime.UtcNow.TimeOfDay.TotalMilliseconds,
+                MagazinesLoaded = MagazinesLoaded,
+            }, Weapon.SorterWep.GetPosition());
         }
     }
 }
