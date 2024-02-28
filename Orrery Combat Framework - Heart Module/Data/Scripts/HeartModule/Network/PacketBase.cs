@@ -18,6 +18,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
     [ProtoInclude(9, typeof(n_SerializableFireEvents))]
     [ProtoInclude(10, typeof(n_TimeSyncPacket))]
     [ProtoInclude(11, typeof(Heart_Settings))]
+    [ProtoInclude(12, typeof(n_TargetingUpdate))]
+    [ProtoInclude(13, typeof(n_MagazineUpdate))]
     [ProtoContract(UseProtoMembersOnly = true)]
     public abstract partial class PacketBase
     {

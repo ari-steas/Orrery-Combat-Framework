@@ -3,6 +3,7 @@ using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using VRage.Game.ModAPI;
+using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Network
 {
@@ -82,6 +83,23 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
         public void SendToEveryone(PacketBase packet, byte[] serialized = null)
         {
             RelayToClients(packet, HeartData.I.SteamId, serialized);
+        }
+
+        public void SendToEveryoneInSync(PacketBase packet, Vector3D position, byte[] serialized = null)
+        {
+            List<ulong> toSend = new List<ulong>();
+            foreach (var player in HeartData.I.Players)
+                if (Vector3D.DistanceSquared(player.GetPosition(), position) <= HeartData.I.SyncRangeSq)
+                    toSend.Add(player.SteamUserId);
+
+            if (toSend.Count == 0)
+                return;
+
+            if (serialized == null)
+                serialized = MyAPIGateway.Utilities.SerializeToBinary(packet);
+
+            foreach (var clientSteamId in toSend)
+                RelayToClient(packet, clientSteamId, HeartData.I.SteamId, serialized);
         }
 
         public void SendToServer(PacketBase packet, byte[] serialized = null)

@@ -331,7 +331,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.AiRange = value;
-                Settings.Sync();
+                Settings.Sync(SorterWep.GetPosition());
             }
         }
 
@@ -345,7 +345,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.PreferUniqueTargetState = value;
-                Settings.Sync();
+                Settings.Sync(SorterWep.GetPosition());
             }
         }
 
@@ -359,7 +359,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.TargetGridsState = value;
-                Settings.Sync();
+                Settings.Sync(SorterWep.GetPosition());
 
             }
         }
@@ -374,7 +374,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.TargetProjectilesState = value;
-                Settings.Sync();
+                Settings.Sync(SorterWep.GetPosition());
             }
         }
 
@@ -388,7 +388,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.TargetCharactersState = value;
-                Settings.Sync();
+                Settings.Sync(SorterWep.GetPosition());
             }
         }
 
@@ -402,7 +402,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.TargetLargeGridsState = value;
-                Settings.Sync();
+                Settings.Sync(SorterWep.GetPosition());
             }
         }
 
@@ -416,7 +416,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.TargetSmallGridsState = value;
-                Settings.Sync();
+                Settings.Sync(SorterWep.GetPosition());
             }
         }
 
@@ -430,7 +430,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.TargetFriendliesState = value;
-                Settings.Sync();
+                Settings.Sync(SorterWep.GetPosition());
             }
         }
 
@@ -444,7 +444,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.TargetNeutralsState = value;
-                Settings.Sync();
+                Settings.Sync(SorterWep.GetPosition());
             }
         }
 
@@ -458,7 +458,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.TargetEnemiesState = value;
-                Settings.Sync();
+                Settings.Sync(SorterWep.GetPosition());
             }
         }
 
@@ -472,7 +472,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             set
             {
                 Settings.TargetUnownedState = value;
-                Settings.Sync();
+                Settings.Sync(SorterWep.GetPosition());
             }
         }
 

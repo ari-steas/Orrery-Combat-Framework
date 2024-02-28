@@ -8,18 +8,19 @@ using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using ProtoBuf;
 using Sandbox.ModAPI;
 using System;
+using VRageMath;
 
 namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
 {
     [ProtoContract(UseProtoMembersOnly = true)]
     public class Heart_Settings : PacketBase // this will ABSOLUTELY bite me in the ass later.
     {
-        public void Sync()
+        public void Sync(Vector3D turretPosition)
         {
             //HeartLog.Log("Sync called!");
             if (MyAPIGateway.Session.IsServer)
             {
-                HeartData.I.Net.SendToEveryone(this);
+                HeartData.I.Net.SendToEveryoneInSync(this, turretPosition);
                 //HeartLog.Log("Sent settings to all.\n" + ToString() + "\n---------------------------");
             }
             else
@@ -53,7 +54,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
 
             if (IsSyncRequest)
             {
-                weapon.Settings.Sync();
+                weapon.Settings.Sync(weapon.SorterWep.GetPosition());
                 return;
             }
 
@@ -62,7 +63,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
             //HeartLog.Log("UPDATED Id: " + weapon.Magazines.SelectedAmmoId + " | Idx: " + weapon.Magazines.SelectedAmmoIndex);
             //HeartLog.Log("SHOULD BE Idx: " + AmmoLoadedIdx);
             if (MyAPIGateway.Session.IsServer)
-                weapon.Settings.Sync();
+                weapon.Settings.Sync(weapon.SorterWep.GetPosition());
         }
 
         [ProtoMember(1)]

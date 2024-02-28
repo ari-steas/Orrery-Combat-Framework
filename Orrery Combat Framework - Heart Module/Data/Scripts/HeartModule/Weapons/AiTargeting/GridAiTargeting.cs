@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
+using VRage.ModAPI;
 using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
@@ -63,6 +64,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             // Unused for now
         }
 
+        public void SetPrimaryTarget(IMyCubeGrid entity)
+        {
+            PrimaryGridTarget = entity;
+        }
+
         public void UpdateTargeting()
         {
             try
@@ -78,8 +84,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                     manualTarget = keenTargeting.GetTarget(Grid);
                     if (manualTarget is IMyCubeGrid)
                         PrimaryGridTarget = (IMyCubeGrid)manualTarget;
-                    else
-                        PrimaryGridTarget = null;
                 }
 
                 //MyAPIGateway.Utilities.ShowNotification("Grids: " + TargetedGrids.Count, 1000/60);

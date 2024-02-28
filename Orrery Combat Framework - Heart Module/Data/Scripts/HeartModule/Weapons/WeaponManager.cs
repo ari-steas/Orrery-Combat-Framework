@@ -2,9 +2,11 @@
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.ModAPI;
 using System.Collections.Generic;
+using System.Diagnostics;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
+using VRageMath;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
@@ -199,17 +201,33 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (!MyAPIGateway.Session.IsServer)
                 return;
 
-            List<n_TurretFacing> facings = new List<n_TurretFacing>(); // TODO: Limit the max number of syncs by network load, and also by player distance
+            Dictionary<Vector3D, n_TurretFacing> facings = new Dictionary<Vector3D, n_TurretFacing>(); // TODO: Limit the max number of syncs by network load, and also by player distance
             foreach (var weapon in ActiveWeapons.Values)
             {
                 if (!(weapon is SorterTurretLogic))
                     continue;
 
                 SorterTurretLogic turret = weapon as SorterTurretLogic;
-                facings.Add(new n_TurretFacing(turret));
+                facings.Add(turret.SorterWep.GetPosition(), new n_TurretFacing(turret));
             }
 
-            HeartData.I.Net.SendToEveryone(new n_TurretFacingArray(facings));
+            // Construct a BIG FUCKOFF ARRAY for every player !!! WOO !!!
+            // for NETWORK PERFORMANCE
+            // !!!
+            foreach (var player in HeartData.I.Players)
+            {
+                Vector3D playerPos = player.GetPosition();
+                List<n_TurretFacing> facingsForPlayer = new List<n_TurretFacing>();
+
+                foreach (var facing in facings)
+                    if (Vector3D.DistanceSquared(facing.Key, playerPos) <= HeartData.I.SyncRangeSq)
+                        facingsForPlayer.Add(facing.Value);
+
+                if (facingsForPlayer.Count == 0)
+                    continue;
+
+                HeartData.I.Net.SendToPlayer(new n_TurretFacingArray(facingsForPlayer), player.SteamUserId);
+            }
         }
 
         public SorterWeaponLogic GetWeapon(uint id) => ActiveWeapons.GetValueOrDefault(id, null);

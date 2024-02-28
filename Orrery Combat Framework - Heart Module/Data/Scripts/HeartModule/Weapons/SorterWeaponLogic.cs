@@ -356,7 +356,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             set
             {
                 Settings.MouseShootState = value;
-                Settings.Sync();
+                Settings.Sync(SorterWep.GetPosition());
             }
         }
 
@@ -370,7 +370,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             set
             {
                 Settings.ShootState = value;
-                Settings.Sync();
+                Settings.Sync(SorterWep.GetPosition());
             }
         }
 
@@ -386,7 +386,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 SetAmmoByIdx(value);
 
                 Settings.AmmoLoadedIdx = Magazines.SelectedAmmoIndex;
-                Settings.Sync();
+                Settings.Sync(SorterWep.GetPosition());
             }
         }
 
@@ -413,7 +413,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             set
             {
                 Settings.HudBarrelIndicatorState = value;
-                Settings.Sync();
+                Settings.Sync(SorterWep.GetPosition());
             }
         }
 
