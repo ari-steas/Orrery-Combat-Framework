@@ -18,14 +18,17 @@ Thanks to Nerd, the creator of Vanilla+ for letting us use his code as a base fo
 
 [https://steamcommunity.com/workshop/filedetails/?id=2915780227](https://steamcommunity.com/workshop/filedetails/?id=2915780227)
 
-### Features
+### Current Features:
+- Conveyor Sorter-based weapons
+- Scalable configs for modders & server owners
+- Live updating of rounds within runtime
+- WeaponCore model compatability
+- Script-on-a-bullet system
+- Programmable Block API
+- Arbitrary Resource Counters (Heat, Durability, Fingerless Gloves)
+- PID Missile Guidance
 
-- Flexible ammo, missile, turret, and weapon system setup.
-- WeaponCore model compatability.
-- Allows defining various properties such as targeting range, auto-shoot capability, reload time, etc.
-- Support for different types of projectiles including beams, missiles, and standard projectiles
-- Networking options for multiplayer compatibility.
-- Configurable damage parameters such as damage to different block types and area damage.
-- Visual and audio effects customization.
-- PID Guidance options for missiles including aim prediction and target tracking.
-- Integration with Space Engineers C# ModAPI (script-on-a-bullet).
+
+### Future features
+- Modular Block Framework
+- DefenseShields compatability
