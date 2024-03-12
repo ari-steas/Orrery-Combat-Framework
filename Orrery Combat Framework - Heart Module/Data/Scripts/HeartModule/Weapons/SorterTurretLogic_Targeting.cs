@@ -25,6 +25,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                         SorterWep.CubeGrid.LinearVelocity,
                         TargetProjectile, 0) ?? Vector3D.MaxValue;
                 UpdateTargetState(AimPoint);
+
+                if (TargetProjectile.QueuedDispose)
+                    TargetProjectile = null;
             }
             else if (TargetEntity != null)
             {

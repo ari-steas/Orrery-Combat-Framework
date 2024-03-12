@@ -1,7 +1,9 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
+using Sandbox.Game.GUI.DebugInputComponents;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
@@ -49,39 +51,43 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             if (HeartData.I.IsSuspended) return;
 
-            // Tick projectiles
-            foreach (var projectile in ActiveProjectiles.Values.ToArray()) // This can be modified by ModApi calls during run
+            try
             {
-                projectile.TickUpdate(deltaTick);
-                if (projectile.QueuedDispose)
-                    QueuedCloseProjectiles.Add(projectile);
-            }
+                MyAPIGateway.Parallel.ForEach(ActiveProjectiles.Values.ToArray(), UpdateSingleProjectile);
 
-            // Queued removal of projectiles
-            foreach (var projectile in QueuedCloseProjectiles)
+                foreach (var projectile in QueuedCloseProjectiles)
+                {
+                    if (!MyAPIGateway.Utilities.IsDedicated)
+                        projectile.CloseDrawing();
+
+                    ActiveProjectiles.Remove(projectile.Id);
+                    if (ProjectilesWithHealth.Contains(projectile))
+                        ProjectilesWithHealth.Remove(projectile);
+                    projectile.OnClose.Invoke(projectile);
+                    if (projectile.Health < 0)
+                        MyAPIGateway.Utilities.ShowNotification(projectile.Id + "");
+                }
+                QueuedCloseProjectiles.Clear();
+
+                // Sync stuff
+                Network.Update1();
+
+                DamageHandler.Update();
+
+                clockTick.Restart();
+            }
+            catch (Exception ex)
             {
-                //MyAPIGateway.Utilities.ShowMessage("Heart", $"Closing projectile {projectile.Id}. Age: {projectile.Age} ");
-                //if (MyAPIGateway.Session.IsServer)
-                //    QueueSync(projectile, 2);
-
-                if (!MyAPIGateway.Utilities.IsDedicated)
-                    projectile.CloseDrawing();
-
-                ActiveProjectiles.Remove(projectile.Id);
-                if (ProjectilesWithHealth.Contains(projectile))
-                    ProjectilesWithHealth.Remove(projectile);
-                projectile.OnClose.Invoke(projectile);
-                if (projectile.Health < 0)
-                    MyAPIGateway.Utilities.ShowNotification(projectile.Id + "");
+                SoftHandle.RaiseException(ex, typeof(ProjectileManager));
             }
-            QueuedCloseProjectiles.Clear();
+        }
 
-            // Sync stuff
-            Network.Update1();
+        private void UpdateSingleProjectile(Projectile projectile)
+        {
+            projectile.TickUpdate(deltaTick);
 
-            DamageHandler.Update();
-
-            clockTick.Restart();
+            if (projectile.QueuedDispose)
+                QueuedCloseProjectiles.Add(projectile);
         }
 
         public override void UpdatingStopped()

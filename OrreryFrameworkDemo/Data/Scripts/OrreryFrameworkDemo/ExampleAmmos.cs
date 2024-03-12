@@ -39,7 +39,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 AreaDamage = 0,
                 AreaRadius = 0,
                 MaxImpacts = 1,
-                DamageToProjectiles = 0.2f,
+                DamageToProjectiles = 0.4f,
                 DamageToProjectilesRadius = 0.2f,
             },
             PhysicalProjectile = new PhysicalProjectile()
@@ -47,11 +47,12 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 Velocity = 800,
                 VelocityVariance = 0,
                 Acceleration = 0,
-                Health = 1,
+                Health = 0,
                 MaxTrajectory = 4000,
                 MaxLifetime = -1,
                 IsHitscan = false,
                 GravityInfluenceMultiplier = 0.01f,
+                ProjectileSize = 0.5f,
             },
             Visual = new Visual()
             {
@@ -162,9 +163,9 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             LiveMethods = new LiveMethods()
             {
 
-                OnSpawn = (ProjectileId, Firer) => {
-                    MyVisualScriptLogicProvider.SendChatMessage(ExampleAmmoMissile.Name + "WARNING: SOMEONE HAS FIRED A MISSILE WITHOUT A PID! LAUGH AT HIM!");
-                },
+                //OnSpawn = (ProjectileId, Firer) => {
+                //    MyVisualScriptLogicProvider.SendChatMessage(ExampleAmmoMissile.Name + "WARNING: SOMEONE HAS FIRED A MISSILE WITHOUT A PID! LAUGH AT HIM!");
+                //},
 
                 //OnSpawn = (ProjectileId, Firer) => {
                 //    HeartApi.LogWriteLine("OnSpawn " + ProjectileId + " | " + HeartApi.BlockHasWeapon(Firer));
