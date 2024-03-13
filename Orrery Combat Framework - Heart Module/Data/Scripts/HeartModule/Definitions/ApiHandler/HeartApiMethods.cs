@@ -191,7 +191,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
 
         #region Debug Methods
 
-        public int GetNetworkLoad() => HeartData.I.Net.NetworkLoad;
+        public int GetNetworkLoad() => HeartData.I.Net.TotalNetworkLoad;
 
         #endregion
     }
