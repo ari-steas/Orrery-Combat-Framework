@@ -1,14 +1,16 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Definitions;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using ProtoBuf;
+using System;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Network
 {
     [ProtoInclude(1, typeof(n_SerializableProjectile))]
-    [ProtoInclude(2, typeof(ExceptionHandler.n_SerializableError))]
+    [ProtoInclude(2, typeof(n_SerializableError))]
     [ProtoInclude(3, typeof(n_ProjectileRequest))]
     [ProtoInclude(4, typeof(n_ProjectileArray))]
     [ProtoInclude(5, typeof(n_TurretFacing))]
@@ -28,5 +30,23 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
         /// </summary>
         /// <param name="SenderSteamId"></param>
         public abstract void Received(ulong SenderSteamId);
+
+        public static Type[] Types = new Type[]
+        {
+            typeof(PacketBase),
+            typeof(n_SerializableProjectile),
+            typeof(n_SerializableError),
+            typeof(n_ProjectileRequest),
+            typeof(n_ProjectileArray),
+            typeof(n_TurretFacing),
+            typeof(n_TurretFacingArray),
+            typeof(n_ProjectileDefinitionIdSync),
+            typeof(n_SerializableProjectileInfos),
+            typeof(n_SerializableFireEvents),
+            typeof(n_TimeSyncPacket),
+            typeof(Heart_Settings),
+            typeof(n_TargetingUpdate),
+            typeof(n_MagazineUpdate),
+        };
     }
 }

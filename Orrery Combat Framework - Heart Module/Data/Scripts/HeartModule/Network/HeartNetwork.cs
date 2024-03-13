@@ -2,6 +2,8 @@
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
 using VRage.Game.ModAPI;
 using VRageMath;
 
@@ -10,9 +12,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
     public class HeartNetwork
     {
         public int NetworkLoadTicks = 240;
-        public int NetworkLoad { get; private set; } = 0; // TODO: Per-packet type network load
+        public int TotalNetworkLoad { get; private set; } = 0;
+        public Dictionary<Type, int> TypeNetworkLoad = new Dictionary<Type, int>();
 
-        private List<int> networkLoadArray = new List<int>();
         private int networkLoadUpdate = 0;
 
         public double ServerTimeOffset { get; internal set; } = 0;
@@ -21,6 +23,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
         public void LoadData()
         {
             MyAPIGateway.Multiplayer.RegisterSecureMessageHandler(HeartData.HeartNetworkId, ReceivedPacket);
+
+            foreach (var type in PacketBase.Types)
+            {
+                TypeNetworkLoad.Add(type, 0);
+            }
 
             UpdateTimeOffset();
         }
@@ -41,14 +48,17 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
         public void Update()
         {
             networkLoadUpdate--;
-            if (networkLoadUpdate <= 0 && networkLoadArray.Count > 0) // Update NetworkLoad average once per second
+            if (networkLoadUpdate <= 0)
             {
                 networkLoadUpdate = NetworkLoadTicks;
-                NetworkLoad = 0;
-                foreach (int i in networkLoadArray)
-                    NetworkLoad += i;
-                NetworkLoad /= (NetworkLoadTicks / 60); // Average per-second
-                networkLoadArray.Clear();
+                TotalNetworkLoad = 0;
+                foreach (var networkLoadArray in TypeNetworkLoad.Keys.ToArray())
+                {
+                    TotalNetworkLoad += TypeNetworkLoad[networkLoadArray];
+                    TypeNetworkLoad[networkLoadArray] = 0;
+                }
+
+                TotalNetworkLoad /= (NetworkLoadTicks / 60); // Average per-second
             }
 
             if (tickCounter % 307 == 0)
@@ -58,10 +68,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
 
         void ReceivedPacket(ushort channelId, byte[] serialized, ulong senderSteamId, bool isSenderServer)
         {
-            networkLoadArray.Add(serialized.Length);
             try
             {
                 PacketBase packet = MyAPIGateway.Utilities.SerializeFromBinary<PacketBase>(serialized);
+                TypeNetworkLoad[packet.GetType()] += serialized.Length;
                 HandlePacket(packet, senderSteamId);
             }
             catch (Exception ex)
@@ -73,6 +83,25 @@ namespace Heart_Module.Data.Scripts.HeartModule.Network
         void HandlePacket(PacketBase packet, ulong senderSteamId)
         {
             packet.Received(senderSteamId);
+        }
+
+
+
+
+
+        public KeyValuePair<Type, int> HighestNetworkLoad()
+        {
+            Type highest = null;
+
+            foreach (var networkLoadArray in TypeNetworkLoad)
+            {
+                if (highest == null || networkLoadArray.Value > TypeNetworkLoad[highest])
+                {
+                    highest = networkLoadArray.Key;
+                }
+            }
+
+            return new KeyValuePair<Type, int>(highest, TypeNetworkLoad[highest]);
         }
 
         public void SendToPlayer(PacketBase packet, ulong playerSteamId, byte[] serialized = null)

@@ -64,7 +64,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
         public void UpdateDebugText(int numProjectiles, int numWeapons, int networkLoad)
         {
             debugInfo.Text = $"Projectiles: {numProjectiles} | Weapons: {numWeapons}";
-            debugInfo2.Text = $"Estimated Network Load: {Math.Round(networkLoad / 1000f, 1)}kb/s";
+            debugInfo2.Text = $"NETLOAD: {Math.Round(networkLoad / 1000f, 1)}kb/s ({HeartData.I.Net.HighestNetworkLoad().Key.Name})";
         }
 
         public void UpdateWeaponText(SorterWeaponLogic weapon)
