@@ -185,7 +185,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             IMyEntity controlledEntity = MyAPIGateway.Session.Player?.Controller?.ControlledEntity?.Entity?.GetTopMostParent(); // Get the currently controlled grid.
             IMyCubeGrid grid = controlledEntity as IMyCubeGrid;
-            if (grid == null || !GridWeapons.ContainsKey(grid))
+            if (MyAPIGateway.Gui.IsCursorVisible || grid == null || !GridWeapons.ContainsKey(grid))
                 return;
 
             bool isMousePressed = MyAPIGateway.Input.IsMousePressed(VRage.Input.MyMouseButtonsEnum.Left);
