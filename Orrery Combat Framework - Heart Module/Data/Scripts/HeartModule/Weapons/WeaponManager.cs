@@ -197,7 +197,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public void Update25()
         {
-            if (!MyAPIGateway.Session.IsServer)
+            if (!MyAPIGateway.Session.IsServer || !MyAPIGateway.Multiplayer.MultiplayerActive)
                 return;
 
             Dictionary<Vector3D, n_TurretFacing> facings = new Dictionary<Vector3D, n_TurretFacing>(); // TODO: Limit the max number of syncs by network load, and also by player distance

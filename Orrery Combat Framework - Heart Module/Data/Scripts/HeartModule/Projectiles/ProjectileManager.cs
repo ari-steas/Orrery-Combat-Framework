@@ -57,15 +57,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
                 foreach (var projectile in QueuedCloseProjectiles)
                 {
-                    if (!MyAPIGateway.Utilities.IsDedicated)
-                        projectile.CloseDrawing();
-
                     ActiveProjectiles.Remove(projectile.Id);
-                    if (ProjectilesWithHealth.Contains(projectile))
-                        ProjectilesWithHealth.Remove(projectile);
+                    ProjectilesWithHealth.Remove(projectile);
                     projectile.OnClose.Invoke(projectile);
-                    if (projectile.Health < 0)
-                        MyAPIGateway.Utilities.ShowNotification(projectile.Id + "");
                 }
                 QueuedCloseProjectiles.Clear();
 
@@ -99,8 +93,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             if (HeartData.I.IsSuspended || MyAPIGateway.Utilities.IsDedicated) // We don't want to needlessly use server CPU time
                 return;
-
-            float deltaDrawTick = (float)clockTick.ElapsedTicks / TimeSpan.TicksPerSecond; // deltaDrawTick is the current offset between tick and draw, to account for variance between FPS and tickrate
 
             foreach (var projectile in ActiveProjectiles.Values)
                 projectile.DrawUpdate(); // Draw delta is always 1/60 because Keen:tm:
