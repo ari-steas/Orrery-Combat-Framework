@@ -31,6 +31,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         public Action<Projectile> OnClose = (p) =>
         {
             p.Definition.LiveMethods.OnEndOfLife?.Invoke(p.Id);
+            p.CloseDrawing();
         };
 
         /// <summary>
@@ -52,7 +53,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             set
             {
                 _health = value;
-                if (_health <= 0)
+                if (_health <= 0 && Definition.PhysicalProjectile.Health > 0)
                     QueueDispose();
             }
         }

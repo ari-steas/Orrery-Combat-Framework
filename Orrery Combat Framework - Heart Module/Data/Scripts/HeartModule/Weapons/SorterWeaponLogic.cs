@@ -355,6 +355,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
             {
                 Settings.MouseShootState = value;
                 Settings.Sync(SorterWep.GetPosition());
+                ShootState = false;
             }
         }
 

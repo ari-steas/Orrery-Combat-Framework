@@ -185,7 +185,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             IMyEntity controlledEntity = MyAPIGateway.Session.Player?.Controller?.ControlledEntity?.Entity?.GetTopMostParent(); // Get the currently controlled grid.
             IMyCubeGrid grid = controlledEntity as IMyCubeGrid;
-            if (grid == null || !GridWeapons.ContainsKey(grid))
+            if (MyAPIGateway.Gui.IsCursorVisible || grid == null || !GridWeapons.ContainsKey(grid))
                 return;
 
             bool isMousePressed = MyAPIGateway.Input.IsMousePressed(VRage.Input.MyMouseButtonsEnum.Left);
@@ -197,7 +197,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public void Update25()
         {
-            if (!MyAPIGateway.Session.IsServer)
+            if (!MyAPIGateway.Session.IsServer || !MyAPIGateway.Multiplayer.MultiplayerActive)
                 return;
 
             Dictionary<Vector3D, n_TurretFacing> facings = new Dictionary<Vector3D, n_TurretFacing>(); // TODO: Limit the max number of syncs by network load, and also by player distance

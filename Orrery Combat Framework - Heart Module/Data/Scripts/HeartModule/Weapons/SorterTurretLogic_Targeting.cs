@@ -25,9 +25,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                         SorterWep.CubeGrid.LinearVelocity,
                         TargetProjectile, 0) ?? Vector3D.MaxValue;
                 UpdateTargetState(AimPoint);
-
-                if (TargetProjectile.QueuedDispose)
-                    TargetProjectile = null;
             }
             else if (TargetEntity != null)
             {
@@ -39,6 +36,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             }
             else
                 ResetTargetingState();
+
+            if (!HasValidTarget())
+            {
+                TargetProjectile = null;
+                TargetEntity = null;
+                ResetTargetingState();
+            }
 
             UpdateAzimuthElevation(AimPoint);
 
@@ -59,12 +63,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public bool HasValidTarget()
         {
-            return (TargetEntity != null || TargetProjectile != null) && IsTargetInRange;
-        }
-
-        public bool IsTargetExpired()
-        {
-            return Definition.Targeting.RetargetTime == 0 || TargetAge > Definition.Targeting.RetargetTime || (TargetEntity == null && TargetProjectile == null);
+            return (TargetEntity != null || (TargetProjectile != null && !TargetProjectile.QueuedDispose)) // Is target not null?
+                && IsTargetInRange && // Is target in range?
+                (Definition.Targeting.RetargetTime == 0 ||
+                TargetAge > Definition.Targeting.RetargetTime);
         }
 
         private void ResetTargetingState()
@@ -95,7 +97,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (!TargetGridsState || targetGrid == null)
                 return false;
 
-            if (Definition.Targeting.RetargetTime != 0 && IsTargetExpired() && targetGrid == TargetEntity)
+            if (Definition.Targeting.RetargetTime != 0 && !HasValidTarget() && targetGrid == TargetEntity)
                 return false;
 
             switch (targetGrid.GridSizeEnum) // Filter large/small grid
@@ -122,7 +124,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (!TargetCharactersState || targetCharacter == null)
                 return false;
 
-            if (Definition.Targeting.RetargetTime != 0 && IsTargetExpired() && targetCharacter == TargetEntity)
+            if (Definition.Targeting.RetargetTime != 0 && !HasValidTarget() && targetCharacter == TargetEntity)
                 return false;
 
             if (!ShouldConsiderTarget(HeartUtils.GetRelationsBetweenGridAndPlayer(SorterWep.CubeGrid, targetCharacter.ControllerInfo?.ControllingIdentityId)))
@@ -137,7 +139,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (!TargetProjectilesState || targetProjectile == null || targetProjectile.Firer == SorterWep.EntityId)
                 return false;
 
-            if (Definition.Targeting.RetargetTime != 0 && IsTargetExpired() && targetProjectile == TargetProjectile)
+            if (Definition.Targeting.RetargetTime != 0 && !HasValidTarget() && targetProjectile == TargetProjectile)
                 return false;
 
             MyRelationsBetweenPlayerAndBlock relations = MyRelationsBetweenPlayerAndBlock.NoOwnership;

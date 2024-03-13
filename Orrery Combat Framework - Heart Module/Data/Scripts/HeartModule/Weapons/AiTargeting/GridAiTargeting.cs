@@ -127,7 +127,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                         }
                     }
 
-                    if (turretHasTarget || !turret.IsTargetExpired())
+                    if (turretHasTarget || turret.HasValidTarget())
                         continue;
 
                     // Rest of targeting logic...

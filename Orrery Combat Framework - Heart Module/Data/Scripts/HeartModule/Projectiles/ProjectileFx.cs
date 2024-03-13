@@ -119,7 +119,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             MyVisualScriptLogicProvider.PlaySingleSoundAtPosition(Definition.Audio.ImpactSound, ImpactPosition);
         }
 
-        internal void CloseDrawing()
+        private void CloseDrawing()
         {
             ProjectileEffect?.Close();
             ProjectileEntity?.Close();
