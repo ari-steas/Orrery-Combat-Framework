@@ -20,18 +20,20 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         public static ProjectileManager I = new ProjectileManager();
         public ProjectileNetwork Network = new ProjectileNetwork();
 
-        private Dictionary<uint, Projectile> ActiveProjectiles = new Dictionary<uint, Projectile>();
+        internal Dictionary<uint, Projectile> ActiveProjectiles = new Dictionary<uint, Projectile>();
         private HashSet<Projectile> ProjectilesWithHealth = new HashSet<Projectile>();
         public uint NextId { get; private set; } = 0;
-        private List<Projectile> QueuedCloseProjectiles = new List<Projectile>();
+        internal List<Projectile> QueuedCloseProjectiles = new List<Projectile>();
         /// <summary>
         /// Delta for engine ticks; 60tps
         /// </summary>
-        private const float deltaTick = 1 / 60f;
+        public const float DeltaTick = 1 / 60f;
         /// <summary>
         /// Delta for frames; varies
         /// </summary>
         private Stopwatch clockTick = Stopwatch.StartNew();
+
+        ParallelProjectileThread ProjectileThread;
 
         public int NumProjectiles => ActiveProjectiles.Count;
 
@@ -39,12 +41,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             I = this;
             DamageHandler.Load();
+            ProjectileThread = new ParallelProjectileThread();
         }
 
         protected override void UnloadData()
         {
             I = null;
             DamageHandler.Unload();
+            ProjectileThread.Close();
         }
 
         public override void UpdateAfterSimulation()
@@ -53,7 +57,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
             try
             {
-                MyAPIGateway.Parallel.ForEach(ActiveProjectiles.Values.ToArray(), UpdateSingleProjectile);
+                ProjectileThread.Update();
 
                 foreach (var projectile in QueuedCloseProjectiles)
                 {
@@ -74,14 +78,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             {
                 SoftHandle.RaiseException(ex, typeof(ProjectileManager));
             }
-        }
-
-        private void UpdateSingleProjectile(Projectile projectile)
-        {
-            projectile.TickUpdate(deltaTick);
-
-            if (projectile.QueuedDispose)
-                QueuedCloseProjectiles.Add(projectile);
         }
 
         public override void UpdatingStopped()

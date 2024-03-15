@@ -4,9 +4,11 @@ using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRageMath;
+using static Sandbox.Engine.Physics.MyPhysics.CollisionLayers;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 {
@@ -149,6 +151,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if ((Definition.PhysicalProjectile.MaxTrajectory != -1 && Definition.PhysicalProjectile.MaxTrajectory < DistanceTravelled) || (Definition.PhysicalProjectile.MaxLifetime != -1 && Definition.PhysicalProjectile.MaxLifetime < Age))
                 QueueDispose();
 
+            if (QueuedDispose)
+                return;
+
             if (Guidance == null && Definition.Guidance.Length > 0)
                 Guidance = new ProjectileGuidance(this);
 
@@ -270,44 +275,56 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                             projectile.Health -= damageToProjectilesInAoE;
             }
 
-            if (RemainingImpacts > 0)
-            {
-                List<IHitInfo> intersects = new List<IHitInfo>();
-                MyAPIGateway.Physics.CastRay(Position, NextMoveStep, intersects);
-
-                foreach (var hitInfo in intersects)
-                {
-                    if (RemainingImpacts <= 0)
-                        break;
-
-                    if (hitInfo.HitEntity.EntityId == Firer)
-                        continue; // Skip firer
-
-                    dist = hitInfo.Fraction * len;
-
-                    if (MyAPIGateway.Session.IsServer)
-                    {
-                        if (hitInfo.HitEntity is IMyCubeGrid)
-                            DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Grid, this, hitInfo.Position, hitInfo.Normal, Position, NextMoveStep));
-                        else if (hitInfo.HitEntity is IMyCharacter)
-                            DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Character, this, hitInfo.Position, hitInfo.Normal, Position, NextMoveStep));
-                    }
-
-                    if (MyAPIGateway.Session.IsServer)
-                        PlayImpactAudio(hitInfo.Position); // Audio is global
-                    if (!MyAPIGateway.Utilities.IsDedicated)
-                        DrawImpactParticle(hitInfo.Position, hitInfo.Normal); // Visuals are clientside
-
-                    Definition.LiveMethods.OnImpact?.Invoke(Id, hitInfo.Position, Direction, (MyEntity)hitInfo.HitEntity);
-
-                    RemainingImpacts--;
-                }
-            }
+            dist = PerformRaycastRecursive(len);
 
             if (RemainingImpacts <= 0)
                 QueueDispose();
 
             return (float)dist;
+        }
+
+        private double PerformRaycastRecursive(double length)
+        {
+            if (RemainingImpacts <= 0)
+                return -1;
+
+            double dist = -1;
+
+            MyAPIGateway.Physics.CastRayParallel(ref Position, ref NextMoveStep, NoVoxelCollisionLayer, (hitInfo) =>
+            {
+                if (RemainingImpacts <= 0 || hitInfo.HitEntity.EntityId == Firer)
+                    return;
+
+                dist = hitInfo.Fraction * length;
+
+                if (MyAPIGateway.Session.IsServer)
+                {
+                    if (hitInfo.HitEntity is IMyCubeGrid)
+                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Grid, this, hitInfo.Position, hitInfo.Normal, Position, NextMoveStep));
+                    else if (hitInfo.HitEntity is IMyCharacter)
+                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Character, this, hitInfo.Position, hitInfo.Normal, Position, NextMoveStep));
+                }
+
+                if (MyAPIGateway.Session.IsServer)
+                    PlayImpactAudio(hitInfo.Position); // Audio is global
+                if (!MyAPIGateway.Utilities.IsDedicated)
+                    DrawImpactParticle(hitInfo.Position, hitInfo.Normal); // Visuals are clientside
+
+                Definition.LiveMethods.OnImpact?.Invoke(Id, hitInfo.Position, Direction, (MyEntity)hitInfo.HitEntity);
+
+                RemainingImpacts--;
+            });
+
+            if (dist == -1)
+                return dist;
+
+            double nextDist = PerformRaycastRecursive(length);
+
+            if (nextDist == -1)
+                return dist;
+
+            // Get the furthest impact distance.
+            return Math.Max(dist, nextDist);
         }
 
         public Vector3D NextMoveStep = Vector3D.Zero;
