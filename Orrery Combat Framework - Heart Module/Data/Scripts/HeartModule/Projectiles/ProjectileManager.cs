@@ -61,6 +61,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
                 foreach (var projectile in QueuedCloseProjectiles)
                 {
+                    if (projectile == null)
+                        continue;
                     ActiveProjectiles.Remove(projectile.Id);
                     ProjectilesWithHealth.Remove(projectile);
                     projectile.OnClose.Invoke(projectile);

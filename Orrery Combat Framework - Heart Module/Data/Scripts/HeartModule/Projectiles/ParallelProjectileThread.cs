@@ -38,6 +38,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             DeltaTick += ProjectileManager.DeltaTick;
 
+            MyAPIGateway.Utilities.ShowNotification("PPT Sim: " + Math.Round(1/60d/DeltaTick, 2), 1000/60);
+
             if (thisTask.IsComplete)
             {
                 // Update thread-safe buffer lists
