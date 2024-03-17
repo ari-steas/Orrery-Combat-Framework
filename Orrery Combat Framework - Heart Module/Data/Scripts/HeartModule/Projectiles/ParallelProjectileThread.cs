@@ -1,10 +1,13 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using ParallelTasks;
+using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using VRage.Game.Entity;
+using VRage.ModAPI;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 {
@@ -21,6 +24,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         /// Thread safe buffer list for projectiles to close.
         /// </summary>
         List<Projectile> ProjectilesToClose = new List<Projectile>();
+        HashSet<IMyEntity> EntityBuffer = new HashSet<IMyEntity>();
 
         public float DeltaTick = 0;
 
@@ -46,6 +50,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 ActiveProjectiles = ProjectileManager.I.ActiveProjectiles.Values.ToArray();
                 ProjectileManager.I.QueuedCloseProjectiles.AddRange(ProjectilesToClose);
                 ProjectilesToClose.Clear();
+                EntityBuffer.Clear();
+                MyAPIGateway.Entities.GetEntities(EntityBuffer, (ent) => ent.Physics != null);
+
                 thisTask = MyAPIGateway.Parallel.StartBackground(DoWork);
             }
         }
@@ -68,7 +75,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         void UpdateSingleProjectile(Projectile projectile)
         {
-            projectile.TickUpdate(DeltaTick);
+            projectile.TickUpdate(DeltaTick, EntityBuffer);
 
             if (projectile.QueuedDispose)
                 ProjectilesToClose.Add(projectile);

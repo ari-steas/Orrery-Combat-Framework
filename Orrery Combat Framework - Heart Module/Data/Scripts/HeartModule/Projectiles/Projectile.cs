@@ -1,12 +1,14 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
+using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
+using VRage.ModAPI;
 using VRageMath;
 using static Sandbox.Engine.Physics.MyPhysics.CollisionLayers;
 
@@ -146,7 +148,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             Definition.LiveMethods.OnSpawn?.Invoke(Id, (MyEntity)MyAPIGateway.Entities.GetEntityById(Firer));
         }
 
-        public void TickUpdate(float delta)
+        public void TickUpdate(float delta, HashSet<IMyEntity> entities = null)
         {
             if ((Definition.PhysicalProjectile.MaxTrajectory != -1 && Definition.PhysicalProjectile.MaxTrajectory < DistanceTravelled) || (Definition.PhysicalProjectile.MaxLifetime != -1 && Definition.PhysicalProjectile.MaxLifetime < Age))
                 QueueDispose();
@@ -162,7 +164,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             {
                 Guidance?.RunGuidance(delta);
 
-                CheckHits();
+                CheckHits(entities);
 
                 // Apply gravity as an acceleration
                 float gravityMultiplier = Definition.PhysicalProjectile.GravityInfluenceMultiplier;
@@ -210,7 +212,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
                 if (RemainingImpacts > 0)
                 {
-                    MaxBeamLength = CheckHits(); // Set visual beam length
+                    CheckHits(entities); // Set visual beam length
                     if (MaxBeamLength == -1)
                         MaxBeamLength = Definition.PhysicalProjectile.MaxTrajectory;
                 }
@@ -222,14 +224,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 UpdateAudio();
         }
 
-        public float CheckHits()
+        public void CheckHits(HashSet<IMyEntity> entities)
         {
             if (NextMoveStep == Vector3D.Zero)
-                return -1;
+                return;
 
             double len = IsHitscan ? Definition.PhysicalProjectile.MaxTrajectory : Vector3D.Distance(Position, NextMoveStep);
-            double dist = -1;
 
+            // Run projectile collision checks
             if (MyAPIGateway.Session.IsServer && RemainingImpacts > 0 && Definition.Damage.DamageToProjectiles > 0)
             {
                 List<Projectile> hittableProjectiles = new List<Projectile>();
@@ -251,12 +253,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                     double? intersectDist = ray.Intersects(box);
                     if (intersectDist != null)
                     {
-                        dist = intersectDist.Value;
+                        MaxBeamLength = (float) intersectDist.Value;
                         projectile.Health -= Definition.Damage.DamageToProjectiles;
 
                         damageToProjectilesInAoE += Definition.Damage.DamageToProjectiles;
 
-                        Vector3D hitPos = Position + Direction * dist;
+                        Vector3D hitPos = Position + Direction * MaxBeamLength;
 
                         if (MyAPIGateway.Session.IsServer)
                             PlayImpactAudio(hitPos); // Audio is global
@@ -275,27 +277,44 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                             projectile.Health -= damageToProjectilesInAoE;
             }
 
-            dist = PerformRaycastRecursive(len);
+            // Check if a raycast is needed, and if it is, perform a physics cast.
+            RayD travelLine = new RayD(Position, Direction);
+            double checkDistSq = (NextMoveStep - Position).LengthSquared();
+
+            foreach (var entity in entities)
+            {
+                double? dist = entity.WorldVolume.Intersects(travelLine); // This seems to be the cheapest form of line checking
+                if (!dist.HasValue || dist * dist > checkDistSq)
+                    continue;
+
+                PerformRaycastRecursive(len);
+                break;
+            }
+
 
             if (RemainingImpacts <= 0)
                 QueueDispose();
-
-            return (float)dist;
         }
 
-        private double PerformRaycastRecursive(double length)
+        private void PerformRaycastRecursive(double length)
         {
-            if (RemainingImpacts <= 0)
-                return -1;
+            MaxBeamLength = -1;
 
-            double dist = -1;
+            if (RemainingImpacts <= 0)
+                return;
+
+            BoundingSphereD sphere = new BoundingSphereD(Position, NextMoveStep.Length());
+            List<MyEntity> entities = new List<MyEntity>();
+            MyGamePruningStructure.GetAllTopMostEntitiesInSphere(ref sphere, entities);
+            if (entities.Count == 0)
+                return;
 
             MyAPIGateway.Physics.CastRayParallel(ref Position, ref NextMoveStep, NoVoxelCollisionLayer, (hitInfo) =>
             {
                 if (RemainingImpacts <= 0 || hitInfo.HitEntity.EntityId == Firer)
                     return;
 
-                dist = hitInfo.Fraction * length;
+                MaxBeamLength = (float) (hitInfo.Fraction * length);
 
                 if (MyAPIGateway.Session.IsServer)
                 {
@@ -316,7 +335,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             });
 
             //if (dist == -1)
-                return dist;
 
             //double nextDist = PerformRaycastRecursive(length);
             //
