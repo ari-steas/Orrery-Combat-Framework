@@ -309,7 +309,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (entities.Count == 0)
                 return;
 
-            MyAPIGateway.Physics.CastRayParallel(ref Position, ref NextMoveStep, NoVoxelCollisionLayer, (hitInfo) =>
+            MyAPIGateway.Physics.CastRayParallel(ref Position, ref NextMoveStep, DefaultCollisionLayer, (hitInfo) =>
             {
                 if (RemainingImpacts <= 0 || hitInfo.HitEntity.EntityId == Firer)
                     return;
@@ -319,9 +319,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 if (MyAPIGateway.Session.IsServer)
                 {
                     if (hitInfo.HitEntity is IMyCubeGrid)
-                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Grid, this, hitInfo.Position, hitInfo.Normal, Position, NextMoveStep));
+                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Grid, this, hitInfo.Position, hitInfo.Normal, hitInfo.Position, hitInfo.Position - hitInfo.Normal));
                     else if (hitInfo.HitEntity is IMyCharacter)
-                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Character, this, hitInfo.Position, hitInfo.Normal, Position, NextMoveStep));
+                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Character, this, hitInfo.Position, hitInfo.Normal, hitInfo.Position, hitInfo.Position - hitInfo.Normal));
                 }
 
                 if (MyAPIGateway.Session.IsServer)
