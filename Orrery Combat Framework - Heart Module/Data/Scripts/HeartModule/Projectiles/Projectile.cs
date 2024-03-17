@@ -315,16 +315,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 RemainingImpacts--;
             });
 
-            if (dist == -1)
+            //if (dist == -1)
                 return dist;
 
-            double nextDist = PerformRaycastRecursive(length);
-
-            if (nextDist == -1)
-                return dist;
-
-            // Get the furthest impact distance.
-            return Math.Max(dist, nextDist);
+            //double nextDist = PerformRaycastRecursive(length);
+            //
+            //if (nextDist == -1)
+            //    return dist;
+            //
+            //// Get the furthest impact distance.
+            //return Math.Max(dist, nextDist);
         }
 
         public Vector3D NextMoveStep = Vector3D.Zero;
