@@ -1,4 +1,5 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
+﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using ParallelTasks;
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
@@ -43,6 +44,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             DeltaTick += ProjectileManager.DeltaTick;
 
             MyAPIGateway.Utilities.ShowNotification("PPT Sim: " + Math.Round(1/60d/DeltaTick, 2), 1000/60);
+
+            foreach (var p in ProjectileManager.I.ActiveProjectiles.Values)
+                DebugDraw.AddLine(p.Position, p.NextMoveStep, VRageMath.Color.Red, 0);
 
             if (thisTask.IsComplete)
             {

@@ -1,4 +1,5 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+﻿using Heart_Module.Data.Scripts.HeartModule.Debug;
+using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.GuidanceHelpers;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Sandbox.Game.Entities;
@@ -309,19 +310,21 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             if (entities.Count == 0)
                 return;
 
-            MyAPIGateway.Physics.CastRayParallel(ref Position, ref NextMoveStep, DefaultCollisionLayer, (hitInfo) =>
+            MyAPIGateway.Physics.CastRayParallel(ref Position, ref NextMoveStep, 0, (hitInfo) =>
             {
                 if (RemainingImpacts <= 0 || hitInfo.HitEntity.EntityId == Firer)
                     return;
+
+                DebugDraw.AddLine(hitInfo.Position, hitInfo.Position - hitInfo.Normal, VRageMath.Color.Blue, 2);
 
                 MaxBeamLength = (float) (hitInfo.Fraction * length);
 
                 if (MyAPIGateway.Session.IsServer)
                 {
                     if (hitInfo.HitEntity is IMyCubeGrid)
-                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Grid, this, hitInfo.Position, hitInfo.Normal, hitInfo.Position, hitInfo.Position - hitInfo.Normal));
+                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Grid, this, hitInfo.Position, hitInfo.Normal, hitInfo.Position + hitInfo.Normal, hitInfo.Position - hitInfo.Normal));
                     else if (hitInfo.HitEntity is IMyCharacter)
-                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Character, this, hitInfo.Position, hitInfo.Normal, hitInfo.Position, hitInfo.Position - hitInfo.Normal));
+                        DamageHandler.QueueEvent(new DamageEvent(hitInfo.HitEntity, DamageEvent.DamageEntType.Character, this, hitInfo.Position, hitInfo.Normal, hitInfo.Position + hitInfo.Normal, hitInfo.Position - hitInfo.Normal));
                 }
 
                 if (MyAPIGateway.Session.IsServer)
