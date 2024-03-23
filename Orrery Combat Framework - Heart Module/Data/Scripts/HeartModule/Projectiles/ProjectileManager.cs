@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using VRage.Game.Components;
+using VRage.Game.Entity;
 using VRageMath;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
@@ -137,7 +138,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         {
             try
             {
-                return AddProjectile(new Projectile(projectileDefinitionId, position, direction, firer, initialVelocity), shouldSync);
+                return AddProjectile(new Projectile(projectileDefinitionId, position, direction, (MyEntity) MyAPIGateway.Entities.GetEntityById(firer), initialVelocity), shouldSync);
             }
             catch (Exception ex)
             {
