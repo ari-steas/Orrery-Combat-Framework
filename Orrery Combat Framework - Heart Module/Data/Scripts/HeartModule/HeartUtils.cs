@@ -31,6 +31,9 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
         public static IMyIdentity GetGridOwner(IMyCubeGrid grid)
         {
+            if (grid == null)
+                return null;
+
             List<long> owners = grid.BigOwners;
             if (owners.Count == 0)
                 return null;
@@ -42,7 +45,10 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
         public static IMyPlayer GetPlayerFromSteamId(ulong id)
         {
-            foreach (var player in HeartData.I?.Players)
+            if (HeartData.I?.Players == null)
+                return null;
+
+            foreach (var player in HeartData.I.Players)
                 if (player.SteamUserId == id)
                     return player;
             return null;
@@ -66,6 +72,9 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
         public static MyRelationsBetweenPlayerAndBlock GetRelationsBetweeenGrids(IMyCubeGrid ownGrid, IMyCubeGrid targetGrid)
         {
+            if (targetGrid == null || ownGrid == null)
+                return MyRelationsBetweenPlayerAndBlock.NoOwnership;
+
             if (targetGrid.BigOwners.Count == 0 || ownGrid.BigOwners.Count == 0)
                 return MyRelationsBetweenPlayerAndBlock.NoOwnership;
             long targetOwner = targetGrid.BigOwners[0];
@@ -78,7 +87,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
         {
             if (targetIdentity == null)
                 return MyRelationsBetweenPlayerAndBlock.Enemies;
-            if (ownGrid.BigOwners.Count == 0)
+            if (ownGrid == null || ownGrid.BigOwners.Count == 0)
                 return MyRelationsBetweenPlayerAndBlock.NoOwnership;
             long owner = ownGrid.BigOwners[0];
 
