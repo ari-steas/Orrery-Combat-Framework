@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 {
@@ -53,9 +54,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
         {
             if (grid.Physics == null) return;
 
+            HeartLog.Log($"Attempting to initialize Grid AI for grid '{grid.DisplayName}'");
+
             var aiTargeting = new GridAiTargeting(grid);
 
-            MyAPIGateway.Utilities.ShowNotification($"Grid AI initialized for grid '{grid.DisplayName}' [{(aiTargeting.Enabled ? "ENABLED" : "DISABLED")}]", 1000, "White");
+            HeartLog.Log($"Grid AI initialized for grid '{grid.DisplayName}' [{(aiTargeting.Enabled ? "ENABLED" : "DISABLED")}]");
 
             GridTargetingMap.Add(grid, aiTargeting);
         }
@@ -68,11 +71,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             {
                 GridTargetingMap[grid].Close();
                 GridTargetingMap.Remove(grid);
-                MyAPIGateway.Utilities.ShowNotification($"Grid AI closed for grid '{grid.DisplayName}'", 1000, "White");
+                HeartLog.Log($"Grid AI closed for grid '{grid.DisplayName}'");
             }
             else
             {
-                MyAPIGateway.Utilities.ShowNotification($"Attempted to close Grid AI on a non-tracked grid: '{grid.DisplayName}'", 1000, "Red");
+                HeartLog.Log($"Attempted to close Grid AI on a non-tracked grid: '{grid.DisplayName}'");
             }
         }
 
