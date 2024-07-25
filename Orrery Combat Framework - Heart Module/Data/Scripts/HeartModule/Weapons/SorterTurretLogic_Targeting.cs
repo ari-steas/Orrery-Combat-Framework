@@ -1,7 +1,10 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting;
 using Sandbox.ModAPI;
+using System.Collections.Generic;
+using System.Linq;
 using VRage.Game;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
@@ -15,7 +18,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         public IMyEntity TargetEntity { get; private set; } = null;
         public Projectile TargetProjectile { get; private set; } = null;
 
-        public void UpdateTargeting()
+        public void UpdateTurretTargeting()
         {
             MuzzleMatrix = CalcMuzzleMatrix(0); // Set stored MuzzleMatrix
 
@@ -37,7 +40,38 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             }
             else
             {
-                ResetTargetingState();
+                List<object> potentialTargets = GetPotentialTargets();
+                var prioritizedTargets = TargetPriority.GetPrioritizedTargets(potentialTargets, this);
+
+                foreach (var target in prioritizedTargets)
+                {
+                    if (TargetPriority.ShouldConsiderTarget(target, this))
+                    {
+                        SetTarget(target);
+                        var entityTarget = target as IMyEntity;
+                        if (entityTarget != null)
+                        {
+                            AimPoint = TargetingHelper.InterceptionPoint(
+                                MuzzleMatrix.Translation,
+                                SorterWep.CubeGrid.LinearVelocity,
+                                entityTarget, 0) ?? Vector3D.MaxValue;
+                        }
+                        else
+                        {
+                            var projectileTarget = target as Projectile;
+                            if (projectileTarget != null)
+                            {
+                                AimPoint = TargetingHelper.InterceptionPoint(
+                                    MuzzleMatrix.Translation,
+                                    SorterWep.CubeGrid.LinearVelocity,
+                                    projectileTarget, 0) ?? Vector3D.MaxValue;
+                            }
+                        }
+
+                        UpdateTargetState(AimPoint);
+                        break;
+                    }
+                }
             }
 
             if (!HasValidTarget())
@@ -51,6 +85,20 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
             TargetAge += 1 / 60f;
         }
+
+        private List<object> GetPotentialTargets()
+        {
+            List<object> potentialTargets = new List<object>();
+            var gridAiTargeting = WeaponManagerAi.I.GetTargeting(SorterWep.CubeGrid);
+            if (gridAiTargeting != null)
+            {
+                potentialTargets.AddRange(gridAiTargeting.TargetedGrids.Keys);
+                potentialTargets.AddRange(gridAiTargeting.TargetedCharacters.Keys);
+                potentialTargets.AddRange(gridAiTargeting.TargetedProjectiles.Keys.Select(id => ProjectileManager.I.GetProjectile(id)));
+            }
+            return potentialTargets;
+        }
+
 
         public void SetTarget(object target)
         {
@@ -69,6 +117,21 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                     //HeartLog.Log($"Turret '{this}' set to target projectile '{projectileTarget}'");
                 }
             }
+        }
+
+        public void ResetTarget()
+        {
+            HeartLog.Log($"Resetting target for turret {SorterWep.EntityId}");
+            TargetEntity = null;
+            TargetProjectile = null;
+            ResetTargetingState();
+            var gridAiTargeting = WeaponManagerAi.I.GetTargeting(SorterWep.CubeGrid);
+            if (gridAiTargeting != null)
+            {
+                gridAiTargeting.SetPrimaryTarget(null);
+            }
+            Settings.ResetTargetState = true;
+            Settings.Sync(SorterWep.GetPosition());
         }
 
         public bool HasValidTarget()

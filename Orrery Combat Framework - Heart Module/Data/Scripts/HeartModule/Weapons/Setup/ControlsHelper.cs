@@ -95,5 +95,26 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup
 
             return cycleControlForwardAction;
         }
+
+        public static IMyTerminalControlButton CreateButton<T>(string id, string displayName, string toolTip, Action<IMyTerminalBlock> action, Func<IMyTerminalBlock, bool> visible = null) where T : SorterWeaponLogic
+        {
+            var button = MyAPIGateway.TerminalControls.CreateControl<IMyTerminalControlButton, IMyConveyorSorter>(IdPrefix + id);
+            button.Title = MyStringId.GetOrCompute(displayName);
+            button.Tooltip = MyStringId.GetOrCompute(toolTip);
+            button.SupportsMultipleBlocks = true;
+
+            Func<IMyTerminalBlock, bool> visibleFunc;
+            if (typeof(T) == typeof(SorterTurretLogic))
+                visibleFunc = (b) => HasTurretLogic(b) && (visible?.Invoke(b) ?? true);
+            else
+                visibleFunc = (b) => HasWeaponLogic(b) && (visible?.Invoke(b) ?? true);
+
+            button.Visible = visibleFunc;
+            button.Action = action;
+
+            MyAPIGateway.TerminalControls.AddControl<IMyConveyorSorter>(button);
+
+            return button;
+        }
     }
 }

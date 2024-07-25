@@ -80,6 +80,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         [ProtoMember(6)]
         public long WeaponEntityId;
 
+        [ProtoMember(7)]
+        internal short ResetTargetStateContainer;
+
         #region ShootStates
 
         public bool ShootState
@@ -133,6 +136,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         #endregion
 
         #region TargetingStates
+
+        public bool ResetTargetState
+        {
+            get
+            {
+                return ExpandValue(ResetTargetStateContainer, ShootStates.ResetTarget);
+            }
+            set
+            {
+                CompressValue(ref ResetTargetStateContainer, ShootStates.ResetTarget, value);
+            }
+        }
 
         public bool TargetGridsState
         {
@@ -307,6 +322,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             public const int MouseShoot = 2;
             public const int HudBarrelIndicator = 4;
             public const int IsSyncRequest = 8;
+            public const int ResetTarget = 16;
         }
     }
 }
