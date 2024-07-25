@@ -100,7 +100,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
             LoadSettings();
 
-            // Implement weapon UI defaults here
+            // Notify the grid AI that a new weapon has been added
+            if (SorterWep.CubeGrid != null)
+            {
+                var gridAiTargeting = WeaponManagerAi.I.GetOrCreateGridAiTargeting(SorterWep.CubeGrid);
+                gridAiTargeting.EnableGridAiIfNeeded();
+            }
 
             SaveSettings();
         }
