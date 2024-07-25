@@ -334,145 +334,143 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public bool PreferUniqueTargetsState
         {
-            get
-            {
-                return Settings.PreferUniqueTargetState;
-            }
-
+            get { return Settings.PreferUniqueTargetState; }
             set
             {
-                Settings.PreferUniqueTargetState = value;
-                Settings.Sync(SorterWep.GetPosition());
+                if (Settings.PreferUniqueTargetState != value)
+                {
+                    Settings.PreferUniqueTargetState = value;
+                    Settings.Sync(SorterWep.GetPosition());
+                    ResetTarget();
+                }
             }
         }
 
         public bool TargetGridsState
         {
-            get
-            {
-                return Settings.TargetGridsState;
-            }
-
+            get { return Settings.TargetGridsState; }
             set
             {
-                Settings.TargetGridsState = value;
-                Settings.Sync(SorterWep.GetPosition());
-
+                if (Settings.TargetGridsState != value)
+                {
+                    Settings.TargetGridsState = value;
+                    Settings.Sync(SorterWep.GetPosition());
+                    ResetTarget();
+                }
             }
         }
 
         public bool TargetProjectilesState
         {
-            get
-            {
-                return Settings.TargetProjectilesState;
-            }
-
+            get { return Settings.TargetProjectilesState; }
             set
             {
-                Settings.TargetProjectilesState = value;
-                Settings.Sync(SorterWep.GetPosition());
+                if (Settings.TargetProjectilesState != value)
+                {
+                    Settings.TargetProjectilesState = value;
+                    Settings.Sync(SorterWep.GetPosition());
+                    ResetTarget();
+                }
             }
         }
 
         public bool TargetCharactersState
         {
-            get
-            {
-                return Settings.TargetCharactersState;
-            }
-
+            get { return Settings.TargetCharactersState; }
             set
             {
-                Settings.TargetCharactersState = value;
-                Settings.Sync(SorterWep.GetPosition());
+                if (Settings.TargetCharactersState != value)
+                {
+                    Settings.TargetCharactersState = value;
+                    Settings.Sync(SorterWep.GetPosition());
+                    ResetTarget();
+                }
             }
         }
 
         public bool TargetLargeGridsState
         {
-            get
-            {
-                return Settings.TargetLargeGridsState;
-            }
-
+            get { return Settings.TargetLargeGridsState; }
             set
             {
-                Settings.TargetLargeGridsState = value;
-                Settings.Sync(SorterWep.GetPosition());
+                if (Settings.TargetLargeGridsState != value)
+                {
+                    Settings.TargetLargeGridsState = value;
+                    Settings.Sync(SorterWep.GetPosition());
+                    ResetTarget();
+                }
             }
         }
 
         public bool TargetSmallGridsState
         {
-            get
-            {
-                return Settings.TargetSmallGridsState;
-            }
-
+            get { return Settings.TargetSmallGridsState; }
             set
             {
-                Settings.TargetSmallGridsState = value;
-                Settings.Sync(SorterWep.GetPosition());
+                if (Settings.TargetSmallGridsState != value)
+                {
+                    Settings.TargetSmallGridsState = value;
+                    Settings.Sync(SorterWep.GetPosition());
+                    ResetTarget();
+                }
             }
         }
 
         public bool TargetFriendliesState
         {
-            get
-            {
-                return Settings.TargetFriendliesState;
-            }
-
+            get { return Settings.TargetFriendliesState; }
             set
             {
-                Settings.TargetFriendliesState = value;
-                Settings.Sync(SorterWep.GetPosition());
+                if (Settings.TargetFriendliesState != value)
+                {
+                    Settings.TargetFriendliesState = value;
+                    Settings.Sync(SorterWep.GetPosition());
+                    ResetTarget();
+                }
             }
         }
 
         public bool TargetNeutralsState
         {
-            get
-            {
-                return Settings.TargetNeutralsState;
-            }
-
+            get { return Settings.TargetNeutralsState; }
             set
             {
-                Settings.TargetNeutralsState = value;
-                Settings.Sync(SorterWep.GetPosition());
+                if (Settings.TargetNeutralsState != value)
+                {
+                    Settings.TargetNeutralsState = value;
+                    Settings.Sync(SorterWep.GetPosition());
+                    ResetTarget();
+                }
             }
         }
 
         public bool TargetEnemiesState
         {
-            get
-            {
-                return Settings.TargetEnemiesState;
-            }
-
+            get { return Settings.TargetEnemiesState; }
             set
             {
-                Settings.TargetEnemiesState = value;
-                Settings.Sync(SorterWep.GetPosition());
+                if (Settings.TargetEnemiesState != value)
+                {
+                    Settings.TargetEnemiesState = value;
+                    Settings.Sync(SorterWep.GetPosition());
+                    ResetTarget();
+                }
             }
         }
 
         public bool TargetUnownedState
         {
-            get
-            {
-                return Settings.TargetUnownedState;
-            }
-
+            get { return Settings.TargetUnownedState; }
             set
             {
-                Settings.TargetUnownedState = value;
-                Settings.Sync(SorterWep.GetPosition());
+                if (Settings.TargetUnownedState != value)
+                {
+                    Settings.TargetUnownedState = value;
+                    Settings.Sync(SorterWep.GetPosition());
+                    ResetTarget();
+                }
             }
         }
-
         #endregion
     }
 }

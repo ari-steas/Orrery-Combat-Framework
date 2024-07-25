@@ -190,6 +190,21 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     );
             }
             {
+                ControlsHelper.CreateButton<SorterTurretLogic>(
+                    "ResetTargetButton",
+                    "Reset Target",
+                    "Resets the current target of the weapon",
+                    (b) =>
+                    {
+                        var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
+                        if (logic != null)
+                        {
+                            logic.ResetTarget();
+                        }
+                    }
+                );
+            }
+            {
                 ControlsHelper.CreateToggle<SorterTurretLogic>(
                     "HeartTargetUnique",
                     "Prefer Unique Targets",
@@ -411,6 +426,22 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     },
                     @"Textures\GUI\Icons\Actions\Decrease.dds"
                     );
+            }
+            {
+                ControlsHelper.CreateAction<SorterTurretLogic>("ResetTarget", "Reset Target",
+                    (b) =>
+                    {
+                        var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
+                        if (logic != null)
+                        {
+                            logic.ResetTarget();
+                        }
+                    },
+                    (b, sb) =>
+                    {
+                        sb.Append("Reset Target");
+                    },
+                    @"Textures\GUI\Icons\Actions\Reset.dds");
             }
             {
                 ControlsHelper.CreateAction<SorterTurretLogic>(

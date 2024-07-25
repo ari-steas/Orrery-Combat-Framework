@@ -1,6 +1,7 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting;
 using Sandbox.ModAPI;
 using VRage.Game;
 using VRage.Game.ModAPI;
@@ -69,6 +70,21 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                     //HeartLog.Log($"Turret '{this}' set to target projectile '{projectileTarget}'");
                 }
             }
+        }
+
+        public void ResetTarget()
+        {
+            HeartLog.Log($"Resetting target for turret {SorterWep.EntityId}");
+            TargetEntity = null;
+            TargetProjectile = null;
+            ResetTargetingState();
+            var gridAiTargeting = WeaponManagerAi.I.GetTargeting(SorterWep.CubeGrid);
+            if (gridAiTargeting != null)
+            {
+                gridAiTargeting.SetPrimaryTarget(null);
+            }
+            Settings.ResetTargetState = true;
+            Settings.Sync(SorterWep.GetPosition());
         }
 
         public bool HasValidTarget()
