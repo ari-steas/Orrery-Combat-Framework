@@ -457,7 +457,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     {
                         var logic = b?.GameLogic?.GetAs<SorterTurretLogic>();
                         if (logic != null)
-                            sb.Append(logic.PreferUniqueTargetsState ? "Grid ON" : "Grid OFF");
+                            sb.Append(logic.PreferUniqueTargetsState ? "UNQ ON" : "UNQ OFF");
                     },
                     @"Textures\GUI\Icons\Actions\Toggle.dds"
                     );
