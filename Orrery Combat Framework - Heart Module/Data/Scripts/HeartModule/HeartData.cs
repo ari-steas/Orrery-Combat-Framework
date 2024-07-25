@@ -13,7 +13,7 @@ namespace Heart_Module.Data.Scripts.HeartModule
         public static HeartData I;
         public const ushort HeartNetworkId = (ushort)(65198749845 % ushort.MaxValue);
 
-        public static bool DebugLogEnabled = false;
+        public static bool DebugLogEnabled = true;
 
         public bool IsLoaded = false;
         public bool IsSuspended = false;

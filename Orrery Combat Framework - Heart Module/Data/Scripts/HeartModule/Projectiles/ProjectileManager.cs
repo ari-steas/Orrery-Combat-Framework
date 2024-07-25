@@ -33,6 +33,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
         /// </summary>
         private Stopwatch clockTick = Stopwatch.StartNew();
 
+        private Dictionary<long, DateTime> lastLoggedTime = new Dictionary<long, DateTime>();
+
         public int NumProjectiles => ActiveProjectiles.Count;
 
         public override void LoadData()
@@ -150,15 +152,21 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
 
         internal Projectile AddProjectile(Projectile projectile, bool shouldSync = true)
         {
-            if (projectile == null || projectile.DefinitionId == -1) return null; // Ensure that invalid projectiles don't get added
+            if (projectile == null || projectile.DefinitionId == -1) return null;
 
-            projectile.Position -= projectile.InheritedVelocity / 60f; // Because this doesn't run during simulation
+            projectile.Position -= projectile.InheritedVelocity / 60f;
 
             NextId++;
             while (!IsIdAvailable(NextId))
                 NextId++;
             projectile.SetId(NextId);
-            HeartLog.Log("SpawnProjectile " + projectile.Id + $" | [{projectile.Definition.Name}] " + projectile.Definition.Networking.NetworkingMode);
+
+            // Rate-limited logging
+            if (ShouldLog(projectile.Firer))
+            {
+                HeartLog.Log($"SpawnProjectile {projectile.Id} | [{projectile.Definition.Name}] {projectile.Definition.Networking.NetworkingMode}");
+            }
+
             ActiveProjectiles.Add(projectile.Id, projectile);
             if (MyAPIGateway.Session.IsServer && shouldSync)
             {
@@ -178,6 +186,24 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
                 ProjectilesWithHealth.Add(projectile);
 
             return projectile;
+        }
+
+        private bool ShouldLog(long firerId)
+        {
+            DateTime lastTime;
+            if (!lastLoggedTime.TryGetValue(firerId, out lastTime))
+            {
+                lastTime = DateTime.MinValue;
+            }
+
+            DateTime now = DateTime.UtcNow;
+            if ((now - lastTime).TotalSeconds >= 1) // Log at most once per second for each weapon
+            {
+                lastLoggedTime[firerId] = now;
+                return true;
+            }
+
+            return false;
         }
 
         public Projectile GetProjectile(uint id) => ActiveProjectiles.GetValueOrDefault(id, null);

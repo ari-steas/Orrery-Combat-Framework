@@ -5,6 +5,7 @@ using ProtoBuf;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using VRage.Game.ModAPI;
 using VRageMath;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding;

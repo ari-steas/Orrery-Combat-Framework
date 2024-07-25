@@ -1,6 +1,7 @@
 ﻿using ProtoBuf;
 using Sandbox.ModAPI;
 using System;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Network
 {
