@@ -36,7 +36,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 UpdateTargetState(AimPoint);
             }
             else
+            {
                 ResetTargetingState();
+            }
 
             if (!HasValidTarget())
             {
@@ -71,13 +73,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public bool HasValidTarget()
         {
-            return (TargetEntity != null || (TargetProjectile != null && !TargetProjectile.QueuedDispose)) // Is target not null?
-                && IsTargetInRange && // Is target in range?
-                (Definition.Targeting.RetargetTime == 0 ||
-                TargetAge > Definition.Targeting.RetargetTime);
+            return SorterWep.IsWorking &&
+                   (TargetEntity != null || (TargetProjectile != null && !TargetProjectile.QueuedDispose)) // Is target not null?
+                   && IsTargetInRange // Is target in range?
+                   && (Definition.Targeting.RetargetTime == 0 || TargetAge > Definition.Targeting.RetargetTime);
         }
 
-        private void ResetTargetingState()
+        public void ResetTargetingState()
         {
             //currentTarget = null;
             IsTargetAligned = false;

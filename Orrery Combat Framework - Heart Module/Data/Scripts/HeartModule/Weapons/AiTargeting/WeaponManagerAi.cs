@@ -4,7 +4,6 @@ using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
-using VRage.ModAPI;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 {
@@ -36,14 +35,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             HeartData.I.OnGridAdd += InitializeGridAI;
             HeartData.I.OnGridRemove += CloseGridAI;
             I = this;
-
-            // Initialize AI for all existing grids that have SorterWeaponLogic
-            foreach (var grid in WeaponManager.I.GridWeapons.Keys)
-            {
-                InitializeGridAI(grid);
-            }
         }
-
 
         protected override void UnloadData()
         {
@@ -58,46 +50,40 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             UpdateAITargeting();
         }
 
+        private void InitializeGridAI(IMyCubeGrid grid)
+        {
+            if (grid.Physics == null) return;
+
+            if (!GridTargetingMap.ContainsKey(grid))
+            {
+                HeartLog.Log($"Attempting to initialize Grid AI for grid '{grid.DisplayName}'");
+
+                var aiTargeting = new GridAiTargeting(grid);
+
+                HeartLog.Log($"Grid AI initialized for grid '{grid.DisplayName}' [{(aiTargeting.Enabled ? "ENABLED" : "DISABLED")}]");
+
+                GridTargetingMap.Add(grid, aiTargeting);
+            }
+            else
+            {
+                HeartLog.Log($"Grid AI already initialized for grid '{grid.DisplayName}'");
+            }
+        }
+
         public GridAiTargeting GetOrCreateGridAiTargeting(IMyCubeGrid grid)
         {
             if (!GridTargetingMap.ContainsKey(grid))
             {
-                var gridAiTargeting = new GridAiTargeting(grid);
-                GridTargetingMap.Add(grid, gridAiTargeting);
-                HeartLog.Log($"Grid AI initialized for grid '{grid.DisplayName}' [{(gridAiTargeting.Enabled ? "ENABLED" : "DISABLED")}]");
+                var aiTargeting = new GridAiTargeting(grid);
+                GridTargetingMap[grid] = aiTargeting;
             }
-
             return GridTargetingMap[grid];
         }
 
-        private void InitializeGridAI(IMyCubeGrid grid)
-        {
-            if (grid.Physics == null)
-            {
-                return;
-            }
-
-            if (GridTargetingMap.ContainsKey(grid))
-            {
-                HeartLog.Log($"Grid '{grid.DisplayName}' is already initialized in GridTargetingMap.");
-                return;
-            }
-
-            HeartLog.Log($"Attempting to initialize Grid AI for grid '{grid.DisplayName}'");
-
-            var aiTargeting = new GridAiTargeting(grid);
-
-            HeartLog.Log($"Grid AI initialized for grid '{grid.DisplayName}' [{(aiTargeting.Enabled ? "ENABLED" : "DISABLED")}]");
-
-            GridTargetingMap.Add(grid, aiTargeting);
-        }
 
         private void CloseGridAI(IMyCubeGrid grid)
         {
-            if (grid.Physics == null)
-            {
-                return;
-            }
+            if (grid.Physics == null) return;
 
             if (GridTargetingMap.ContainsKey(grid))
             {

@@ -147,6 +147,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                         continue;
 
                     SorterTurretLogic turret = weapon as SorterTurretLogic;
+
+                    if (!turret.SorterWep.IsWorking) // Skip turrets that are not functional
+                        continue;
+
                     bool turretHasTarget = false;
                     bool targetChanged = false;
 
@@ -337,6 +341,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                                 }
                             }
                         }
+                    }
+
+                    if (!turretHasTarget)
+                    {
+                        turret.ResetTargetingState();
                     }
 
                     if (targetChanged)
