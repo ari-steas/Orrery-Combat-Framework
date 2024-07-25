@@ -117,11 +117,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             PrimaryGridTarget = entity;
         }
 
+        private DateTime lastLogTime = DateTime.MinValue;
+
         public void UpdateTargeting()
         {
             if (Grid.Physics == null)
             {
-                HeartLog.Log($"Skipping UpdateTargeting for grid '{Grid.DisplayName}' because it has null physics.");
                 return;
             }
 
@@ -160,7 +161,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                                 turret.SetTarget(manualTarget);
                                 turretHasTarget = true;
                                 targetChanged = true;
-                                HeartLog.Log($"Turret '{turret}' set to manually locked target '{manualTarget.DisplayName}'");
                             }
                         }
                     }
@@ -176,7 +176,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                                 turretHasTarget = true;
                                 targetChanged = true;
                                 PriorityTargets[priorityTarget]++;
-                                HeartLog.Log($"Turret '{turret}' set to priority target '{priorityTarget.DisplayName}'");
                             }
                         }
                     }
@@ -216,7 +215,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                                 turretHasTarget = true;
                                 targetChanged = true;
                                 TargetedProjectiles[minTargeted.Id]++;
-                                HeartLog.Log($"Turret '{turret}' set to projectile target '{minTargeted}'");
                             }
                         }
                         else
@@ -232,7 +230,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                                         turretHasTarget = true;
                                         targetChanged = true;
                                         TargetedProjectiles[projectile]++;
-                                        HeartLog.Log($"Turret '{turret}' set to projectile target '{proj}'");
                                         break;
                                     }
                                 }
@@ -270,7 +267,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                                 turretHasTarget = true;
                                 targetChanged = true;
                                 TargetedCharacters[minTargeted]++;
-                                HeartLog.Log($"Turret '{turret}' set to character target '{minTargeted.DisplayName}'");
                             }
                         }
                         else
@@ -285,7 +281,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                                         turretHasTarget = true;
                                         targetChanged = true;
                                         TargetedCharacters[character]++;
-                                        HeartLog.Log($"Turret '{turret}' set to character target '{character.DisplayName}'");
                                         break;
                                     }
                                 }
@@ -323,7 +318,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                                 turretHasTarget = true;
                                 targetChanged = true;
                                 TargetedGrids[minTargeted]++;
-                                HeartLog.Log($"Turret '{turret}' set to grid target '{minTargeted.DisplayName}'");
                             }
                         }
                         else
@@ -338,7 +332,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                                         turretHasTarget = true;
                                         targetChanged = true;
                                         TargetedGrids[grid]++;
-                                        HeartLog.Log($"Turret '{turret}' set to grid target '{grid.DisplayName}'");
                                         break;
                                     }
                                 }
@@ -348,7 +341,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
                     if (targetChanged)
                     {
-                        HeartLog.Log($"Target updated for turret '{turret}' on grid '{Grid.DisplayName}'");
+                        var now = DateTime.Now;
+                        if ((now - lastLogTime).TotalSeconds > 10)
+                        {
+                            HeartLog.Log($"Target updated for turret '{turret}' on grid '{Grid.DisplayName}'");
+                            lastLogTime = now;
+                        }
                     }
                 }
             }
@@ -409,7 +407,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
             if (Grid.Physics == null)
             {
-                HeartLog.Log($"Skipping ScanForTargets for grid '{Grid.DisplayName}' because it has null physics.");
                 return;
             }
 

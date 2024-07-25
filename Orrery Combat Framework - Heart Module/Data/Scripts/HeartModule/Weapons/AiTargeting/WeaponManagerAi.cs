@@ -74,7 +74,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
         {
             if (grid.Physics == null)
             {
-                HeartLog.Log($"Skipping initialization for grid '{grid.DisplayName}' because it has null physics.");
                 return;
             }
 
@@ -97,7 +96,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
         {
             if (grid.Physics == null)
             {
-                HeartLog.Log($"Skipping CloseGridAI for grid '{grid.DisplayName}' because it has null physics.");
                 return;
             }
 

@@ -1,4 +1,5 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles;
+﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
+using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Sandbox.ModAPI;
 using VRage.Game;
@@ -51,14 +52,21 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public void SetTarget(object target)
         {
-            TargetEntity = null;
-            TargetProjectile = null;
-            TargetAge = 0;
-
-            if (target is IMyEntity)
-                TargetEntity = (IMyEntity)target;
-            else if (target is Projectile)
-                TargetProjectile = (Projectile)target;
+            var entityTarget = target as IMyEntity;
+            if (entityTarget != null && TargetEntity != entityTarget)
+            {
+                TargetEntity = entityTarget;
+                //HeartLog.Log($"Turret '{this}' set to target entity '{entityTarget.DisplayName}'");
+            }
+            else
+            {
+                var projectileTarget = target as Projectile;
+                if (projectileTarget != null && TargetProjectile != projectileTarget)
+                {
+                    TargetProjectile = projectileTarget;
+                    //HeartLog.Log($"Turret '{this}' set to target projectile '{projectileTarget}'");
+                }
+            }
         }
 
         public bool HasValidTarget()
