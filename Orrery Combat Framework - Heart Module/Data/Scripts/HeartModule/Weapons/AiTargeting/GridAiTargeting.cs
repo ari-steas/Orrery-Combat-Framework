@@ -43,6 +43,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             HeartLog.Log($"Initializing GridAiTargeting for grid '{grid.DisplayName}'");
             Grid = grid;
             Grid.OnBlockAdded += Grid_OnBlockAdded;
+            Grid.OnBlockRemoved += Grid_OnBlockRemoved; // Subscribe to the block removed event
 
             GridComparer = Comparer<IMyCubeGrid>.Create((x, y) =>
             {
@@ -64,6 +65,24 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
         private void Grid_OnBlockAdded(IMySlimBlock obj)
         {
             // Unused for now
+            CheckAndCloseIfNoWeapons();
+        }
+
+        private void Grid_OnBlockRemoved(IMySlimBlock obj)
+        {
+            // Check if the removed block was a weapon
+            if (obj.FatBlock is SorterWeaponLogic)
+            {
+                CheckAndCloseIfNoWeapons();
+            }
+        }
+
+        public void CheckAndCloseIfNoWeapons()
+        {
+            if (Weapons.Count == 0)
+            {
+                Close();
+            }
         }
 
         public void SetPrimaryTarget(IMyCubeGrid entity)
@@ -422,6 +441,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
         public void Close()
         {
+            HeartLog.Log($"Closing GridAiTargeting for grid '{Grid.DisplayName}'");
+            Grid.OnBlockAdded -= Grid_OnBlockAdded;
+            Grid.OnBlockRemoved -= Grid_OnBlockRemoved;
             TargetedGrids.Clear();
             TargetedCharacters.Clear();
             TargetedProjectiles.Clear();
