@@ -169,6 +169,37 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             return MyRelationsBetweenPlayerAndBlock.NoOwnership; // Treat as unowned if the owner has no faction
         }
 
+        public bool IsTargetLocked(IMyCubeGrid grid)
+        {
+            if (grid == null)
+                return false;
+
+            var myCubeGrid = grid as MyCubeGrid;
+            if (myCubeGrid != null)
+            {
+                MyShipController activeController = null;
+
+                foreach (var block in myCubeGrid.GetFatBlocks<MyShipController>())
+                {
+                    if (block.NeedsPerFrameUpdate)
+                    {
+                        activeController = block;
+                        break;
+                    }
+                }
+
+                if (activeController != null && activeController.Pilot != null)
+                {
+                    var targetLockingComponent = activeController.Pilot.Components.Get<MyTargetLockingComponent>();
+                    if (targetLockingComponent != null)
+                    {
+                        return targetLockingComponent.IsTargetLocked;
+                    }
+                }
+            }
+            return false;
+        }
+
 
     }
 }
