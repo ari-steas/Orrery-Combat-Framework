@@ -137,10 +137,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                 {
                     manualTarget = keenTargeting.GetTarget(Grid);
                     if (manualTarget is IMyCubeGrid)
-                    {
                         PrimaryGridTarget = (IMyCubeGrid)manualTarget;
-                    }
                 }
+
+                List<object> potentialTargets = new List<object>();
+                potentialTargets.AddRange(TargetedGrids.Keys.Cast<object>());
+                potentialTargets.AddRange(TargetedCharacters.Keys.Cast<object>());
+                potentialTargets.AddRange(TargetedProjectiles.Keys.Select(id => (object)ProjectileManager.I.GetProjectile(id)));
 
                 foreach (var weapon in Weapons)
                 {
@@ -160,20 +163,32 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                         continue;
                     }
 
-                    List<object> potentialTargets = new List<object>();
-                    potentialTargets.AddRange(TargetedGrids.Keys.Cast<object>());
-                    potentialTargets.AddRange(TargetedCharacters.Keys.Cast<object>());
-                    potentialTargets.AddRange(TargetedProjectiles.Keys.Select(id => (object)ProjectileManager.I.GetProjectile(id)));
-
                     var prioritizedTargets = GetPrioritizedTargets(potentialTargets, turret);
 
-                    foreach (var target in prioritizedTargets)
+                    if (turret.PreferUniqueTargetsState)
                     {
-                        if (ShouldConsiderTarget(target, turret))
+                        var assignedTargets = AssignUniqueTargets(prioritizedTargets, turret);
+
+                        foreach (var target in assignedTargets)
                         {
-                            turret.SetTarget(target);
-                            turretHasTarget = true;
-                            break;
+                            if (ShouldConsiderTarget(target, turret))
+                            {
+                                turret.SetTarget(target);
+                                turretHasTarget = true;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var target in prioritizedTargets)
+                        {
+                            if (ShouldConsiderTarget(target, turret))
+                            {
+                                turret.SetTarget(target);
+                                turretHasTarget = true;
+                                break;
+                            }
                         }
                     }
 
@@ -195,11 +210,36 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             return targets;
         }
 
+        private List<object> AssignUniqueTargets(List<object> prioritizedTargets, SorterTurretLogic turret)
+        {
+            Dictionary<object, int> targetAssignments = new Dictionary<object, int>();
+
+            foreach (var target in prioritizedTargets)
+            {
+                targetAssignments[target] = 0;
+            }
+
+            foreach (var weapon in Weapons)
+            {
+                if (weapon is SorterTurretLogic)
+                {
+                    var currentTurret = weapon as SorterTurretLogic;
+                    var currentTarget = currentTurret.TargetEntity ?? (object)currentTurret.TargetProjectile;
+
+                    if (currentTarget != null && targetAssignments.ContainsKey(currentTarget))
+                    {
+                        targetAssignments[currentTarget]++;
+                    }
+                }
+            }
+
+            return targetAssignments.OrderBy(kvp => kvp.Value).Select(kvp => kvp.Key).ToList();
+        }
+
         private bool ShouldConsiderTarget(object target, SorterTurretLogic turret)
         {
             return TargetPriority.ShouldConsiderTarget(target, turret);
         }
-
 
         /// <summary>
         /// Scan all turrets for flags

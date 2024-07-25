@@ -18,7 +18,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         public IMyEntity TargetEntity { get; private set; } = null;
         public Projectile TargetProjectile { get; private set; } = null;
 
-        public void UpdateTargeting()
+        public void UpdateTurretTargeting()
         {
             MuzzleMatrix = CalcMuzzleMatrix(0); // Set stored MuzzleMatrix
 

@@ -42,7 +42,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (!SorterWep.IsWorking) // Don't turn if the turret is disabled
                 return;
             if (MyAPIGateway.Session.IsServer)
-                UpdateTargeting();
+                UpdateTurretTargeting();
             base.UpdateAfterSimulation();
         }
 
