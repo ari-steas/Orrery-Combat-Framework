@@ -23,13 +23,14 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
             {
                 ParentAlignment = ParentAlignments.Bottom | ParentAlignments.InnerV,
                 DimAlignment = DimAlignments.Width,
+                Offset = new Vector2(0, 15), // Adjust this offset to move the label up or down
             };
 
             debugInfo2 = new Label(body)
             {
                 ParentAlignment = ParentAlignments.Bottom | ParentAlignments.InnerV,
                 DimAlignment = DimAlignments.Width,
-                Offset = new Vector2(0, debugInfo.Height),
+                Offset = new Vector2(0, debugInfo.Height + 0), // Increase spacing if necessary
             };
 
             weaponStatus = new ListBox<uint>(body)
@@ -46,7 +47,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
             BodyColor = new Color(41, 54, 62, 150);
             BorderColor = new Color(58, 68, 77);
 
-            header.Format = new GlyphFormat(GlyphFormat.Blueish.Color, TextAlignment.Center, 1.08f);
+            header.Format = new GlyphFormat(GlyphFormat.Blueish.Color, TextAlignment.Center, 0.95f); // Adjust font size
             header.Height = 30f;
 
             HeaderText = "[OCF] HeartModule";
