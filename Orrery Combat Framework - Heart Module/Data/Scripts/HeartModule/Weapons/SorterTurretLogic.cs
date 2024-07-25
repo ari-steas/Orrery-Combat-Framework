@@ -5,7 +5,6 @@ using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System;
-using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using VRage.Game.Entity;
 using VRage.Network;
 using VRageMath;
@@ -242,24 +241,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             // Decrease AI Range within limits
             AiRange = Math.Max(AiRange - 100, 0);
-        }
-
-        public void DebugAiInitialization()
-        {
-            HeartLog.Log($"SorterTurretLogic: AI Debug for turret {SorterWep.EntityId}");
-            HeartLog.Log($"  - Definition: {Definition.Assignments.BlockSubtype}");
-            HeartLog.Log($"  - Position: {SorterWep.GetPosition()}");
-            HeartLog.Log($"  - AI Range: {AiRange}");
-            HeartLog.Log($"  - Target Grids: {TargetGridsState}");
-            HeartLog.Log($"  - Target Projectiles: {TargetProjectilesState}");
-            HeartLog.Log($"  - Target Characters: {TargetCharactersState}");
-            HeartLog.Log($"  - Target Enemies: {TargetEnemiesState}");
-            HeartLog.Log($"  - Is Target Aligned: {IsTargetAligned}");
-            HeartLog.Log($"  - Is Target In Range: {IsTargetInRange}");
-            HeartLog.Log($"  - Current Azimuth: {Azimuth}");
-            HeartLog.Log($"  - Current Elevation: {Elevation}");
-            HeartLog.Log($"  - Desired Azimuth: {DesiredAzimuth}");
-            HeartLog.Log($"  - Desired Elevation: {DesiredElevation}");
         }
 
         internal override void LoadDefaultSettings()
