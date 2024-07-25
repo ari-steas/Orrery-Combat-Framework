@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using VRage.Game.Entity;
 using VRageMath;
-using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Definitions.ApiHandler
 {

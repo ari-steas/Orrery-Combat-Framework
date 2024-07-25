@@ -4,7 +4,7 @@ using RichHudFramework.Client;
 using RichHudFramework.UI.Client;
 using VRage.Game;
 using VRage.Game.Components;
-using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.UserInterface.ReloadIndicators
 {

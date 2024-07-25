@@ -1,7 +1,7 @@
 ﻿using Sandbox.ModAPI;
 using System;
 
-namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup
+namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup
 {
     /// <summary>
     /// Designed for appending custom conditions to Visible/Enabled of terminal controls or toolbar actions so that they can be hidden for specific conditions/subtypes/whatever.

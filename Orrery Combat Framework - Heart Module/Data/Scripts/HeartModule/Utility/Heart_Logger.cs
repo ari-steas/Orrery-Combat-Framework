@@ -9,7 +9,7 @@ using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.Utils;
 
-namespace YourName.ModName.Data.Scripts.HeartModule.Utility
+namespace Heart_Module.Data.Scripts.HeartModule.Utility
 {
     /// <summary>
     /// <para>Standalone logger, does not require any setup.</para>

@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using VRage.Game.ModAPI;
 using VRageMath;
-using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Projectiles.ProjectileNetworking
 {

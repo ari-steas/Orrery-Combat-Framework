@@ -8,7 +8,7 @@ using VRage.Game;
 using VRage.Game.ModAPI;
 using VRageMath;
 
-namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
+namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
     public class WeaponLogic_Magazines
     {

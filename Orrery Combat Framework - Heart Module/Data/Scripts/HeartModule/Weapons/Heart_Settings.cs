@@ -5,7 +5,7 @@ using ProtoBuf;
 using Sandbox.ModAPI;
 using VRageMath;
 
-namespace YourName.ModName.Data.Scripts.HeartModule.Weapons
+namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
     [ProtoContract(UseProtoMembersOnly = true)]
     public class Heart_Settings : PacketBase // this will ABSOLUTELY bite me in the ass later.
