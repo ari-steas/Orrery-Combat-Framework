@@ -1,5 +1,6 @@
 ﻿using Sandbox.ModAPI;
 using System.Collections.Generic;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
@@ -23,17 +24,17 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
         public override void LoadData()
         {
-            // Ensure this runs only on the server to avoid unnecessary calculations on clients
             if (!MyAPIGateway.Session.IsServer)
             {
                 SetUpdateOrder(MyUpdateOrder.NoUpdate);
                 return;
             }
 
-            // Subscribe to grid addition and removal events
             HeartData.I.OnGridAdd += InitializeGridAI;
             HeartData.I.OnGridRemove += CloseGridAI;
             I = this;
+
+            HeartLog.Log("WeaponManagerAi: LoadData completed");
         }
 
         protected override void UnloadData()
@@ -41,11 +42,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             HeartData.I.OnGridAdd -= InitializeGridAI;
             HeartData.I.OnGridRemove -= CloseGridAI;
             I = null;
+
+            HeartLog.Log("WeaponManagerAi: UnloadData completed");
         }
 
         public override void UpdateAfterSimulation()
         {
-            // AI update logic here, potentially throttled for performance
             UpdateAITargeting();
         }
 
@@ -54,25 +56,39 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             if (grid.Physics == null) return;
 
             var aiTargeting = new GridAiTargeting(grid);
-
-            MyAPIGateway.Utilities.ShowNotification($"Grid AI initialized for grid '{grid.DisplayName}' [{(aiTargeting.Enabled ? "ENABLED" : "DISABLED")}]", 1000, "White");
-
             GridTargetingMap.Add(grid, aiTargeting);
+
+            HeartLog.Log($"WeaponManagerAi: Grid AI initialized for grid '{grid.DisplayName}' [{(aiTargeting.Enabled ? "ENABLED" : "DISABLED")}]");
+
+            // Debug all turrets on this grid
+            List<SorterWeaponLogic> weapons;
+            if (GridWeapons.TryGetValue(grid, out weapons))
+            {
+                foreach (var weapon in weapons)
+                {
+                    var turret = weapon as SorterTurretLogic;
+                    if (turret != null)
+                    {
+                        turret.DebugAiInitialization();
+                    }
+                }
+            }
         }
 
         private void CloseGridAI(IMyCubeGrid grid)
         {
             if (grid.Physics == null) return;
 
-            if (GridTargetingMap.ContainsKey(grid))
+            GridAiTargeting aiTargeting;
+            if (GridTargetingMap.TryGetValue(grid, out aiTargeting))
             {
-                GridTargetingMap[grid].Close();
+                aiTargeting.Close();
                 GridTargetingMap.Remove(grid);
-                MyAPIGateway.Utilities.ShowNotification($"Grid AI closed for grid '{grid.DisplayName}'", 1000, "White");
+                HeartLog.Log($"WeaponManagerAi: Grid AI closed for grid '{grid.DisplayName}'");
             }
             else
             {
-                MyAPIGateway.Utilities.ShowNotification($"Attempted to close Grid AI on a non-tracked grid: '{grid.DisplayName}'", 1000, "Red");
+                HeartLog.Log($"WeaponManagerAi: Attempted to close Grid AI on a non-tracked grid: '{grid.DisplayName}'");
             }
         }
 
@@ -80,7 +96,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
         {
             foreach (var targetingKvp in GridTargetingMap)
             {
-                targetingKvp.Value.UpdateTargeting(); // Method to be implemented in GridAiTargeting class
+                targetingKvp.Value.UpdateTargeting();
             }
         }
     }
