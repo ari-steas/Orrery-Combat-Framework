@@ -83,14 +83,23 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
                 if (!HeartData.I.IsLoaded) // Definitions can load after blocks do :)
                 {
-                    MyAPIGateway.Entities.OnEntityAdd += OnEntityAdd;
-                    MyAPIGateway.Entities.OnEntityRemove += OnEntityRemove;
-
-                    MyAPIGateway.Entities.GetEntities(null, ent =>
+                    if (MyAPIGateway.Entities != null)
                     {
-                        OnEntityAdd(ent);
-                        return false;
-                    });
+                        HeartLog.Log("UpdateAfterSimulation: Adding entity event handlers");
+                        MyAPIGateway.Entities.OnEntityAdd += OnEntityAdd;
+                        MyAPIGateway.Entities.OnEntityRemove += OnEntityRemove;
+
+                        MyAPIGateway.Entities.GetEntities(null, ent =>
+                        {
+                            OnEntityAdd(ent);
+                            return false;
+                        });
+                    }
+                    else
+                    {
+                        HeartLog.Log("UpdateAfterSimulation: MyAPIGateway.Entities is null, skipping event handler setup");
+                    }
+
                     HeartData.I.IsLoaded = true;
 
                     HideSorterControls.DoOnce();
@@ -176,14 +185,98 @@ namespace Heart_Module.Data.Scripts.HeartModule
 
         private void OnEntityAdd(IMyEntity entity)
         {
-            if (entity is IMyCubeGrid)
-                HeartData.I?.OnGridAdd?.Invoke(entity as IMyCubeGrid);
+            try
+            {
+                HeartLog.Log($"OnEntityAdd: Starting for entity {entity?.EntityId}");
+
+                if (entity == null)
+                {
+                    HeartLog.Log("OnEntityAdd: Entity is null, skipping");
+                    return;
+                }
+
+                if (HeartData.I == null)
+                {
+                    HeartLog.Log("OnEntityAdd: HeartData.I is null, skipping");
+                    return;
+                }
+
+                var grid = entity as IMyCubeGrid;
+                if (grid != null)
+                {
+                    HeartLog.Log($"OnEntityAdd: Entity is a CubeGrid {grid.EntityId}");
+
+                    if (grid.Physics == null)
+                    {
+                        HeartLog.Log($"OnEntityAdd: Grid {grid.EntityId} has no physics, skipping");
+                        return;
+                    }
+
+                    if (HeartData.I.OnGridAdd == null)
+                    {
+                        HeartLog.Log("OnEntityAdd: HeartData.I.OnGridAdd is null, skipping");
+                        return;
+                    }
+
+                    HeartLog.Log($"OnEntityAdd: Invoking OnGridAdd for grid {grid.EntityId}");
+                    HeartData.I.OnGridAdd.Invoke(grid);
+                }
+                else
+                {
+                    HeartLog.Log($"OnEntityAdd: Entity {entity.EntityId} is not a CubeGrid, skipping");
+                }
+            }
+            catch (Exception ex)
+            {
+                HeartLog.Log($"OnEntityAdd: Exception occurred: {ex.Message}");
+                HeartLog.Log($"OnEntityAdd: Stack trace: {ex.StackTrace}");
+                SoftHandle.RaiseException(ex);
+            }
         }
 
         private void OnEntityRemove(IMyEntity entity)
         {
-            if (entity is IMyCubeGrid)
-                HeartData.I?.OnGridRemove?.Invoke(entity as IMyCubeGrid);
+            try
+            {
+                HeartLog.Log($"OnEntityRemove: Starting for entity {entity?.EntityId}");
+
+                if (entity == null)
+                {
+                    HeartLog.Log("OnEntityRemove: Entity is null, skipping");
+                    return;
+                }
+
+                if (HeartData.I == null)
+                {
+                    HeartLog.Log("OnEntityRemove: HeartData.I is null, skipping");
+                    return;
+                }
+
+                var grid = entity as IMyCubeGrid;
+                if (grid != null)
+                {
+                    HeartLog.Log($"OnEntityRemove: Entity is a CubeGrid {grid.EntityId}");
+
+                    if (HeartData.I.OnGridRemove == null)
+                    {
+                        HeartLog.Log("OnEntityRemove: HeartData.I.OnGridRemove is null, skipping");
+                        return;
+                    }
+
+                    HeartLog.Log($"OnEntityRemove: Invoking OnGridRemove for grid {grid.EntityId}");
+                    HeartData.I.OnGridRemove.Invoke(grid);
+                }
+                else
+                {
+                    HeartLog.Log($"OnEntityRemove: Entity {entity.EntityId} is not a CubeGrid, skipping");
+                }
+            }
+            catch (Exception ex)
+            {
+                HeartLog.Log($"OnEntityRemove: Exception occurred: {ex.Message}");
+                HeartLog.Log($"OnEntityRemove: Stack trace: {ex.StackTrace}");
+                SoftHandle.RaiseException(ex);
+            }
         }
 
         public static void ResetDefinitions()

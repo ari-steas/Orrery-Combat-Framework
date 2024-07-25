@@ -30,36 +30,42 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
         {
             if (MyAPIGateway.Session.IsServer)
                 return;
-
-            HeartLog.Log("Requesting sync from server...");
-            HeartData.I.Net.SendToServer(new Heart_Settings() { IsSyncRequest = true, WeaponEntityId = weaponEntityId });
+            HeartLog.Log($"RequestSync: Requesting sync for weapon {weaponEntityId}");
+            HeartData.I.Net.SendToServer(new Heart_Settings()
+            {
+                IsSyncRequest = true,
+                WeaponEntityId = weaponEntityId
+            });
         }
 
         public override void Received(ulong SenderSteamId)
         {
-            HeartLog.Log("Recieve called: Sender: " + SenderSteamId + " | Self: " + HeartData.I.SteamId + "\n" + ToString());
-            //if (!IsSyncRequest)
-            //    HeartLog.Log("Recieved: " + ToString());
-
+            HeartLog.Log($"Heart_Settings Received: Sender: {SenderSteamId} | Self: {HeartData.I.SteamId}\n{ToString()}");
             var weapon = WeaponManager.I.GetWeapon(WeaponEntityId);
             if (weapon == null)
             {
-                HeartLog.Log("Weapon doesn't exist! ThisId: " + WeaponEntityId);
+                HeartLog.Log($"Weapon doesn't exist! ThisId: {WeaponEntityId}");
                 return;
             }
 
             if (IsSyncRequest)
             {
+                HeartLog.Log($"Processing sync request for weapon {WeaponEntityId}");
                 weapon.Settings.Sync(weapon.SorterWep.GetPosition());
                 return;
             }
 
+            HeartLog.Log($"Updating settings for weapon {WeaponEntityId}");
             weapon.Settings = this;
             weapon.Magazines.SelectedAmmoIndex = AmmoLoadedIdx;
-            HeartLog.Log("UPDATED Id: " + weapon.Magazines.SelectedAmmoId + " | Idx: " + weapon.Magazines.SelectedAmmoIndex);
-            HeartLog.Log("SHOULD BE Idx: " + AmmoLoadedIdx);
+            HeartLog.Log($"UPDATED Id: {weapon.Magazines.SelectedAmmoId} | Idx: {weapon.Magazines.SelectedAmmoIndex}");
+            HeartLog.Log($"SHOULD BE Idx: {AmmoLoadedIdx}");
+
             if (MyAPIGateway.Session.IsServer)
+            {
+                HeartLog.Log($"Server is syncing settings for weapon {WeaponEntityId}");
                 weapon.Settings.Sync(weapon.SorterWep.GetPosition());
+            }
         }
 
         [ProtoMember(1)]

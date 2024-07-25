@@ -10,6 +10,7 @@ using VRage.Network;
 using VRageMath;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
