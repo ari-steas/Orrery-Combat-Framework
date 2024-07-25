@@ -21,17 +21,17 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (TargetProjectile != null)
             {
                 AimPoint = TargetingHelper.InterceptionPoint(
-                        MuzzleMatrix.Translation,
-                        SorterWep.CubeGrid.LinearVelocity,
-                        TargetProjectile, 0) ?? Vector3D.MaxValue;
+                    MuzzleMatrix.Translation,
+                    SorterWep.CubeGrid.LinearVelocity,
+                    TargetProjectile, 0) ?? Vector3D.MaxValue;
                 UpdateTargetState(AimPoint);
             }
             else if (TargetEntity != null)
             {
                 AimPoint = TargetingHelper.InterceptionPoint(
-                        MuzzleMatrix.Translation,
-                        SorterWep.CubeGrid.LinearVelocity,
-                        TargetEntity, 0) ?? Vector3D.MaxValue;
+                    MuzzleMatrix.Translation,
+                    SorterWep.CubeGrid.LinearVelocity,
+                    TargetEntity, 0) ?? Vector3D.MaxValue;
                 UpdateTargetState(AimPoint);
             }
             else

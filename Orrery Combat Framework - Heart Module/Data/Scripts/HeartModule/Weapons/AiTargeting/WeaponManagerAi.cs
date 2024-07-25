@@ -4,6 +4,7 @@ using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
+using VRage.ModAPI;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 {
@@ -35,6 +36,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             HeartData.I.OnGridAdd += InitializeGridAI;
             HeartData.I.OnGridRemove += CloseGridAI;
             I = this;
+
+            // Initialize AI for all existing grids
+            HashSet<IMyEntity> entities = new HashSet<IMyEntity>();
+            MyAPIGateway.Entities.GetEntities(entities, e => e is IMyCubeGrid);
+
+            foreach (var entity in entities)
+            {
+                InitializeGridAI(entity as IMyCubeGrid);
+            }
         }
 
         protected override void UnloadData()
@@ -50,17 +60,24 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             UpdateAITargeting();
         }
 
+        public GridAiTargeting GetOrCreateGridAiTargeting(IMyCubeGrid grid)
+        {
+            if (!GridTargetingMap.ContainsKey(grid))
+            {
+                var gridAiTargeting = new GridAiTargeting(grid);
+                GridTargetingMap.Add(grid, gridAiTargeting);
+                HeartLog.Log($"Grid AI initialized for grid '{grid.DisplayName}' [{(gridAiTargeting.Enabled ? "ENABLED" : "DISABLED")}]");
+            }
+
+            return GridTargetingMap[grid];
+        }
+
         private void InitializeGridAI(IMyCubeGrid grid)
         {
             if (grid.Physics == null) return;
 
             HeartLog.Log($"Attempting to initialize Grid AI for grid '{grid.DisplayName}'");
-
-            var aiTargeting = new GridAiTargeting(grid);
-
-            HeartLog.Log($"Grid AI initialized for grid '{grid.DisplayName}' [{(aiTargeting.Enabled ? "ENABLED" : "DISABLED")}]");
-
-            GridTargetingMap.Add(grid, aiTargeting);
+            GetOrCreateGridAiTargeting(grid);
         }
 
         private void CloseGridAI(IMyCubeGrid grid)

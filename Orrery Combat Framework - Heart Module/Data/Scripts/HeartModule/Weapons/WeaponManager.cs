@@ -8,6 +8,7 @@ using VRage.ModAPI;
 using VRageMath;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
@@ -46,7 +47,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                     if (block.BlockDefinition.SubtypeName != definition.Assignments.BlockSubtype || block.GameLogic?.GetAs<SorterWeaponLogic>() != null)
                         continue;
 
-                    AddWeapon(block);
+                    AddWeapon(block as IMyConveyorSorter);
+
+                    // Notify the grid AI that a new weapon has been added
+                    var gridAiTargeting = WeaponManagerAi.I.GetOrCreateGridAiTargeting(grid);
+                    gridAiTargeting.EnableGridAiIfNeeded();
                 }
             }
         }
@@ -142,12 +147,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
             Heart_Settings.RequestSync(sorter.EntityId);
 
-
             if (logic.Id == uint.MaxValue)
             {
                 logic.Close();
                 CriticalHandle.ThrowCriticalException(new System.Exception($"Failed to initialize weapon! Subtype: {sorter.BlockDefinition.SubtypeId}"), typeof(WeaponManager));
             }
+
+            // Notify the grid AI that a new weapon has been added
+            var gridAiTargeting = WeaponManagerAi.I.GetOrCreateGridAiTargeting(sorter.CubeGrid);
+            gridAiTargeting.EnableGridAiIfNeeded();
         }
 
         protected override void UnloadData()

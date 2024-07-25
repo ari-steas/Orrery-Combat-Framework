@@ -64,24 +64,36 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
         private void Grid_OnBlockAdded(IMySlimBlock obj)
         {
-            // Unused for now
-            CheckAndCloseIfNoWeapons();
+            if (obj.FatBlock is SorterWeaponLogic)
+            {
+                EnableGridAiIfNeeded();
+            }
         }
 
         private void Grid_OnBlockRemoved(IMySlimBlock obj)
         {
-            // Check if the removed block was a weapon
             if (obj.FatBlock is SorterWeaponLogic)
             {
-                CheckAndCloseIfNoWeapons();
+                DisableGridAiIfNeeded();
             }
         }
 
-        public void CheckAndCloseIfNoWeapons()
+        public void EnableGridAiIfNeeded()
         {
-            if (Weapons.Count == 0)
+            if (!Enabled && Weapons.Count > 0)
             {
-                Close();
+                Enabled = true;
+                SetTargetingFlags();
+                HeartLog.Log($"GridAiTargeting enabled for grid '{Grid.DisplayName}'");
+            }
+        }
+
+        public void DisableGridAiIfNeeded()
+        {
+            if (Enabled && Weapons.Count == 0)
+            {
+                Enabled = false;
+                HeartLog.Log($"GridAiTargeting disabled for grid '{Grid.DisplayName}' due to no weapons");
             }
         }
 
@@ -98,21 +110,19 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
                 SetTargetingFlags();
 
-                // Cache the targets
                 var previousTargetedGrids = new List<IMyCubeGrid>(TargetedGrids.Keys);
                 var previousTargetedCharacters = new List<IMyCharacter>(TargetedCharacters.Keys);
                 var previousTargetedProjectiles = new List<uint>(TargetedProjectiles.Keys);
 
                 ScanForTargets();
 
-                // Check if the targets have changed
                 bool targetsChanged = !previousTargetedGrids.SequenceEqual(TargetedGrids.Keys) ||
                                       !previousTargetedCharacters.SequenceEqual(TargetedCharacters.Keys) ||
                                       !previousTargetedProjectiles.SequenceEqual(TargetedProjectiles.Keys);
 
                 if (!targetsChanged)
                 {
-                    return; // Skip if targets haven't changed
+                    return;
                 }
 
                 MyEntity manualTarget = null;
@@ -132,7 +142,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                     bool turretHasTarget = false;
                     bool targetChanged = false;
 
-                    // First, check for manually locked target using GenericKeenTargeting
                     if (keenTargeting != null)
                     {
                         bool isManuallyLockedTargetInRange = manualTarget == null || Vector3D.DistanceSquared(manualTarget.PositionComp.WorldAABB.Center, Grid.PositionComp.WorldAABB.Center) <= MaxTargetingRange * MaxTargetingRange;
@@ -346,10 +355,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
         /// </summary>
         private void SetTargetingFlags()
         {
-            Enabled = Weapons.Count > 0; // Disable if it has no weapons
-            if (!Enabled)
-                return;
-
             DoesTargetGrids = false;
             DoesTargetCharacters = false;
             DoesTargetProjectiles = false;
@@ -371,11 +376,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
             MaxTargetingRange *= 1.1f; // Increase range by a little bit to make targeting less painful
 
-            if (Enabled) // Disable if MaxRange = 0.
-                Enabled = MaxTargetingRange > 0;
-
-            // Other targeting logic here
+            Enabled = MaxTargetingRange > 0 && Weapons.Count > 0;
         }
+
 
         private void ScanForTargets()
         {
@@ -396,9 +399,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                     continue;
                 if (entity is IMyCubeGrid)
                 {
-                    //IMyCubeGrid topmost = (IMyCubeGrid)((IMyCubeGrid)entity).GetTopMostParent(); // Ignore subgrids, and instead target parents.
-                    //if (!allGrids.Contains(topmost)) // Note - GetTopMostParent() consistently picks the first subgrid to spawn.
-                    //    allGrids.Add(topmost);
                     allGrids.Add((IMyCubeGrid)entity);
                 }
                 else if (entity is IMyCharacter)
