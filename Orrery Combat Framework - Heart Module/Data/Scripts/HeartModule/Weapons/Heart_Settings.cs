@@ -1,4 +1,5 @@
 using Heart_Module.Data.Scripts.HeartModule;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Network;
 using Heart_Module.Data.Scripts.HeartModule.Weapons;
 using ProtoBuf;
@@ -12,16 +13,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
     {
         public void Sync(Vector3D turretPosition)
         {
-            //HeartLog.Log("Sync called!");
+            HeartLog.Log("Sync called!");
             if (MyAPIGateway.Session.IsServer)
             {
                 HeartData.I.Net.SendToEveryoneInSync(this, turretPosition);
-                //HeartLog.Log("Sent settings to all.\n" + ToString() + "\n---------------------------");
+                HeartLog.Log("Sent settings to all.\n" + ToString() + "\n---------------------------");
             }
             else
             {
                 HeartData.I.Net.SendToServer(this);
-                //HeartLog.Log("Sent settings to server");
+                HeartLog.Log("Sent settings to server");
             }
         }
 
@@ -30,20 +31,20 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
             if (MyAPIGateway.Session.IsServer)
                 return;
 
-            //HeartLog.Log("Requesting sync from server...");
+            HeartLog.Log("Requesting sync from server...");
             HeartData.I.Net.SendToServer(new Heart_Settings() { IsSyncRequest = true, WeaponEntityId = weaponEntityId });
         }
 
         public override void Received(ulong SenderSteamId)
         {
-            //HeartLog.Log("Recieve called: Sender: " + SenderSteamId + " | Self: " + HeartData.I.SteamId + "\n" + ToString());
+            HeartLog.Log("Recieve called: Sender: " + SenderSteamId + " | Self: " + HeartData.I.SteamId + "\n" + ToString());
             //if (!IsSyncRequest)
             //    HeartLog.Log("Recieved: " + ToString());
 
             var weapon = WeaponManager.I.GetWeapon(WeaponEntityId);
             if (weapon == null)
             {
-                //HeartLog.Log("Weapon doesn't exist! ThisId: " + WeaponEntityId);
+                HeartLog.Log("Weapon doesn't exist! ThisId: " + WeaponEntityId);
                 return;
             }
 
@@ -55,8 +56,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
             weapon.Settings = this;
             weapon.Magazines.SelectedAmmoIndex = AmmoLoadedIdx;
-            //HeartLog.Log("UPDATED Id: " + weapon.Magazines.SelectedAmmoId + " | Idx: " + weapon.Magazines.SelectedAmmoIndex);
-            //HeartLog.Log("SHOULD BE Idx: " + AmmoLoadedIdx);
+            HeartLog.Log("UPDATED Id: " + weapon.Magazines.SelectedAmmoId + " | Idx: " + weapon.Magazines.SelectedAmmoIndex);
+            HeartLog.Log("SHOULD BE Idx: " + AmmoLoadedIdx);
             if (MyAPIGateway.Session.IsServer)
                 weapon.Settings.Sync(weapon.SorterWep.GetPosition());
         }

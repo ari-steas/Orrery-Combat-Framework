@@ -11,7 +11,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.ExceptionHandler
 
         public static void Log(string message)
         {
-            I._Log(message);
+            if (HeartData.DebugLogEnabled)
+            {
+                I._Log(message);
+            }
         }
         public static void LogException(Exception ex, Type callingType, string prefix = "")
         {
