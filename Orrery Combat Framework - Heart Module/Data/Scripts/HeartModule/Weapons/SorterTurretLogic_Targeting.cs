@@ -1,8 +1,10 @@
-﻿using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
+﻿using Heart_Module.Data.Scripts.HeartModule.ErrorHandler;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles;
 using Heart_Module.Data.Scripts.HeartModule.Utility;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting;
 using Sandbox.ModAPI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using VRage.Game;
@@ -121,17 +123,42 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 
         public void ResetTarget()
         {
-            HeartLog.Log($"Resetting target for turret {SorterWep.EntityId}");
-            TargetEntity = null;
-            TargetProjectile = null;
-            ResetTargetingState();
-            var gridAiTargeting = WeaponManagerAi.I.GetTargeting(SorterWep.CubeGrid);
-            if (gridAiTargeting != null)
+            try
             {
-                gridAiTargeting.SetPrimaryTarget(null);
+                HeartLog.Log($"ResetTarget: Starting for turret {SorterWep?.EntityId}");
+
+                if (SorterWep == null)
+                {
+                    HeartLog.Log("ResetTarget: SorterWep is null, skipping");
+                    return;
+                }
+
+                HeartLog.Log($"Resetting target for turret {SorterWep.EntityId}");
+                TargetEntity = null;
+                TargetProjectile = null;
+                ResetTargetingState();
+
+                var gridAiTargeting = WeaponManagerAi.I?.GetTargeting(SorterWep.CubeGrid);
+                if (gridAiTargeting != null)
+                {
+                    gridAiTargeting.SetPrimaryTarget(null);
+                }
+                else
+                {
+                    HeartLog.Log("ResetTarget: gridAiTargeting is null");
+                }
+
+                Settings.ResetTargetState = true;
+                Settings.Sync(SorterWep.GetPosition());
+
+                HeartLog.Log("ResetTarget: Completed successfully");
             }
-            Settings.ResetTargetState = true;
-            Settings.Sync(SorterWep.GetPosition());
+            catch (Exception ex)
+            {
+                HeartLog.Log($"ResetTarget: Exception occurred: {ex.Message}");
+                HeartLog.Log($"ResetTarget: Stack trace: {ex.StackTrace}");
+                SoftHandle.RaiseException(ex, typeof(SorterTurretLogic));
+            }
         }
 
         public bool HasValidTarget()

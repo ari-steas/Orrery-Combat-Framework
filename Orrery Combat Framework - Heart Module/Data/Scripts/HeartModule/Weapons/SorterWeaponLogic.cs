@@ -106,6 +106,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     return;
                 }
 
+                HeartLog.Log($"UpdateOnceBeforeFrame: Setting WeaponEntityId to {SorterWep.EntityId}");
                 Settings.WeaponEntityId = SorterWep.EntityId;
 
                 if (SorterWep.CubeGrid == null)
@@ -124,11 +125,16 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 NeedsUpdate = MyEntityUpdateEnum.EACH_FRAME;
 
                 HeartLog.Log("UpdateOnceBeforeFrame: Initializing MuzzleDummies");
-                if (Definition.Assignments.HasMuzzleSubpart)
+                if (Definition == null)
+                {
+                    HeartLog.Log("UpdateOnceBeforeFrame: Definition is null, skipping MuzzleDummies initialization");
+                }
+                else if (Definition.Assignments.HasMuzzleSubpart)
                 {
                     var muzzleSubpart = SubpartManager.RecursiveGetSubpart(SorterWep, Definition.Assignments.MuzzleSubpart);
                     if (muzzleSubpart != null)
                     {
+                        HeartLog.Log("UpdateOnceBeforeFrame: Muzzle subpart found, getting dummies");
                         ((IMyEntity)muzzleSubpart).Model?.GetDummies(MuzzleDummies);
                     }
                     else
@@ -138,23 +144,28 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding
                 }
                 else
                 {
+                    HeartLog.Log("UpdateOnceBeforeFrame: Getting dummies from SorterWep model");
                     SorterWep.Model?.GetDummies(MuzzleDummies);
                 }
 
                 HeartLog.Log("UpdateOnceBeforeFrame: Setting block damage modifier");
-                SorterWep.SlimBlock.BlockGeneralDamageModifier = Definition.Assignments.DurabilityModifier;
+                SorterWep.SlimBlock.BlockGeneralDamageModifier = Definition?.Assignments.DurabilityModifier ?? 1f;
 
                 HeartLog.Log("UpdateOnceBeforeFrame: Setting required power input");
-                SorterWep.ResourceSink.SetRequiredInputByType(MyResourceDistributorComponent.ElectricityId, Definition.Hardpoint.IdlePower);
+                SorterWep.ResourceSink.SetRequiredInputByType(MyResourceDistributorComponent.ElectricityId, Definition?.Hardpoint.IdlePower ?? 0f);
 
                 HeartLog.Log("UpdateOnceBeforeFrame: Loading settings");
                 LoadSettings();
 
-                if (SorterWep.CubeGrid != null)
+                HeartLog.Log("UpdateOnceBeforeFrame: Getting or creating GridAiTargeting");
+                var gridAiTargeting = WeaponManagerAi.I?.GetOrCreateGridAiTargeting(SorterWep.CubeGrid);
+                if (gridAiTargeting != null)
                 {
-                    HeartLog.Log("UpdateOnceBeforeFrame: Getting or creating GridAiTargeting");
-                    var gridAiTargeting = WeaponManagerAi.I.GetOrCreateGridAiTargeting(SorterWep.CubeGrid);
                     gridAiTargeting.EnableGridAiIfNeeded();
+                }
+                else
+                {
+                    HeartLog.Log("UpdateOnceBeforeFrame: Failed to get or create GridAiTargeting");
                 }
 
                 HeartLog.Log("UpdateOnceBeforeFrame: Saving settings");

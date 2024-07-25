@@ -192,6 +192,11 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 }
 
                 HeartLog.Log($"AddWeapon: Getting definition for {sorter.BlockDefinition.SubtypeName}");
+                if (WeaponDefinitionManager.I == null)
+                {
+                    HeartLog.Log("AddWeapon: WeaponDefinitionManager.I is null");
+                    return;
+                }
                 WeaponDefinitionBase def = WeaponDefinitionManager.GetDefinition(sorter.BlockDefinition.SubtypeName);
                 if (def == null)
                 {
@@ -204,6 +209,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 while (!IsIdAvailable(NextId))
                     NextId++;
 
+                HeartLog.Log($"AddWeapon: Using NextId {NextId}");
                 if (def.Assignments.IsTurret)
                     logic = new SorterTurretLogic(sorter, def, NextId);
                 else
@@ -248,8 +254,15 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                 }
 
                 HeartLog.Log($"AddWeapon: Getting or creating GridAiTargeting for grid {sorter.CubeGrid.EntityId}");
-                var gridAiTargeting = WeaponManagerAi.I.GetOrCreateGridAiTargeting(sorter.CubeGrid);
-                gridAiTargeting.EnableGridAiIfNeeded();
+                var gridAiTargeting = WeaponManagerAi.I?.GetOrCreateGridAiTargeting(sorter.CubeGrid);
+                if (gridAiTargeting != null)
+                {
+                    gridAiTargeting.EnableGridAiIfNeeded();
+                }
+                else
+                {
+                    HeartLog.Log("AddWeapon: Failed to get or create GridAiTargeting");
+                }
 
                 HeartLog.Log($"AddWeapon: Finished adding weapon for sorter {sorter.EntityId}");
             }
