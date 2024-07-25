@@ -37,15 +37,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             HeartData.I.OnGridRemove += CloseGridAI;
             I = this;
 
-            // Initialize AI for all existing grids
-            HashSet<IMyEntity> entities = new HashSet<IMyEntity>();
-            MyAPIGateway.Entities.GetEntities(entities, e => e is IMyCubeGrid);
-
-            foreach (var entity in entities)
+            // Initialize AI for all existing grids that have SorterWeaponLogic
+            foreach (var grid in WeaponManager.I.GridWeapons.Keys)
             {
-                InitializeGridAI(entity as IMyCubeGrid);
+                InitializeGridAI(grid);
             }
         }
+
 
         protected override void UnloadData()
         {
