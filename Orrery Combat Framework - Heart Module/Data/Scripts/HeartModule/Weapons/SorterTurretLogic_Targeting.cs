@@ -133,7 +133,6 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons
                     return;
                 }
 
-                HeartLog.Log($"Resetting target for turret {SorterWep.EntityId}");
                 TargetEntity = null;
                 TargetProjectile = null;
                 ResetTargetingState();
