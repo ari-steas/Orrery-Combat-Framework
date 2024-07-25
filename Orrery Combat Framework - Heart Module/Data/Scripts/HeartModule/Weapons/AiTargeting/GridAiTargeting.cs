@@ -167,7 +167,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
                     if (turret.PreferUniqueTargetsState)
                     {
-                        var assignedTargets = AssignUniqueTargets(prioritizedTargets, turret);
+                        var assignedTargets = AssignUniqueTargets(prioritizedTargets);
 
                         foreach (var target in assignedTargets)
                         {
@@ -210,30 +210,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             return targets;
         }
 
-        private List<object> AssignUniqueTargets(List<object> prioritizedTargets, SorterTurretLogic turret)
+        private List<object> AssignUniqueTargets(List<object> prioritizedTargets)
         {
-            Dictionary<object, int> targetAssignments = new Dictionary<object, int>();
-
-            foreach (var target in prioritizedTargets)
-            {
-                targetAssignments[target] = 0;
-            }
-
-            foreach (var weapon in Weapons)
-            {
-                if (weapon is SorterTurretLogic)
-                {
-                    var currentTurret = weapon as SorterTurretLogic;
-                    var currentTarget = currentTurret.TargetEntity ?? (object)currentTurret.TargetProjectile;
-
-                    if (currentTarget != null && targetAssignments.ContainsKey(currentTarget))
-                    {
-                        targetAssignments[currentTarget]++;
-                    }
-                }
-            }
-
-            return targetAssignments.OrderBy(kvp => kvp.Value).Select(kvp => kvp.Key).ToList();
+            return prioritizedTargets;
         }
 
         private bool ShouldConsiderTarget(object target, SorterTurretLogic turret)
