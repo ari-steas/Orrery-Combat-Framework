@@ -35,10 +35,8 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
         public SortedList<IMyCubeGrid, int> TargetedGrids = new SortedList<IMyCubeGrid, int>();
         public SortedList<IMyCharacter, int> TargetedCharacters = new SortedList<IMyCharacter, int>();
-
-        // Priority target list that gets checked first 
-        SortedList<MyEntity, int> PriorityTargets = new SortedList<MyEntity, int>();
         public SortedList<uint, int> TargetedProjectiles = new SortedList<uint, int>();
+        SortedList<MyEntity, int> PriorityTargets = new SortedList<MyEntity, int>();
 
         private GenericKeenTargeting keenTargeting = new GenericKeenTargeting();
 
@@ -58,7 +56,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             HeartLog.Log($"Initializing GridAiTargeting for grid '{grid.DisplayName}'");
             Grid = grid;
             Grid.OnBlockAdded += Grid_OnBlockAdded;
-            Grid.OnBlockRemoved += Grid_OnBlockRemoved; // Subscribe to the block removed event
+            Grid.OnBlockRemoved += Grid_OnBlockRemoved;
 
             GridComparer = Comparer<IMyCubeGrid>.Create((x, y) =>
             {
@@ -136,8 +134,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                 if (isTargetLocked)
                 {
                     manualTarget = keenTargeting.GetTarget(Grid);
-                    if (manualTarget is IMyCubeGrid)
-                        PrimaryGridTarget = (IMyCubeGrid)manualTarget;
+                    var gridTarget = manualTarget as IMyCubeGrid;
+                    if (gridTarget != null)
+                        PrimaryGridTarget = gridTarget;
                 }
 
                 List<object> potentialTargets = new List<object>();
@@ -147,10 +146,10 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
                 foreach (var weapon in Weapons)
                 {
-                    if (!(weapon is SorterTurretLogic) || !weapon.SorterWep.IsWorking)
+                    var turret = weapon as SorterTurretLogic;
+                    if (turret == null || !turret.SorterWep.IsWorking)
                         continue;
 
-                    SorterTurretLogic turret = weapon as SorterTurretLogic;
                     bool turretHasTarget = false;
 
                     if (isTargetLocked)
@@ -212,7 +211,29 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
         private List<object> AssignUniqueTargets(List<object> prioritizedTargets)
         {
-            return prioritizedTargets;
+            Dictionary<object, int> targetAssignments = new Dictionary<object, int>();
+            List<object> assignedTargets = new List<object>();
+
+            foreach (var target in prioritizedTargets)
+            {
+                targetAssignments[target] = 0;
+            }
+
+            foreach (var weapon in Weapons)
+            {
+                var turret = weapon as SorterTurretLogic;
+                if (turret == null || !turret.SorterWep.IsWorking)
+                    continue;
+
+                object leastAssignedTarget = targetAssignments.OrderBy(kvp => kvp.Value).FirstOrDefault().Key;
+                if (leastAssignedTarget != null)
+                {
+                    assignedTargets.Add(leastAssignedTarget);
+                    targetAssignments[leastAssignedTarget]++;
+                }
+            }
+
+            return assignedTargets;
         }
 
         private bool ShouldConsiderTarget(object target, SorterTurretLogic turret)
@@ -237,9 +258,9 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                 MaxTargetingRange = 0;
                 foreach (var weapon in Weapons)
                 {
-                    if (weapon is SorterTurretLogic) // Only set targeting flags with turrets
+                    var turret = weapon as SorterTurretLogic;
+                    if (turret != null) // Only set targeting flags with turrets
                     {
-                        var turret = (SorterTurretLogic)weapon;
                         DoesTargetGrids |= turret.Settings.TargetGridsState;
                         DoesTargetCharacters |= turret.Settings.TargetCharactersState;
                         DoesTargetProjectiles |= turret.Settings.TargetProjectilesState;
@@ -286,12 +307,19 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
             {
                 if (entity == Grid || entity.Physics == null)
                     continue;
-                if (entity is IMyCubeGrid)
+                var grid = entity as IMyCubeGrid;
+                if (grid != null)
                 {
-                    allGrids.Add((IMyCubeGrid)entity);
+                    allGrids.Add(grid);
                 }
-                else if (entity is IMyCharacter)
-                    allCharacters.Add(entity as IMyCharacter);
+                else
+                {
+                    var character = entity as IMyCharacter;
+                    if (character != null)
+                    {
+                        allCharacters.Add(character);
+                    }
+                }
             }
 
             List<Projectile> allProjectiles = new List<Projectile>();
