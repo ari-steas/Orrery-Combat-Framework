@@ -4,7 +4,7 @@ using Sandbox.ModAPI.Interfaces.Terminal;
 using System;
 using System.Text;
 using VRage.Utils;
-using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup
 {

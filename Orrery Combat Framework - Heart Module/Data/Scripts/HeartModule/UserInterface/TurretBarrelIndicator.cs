@@ -6,7 +6,7 @@ using VRage.Game.Components;
 using VRage.Utils;
 using VRageMath;
 using VRageRender;
-using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.UserInterface
 {

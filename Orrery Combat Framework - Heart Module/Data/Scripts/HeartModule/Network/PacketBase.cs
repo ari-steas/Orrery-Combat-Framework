@@ -5,7 +5,7 @@ using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
 using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using ProtoBuf;
 using System;
-using YourName.ModName.Data.Scripts.HeartModule.Weapons;
+using Heart_Module.Data.Scripts.HeartModule.Weapons;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Network
 {

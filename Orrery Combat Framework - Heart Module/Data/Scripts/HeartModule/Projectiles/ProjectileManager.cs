@@ -158,7 +158,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Projectiles
             while (!IsIdAvailable(NextId))
                 NextId++;
             projectile.SetId(NextId);
-            //HeartLog.Log("SpawnProjectile " + projectile.Id + $" | [{projectile.Definition.Name}] " + projectile.Definition.Networking.NetworkingMode);
+            HeartLog.Log("SpawnProjectile " + projectile.Id + $" | [{projectile.Definition.Name}] " + projectile.Definition.Networking.NetworkingMode);
             ActiveProjectiles.Add(projectile.Id, projectile);
             if (MyAPIGateway.Session.IsServer && shouldSync)
             {

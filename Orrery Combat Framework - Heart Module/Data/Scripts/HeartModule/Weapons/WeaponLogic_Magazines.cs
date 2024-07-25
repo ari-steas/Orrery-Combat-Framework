@@ -4,11 +4,12 @@ using Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses;
 using Sandbox.Game;
 using Sandbox.ModAPI;
 using System;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 using VRage.Game;
 using VRage.Game.ModAPI;
 using VRageMath;
 
-namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
+namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding
 {
     public class WeaponLogic_Magazines
     {
@@ -40,7 +41,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     return;
                 EmptyMagazines();
 
-                //HeartLog.Log("Set Loaded AmmoId: " + SelectedAmmoId + " | IDX " + SelectedAmmoIndex);
+                HeartLog.Log("Set Loaded AmmoId: " + SelectedAmmoId + " | IDX " + SelectedAmmoIndex);
             }
         }
 
@@ -62,7 +63,7 @@ namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding
                     return;
                 EmptyMagazines();
 
-                //HeartLog.Log("Set Loaded AmmoIdx: " + SelectedAmmoId + " | IDX " + SelectedAmmoIndex);
+                HeartLog.Log("Set Loaded AmmoIdx: " + SelectedAmmoId + " | IDX " + SelectedAmmoIndex);
             }
         }
 

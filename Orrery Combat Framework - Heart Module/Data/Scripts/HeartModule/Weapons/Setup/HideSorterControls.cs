@@ -1,9 +1,9 @@
 ﻿using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces.Terminal;
 using System.Collections.Generic;
-using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
-namespace YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Hiding
+namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Hiding
 {
     // In this example we're hiding the "Detect asteroids" terminal control and terminal action. Also bonus, enforcing it to stay false.
     //  All this only on a specific sensor block to show doing it properly without breaking other mods trying to do the same.

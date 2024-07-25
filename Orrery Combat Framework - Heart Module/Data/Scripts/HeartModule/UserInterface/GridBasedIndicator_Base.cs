@@ -3,7 +3,7 @@ using Sandbox.ModAPI;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
-using YourName.ModName.Data.Scripts.HeartModule.Weapons.Setup.Adding;
+using Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding;
 
 namespace Heart_Module.Data.Scripts.HeartModule.UserInterface
 {

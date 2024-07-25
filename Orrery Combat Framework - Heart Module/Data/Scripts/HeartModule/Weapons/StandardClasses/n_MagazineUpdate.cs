@@ -1,6 +1,7 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Network;
 using ProtoBuf;
 using System;
+using Heart_Module.Data.Scripts.HeartModule.ExceptionHandler;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
 {
@@ -18,7 +19,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
         public override void Received(ulong SenderSteamId)
         {
             var weapon = WeaponManager.I.GetWeapon(WeaponEntityId);
-            //HeartLog.Log($"Trigger update {WeaponEntityId}. " + (weapon == null));
+            HeartLog.Log($"Trigger update {WeaponEntityId}. " + (weapon == null));
             var magazine = weapon?.Magazines;
             if (magazine == null)
                 return;
@@ -31,7 +32,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.StandardClasses
 
             weapon.NextMuzzleIdx = NextMuzzleIdx;
 
-            //HeartLog.Log($"Magazine updated for weapon {WeaponEntityId}! Delta: " + timeDelta);
+            HeartLog.Log($"Magazine updated for weapon {WeaponEntityId}! Delta: " + timeDelta);
         }
     }
 }
