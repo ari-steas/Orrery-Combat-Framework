@@ -54,6 +54,13 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
         public GridAiTargeting(IMyCubeGrid grid)
         {
             HeartLog.Log($"Initializing GridAiTargeting for grid '{grid.DisplayName}'");
+
+            if (grid == null || grid.Physics == null)
+            {
+                HeartLog.Log($"GridAiTargeting: Grid is null or has no physics. Skipping initialization.");
+                return;
+            }
+
             Grid = grid;
             Grid.OnBlockAdded += Grid_OnBlockAdded;
             Grid.OnBlockRemoved += Grid_OnBlockRemoved;

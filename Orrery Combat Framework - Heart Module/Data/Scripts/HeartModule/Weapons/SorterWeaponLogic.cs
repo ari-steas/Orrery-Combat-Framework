@@ -44,26 +44,38 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public SorterWeaponLogic(IMyConveyorSorter sorterWeapon, WeaponDefinitionBase definition, uint id)
         {
-            if (definition == null)
+            HeartLog.Log($"SorterWeaponLogic: Constructing for sorter {sorterWeapon?.EntityId}, definition {definition?.Assignments.BlockSubtype}, id {id}");
+
+            if (sorterWeapon == null)
+            {
+                HeartLog.Log("SorterWeaponLogic: sorterWeapon is null");
                 return;
+            }
+
+            if (definition == null)
+            {
+                HeartLog.Log("SorterWeaponLogic: Definition is null");
+                return;
+            }
 
             sorterWeapon.GameLogic = this;
             Init(sorterWeapon.GetObjectBuilder());
             this.Definition = definition;
-
-            // Provide a function to get the inventory
-            Func<IMyInventory> getInventoryFunc = () => sorterWeapon.GetInventory();
-
-            // You need to provide the missing arguments for WeaponLogic_Magazines constructor here
+            Func<IMyInventory> getInventoryFunc = () =>
+            {
+                if (sorterWeapon.MarkedForClose)
+                {
+                    HeartLog.Log($"SorterWeaponLogic: Weapon {sorterWeapon.EntityId} is marked for close, returning null inventory");
+                    return null;
+                }
+                return sorterWeapon.GetInventory();
+            };
             Magazines = new WeaponLogic_Magazines(this, getInventoryFunc, AmmoComboBox);
-
-            // Initialize the WeaponResourceSystem
             _resourceSystem = new WeaponResourceSystem(definition, this);
-
             Id = id;
+
+            HeartLog.Log($"SorterWeaponLogic: Constructed for sorter {sorterWeapon.EntityId}");
         }
-
-
 
         public override void Init(MyObjectBuilder_EntityBase objectBuilder)
         {
@@ -77,45 +89,96 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public override void UpdateOnceBeforeFrame()
         {
-            SorterWep = (IMyConveyorSorter)Entity;
-            Settings.WeaponEntityId = SorterWep.EntityId;
-
-            if (SorterWep.CubeGrid?.Physics == null)
-                return; // ignore ghost/projected grids
-
-            // the bonus part, enforcing it to stay a specific value.
-            //if (MyAPIGateway.Multiplayer.IsServer) // serverside only to avoid network spam
-            //{
-            NeedsUpdate = MyEntityUpdateEnum.EACH_FRAME;
-            //}
-
-            if (Definition.Assignments.HasMuzzleSubpart) // Get muzzle dummies
-                ((IMyEntity)SubpartManager.RecursiveGetSubpart(SorterWep, Definition.Assignments.MuzzleSubpart))?.Model?.GetDummies(MuzzleDummies);
-            else
-                SorterWep.Model.GetDummies(MuzzleDummies); // From base model if muzzle subpart is not set
-
-            SorterWep.SlimBlock.BlockGeneralDamageModifier = Definition.Assignments.DurabilityModifier;
-            SorterWep.ResourceSink.SetRequiredInputByType(MyResourceDistributorComponent.ElectricityId, Definition.Hardpoint.IdlePower);
-            //SorterWep.ResourceSink.SetMaxRequiredInputByType(MyResourceDistributorComponent.ElectricityId, Definition.Hardpoint.IdlePower); // TODO: Set max power to include projectiles and RoF
-
-            LoadSettings();
-
-            // Notify the grid AI that a new weapon has been added
-            if (SorterWep.CubeGrid != null)
+            try
             {
-                var gridAiTargeting = WeaponManagerAi.I.GetOrCreateGridAiTargeting(SorterWep.CubeGrid);
-                gridAiTargeting.EnableGridAiIfNeeded();
-            }
+                HeartLog.Log($"UpdateOnceBeforeFrame: Starting for weapon {Entity?.EntityId}");
 
-            SaveSettings();
+                if (Entity == null)
+                {
+                    HeartLog.Log("UpdateOnceBeforeFrame: Entity is null, skipping");
+                    return;
+                }
+
+                SorterWep = Entity as IMyConveyorSorter;
+                if (SorterWep == null)
+                {
+                    HeartLog.Log("UpdateOnceBeforeFrame: SorterWep is null, skipping");
+                    return;
+                }
+
+                Settings.WeaponEntityId = SorterWep.EntityId;
+
+                if (SorterWep.CubeGrid == null)
+                {
+                    HeartLog.Log("UpdateOnceBeforeFrame: CubeGrid is null, skipping");
+                    return;
+                }
+
+                if (SorterWep.CubeGrid.Physics == null)
+                {
+                    HeartLog.Log("UpdateOnceBeforeFrame: Grid Physics is null, skipping");
+                    return;
+                }
+
+                HeartLog.Log("UpdateOnceBeforeFrame: Setting NeedsUpdate");
+                NeedsUpdate = MyEntityUpdateEnum.EACH_FRAME;
+
+                HeartLog.Log("UpdateOnceBeforeFrame: Initializing MuzzleDummies");
+                if (Definition.Assignments.HasMuzzleSubpart)
+                {
+                    var muzzleSubpart = SubpartManager.RecursiveGetSubpart(SorterWep, Definition.Assignments.MuzzleSubpart);
+                    if (muzzleSubpart != null)
+                    {
+                        ((IMyEntity)muzzleSubpart).Model?.GetDummies(MuzzleDummies);
+                    }
+                    else
+                    {
+                        HeartLog.Log("UpdateOnceBeforeFrame: Muzzle subpart not found");
+                    }
+                }
+                else
+                {
+                    SorterWep.Model?.GetDummies(MuzzleDummies);
+                }
+
+                HeartLog.Log("UpdateOnceBeforeFrame: Setting block damage modifier");
+                SorterWep.SlimBlock.BlockGeneralDamageModifier = Definition.Assignments.DurabilityModifier;
+
+                HeartLog.Log("UpdateOnceBeforeFrame: Setting required power input");
+                SorterWep.ResourceSink.SetRequiredInputByType(MyResourceDistributorComponent.ElectricityId, Definition.Hardpoint.IdlePower);
+
+                HeartLog.Log("UpdateOnceBeforeFrame: Loading settings");
+                LoadSettings();
+
+                if (SorterWep.CubeGrid != null)
+                {
+                    HeartLog.Log("UpdateOnceBeforeFrame: Getting or creating GridAiTargeting");
+                    var gridAiTargeting = WeaponManagerAi.I.GetOrCreateGridAiTargeting(SorterWep.CubeGrid);
+                    gridAiTargeting.EnableGridAiIfNeeded();
+                }
+
+                HeartLog.Log("UpdateOnceBeforeFrame: Saving settings");
+                SaveSettings();
+
+                HeartLog.Log("UpdateOnceBeforeFrame: Completed successfully");
+            }
+            catch (Exception ex)
+            {
+                HeartLog.Log($"UpdateOnceBeforeFrame: Exception occurred: {ex.Message}");
+                HeartLog.Log($"UpdateOnceBeforeFrame: Stack trace: {ex.StackTrace}");
+                SoftHandle.RaiseException(ex, typeof(SorterWeaponLogic));
+            }
         }
 
         public override void UpdateAfterSimulation()
         {
             try
             {
-                if (MarkedForClose || Id == uint.MaxValue)
+                if (MarkedForClose || Id == uint.MaxValue || SorterWep == null)
+                {
+                    HeartLog.Log($"UpdateAfterSimulation: Skipping update for weapon {Id}");
                     return;
+                }
 
                 MuzzleMatrix = CalcMuzzleMatrix(0); // Set stored MuzzleMatrix
                 Magazines.UpdateReload();
@@ -141,6 +204,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding
             if (!Definition.Hardpoint.LineOfSightCheck) // Ignore if LoS check is disabled
                 return true;
 
+            if (SorterWep == null || SorterWep.CubeGrid == null)
+            {
+                HeartLog.Log($"HasLineOfSight: SorterWep or CubeGrid is null for weapon {Id}");
+                return false;
+            }
+
             List<Vector3I> intersects = new List<Vector3I>();
             SorterWep.CubeGrid.RayCastCells(MuzzleMatrix.Translation, MuzzleMatrix.Translation + MuzzleMatrix.Forward * GridCheckRange, intersects);
 
@@ -158,6 +227,12 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public virtual void TryShoot()
         {
+            if (SorterWep == null)
+            {
+                HeartLog.Log($"TryShoot: SorterWep is null for weapon {Id}");
+                return;
+            }
+
             float modifiedRateOfFire = Definition.Loading.RateOfFire;
 
             // Only apply variance if RateOfFireVariance is not zero
@@ -314,6 +389,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.Setup.Adding
 
         public virtual MatrixD CalcMuzzleMatrix(int id, bool local = false)
         {
+            if (SorterWep == null)
+            {
+                HeartLog.Log($"CalcMuzzleMatrix: SorterWep is null for weapon {Id}");
+                return MatrixD.Identity;
+            }
+
+            if (MuzzleDummies == null)
+            {
+                HeartLog.Log($"CalcMuzzleMatrix: MuzzleDummies is null for weapon {Id}");
+                return SorterWep.WorldMatrix;
+            }
+
             if (Definition.Assignments.Muzzles.Length == 0 || !MuzzleDummies.ContainsKey(Definition.Assignments.Muzzles[id]))
                 return SorterWep.WorldMatrix;
 
