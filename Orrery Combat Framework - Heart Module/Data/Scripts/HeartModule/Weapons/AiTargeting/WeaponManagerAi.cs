@@ -72,15 +72,34 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
         private void InitializeGridAI(IMyCubeGrid grid)
         {
-            if (grid.Physics == null) return;
+            if (grid.Physics == null)
+            {
+                HeartLog.Log($"Skipping initialization for grid '{grid.DisplayName}' because it has null physics.");
+                return;
+            }
+
+            if (GridTargetingMap.ContainsKey(grid))
+            {
+                HeartLog.Log($"Grid '{grid.DisplayName}' is already initialized in GridTargetingMap.");
+                return;
+            }
 
             HeartLog.Log($"Attempting to initialize Grid AI for grid '{grid.DisplayName}'");
-            GetOrCreateGridAiTargeting(grid);
+
+            var aiTargeting = new GridAiTargeting(grid);
+
+            HeartLog.Log($"Grid AI initialized for grid '{grid.DisplayName}' [{(aiTargeting.Enabled ? "ENABLED" : "DISABLED")}]");
+
+            GridTargetingMap.Add(grid, aiTargeting);
         }
 
         private void CloseGridAI(IMyCubeGrid grid)
         {
-            if (grid.Physics == null) return;
+            if (grid.Physics == null)
+            {
+                HeartLog.Log($"Skipping CloseGridAI for grid '{grid.DisplayName}' because it has null physics.");
+                return;
+            }
 
             if (GridTargetingMap.ContainsKey(grid))
             {

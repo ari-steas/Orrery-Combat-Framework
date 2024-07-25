@@ -15,7 +15,22 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
     internal class GridAiTargeting
     {
         IMyCubeGrid Grid;
-        List<SorterWeaponLogic> Weapons => WeaponManager.I.GridWeapons[Grid];
+        List<SorterWeaponLogic> Weapons
+        {
+            get
+            {
+                List<SorterWeaponLogic> weapons;
+                if (WeaponManager.I.GridWeapons.TryGetValue(Grid, out weapons))
+                {
+                    return weapons;
+                }
+                else
+                {
+                    HeartLog.Log($"Weapons list not found for grid '{Grid.DisplayName}'");
+                    return new List<SorterWeaponLogic>();
+                }
+            }
+        }
         Vector3D gridPosition => Grid.PositionComp.WorldAABB.Center;
 
         SortedList<IMyCubeGrid, int> TargetedGrids = new SortedList<IMyCubeGrid, int>();
@@ -104,26 +119,18 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
 
         public void UpdateTargeting()
         {
+            if (Grid.Physics == null)
+            {
+                HeartLog.Log($"Skipping UpdateTargeting for grid '{Grid.DisplayName}' because it has null physics.");
+                return;
+            }
+
             try
             {
                 if (!Enabled) return;
 
                 SetTargetingFlags();
-
-                var previousTargetedGrids = new List<IMyCubeGrid>(TargetedGrids.Keys);
-                var previousTargetedCharacters = new List<IMyCharacter>(TargetedCharacters.Keys);
-                var previousTargetedProjectiles = new List<uint>(TargetedProjectiles.Keys);
-
                 ScanForTargets();
-
-                bool targetsChanged = !previousTargetedGrids.SequenceEqual(TargetedGrids.Keys) ||
-                                      !previousTargetedCharacters.SequenceEqual(TargetedCharacters.Keys) ||
-                                      !previousTargetedProjectiles.SequenceEqual(TargetedProjectiles.Keys);
-
-                if (!targetsChanged)
-                {
-                    return;
-                }
 
                 MyEntity manualTarget = null;
                 if (keenTargeting != null)
@@ -142,6 +149,7 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
                     bool turretHasTarget = false;
                     bool targetChanged = false;
 
+                    // First, check for manually locked target using GenericKeenTargeting
                     if (keenTargeting != null)
                     {
                         bool isManuallyLockedTargetInRange = manualTarget == null || Vector3D.DistanceSquared(manualTarget.PositionComp.WorldAABB.Center, Grid.PositionComp.WorldAABB.Center) <= MaxTargetingRange * MaxTargetingRange;
@@ -355,35 +363,55 @@ namespace Heart_Module.Data.Scripts.HeartModule.Weapons.AiTargeting
         /// </summary>
         private void SetTargetingFlags()
         {
-            DoesTargetGrids = false;
-            DoesTargetCharacters = false;
-            DoesTargetProjectiles = false;
-            MaxTargetingRange = 0;
-            foreach (var weapon in Weapons)
+            try
             {
-                if (weapon is SorterTurretLogic) // Only set targeting flags with turrets
+                Enabled = Weapons.Count > 0; // Disable if it has no weapons
+                if (!Enabled)
+                    return;
+
+                DoesTargetGrids = false;
+                DoesTargetCharacters = false;
+                DoesTargetProjectiles = false;
+                MaxTargetingRange = 0;
+                foreach (var weapon in Weapons)
                 {
-                    var turret = (SorterTurretLogic)weapon;
-                    DoesTargetGrids |= turret.Settings.TargetGridsState;
-                    DoesTargetCharacters |= turret.Settings.TargetCharactersState;
-                    DoesTargetProjectiles |= turret.Settings.TargetProjectilesState;
+                    if (weapon is SorterTurretLogic) // Only set targeting flags with turrets
+                    {
+                        var turret = (SorterTurretLogic)weapon;
+                        DoesTargetGrids |= turret.Settings.TargetGridsState;
+                        DoesTargetCharacters |= turret.Settings.TargetCharactersState;
+                        DoesTargetProjectiles |= turret.Settings.TargetProjectilesState;
+                    }
+
+                    float maxTrajectory = ProjectileDefinitionManager.GetDefinition(weapon.Magazines.SelectedAmmoId)?.PhysicalProjectile.MaxTrajectory ?? 0;
+                    if (maxTrajectory > MaxTargetingRange)
+                        MaxTargetingRange = maxTrajectory;
                 }
 
-                float maxTrajectory = ProjectileDefinitionManager.GetDefinition(weapon.Magazines.SelectedAmmoId)?.PhysicalProjectile.MaxTrajectory ?? 0;
-                if (maxTrajectory > MaxTargetingRange)
-                    MaxTargetingRange = maxTrajectory;
+                MaxTargetingRange *= 1.1f; // Increase range by a little bit to make targeting less painful
+
+                if (Enabled) // Disable if MaxRange = 0.
+                    Enabled = MaxTargetingRange > 0;
+
+                // Other targeting logic here
             }
-
-            MaxTargetingRange *= 1.1f; // Increase range by a little bit to make targeting less painful
-
-            Enabled = MaxTargetingRange > 0 && Weapons.Count > 0;
+            catch (Exception ex)
+            {
+                HeartLog.LogException(ex, typeof(GridAiTargeting), "Error in SetTargetingFlags: ");
+                Enabled = false;
+            }
         }
-
 
         private void ScanForTargets()
         {
             if (!Enabled)
                 return;
+
+            if (Grid.Physics == null)
+            {
+                HeartLog.Log($"Skipping ScanForTargets for grid '{Grid.DisplayName}' because it has null physics.");
+                return;
+            }
 
             BoundingSphereD sphere = new BoundingSphereD(Grid.PositionComp.WorldAABB.Center, MaxTargetingRange);
 
