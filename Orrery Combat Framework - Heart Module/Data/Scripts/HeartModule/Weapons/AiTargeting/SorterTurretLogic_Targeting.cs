@@ -11,6 +11,7 @@ using VRage.Game;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
 using VRageMath;
+using Heart_Module.Data.Scripts.HeartModule.Weapons;
 
 namespace Heart_Module.Data.Scripts.HeartModule.Weapons
 {
