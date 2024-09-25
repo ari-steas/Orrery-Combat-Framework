@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using VRage.Game.Components;
 using VRage.Utils;
 
-namespace OrreryFramework.Data.Scripts.OrreryFramework.Communication
+namespace OrreryFramework.Communication
 {
     [MySessionComponentDescriptor(MyUpdateOrder.BeforeSimulation, Priority = int.MaxValue)]
     internal class DefinitionSender : MySessionComponentBase

@@ -1,6 +1,6 @@
 ﻿using EmptyKeys.UserInterface.Generated.StoreBlockView_Bindings;
 using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
-using OrreryFramework.Data.Scripts.OrreryFramework.Communication.ProjectileBases;
+using OrreryFramework.Communication.ProjectileBases;
 using Sandbox.Game;
 using Sandbox.ModAPI;
 using System;
@@ -10,7 +10,7 @@ using VRage.Game.Entity;
 using VRage.Utils;
 using VRageMath;
 
-namespace OrreryFramework.Data.Scripts.OrreryFramework.Communication
+namespace OrreryFramework.Communication
 {
     partial class HeartDefinitions
     {

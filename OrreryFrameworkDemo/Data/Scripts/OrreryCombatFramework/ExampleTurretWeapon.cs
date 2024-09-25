@@ -1,7 +1,7 @@
-﻿using OrreryFramework.Data.Scripts.OrreryFramework.Communication.WeaponBases;
+﻿using OrreryFramework.Communication.WeaponBases;
 using System;
 
-namespace OrreryFramework.Data.Scripts.OrreryFramework.Communication
+namespace OrreryFramework.Communication
 {
     partial class HeartDefinitions
     {

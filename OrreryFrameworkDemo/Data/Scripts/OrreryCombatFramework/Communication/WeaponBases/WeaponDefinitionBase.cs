@@ -1,7 +1,7 @@
 ﻿using ProtoBuf;
 using System;
 
-namespace OrreryFramework.Data.Scripts.OrreryFramework.Communication.WeaponBases
+namespace OrreryFramework.Communication.WeaponBases
 {
     /// <summary>
     /// Standard serializable weapon definition. Add onto definition base using the partial modifier.
