@@ -1,11 +1,11 @@
-﻿using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.WeaponBases;
+﻿using OrreryFramework.Data.Scripts.OrreryFramework.Communication.WeaponBases;
 using System;
 
-namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
+namespace OrreryFramework.Data.Scripts.OrreryFramework.Communication
 {
     partial class HeartDefinitions
     {
-        WeaponDefinitionBase ExampleFixedProjWeapon => new WeaponDefinitionBase()
+        WeaponDefinitionBase ExampleFixedMissileWeapon => new WeaponDefinitionBase()
         {
             Targeting = new Targeting()
             {
@@ -17,7 +17,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             },
             Assignments = new Assignments()
             {
-                BlockSubtype = "OCF_ExampleFixedProjectileWeapon",
+                BlockSubtype = "OCF_ExampleMissileLauncher",
                 MuzzleSubpart = "",
                 ElevationSubpart = "",
                 AzimuthSubpart = "",
@@ -25,7 +25,16 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 InventoryIconName = "",
                 Muzzles = new string[]
                 {
-                    "muzzle_projectile_1",
+                    "Muzzle_10",
+                    "Muzzle_01",
+                    "Muzzle_02",
+                    "Muzzle_03",
+                    "Muzzle_04",
+                    "Muzzle_05",
+                    "Muzzle_06",
+                    "Muzzle_07",
+                    "Muzzle_08",
+                    "Muzzle_09",
                 },
             },
             Hardpoint = new Hardpoint()
@@ -37,7 +46,7 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
                 MaxElevation = (float)Math.PI / 4,
                 MinElevation = (float)-Math.PI / 4,
                 IdlePower = 0,
-                ShotInaccuracy = 0f,
+                ShotInaccuracy = 0.0175f,
                 LineOfSightCheck = true,
                 ControlRotation = true,
             },
@@ -45,36 +54,25 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             {
                 Ammos = new string[]
                 {
-                    ExampleAmmoProjectile.Name,
+                    ExampleAmmoMissile.Name,
+                    ExampleAmmoMissilePID.Name,
                 },
 
-                RateOfFire = 1,
+                RateOfFire = 20,
                 RateOfFireVariance = 0f,
                 BarrelsPerShot = 1,
                 ProjectilesPerBarrel = 1,
-                ReloadTime = 3,
-                DelayUntilFire = 2,
+                ReloadTime = 6,
+                DelayUntilFire = 0,
                 MagazinesToLoad = 1,
 
                 MaxReloads = -1,
-
-                Resources = new Loading.Resource[]
-                {
-                    new Loading.Resource
-                    {
-                        ResourceType = "Heat",
-                        ResourceGeneration = 5,     //fug this doesn't work yet
-                        ResourceStorage = 100, 
-                        ResourcePerShot = 1,
-                        MinResourceBeforeFire = 10 
-                    }
-                },
             },
             Audio = new Audio()
             {
                 PreShootSound = "",
-                ShootSound = "PunisherNewFire",
-                ReloadSound = "PunisherNewReload",
+                ShootSound = "ArcWepShipOnyxPlasmaHelios_Fire",
+                ReloadSound = "",
                 RotationSound = "",
             },
             Visuals = new Visuals()

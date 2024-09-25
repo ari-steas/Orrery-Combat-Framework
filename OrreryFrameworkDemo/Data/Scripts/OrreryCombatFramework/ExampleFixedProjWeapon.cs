@@ -1,48 +1,43 @@
-﻿using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.WeaponBases;
+﻿using OrreryFramework.Data.Scripts.OrreryFramework.Communication.WeaponBases;
 using System;
 
-namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
+namespace OrreryFramework.Data.Scripts.OrreryFramework.Communication
 {
     partial class HeartDefinitions
     {
-        WeaponDefinitionBase Example2BarrelTurretWeapon => new WeaponDefinitionBase()
+        WeaponDefinitionBase ExampleFixedProjWeapon => new WeaponDefinitionBase()
         {
             Targeting = new Targeting()
             {
-                MaxTargetingRange = 1000,
                 MinTargetingRange = 0,
+                MaxTargetingRange = 1000,
                 CanAutoShoot = true,
-                RetargetTime = 0,
+                RetargetTime = -1,
                 AimTolerance = 0.0175f,
-                DefaultIFF = IFF_Enum.TargetEnemies | IFF_Enum.TargetNeutrals,
-                AllowedTargetTypes = TargetType_Enum.TargetGrids | TargetType_Enum.TargetCharacters | TargetType_Enum.TargetProjectiles,
             },
             Assignments = new Assignments()
             {
-                BlockSubtype = "OCF_Example2BarrelTurret",
-                MuzzleSubpart = "TestEv",
-                ElevationSubpart = "TestEv",
-                AzimuthSubpart = "TestAz",
+                BlockSubtype = "OCF_ExampleFixedProjectileWeapon",
+                MuzzleSubpart = "",
+                ElevationSubpart = "",
+                AzimuthSubpart = "",
                 DurabilityModifier = 1,
                 InventoryIconName = "",
                 Muzzles = new string[]
                 {
-                    "muzzle01",
-                    "muzzle02",
+                    "muzzle_projectile_1",
                 },
             },
             Hardpoint = new Hardpoint()
             {
-                AzimuthRate = 0.5f,
-                ElevationRate = 0.5f,
+                AzimuthRate = 0.01f,
+                ElevationRate = 0.01f,
                 MaxAzimuth = (float)Math.PI,
                 MinAzimuth = (float)-Math.PI,
-                MaxElevation = (float)Math.PI,
-                MinElevation = -0.1745f,
-                HomeAzimuth = 0,
-                HomeElevation = 0,
-                IdlePower = 10,
-                ShotInaccuracy = 0.0025f,
+                MaxElevation = (float)Math.PI / 4,
+                MinElevation = (float)-Math.PI / 4,
+                IdlePower = 0,
+                ShotInaccuracy = 0f,
                 LineOfSightCheck = true,
                 ControlRotation = true,
             },
@@ -50,26 +45,37 @@ namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
             {
                 Ammos = new string[]
                 {
-                    ExampleAmmoBeam.Name,
                     ExampleAmmoProjectile.Name,
-                    ExampleAmmoMissile.Name,
                 },
 
-                RateOfFire = 5,
+                RateOfFire = 1,
+                RateOfFireVariance = 0f,
                 BarrelsPerShot = 1,
                 ProjectilesPerBarrel = 1,
-                ReloadTime = 4,
-                DelayUntilFire = 0,
+                ReloadTime = 3,
+                DelayUntilFire = 2,
                 MagazinesToLoad = 1,
 
                 MaxReloads = -1,
+
+                Resources = new Loading.Resource[]
+                {
+                    new Loading.Resource
+                    {
+                        ResourceType = "Heat",
+                        ResourceGeneration = 5,     //fug this doesn't work yet
+                        ResourceStorage = 100, 
+                        ResourcePerShot = 1,
+                        MinResourceBeforeFire = 10 
+                    }
+                },
             },
             Audio = new Audio()
             {
                 PreShootSound = "",
                 ShootSound = "PunisherNewFire",
                 ReloadSound = "PunisherNewReload",
-                RotationSound = "WepTurretGatlingRotate",
+                RotationSound = "",
             },
             Visuals = new Visuals()
             {

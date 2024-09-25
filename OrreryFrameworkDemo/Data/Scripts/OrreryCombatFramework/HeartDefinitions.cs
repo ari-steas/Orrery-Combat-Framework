@@ -1,4 +1,4 @@
-﻿namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
+﻿namespace OrreryFramework.Data.Scripts.OrreryFramework.Communication
 {
     partial class HeartDefinitions
     {

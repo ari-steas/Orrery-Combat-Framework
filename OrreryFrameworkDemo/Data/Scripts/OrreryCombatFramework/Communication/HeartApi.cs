@@ -1,6 +1,6 @@
 ﻿using Heart_Module.Data.Scripts.HeartModule.Projectiles.StandardClasses;
-using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.ProjectileBases;
-using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.WeaponBases;
+using OrreryFramework.Data.Scripts.OrreryFramework.Communication.ProjectileBases;
+using OrreryFramework.Data.Scripts.OrreryFramework.Communication.WeaponBases;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using VRage.Game.ModAPI;
 using VRage.Utils;
 using VRageMath;
 
-namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
+namespace OrreryFramework.Data.Scripts.OrreryFramework.Communication
 {
     public class HeartApi
     {
