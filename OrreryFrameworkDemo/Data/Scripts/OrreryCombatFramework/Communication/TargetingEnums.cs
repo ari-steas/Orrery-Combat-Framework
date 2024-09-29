@@ -1,4 +1,4 @@
-﻿namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
+﻿namespace OrreryFramework.Communication
 {
     public enum IFF_Enum
     {

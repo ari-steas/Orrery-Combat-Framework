@@ -7,7 +7,7 @@ using VRage.Game.Entity;
 using VRage.Utils;
 using VRageMath;
 
-namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.ProjectileBases
+namespace OrreryFramework.Communication.ProjectileBases
 {
     /// <summary>
     /// Standard serializable projectile definition.

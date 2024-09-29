@@ -1,10 +1,10 @@
-﻿using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.ProjectileBases;
-using OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication.WeaponBases;
+﻿using OrreryFramework.Communication.ProjectileBases;
+using OrreryFramework.Communication.WeaponBases;
 using ProtoBuf;
 using Sandbox.ModAPI;
 using System.Collections.Generic;
 
-namespace OrreryFrameworkDemo.Data.Scripts.OrreryFrameworkDemo.Communication
+namespace OrreryFramework.Communication
 {
     partial class HeartDefinitions
     {
